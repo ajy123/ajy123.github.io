@@ -1,2 +1,2 @@
 console.log('hello world')
-document.getElementById('spotify').backgroundColor = "black";
+// document.getElementByClass('spotify').backgroundColor = "black";

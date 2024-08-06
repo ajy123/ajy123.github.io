@@ -264,7 +264,6 @@ a p {
 a:hover {
   border-bottom-color: transparent;
   color: #f2849e !important;
-
   h2 {
     opacity: 1;
   }
@@ -285,7 +284,7 @@ i {
 }
 
 p {
-  margin: 0 0 2em 0;
+  margin: 0.5em 0 0.5em 0;
 }
 
 h1 {
@@ -1904,7 +1903,7 @@ article.special {
   text-align: center;
 }
 
-header p {
+header {
   margin-top: -1em;
 }
 
@@ -2871,9 +2870,9 @@ body:not(.is-touch) .tiles article:hover .content {
   opacity: 1;
 }
 
-* + .tiles {
+/* * + .tiles {
   margin-top: 2em;
-}
+} */
 
 body.is-preload .tiles article {
   -moz-transform: scale(0.9);

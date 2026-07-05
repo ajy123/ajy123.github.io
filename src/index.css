@@ -1,0 +1,1217 @@
+:root {
+  /* One typeface across the whole scale (design.md: Figtree). */
+  --font-body: Figtree, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Palette from design.md — ink / grey / white, no brand accent. */
+  --canvas: #ffffff; /* default page floor */
+  --white: #ffffff;
+  --surface-subtle: #f7f7f7; /* faint card / divider fill */
+  --surface-warm: #faf9f5; /* warm off-white control surface */
+  --ghost: #e0e0e0; /* oversized decorative section titles */
+  --muted: #898989; /* secondary text, captions, eyebrows */
+  --body: #141413; /* control/label text on warm surface */
+  --ink: #111111; /* primary text, headings */
+  --ink-strong: #000000; /* max-contrast text, links */
+  --hairline: rgba(31, 30, 29, 0.4); /* 1px control borders */
+  --hairline-faint: rgba(31, 30, 29, 0.12);
+
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--canvas);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: var(--font-body);
+  background: var(--canvas);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+button {
+  padding: 0;
+  font: inherit;
+}
+
+svg {
+  display: block;
+}
+
+::selection {
+  color: var(--white);
+  background: rgb(13, 81, 255); /* matches the cursor-trail blue */
+}
+
+.portfolio-shell {
+  display: flex;
+  max-width: 1200px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  gap: 64px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.profile-rail {
+  position: relative;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.profile-sticky {
+  position: fixed;
+  top: 0;
+  display: flex;
+  width: 280px;
+  height: 100vh;
+  height: 100dvh;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 72px 48px 72px 0;
+  background: var(--canvas);
+  /* Hairline divider, not a shadow — separation by line/whitespace only. */
+  box-shadow: inset -1px 0 var(--hairline-faint);
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Nudge identity heading cap-top to align with the 64px "Work" ghost cap. */
+  padding-top: 14px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+/* Identity heading — full ink, no chip. */
+h1 {
+  margin: 0 0 18px;
+  color: var(--ink);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h1 span {
+  display: block;
+}
+
+/* Body narrative — body-md scale (16/1.6), muted, flat (no chip). */
+.sidebar-bio {
+  width: 100%;
+  margin: 0 0 32px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.social-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Contact block anchored at the bottom of the rail, above the copyright.
+   Resume / LinkedIn / Email all follow the GitHub block's design: bold ink
+   label, optional muted secondary, icon pushed right, hover → ink. */
+.rail-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rl-gap, 12px);
+  /* Larger than the in-group 12px so the © credit reads as its own section. */
+  margin-bottom: 40px;
+}
+
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.rail-link-label {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: var(--rl-label-size, 12px);
+}
+
+.rail-link-sub {
+  overflow: hidden;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.35s var(--spring);
+}
+
+.rail-link svg {
+  width: var(--rl-icon-size, 12px);
+  height: var(--rl-icon-size, 12px);
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: color 0.35s var(--spring);
+}
+
+.rail-link svg rect,
+.rail-link svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rail-link:hover .rail-link-label,
+.rail-link:hover svg {
+  color: var(--ink);
+}
+
+.rail-link.is-copied .rail-link-sub {
+  color: var(--ink);
+}
+
+.rail-footer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.6px; /* 10% smaller than the 14px credit */
+  line-height: 1;
+}
+
+/* GitHub contributions (last 30 days) — additive rail block, links to profile. */
+.contrib {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--rl-gap, 12px);
+  color: var(--muted);
+}
+
+.contrib-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.contrib-label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* The week tiles + the hover summary share one slot, right after the label. */
+.contrib-slot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.contrib-weeks {
+  display: inline-flex;
+  gap: var(--rl-cell-gap, 3px);
+  transition: opacity 0.2s var(--ease);
+}
+
+/* Hovering the row crossfades the tiles to the active-days summary. Absolutely
+   positioned so the wider text never reflows the row or shoves the arrow. */
+.contrib-count {
+  position: absolute;
+  left: 0;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  color: var(--muted);
+  transition: opacity 0.2s var(--ease);
+}
+
+.contrib-head:hover .contrib-weeks {
+  opacity: 0;
+}
+
+.contrib-head:hover .contrib-count {
+  opacity: 1;
+}
+
+/* Only the arrow is the link — limited hit area, sits right after the title. */
+.contrib-link {
+  display: inline-flex;
+  color: var(--muted);
+  transition: color 0.35s var(--spring);
+}
+
+.contrib-link:hover {
+  color: var(--ink);
+}
+
+.contrib-head svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* The .email-row stroke rules are scoped; restate them for this glyph. */
+.contrib-head svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contrib-cell {
+  width: var(--rl-cell, 12.285px);
+  height: var(--rl-cell, 12.285px);
+  border-radius: var(--rl-cell-radius, 2px);
+  background: #ececec; /* level 0 — empty week, one step darker */
+}
+
+.contrib-cell[data-level="1"] {
+  background: #c2c2c0;
+}
+
+.contrib-cell[data-level="2"] {
+  background: #6d6d6d;
+}
+
+.contrib-cell[data-level="3"] {
+  background: #363634;
+}
+
+.contrib-cell[data-level="4"] {
+  background: #000;
+}
+
+/* ===========================================================================
+   Rail-footer design variants. The footer body carries data-variant + the
+   DialKit-tuned CSS vars (set inline; the var() fallbacks below = baked
+   defaults so the production build, where DialKit is absent, still renders).
+   `current` is the baseline above; these blocks restyle the whole footer.
+   =========================================================================== */
+.rail-footer-body {
+  display: contents; /* layout stays owned by .profile-sticky / .rail-footer */
+}
+
+/* --- divided: ruled rows, icons aligned to the right edge ---------------- */
+.rail-footer-body[data-variant="divided"] .rail-contact {
+  gap: 0;
+}
+.rail-footer-body[data-variant="divided"] .rail-link {
+  padding: var(--rl-rowpad, 10px) 0;
+  border-top: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
+}
+.rail-footer-body[data-variant="divided"] .rail-link svg {
+  margin-left: auto;
+}
+.rail-footer-body[data-variant="divided"] .contrib {
+  margin-bottom: 0;
+  padding-bottom: var(--rl-rowpad, 10px);
+  border-bottom: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
+}
+.rail-footer-body[data-variant="divided"] > p {
+  margin-top: var(--rl-rowpad, 10px);
+  padding-top: var(--rl-rowpad, 10px);
+  border-top: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
+}
+
+/* --- mono: monospace, lowercase, optional [brackets], no icons ----------- */
+.rail-footer-body[data-variant="mono"] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: var(--rl-mono-tracking, 0px);
+}
+.rail-footer-body[data-variant="mono"] .rail-link,
+.rail-footer-body[data-variant="mono"] .contrib-head {
+  font-size: var(--rl-mono-size, 12px);
+}
+.rail-footer-body[data-variant="mono"] .rail-link-label,
+.rail-footer-body[data-variant="mono"] .contrib-label {
+  text-transform: lowercase;
+}
+.rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::before {
+  content: "[";
+}
+.rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::after {
+  content: "]";
+}
+.rail-footer-body[data-variant="mono"] .rail-link svg,
+.rail-footer-body[data-variant="mono"] .contrib-link {
+  display: none;
+}
+
+/* --- dotleader: table-of-contents dotted leaders, label ···· icon -------- */
+.rail-link-leader {
+  display: none; /* inert in every variant except dotleader */
+}
+.rail-footer-body[data-variant="dotleader"] .rail-link-sub {
+  display: none;
+}
+.rail-footer-body[data-variant="dotleader"] .rail-link-leader {
+  display: block;
+  flex: 1;
+  align-self: end;
+  height: 3px;
+  margin: 0 8px 5px;
+  background-image: radial-gradient(circle, var(--muted) 1.1px, transparent 1.7px);
+  background-size: var(--rl-leader-gap, 6px) 3px;
+  background-position: 0 center;
+  background-repeat: repeat-x;
+}
+.rail-footer-body[data-variant="dotleader"] .rail-link svg {
+  margin-left: 0;
+}
+
+/* --- keycap: links as tactile keyboard keys ----------------------------- */
+.rail-footer-body[data-variant="keycap"] .rail-contact {
+  flex-flow: row wrap;
+  gap: var(--rl-gap, 12px);
+}
+.rail-footer-body[data-variant="keycap"] .rail-link {
+  width: auto;
+  align-self: flex-start;
+  padding: 8px 12px 10px;
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rl-key-radius, 8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 var(--rl-key-depth, 3px) 0 rgba(31, 30, 29, 0.18),
+    0 calc(var(--rl-key-depth, 3px) + 1px) 3px rgba(31, 30, 29, 0.14);
+  transition:
+    transform 0.08s var(--ease),
+    box-shadow 0.08s var(--ease);
+}
+.rail-footer-body[data-variant="keycap"] .rail-link:active {
+  transform: translateY(var(--rl-key-depth, 3px));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); /* pressed flat */
+}
+.rail-footer-body[data-variant="keycap"] .rail-link-sub {
+  display: none;
+}
+
+/* --- physics: matter.js drives transforms; assembled look = current -----
+   The body must be a real box (not display:contents) so the controller can
+   measure it for the ground plane + cursor-proximity. Block flow stacks the
+   children identically, so the assembled look is unchanged. */
+.rail-footer-body[data-variant="physics"] {
+  display: block;
+  position: relative;
+}
+.rail-footer-body[data-variant="physics"] .rail-link-label,
+.rail-footer-body[data-variant="physics"] .rail-link-sub,
+.rail-footer-body[data-variant="physics"] .rail-link svg,
+.rail-footer-body[data-variant="physics"] .contrib-label,
+.rail-footer-body[data-variant="physics"] .contrib-count,
+.rail-footer-body[data-variant="physics"] .contrib-head svg,
+.rail-footer-body[data-variant="physics"] .contrib-cell,
+.rail-footer-body[data-variant="physics"] .phys-char,
+.rail-footer-body[data-variant="physics"] > p {
+  will-change: transform;
+}
+
+.work-canvas {
+  flex: 1;
+  min-width: 0;
+  padding: 72px 0 64px;
+}
+
+.work-heading {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+/* Second+ section ghost heading gets generous separation from prior grid. */
+.work-grid + .work-heading {
+  margin-top: 96px;
+}
+
+/* Signature ghost section title — quiet label behind the content. */
+.section-heading {
+  display: block;
+  color: var(--ghost);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.work-heading p {
+  display: block;
+  width: fit-content;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 64px;
+}
+
+/* case-card: transparent, no border/shadow, eyebrow → title → meta → image. */
+.work-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-eyebrow {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card-title {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-role {
+  margin: 0 0 4px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.card-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.card-meta-copy {
+  min-width: 0;
+}
+
+.card-meta a {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color 180ms var(--ease),
+    text-decoration-color 180ms var(--ease);
+}
+
+.card-meta a:hover,
+.card-meta a:focus-visible {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
+.card-summary {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/* Full-width media, square corners, flat — depth comes from the image only. */
+.work-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  border-radius: 0;
+  transition: transform 0.35s var(--ease);
+}
+
+.work-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.work-media-control {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--white);
+  background: rgba(17, 17, 17, 0.72);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 180ms var(--ease),
+    transform 180ms var(--ease),
+    background 180ms var(--ease);
+}
+
+.work-media-control:hover {
+  background: rgba(17, 17, 17, 0.9);
+}
+
+.work-media-control:focus-visible,
+.work-media:hover .work-media-control,
+.work-media:focus-within .work-media-control {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.work-media-control svg {
+  width: 16px;
+  height: 16px;
+}
+
+.work-media-control svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.work-media-control svg path[d="M8 5v14l11-7z"] {
+  fill: currentColor;
+  stroke: none;
+}
+
+@media (hover: none) {
+  .work-media-control {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 500ms var(--ease),
+    transform 500ms var(--ease);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.splash {
+  all: unset;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  background: var(--surface-warm);
+  cursor: pointer;
+  animation: splashIn 360ms var(--ease) both;
+}
+
+.splash--cream {
+  background: var(--surface-warm);
+}
+
+/* Splash backgrounds paint over the cream fallback and stay click-through so
+ * the splash button still receives clicks. */
+.splash-shader-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.splash.is-leaving {
+  pointer-events: none;
+  animation: splashOut 280ms var(--ease) both;
+}
+
+.splash-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(420px, calc(100vw - 48px));
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.splash-title {
+  color: var(--ink);
+  font-size: clamp(44px, 8vw, 56px);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.splash-progress {
+  position: relative;
+  display: block;
+  width: min(260px, 70%);
+  height: 3px;
+  overflow: hidden;
+  background: var(--hairline-faint);
+  border-radius: 9999px;
+}
+
+.splash-progress span {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  border-radius: inherit;
+  transform-origin: left center;
+  transition: transform 220ms var(--ease);
+}
+
+.splash-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.splash-hint-dot {
+  color: rgba(137, 137, 137, 0.7);
+}
+
+.splash-key,
+.contextual-ask-key {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  color: var(--body);
+  background: rgba(250, 249, 245, 0.92);
+  border: 1px solid rgba(31, 30, 29, 0.18);
+  border-radius: 5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(31, 30, 29, 0.12);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.splash-key {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+[data-ask-hint] {
+  position: relative;
+}
+
+.askable-region {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-ask-active="true"] {
+  z-index: 1;
+}
+
+.contextual-ask-hint {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 18;
+  display: inline-flex;
+  max-width: min(
+    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 31px),
+    calc(100vw - 32px)
+  );
+  align-items: center;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.contextual-ask-surface {
+  display: inline-flex;
+  max-width: min(
+    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 31px),
+    calc(100vw - 32px)
+  );
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  color: var(--ink);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: none;
+  opacity: 1;
+  clip-path: inset(0 0 0 0 round 12px);
+  filter: blur(0);
+  transform: scale(1);
+  transform-origin: calc((var(--ask-pin-size, 20px) / 2) + 5px) 50%;
+  transition:
+    opacity 160ms var(--ease-out-strong),
+    transform 160ms var(--ease-out-strong),
+    clip-path 180ms var(--ease-out-strong),
+    filter 180ms var(--ease-out-strong);
+  will-change: opacity, transform, clip-path, filter;
+}
+
+@starting-style {
+  .contextual-ask-surface {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.contextual-ask-hint--exiting .contextual-ask-surface {
+  opacity: 0;
+  transform: scale(0.97);
+  transition-duration: 120ms;
+}
+
+.contextual-ask-hint--pin .contextual-ask-surface {
+  clip-path: inset(
+    0
+    calc(100% - (var(--ask-pin-size, 20px) + 10px))
+    0
+    0
+    round 999px
+  );
+}
+
+.contextual-ask-hint--expanded .contextual-ask-surface {
+  clip-path: inset(0 0 0 0 round 12px);
+}
+
+.contextual-ask-hint .contextual-ask-key {
+  flex: 0 0 var(--ask-pin-size, 20px);
+  min-width: var(--ask-pin-size, 20px);
+  width: var(--ask-pin-size, 20px);
+  height: var(--ask-pin-size, 20px);
+  color: rgba(17, 17, 17, 0.86);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(31, 30, 29, 0.14);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(31, 30, 29, 0.12);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.contextual-ask-copy {
+  display: block;
+  max-width: var(--ask-hint-max-width, 220px);
+  min-width: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  text-wrap: balance;
+  transition:
+    opacity 140ms var(--ease-out-strong) 40ms,
+    filter 140ms var(--ease-out-strong) 40ms;
+}
+
+.contextual-ask-hint--pin .contextual-ask-copy {
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.contextual-ask-hint--expanded .contextual-ask-copy {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/*
+ * cursor-chat is a floating interaction overlay, not a content card. It keeps a
+ * light elevation so it reads above the page — a deliberate exception to the
+ * otherwise-flat system (see design.md "Elevation").
+ */
+.cursor-chat {
+  position: fixed;
+  z-index: 20;
+  width: 320px;
+  max-width: calc(100vw - 28px);
+  max-height: min(360px, calc(100vh - 28px));
+  overflow: auto;
+  padding: 10px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(22, 21, 19, 0.12);
+  animation: cursorChatIn 240ms var(--ease) both;
+}
+
+.cursor-chat-grip {
+  width: 28px;
+  height: 3px;
+  margin: 0 auto 8px;
+  background: var(--ghost);
+  border-radius: 9999px;
+}
+
+.cursor-chat textarea {
+  all: unset;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 154px;
+  overflow-y: auto;
+  padding: 10px 11px;
+  color: var(--ink);
+  background: var(--surface-subtle);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.cursor-chat textarea::placeholder {
+  color: var(--muted);
+}
+
+.cursor-chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.cursor-chat-suggestions button {
+  all: unset;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 7px 9px;
+  color: rgba(52, 50, 47, 0.9);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  transition:
+    border-color 180ms var(--ease),
+    transform 180ms var(--ease),
+    background 180ms var(--ease);
+}
+
+.cursor-chat-suggestions button:hover,
+.cursor-chat-suggestions button:focus-visible {
+  background: rgba(250, 249, 245, 0.98);
+  border-color: rgba(31, 30, 29, 0.22);
+}
+
+.cursor-chat-suggestions button:active {
+  transform: translateY(1px);
+}
+
+.cursor-chat-message,
+.cursor-chat-response {
+  padding: 10px 11px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.cursor-chat-message {
+  margin-bottom: 8px;
+  background: var(--surface-subtle);
+}
+
+.cursor-chat-response {
+  margin-bottom: 8px;
+  color: var(--body);
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--hairline-faint);
+}
+
+.cursor-chat-error .cursor-chat-response {
+  color: #6d342f;
+  background: #f8eeee;
+}
+
+.cursor-chat-message p,
+.cursor-chat-response p {
+  margin: 0;
+}
+
+.cursor-chat-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.cursor-chat-actions button,
+.cursor-chat-pin {
+  all: unset;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.cursor-chat-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 10px;
+  color: var(--body);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    color 220ms var(--ease),
+    background 220ms var(--ease),
+    transform 220ms var(--ease),
+    opacity 220ms var(--ease);
+}
+
+.cursor-chat-actions button:hover:not(:disabled) {
+  color: var(--canvas);
+  background: var(--ink);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.cursor-chat-actions button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.cursor-chat-pin {
+  position: fixed;
+  z-index: 19;
+  display: block;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--ink);
+  border-radius: 9999px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9);
+  transition:
+    transform 240ms var(--spring),
+    box-shadow 240ms var(--spring);
+}
+
+.cursor-chat-pin:hover {
+  transform: translateY(-2px) scale(1.08);
+}
+
+.cursor-chat-pin span {
+  position: absolute;
+  inset: 8px;
+  background: var(--white);
+  border-radius: 9999px;
+}
+
+@keyframes cursorChatIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splashIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splashOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .portfolio-shell {
+    display: block;
+    max-width: none;
+    padding: 0 20px;
+  }
+
+  .profile-rail {
+    position: static;
+    width: auto;
+  }
+
+  .profile-sticky {
+    position: relative;
+    width: auto;
+    height: auto;
+    min-height: auto;
+    padding: 48px 0 32px;
+    box-shadow: none;
+  }
+
+  .profile-content {
+    max-width: 320px;
+  }
+
+  .rail-footer {
+    margin-top: 44px;
+  }
+
+  .work-canvas {
+    padding: 42px 0 64px;
+  }
+
+  /* Ghost titles scale down so they stay proportional (design.md). */
+  .section-heading {
+    font-size: 40px;
+  }
+
+  .work-grid {
+    grid-template-columns: 1fr;
+    row-gap: 42px;
+  }
+
+  .cursor-chat {
+    width: min(320px, calc(100vw - 28px));
+  }
+
+  .contextual-ask-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cursor-chat {
+    animation: none;
+  }
+
+  .contextual-ask-surface,
+  .contextual-ask-copy {
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .splash,
+  .splash.is-leaving {
+    animation: none;
+  }
+
+  .splash-progress span {
+    transition: none;
+  }
+}

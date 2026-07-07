@@ -21,6 +21,18 @@ export function ContextualAskHintWithDials() {
       ],
       pinSize: [DEFAULT_CONTEXTUAL_ASK_HINT_DIALS.pinSize, 14, 32, 1],
       hintMaxWidth: [DEFAULT_CONTEXTUAL_ASK_HINT_DIALS.hintMaxWidth, 160, 320, 1],
+      scrambleDurMs: [
+        DEFAULT_CONTEXTUAL_ASK_HINT_DIALS.scrambleDurMs,
+        0,
+        2000,
+        25,
+      ],
+      scrambleSpeed: [
+        DEFAULT_CONTEXTUAL_ASK_HINT_DIALS.scrambleSpeed,
+        0.01,
+        0.12,
+        0.005,
+      ],
     },
     {
       id: "contextual-ask-hint",
@@ -38,6 +50,8 @@ export function ContextualAskHintWithDials() {
     expandDelayMs: params.expandDelayMs,
     pinSize: params.pinSize,
     hintMaxWidth: params.hintMaxWidth,
+    scrambleDurMs: params.scrambleDurMs,
+    scrambleSpeed: params.scrambleSpeed,
   };
 
   return (

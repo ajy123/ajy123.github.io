@@ -1,8 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import type { ChatCompletionMessageParam } from "@mlc-ai/web-llm";
 import {
   isAbortError,
+  isEngineReady,
   isWebGPUAvailable,
+  onInitProgress,
   streamChat,
 } from "./llmEngine";
 import {
@@ -48,8 +56,17 @@ type Thread = {
   status: ChatStatus;
   isPinned: boolean;
   createdAt: number;
+  dragPageLeft?: number;
+  dragPageTop?: number;
+  draftPlaceholder?: string;
   suggestedPrompts?: SuggestedPrompt[];
   zoneContext?: CursorChatZoneContext;
+};
+
+export type CursorChatDials = {
+  chipStaggerMs: number;
+  radiusTight: number;
+  radiusRoomy: number;
 };
 
 const COMPOSER_WIDTH = 320;
@@ -59,6 +76,94 @@ const AUDIENCE_PRESETS = {
   recruiter: "recruiter",
   "product-design": "product design",
 } as const;
+
+// Suggested chips carry the questions. Placeholders stay instructional so the
+// composer never repeats the same copy in two places.
+const AUDIENCE_PROMPTS: Record<
+  string,
+  { chips: string[]; placeholder: string }
+> = {
+  recruiter: {
+    chips: [
+      "what's she strongest at?",
+      "what has she shipped recently?",
+      "walk me through her background",
+      "what roles is she looking for?",
+    ],
+    placeholder: "or ask what's on your checklist",
+  },
+  "product design": {
+    chips: [
+      "how was this chat built?",
+      "what's her design process?",
+      "what did she actually ship?",
+    ],
+    placeholder: "or ask how anything here was made",
+  },
+  default: {
+    chips: [
+      "what did she actually ship?",
+      "what's she strongest at?",
+      "how was this chat built?",
+    ],
+    placeholder: "or ask anything about her work",
+  },
+};
+
+function getAudiencePrompts() {
+  const role = getAudienceRole();
+  return (role && AUDIENCE_PROMPTS[role]) || AUDIENCE_PROMPTS.default;
+}
+
+function shufflePrompts(prompts: string[]) {
+  return prompts
+    .map((prompt) => ({ prompt, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ prompt }) => prompt);
+}
+
+function toSuggestedPromptId(value: string, index: number) {
+  const slug = value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `persona-${slug || "prompt"}-${index}`;
+}
+
+function pickAudienceSuggestions(): SuggestedPrompt[] {
+  return shufflePrompts(getAudiencePrompts().chips)
+    .slice(0, 3)
+    .map((prompt, index) => ({
+      id: toSuggestedPromptId(prompt, index),
+      label: prompt,
+      prompt,
+    }));
+}
+
+function pickDraftPlaceholder(fromSelection: boolean): string {
+  if (fromSelection) return "Ask about what you selected";
+  return getAudiencePrompts().placeholder;
+}
+
+function getZoneTagLabel(zoneContext?: CursorChatZoneContext) {
+  if (!zoneContext) return null;
+
+  const labelByKind: Record<string, string> = {
+    project: "THIS PROJECT",
+    essay: "THIS ESSAY",
+    profile: "JOANNA",
+  };
+
+  return `ASKING ABOUT: ${labelByKind[zoneContext.kind] ?? "THIS PAGE"}`;
+}
+
+export const DEFAULT_CURSOR_CHAT_DIALS: CursorChatDials = {
+  chipStaggerMs: 40,
+  radiusTight: 4,
+  radiusRoomy: 14,
+};
+
+type AnchorCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
 function getAudienceRole(): CapturedContext["audienceRole"] {
   const audience = new URLSearchParams(window.location.search)
@@ -147,6 +252,8 @@ function placeComposer(pageX: number, pageY: number) {
       Math.max(preferredTop, EDGE),
       window.innerHeight - EDGE - 120,
     ),
+    anchorCorner:
+      `${opensUp ? "bottom" : "top"}-${opensLeft ? "right" : "left"}` as AnchorCorner,
   };
 }
 
@@ -187,6 +294,28 @@ function captureContext(pageX: number, pageY: number): CapturedContext {
 
 const UNSUPPORTED_MESSAGE =
   "This browser cannot run the local model. It needs WebGPU (recent Chrome, Edge, or Arc).";
+
+// Generation narration: silent-ish pulse first, truthful stage phrases only
+// when the wait drags on. Ends on "composing…" and holds.
+const THINKING_PHRASES = [
+  "thinking…",
+  "reading this page…",
+  "checking Joanna's notes…",
+  "composing…",
+];
+const THINKING_PHRASE_DELAYS_MS = [3000, 5500, 8000];
+
+const BRAIN_METER_CELLS = 12;
+
+function renderResponseText(response: string, isStreaming: boolean) {
+  if (!isStreaming) return response;
+
+  return response.split(/(\s+)/).map((part, index) => (
+    <span className="cursor-chat-response-token" key={index}>
+      {part}
+    </span>
+  ));
+}
 
 function buildMessages(
   prompt: string,
@@ -243,7 +372,13 @@ function buildMessages(
   return messages;
 }
 
-export function CursorChat({ suspended = false }: { suspended?: boolean }) {
+export function CursorChat({
+  dials = DEFAULT_CURSOR_CHAT_DIALS,
+  suspended = false,
+}: {
+  dials?: CursorChatDials;
+  suspended?: boolean;
+}) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -256,6 +391,29 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
   const suspendedRef = useRef(suspended);
 
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
+  const activeZoneTag = getZoneTagLabel(activeThread?.zoneContext);
+
+  // Engine download progress (0..1). While a thread is "loading" but the model
+  // is still downloading, the UI shows an honest progress state instead of
+  // pretending to think.
+  const [engineProgress, setEngineProgress] = useState(() =>
+    isEngineReady() ? 1 : 0,
+  );
+  useEffect(() => onInitProgress((report) => setEngineProgress(report.progress)), []);
+  const engineIsReady = isEngineReady() || engineProgress >= 1;
+
+  // Generation narration index; restarts per thread and only once the engine
+  // is actually generating (not while downloading).
+  const [thinkingPhase, setThinkingPhase] = useState(0);
+  const isGenerating = activeThread?.status === "loading" && engineIsReady;
+  useEffect(() => {
+    setThinkingPhase(0);
+    if (!isGenerating) return;
+    const timers = THINKING_PHRASE_DELAYS_MS.map((ms, index) =>
+      window.setTimeout(() => setThinkingPhase(index + 1), ms),
+    );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [isGenerating, activeThread?.id]);
 
   useEffect(() => {
     activeIdRef.current = activeId;
@@ -295,6 +453,10 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
 
       const selectionAnchor = getSelectionAnchor();
       const anchor = anchorOverride ?? selectionAnchor ?? pointerRef.current;
+      const fromSelection = !anchorOverride && selectionAnchor !== null;
+      const threadSuggestedPrompts =
+        suggestedPrompts ??
+        (!anchorOverride && !fromSelection ? pickAudienceSuggestions() : undefined);
       const id = crypto.randomUUID();
 
       setDraft("");
@@ -312,8 +474,9 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
           status: "draft",
           isPinned: false,
           createdAt: Date.now(),
-          suggestedPrompts,
+          suggestedPrompts: threadSuggestedPrompts,
           zoneContext,
+          draftPlaceholder: pickDraftPlaceholder(fromSelection),
         },
       ]);
       setActiveId(id);
@@ -379,17 +542,42 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
     textarea.style.height = `${Math.min(textarea.scrollHeight, 154)}px`;
   }, [draft, activeId]);
 
+  // Closing an answered thread pins it in place instead of destroying it, so a
+  // stray Escape never eats a conversation. Unanswered drafts still discard.
   const closeActive = () => {
     const id = activeIdRef.current;
     if (!id) return;
 
     abortRef.current?.abort();
     abortRef.current = null;
-    setThreads((current) => current.filter((thread) => thread.id !== id));
+    setThreads((current) => {
+      const thread = current.find((item) => item.id === id);
+      const keep =
+        thread && (thread.status === "done" || thread.history.length > 0);
+
+      if (!keep) return current.filter((item) => item.id !== id);
+
+      return current.map((item) => {
+        if (item.id !== id) return item;
+        const lastTurn = item.history[item.history.length - 1];
+        const revertToLastTurn = item.status !== "done" && lastTurn;
+        return {
+          ...item,
+          isPinned: true,
+          status: "done" as ChatStatus,
+          prompt: revertToLastTurn ? lastTurn.prompt : item.prompt,
+          response: revertToLastTurn ? lastTurn.response : item.response,
+        };
+      });
+    });
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
     previousFocusRef.current?.focus();
+  };
+
+  const removeThread = (id: string) => {
+    setThreads((current) => current.filter((thread) => thread.id !== id));
   };
 
   const submitThread = async (promptOverride?: string) => {
@@ -508,9 +696,85 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
     void submitThread();
   };
 
+  const dragStateRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    baseLeft: number;
+    baseTop: number;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
   const activePosition = activeThread
-    ? placeComposer(activeThread.pageX, activeThread.pageY)
+    ? (() => {
+        const placed = placeComposer(activeThread.pageX, activeThread.pageY);
+        if (
+          activeThread.dragPageLeft == null ||
+          activeThread.dragPageTop == null
+        ) {
+          return placed;
+        }
+        return {
+          ...placed,
+          left: activeThread.dragPageLeft - window.scrollX,
+          top: activeThread.dragPageTop - window.scrollY,
+        };
+      })()
     : null;
+
+  const handleTopbarPointerDown = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (!activePosition) return;
+    if ((event.target as HTMLElement).closest("button")) return;
+
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      baseLeft: activePosition.left,
+      baseTop: activePosition.top,
+    };
+    setIsDragging(true);
+  };
+
+  const handleTopbarPointerMove = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    const drag = dragStateRef.current;
+    const id = activeIdRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || !id) return;
+
+    const left = Math.min(
+      Math.max(drag.baseLeft + event.clientX - drag.startX, EDGE),
+      window.innerWidth - COMPOSER_WIDTH - EDGE,
+    );
+    const top = Math.min(
+      Math.max(drag.baseTop + event.clientY - drag.startY, EDGE),
+      window.innerHeight - EDGE - 120,
+    );
+    setThreads((current) =>
+      current.map((thread) =>
+        thread.id === id
+          ? {
+              ...thread,
+              dragPageLeft: left + window.scrollX,
+              dragPageTop: top + window.scrollY,
+            }
+          : thread,
+      ),
+    );
+  };
+
+  const handleTopbarPointerEnd = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (dragStateRef.current?.pointerId !== event.pointerId) return;
+    dragStateRef.current = null;
+    setIsDragging(false);
+  };
 
   void tick;
 
@@ -520,28 +784,116 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
         .filter((thread) => thread.isPinned)
         .map((thread) => {
           const position = placePin(thread.pageX, thread.pageY);
+          const snippet =
+            thread.prompt.length > 34
+              ? `${thread.prompt.slice(0, 34).trimEnd()}…`
+              : thread.prompt;
           return (
-            <button
+            <div
               className="cursor-chat-pin"
               key={thread.id}
               style={{ left: position.left, top: position.top }}
-              type="button"
-              aria-label="Open cursor chat thread"
-              onClick={() => reopenThread(thread.id)}
             >
-              <span />
-            </button>
+              <button
+                className="cursor-chat-pin-open"
+                type="button"
+                aria-label={`Reopen chat: ${thread.prompt}`}
+                onClick={() => reopenThread(thread.id)}
+              >
+                <span className="cursor-chat-pin-key" aria-hidden="true">
+                  /
+                </span>
+                <span className="cursor-chat-pin-label">{snippet}</span>
+              </button>
+              <button
+                className="cursor-chat-pin-remove"
+                type="button"
+                aria-label="Remove pinned chat"
+                onClick={() => removeThread(thread.id)}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                  <path
+                    d="M2 2l6 6M8 2l-6 6"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </svg>
+              </button>
+            </div>
           );
         })}
 
       {activeThread && activePosition ? (
         <section
           className={`cursor-chat cursor-chat-${activeThread.status}`}
-          style={{ left: activePosition.left, top: activePosition.top }}
+          data-anchor-corner={activePosition.anchorCorner}
+          data-dragged={activeThread.dragPageLeft != null ? "true" : undefined}
+          style={
+            {
+              left: activePosition.left,
+              top: activePosition.top,
+              "--chat-radius-tight": `${dials.radiusTight}px`,
+              "--chat-radius-roomy": `${dials.radiusRoomy}px`,
+            } as CSSProperties
+          }
           role="dialog"
           aria-label="Cursor chat"
         >
-          <div className="cursor-chat-grip" aria-hidden="true" />
+          <div
+            className={`cursor-chat-topbar${isDragging ? " is-dragging" : ""}`}
+            onPointerDown={handleTopbarPointerDown}
+            onPointerMove={handleTopbarPointerMove}
+            onPointerUp={handleTopbarPointerEnd}
+            onPointerCancel={handleTopbarPointerEnd}
+          >
+            {activeZoneTag ? (
+              <span className="cursor-chat-zonetag" aria-hidden="true">
+                {activeZoneTag}
+              </span>
+            ) : null}
+            {activeThread.status === "done" ? (
+              <button
+                className="cursor-chat-iconbtn"
+                type="button"
+                aria-label="Pin chat to page"
+                onClick={collapseActive}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                  <path
+                    d="M4.2 1h3.6M5 1.2v3L3.2 6v.9h5.6V6L7 4.2v-3M6 6.9V11"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              </button>
+            ) : null}
+            <button
+              className="cursor-chat-iconbtn"
+              type="button"
+              aria-label={
+                activeThread.status === "done" ||
+                activeThread.history.length > 0
+                  ? "Close chat (stays pinned on the page)"
+                  : "Close chat"
+              }
+              onClick={closeActive}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path
+                  d="M2.5 2.5l7 7M9.5 2.5l-7 7"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+            </button>
+          </div>
 
           {activeThread.prompt ? (
             <div className="cursor-chat-message">
@@ -552,20 +904,68 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
           {activeThread.response ||
           activeThread.status === "loading" ? (
             <div className="cursor-chat-response" aria-live="polite">
-              {activeThread.status === "loading" ? (
-                <p>Thinking...</p>
+              {activeThread.status === "loading" && !engineIsReady ? (
+                <>
+                  <p className="cursor-chat-thinking">
+                    {engineProgress <= 0
+                      ? "finding the tiny brain…"
+                      : `still waking the tiny brain — ${Math.min(
+                          99,
+                          Math.round(engineProgress * 100),
+                        )}%`}
+                  </p>
+                  <span className="cursor-chat-brainmeter" aria-hidden="true">
+                    {Array.from({ length: BRAIN_METER_CELLS }, (_, index) => (
+                      <span
+                        key={index}
+                        data-filled={
+                          index < Math.round(engineProgress * BRAIN_METER_CELLS)
+                            ? "true"
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </span>
+                </>
+              ) : activeThread.status === "loading" ? (
+                <p className="cursor-chat-thinking">
+                  {THINKING_PHRASES[thinkingPhase]}
+                  <span className="cursor-chat-caret" aria-hidden="true" />
+                </p>
               ) : (
-                <p>{activeThread.response}</p>
+                <p>
+                  {renderResponseText(
+                    activeThread.response,
+                    activeThread.status === "streaming",
+                  )}
+                  {activeThread.status === "streaming" ? (
+                    <span className="cursor-chat-caret" aria-hidden="true" />
+                  ) : null}
+                </p>
               )}
+              {activeThread.status === "error" ? (
+                <button
+                  className="cursor-chat-retry"
+                  type="button"
+                  onClick={retryActive}
+                >
+                  Retry
+                </button>
+              ) : null}
             </div>
           ) : null}
 
           {activeThread.status === "draft" &&
           activeThread.suggestedPrompts?.length ? (
             <div className="cursor-chat-suggestions" aria-label="Suggested prompts">
-              {activeThread.suggestedPrompts.map((chip) => (
+              {activeThread.suggestedPrompts.map((chip, index) => (
                 <button
                   key={chip.id}
+                  style={
+                    {
+                      "--chip-delay": `${index * dials.chipStaggerMs}ms`,
+                    } as CSSProperties
+                  }
                   type="button"
                   onClick={() => void submitThread(chip.prompt)}
                 >
@@ -578,56 +978,38 @@ export function CursorChat({ suspended = false }: { suspended?: boolean }) {
           {activeThread.status === "draft" ||
           activeThread.status === "done" ||
           activeThread.status === "error" ? (
-            <textarea
-              ref={textareaRef}
-              value={draft}
-              rows={1}
-              maxLength={2000}
-              placeholder={
-                activeThread.status === "done"
-                  ? "Continue the chat"
-                  : activeThread.zoneContext?.hint ?? "Ask about this spot"
-              }
-              aria-label="Cursor chat message"
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  void submitThread();
+            <div className="cursor-chat-composer">
+              <textarea
+                ref={textareaRef}
+                value={draft}
+                rows={1}
+                maxLength={2000}
+                placeholder={
+                  activeThread.status === "done"
+                    ? "Continue the chat"
+                    : activeThread.draftPlaceholder ??
+                      "or ask anything about her work"
                 }
-              }}
-            />
-          ) : null}
-
-          <div className="cursor-chat-actions">
-            <button type="button" onClick={closeActive}>
-              Close
-            </button>
-            {activeThread.status === "error" ? (
-              <button type="button" onClick={retryActive}>
-                Retry
-              </button>
-            ) : null}
-            {activeThread.status === "draft" ? (
+                aria-label="Cursor chat message"
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    void submitThread();
+                  }
+                }}
+              />
               <button
+                className="cursor-chat-send"
                 type="button"
+                aria-label="Send message"
                 disabled={!draft.trim()}
                 onClick={() => void submitThread()}
               >
-                Send
+                ⏎
               </button>
-            ) : null}
-            {activeThread.status === "done" && draft.trim() ? (
-              <button type="button" onClick={() => void submitThread()}>
-                Send
-              </button>
-            ) : null}
-            {activeThread.status === "done" ? (
-              <button type="button" onClick={collapseActive}>
-                Pin
-              </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </section>
       ) : null}
     </>

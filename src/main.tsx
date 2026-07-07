@@ -19,11 +19,17 @@ import {
   type AskAnchorPreference,
 } from "./components/ContextualAskHint";
 import { ContribGraph } from "./components/ContribGraph";
+import { CursorTrail } from "./components/CursorTrail";
 import { EssayEvalThumbnail } from "./components/EssayEvalThumbnail";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { SplashShader } from "./components/SplashShader";
-import { isWebGPUAvailable, onInitProgress, preloadEngine } from "./llmEngine";
+import {
+  isEngineReady,
+  isWebGPUAvailable,
+  onInitProgress,
+  preloadEngine,
+} from "./llmEngine";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
 import deeliCaseStudyPosterUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -72,9 +78,9 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "Ask how this became a chat",
-      "What changed after launch?",
-      "What was Joanna's role?",
+      "why a chat instead of search?",
+      "what changed after launch?",
+      "what was Joanna's role?",
     ],
     summary:
       "Designed a chat that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
@@ -95,9 +101,9 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "Ask what shipped for Computex",
-      "What did the identity system include?",
-      "What constraints shaped the work?",
+      "what did the identity include?",
+      "how was it done in a week?",
+      "what constraints shaped it?",
     ],
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
@@ -121,20 +127,39 @@ const aiPracticeItems: WorkItem[] = [
     askKind: "essay",
     askAnchorPreference: "edge",
     askPromptChips: [
-      "Ask why evals became the spec",
-      "What is the main argument?",
-      "How does this apply to product design?",
+      "what's the main argument?",
+      "how does it apply to design?",
+      "what's an eval, simply?",
     ],
     summary: "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality."
   },
 ];
 
 const MIN_SPLASH_MS = 2400;
+// Hold the splash past the floor only while the model is still downloading —
+// shards bank in the browser cache, so every extra second here shrinks the
+// wait a first ask would otherwise hit. Cached repeat visits release at the
+// floor; slow connections are never held past the cap.
+const MAX_SPLASH_MS = 8000;
 const SPLASH_EXIT_MS = 280;
 const ContextualAskHintWithDials = import.meta.env.DEV
   ? lazy(() =>
       import("./components/ContextualAskHintDials").then((module) => ({
         default: module.ContextualAskHintWithDials,
+      })),
+    )
+  : null;
+const CursorTrailWithDials = import.meta.env.DEV
+  ? lazy(() =>
+      import("./components/CursorTrailDials").then((module) => ({
+        default: module.CursorTrailWithDials,
+      })),
+    )
+  : null;
+const CursorChatWithDials = import.meta.env.DEV
+  ? lazy(() =>
+      import("./components/CursorChatDials").then((module) => ({
+        default: module.CursorChatWithDials,
       })),
     )
   : null;
@@ -305,9 +330,9 @@ function ProfileRail() {
           askKind="profile"
           askAnchorPreference="margin"
           askPromptChips={[
-            "Ask about Joanna's fit",
-            "What roles would she be strong for?",
-            "What should I ask her about?",
+            "what roles suit her best?",
+            "what should I ask her about?",
+            "what's her background?",
           ]}
         >
           <h1>
@@ -557,6 +582,10 @@ function Splash({
         <span className="splash-progress" aria-hidden="true">
           <span style={{ transform: `scaleX(${percent / 100})` }} />
         </span>
+        <span className="splash-note">
+          downloading the tiny brain that answers questions — it keeps loading
+          while you browse
+        </span>
         <span className="splash-hint">
           <span>Enter to enter</span>
           <span className="splash-hint-dot" aria-hidden="true">
@@ -583,12 +612,39 @@ function ContextualAskHintLayer() {
   return <ContextualAskHint />;
 }
 
+function CursorTrailLayer({ suspended }: { suspended: boolean }) {
+  if (CursorTrailWithDials) {
+    return (
+      <Suspense fallback={null}>
+        <CursorTrailWithDials suspended={suspended} />
+      </Suspense>
+    );
+  }
+
+  return <CursorTrail suspended={suspended} />;
+}
+
+function CursorChatLayer({ suspended }: { suspended: boolean }) {
+  if (CursorChatWithDials) {
+    return (
+      <Suspense fallback={null}>
+        <CursorChatWithDials suspended={suspended} />
+      </Suspense>
+    );
+  }
+
+  return <CursorChat suspended={suspended} />;
+}
+
 function App() {
   const [showSplash, setShowSplash] = useState(() => isWebGPUAvailable());
   const [splashLeaving, setSplashLeaving] = useState(false);
   const [progress, setProgress] = useState(0);
   const exitTimerRef = useRef<number | null>(null);
   const revealTimerRef = useRef<number | null>(null);
+  const capTimerRef = useRef<number | null>(null);
+  const readyPollRef = useRef<number | null>(null);
+  const splashFloorPassedRef = useRef(false);
   const unsubscribeProgressRef = useRef<(() => void) | null>(null);
   const dismissedSplashRef = useRef(false);
   const pendingChatOpenRef = useRef(false);
@@ -597,6 +653,16 @@ function App() {
     if (revealTimerRef.current !== null) {
       window.clearTimeout(revealTimerRef.current);
       revealTimerRef.current = null;
+    }
+
+    if (capTimerRef.current !== null) {
+      window.clearTimeout(capTimerRef.current);
+      capTimerRef.current = null;
+    }
+
+    if (readyPollRef.current !== null) {
+      window.clearInterval(readyPollRef.current);
+      readyPollRef.current = null;
     }
 
     unsubscribeProgressRef.current?.();
@@ -630,7 +696,18 @@ function App() {
     unsubscribeProgressRef.current = onInitProgress((report) => {
       setProgress(report.progress);
     });
-    revealTimerRef.current = window.setTimeout(dismissSplash, MIN_SPLASH_MS);
+
+    // Release when both the floor has passed AND the engine is ready; the cap
+    // releases unconditionally so a slow download never holds the page hostage.
+    const maybeDismiss = () => {
+      if (splashFloorPassedRef.current && isEngineReady()) dismissSplash();
+    };
+    revealTimerRef.current = window.setTimeout(() => {
+      splashFloorPassedRef.current = true;
+      maybeDismiss();
+    }, MIN_SPLASH_MS);
+    capTimerRef.current = window.setTimeout(dismissSplash, MAX_SPLASH_MS);
+    readyPollRef.current = window.setInterval(maybeDismiss, 250);
 
     return () => {
       stopSplashListeners();
@@ -681,8 +758,9 @@ function App() {
   return (
     <>
       {shell}
+      <CursorTrailLayer suspended={showSplash} />
       <ContextualAskHintLayer />
-      <CursorChat suspended={showSplash} />
+      <CursorChatLayer suspended={showSplash} />
       {import.meta.env.DEV ? <Agentation /> : null}
       {showSplash ? (
         <Splash

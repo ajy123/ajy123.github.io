@@ -10,6 +10,7 @@ import {
   requestCursorChatOpen,
   type SuggestedPrompt,
 } from "../chatEvents";
+import { TextScramble } from "./TextScramble";
 
 export type AskableKind = "project" | "essay" | "profile" | "contact";
 
@@ -29,6 +30,8 @@ export type ContextualAskHintDials = {
   pinSize: number;
   expandDelayMs: number;
   hintMaxWidth: number;
+  scrambleDurMs: number;
+  scrambleSpeed: number;
 };
 
 type ActiveHint = {
@@ -53,6 +56,8 @@ const DEFAULT_DIALS: ContextualAskHintDials = {
   pinSize: 20,
   expandDelayMs: 200,
   hintMaxWidth: 220,
+  scrambleDurMs: 800,
+  scrambleSpeed: 0.04,
 };
 
 export const DEFAULT_CONTEXTUAL_ASK_HINT_DIALS = DEFAULT_DIALS;
@@ -514,7 +519,14 @@ export function ContextualAskHint({
     >
       <span className="contextual-ask-surface">
         <span className="contextual-ask-key">/</span>
-        <span className="contextual-ask-copy">{copy}</span>
+        <span className="contextual-ask-copy">
+          <TextScramble
+            text={copy}
+            active={visualStage === "expanded" && !isExiting}
+            durationMs={dials.scrambleDurMs}
+            speed={dials.scrambleSpeed}
+          />
+        </span>
       </span>
     </button>
   ) : null;

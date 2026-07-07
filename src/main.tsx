@@ -26,7 +26,6 @@ import {
   type AskableKind,
   type AskAnchorPreference,
 } from "./components/ContextualAskHint";
-import { ContribGraph } from "./components/ContribGraph";
 import { CursorTrail } from "./components/CursorTrail";
 import { EssayEvalThumbnail } from "./components/EssayEvalThumbnail";
 import { PhysicsFooter } from "./components/PhysicsFooter";
@@ -410,8 +409,6 @@ function ProfileRail() {
             data-brackets={dials.mono.brackets}
             style={footerVars(dials)}
           >
-            <ContribGraph user="ajy123" />
-
             <div className="rail-contact">
               <a
                 className="rail-link"

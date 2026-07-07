@@ -535,6 +535,7 @@ function getFocusableElements(container: HTMLElement | null) {
 
 function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrollReady, setIsScrollReady] = useState(false);
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -592,8 +593,35 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
     };
   }, [isOpen]);
 
-  const openDialog = () => setIsOpen(true);
-  const closeDialog = () => setIsOpen(false);
+  useEffect(() => {
+    if (!isOpen) {
+      setIsScrollReady(false);
+      return;
+    }
+
+    if (prefersReducedMotion) {
+      setIsScrollReady(true);
+      return;
+    }
+
+    setIsScrollReady(false);
+    const scrollGate = window.setTimeout(() => {
+      setIsScrollReady(true);
+    }, 360);
+
+    return () => {
+      window.clearTimeout(scrollGate);
+    };
+  }, [isOpen, prefersReducedMotion]);
+
+  const openDialog = () => {
+    setIsScrollReady(false);
+    setIsOpen(true);
+  };
+  const closeDialog = () => {
+    setIsScrollReady(false);
+    setIsOpen(false);
+  };
 
   const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -601,9 +629,27 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
     openDialog();
   };
 
-  const modalTransition = prefersReducedMotion
+  const modalEnterTransition = prefersReducedMotion
     ? { duration: 0.01 }
     : { duration: 0.28, ease: [0.23, 1, 0.32, 1] as const };
+  const modalExitTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
+  const backdropEnterTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
+  const backdropExitTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.15, ease: [0.23, 1, 0.32, 1] as const };
+  const contentInitial = prefersReducedMotion
+    ? { opacity: 1, y: 0 }
+    : { opacity: 0, y: 12 };
+  const contentTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.24, delay: 0.08, ease: [0.23, 1, 0.32, 1] as const };
+  const contentExitTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.12, ease: [0.23, 1, 0.32, 1] as const };
 
   return (
     <Reveal
@@ -629,21 +675,17 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           onKeyDown={handleTriggerKeyDown}
           role="button"
           tabIndex={0}
-          transition={modalTransition}
+          transition={isOpen ? modalEnterTransition : modalExitTransition}
         >
-          <motion.h2
-            className="card-title"
-            layoutId={`essay-dialog-title-copy-${item.id}`}
-            transition={modalTransition}
-          >
+          <h2 className="card-title">
             {item.title}
-          </motion.h2>
+          </h2>
           <p className="card-role">{item.role}</p>
           <p className="card-meta">{item.year}</p>
           <motion.div
             className="essay-dialog-visual"
             layoutId={`essay-dialog-visual-${item.id}`}
-            transition={modalTransition}
+            transition={isOpen ? modalEnterTransition : modalExitTransition}
           >
             <EssayEvalThumbnail interactive={false} />
           </motion.div>
@@ -659,8 +701,11 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                 className="essay-dialog-backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={modalTransition}
+                exit={{
+                  opacity: 0,
+                  transition: backdropExitTransition,
+                }}
+                transition={backdropEnterTransition}
               />
             ) : null}
             {isOpen ? (
@@ -669,11 +714,14 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                 className="essay-dialog-stage"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                exit={{
+                  opacity: 0,
+                  transition: backdropExitTransition,
+                }}
                 onMouseDown={(event) => {
                   if (event.target === event.currentTarget) closeDialog();
                 }}
-                transition={modalTransition}
+                transition={backdropEnterTransition}
               >
                 <motion.article
                   ref={dialogRef}
@@ -681,11 +729,12 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                   aria-labelledby={dialogTitleId}
                   aria-modal="true"
                   className="essay-dialog-panel"
+                  data-scroll-ready={isScrollReady}
                   id={dialogId}
                   layoutId={`essay-dialog-panel-${item.id}`}
                   role="dialog"
                   tabIndex={-1}
-                  transition={modalTransition}
+                  transition={modalEnterTransition}
                 >
                   <button
                     ref={closeRef}
@@ -697,33 +746,49 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                     <CloseGlyph />
                   </button>
 
-                  <div className="essay-dialog-header">
+                  <motion.div
+                    animate={{ opacity: 1, y: 0 }}
+                    className="essay-dialog-header"
+                    exit={{
+                      opacity: prefersReducedMotion ? 1 : 0,
+                      y: 0,
+                      transition: contentExitTransition,
+                    }}
+                    initial={contentInitial}
+                    transition={contentTransition}
+                  >
                     <p className="card-eyebrow">{item.eyebrow}</p>
-                    <motion.h2
+                    <h2
                       className="essay-dialog-title"
                       id={dialogTitleId}
-                      layoutId={`essay-dialog-title-copy-${item.id}`}
-                      transition={modalTransition}
                     >
                       {item.title}
-                    </motion.h2>
+                    </h2>
                     <p className="essay-dialog-meta">
                       {item.role} · {item.year}
                     </p>
                     <p className="essay-dialog-dek">{item.dek}</p>
-                  </div>
+                  </motion.div>
 
                   <motion.div
                     className="essay-dialog-hero"
                     layoutId={`essay-dialog-visual-${item.id}`}
-                    transition={modalTransition}
+                    transition={modalEnterTransition}
                   >
                     <EssayEvalThumbnail interactive={false} />
                   </motion.div>
 
-                  <div
+                  <motion.div
+                    animate={{ opacity: 1, y: 0 }}
                     className="essay-dialog-body"
+                    exit={{
+                      opacity: prefersReducedMotion ? 1 : 0,
+                      y: 0,
+                      transition: contentExitTransition,
+                    }}
                     id={dialogDescriptionId}
+                    initial={contentInitial}
+                    transition={contentTransition}
                   >
                     {item.sections.map((section) => (
                       <section
@@ -737,7 +802,7 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                       </section>
                     ))}
                     <p className="essay-dialog-takeaway">{item.takeaway}</p>
-                  </div>
+                  </motion.div>
                 </motion.article>
               </motion.div>
             ) : null}

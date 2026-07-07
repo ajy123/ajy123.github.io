@@ -9,7 +9,7 @@
   --surface-subtle: #f7f7f7; /* faint card / divider fill */
   --surface-warm: #faf9f5; /* warm off-white control surface */
   --ghost: #e0e0e0; /* oversized decorative section titles */
-  --muted: #898989; /* secondary text, captions, eyebrows */
+  --muted: #757169; /* secondary text, captions, eyebrows — AA on all surfaces */
   --body: #141413; /* control/label text on warm surface */
   --ink: #111111; /* primary text, headings */
   --ink-strong: #000000; /* max-contrast text, links */
@@ -668,12 +668,15 @@ h1 span {
   display: block;
 }
 
+.essay-dialog-visual .work-media {
+  aspect-ratio: 16 / 9;
+}
+
 .essay-dialog-backdrop {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.85);
 }
 
 .essay-dialog-stage {
@@ -696,10 +699,14 @@ h1 span {
   overscroll-behavior: contain;
   color: var(--ink);
   background: var(--canvas);
-  border: 1px solid var(--hairline-faint);
+  border: 0;
   border-radius: 4px;
   outline: none;
-  box-shadow: none;
+  box-shadow: 0 18px 48px rgba(22, 21, 19, 0.12);
+}
+
+.essay-dialog-panel[data-scroll-ready="false"] {
+  overflow: hidden;
 }
 
 .essay-dialog-close {
@@ -711,15 +718,27 @@ h1 span {
   height: 40px;
   margin: 0 0 -40px auto;
   place-items: center;
-  color: var(--body);
-  background: var(--surface-warm);
-  border: 1px solid var(--hairline);
+  color: var(--muted);
+  background: var(--canvas);
+  border: 1px solid var(--hairline-faint);
   border-radius: 12px;
+  box-shadow: none;
   cursor: pointer;
+  transition:
+    transform 160ms var(--ease-out-strong),
+    color 180ms var(--ease),
+    border-color 180ms var(--ease),
+    background-color 180ms var(--ease);
 }
 
 .essay-dialog-close:hover {
   color: var(--ink-strong);
+  background: var(--surface-warm);
+  border-color: var(--hairline);
+}
+
+.essay-dialog-close:active {
+  transform: scale(0.97);
 }
 
 .essay-dialog-close svg {
@@ -741,13 +760,12 @@ h1 span {
 }
 
 .essay-dialog-title {
-  max-width: 12ch;
   margin: 0 0 10px;
   color: var(--ink);
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(28px, 4vw, 36px);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: 0;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -763,9 +781,9 @@ h1 span {
   max-width: 58ch;
   margin: 0;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
@@ -779,7 +797,7 @@ h1 span {
 
 .essay-dialog-body {
   max-width: 68ch;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .essay-dialog-section {
@@ -793,9 +811,9 @@ h1 span {
 .essay-dialog-section h3 {
   margin: 0 0 12px;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: 0;
   text-wrap: balance;
 }
@@ -818,7 +836,7 @@ h1 span {
   padding-top: 20px;
   color: var(--ink);
   border-top: 1px solid var(--hairline-faint);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.5;
   text-wrap: balance;
@@ -935,7 +953,7 @@ h1 span {
 }
 
 .splash-hint-dot {
-  color: rgba(137, 137, 137, 0.7);
+  color: rgba(117, 113, 105, 0.7);
 }
 
 .splash-key {
@@ -1671,20 +1689,8 @@ h1 span {
     margin-bottom: 22px;
   }
 
-  .essay-dialog-title {
-    max-width: 11ch;
-  }
-
-  .essay-dialog-dek {
-    font-size: 16px;
-  }
-
   .essay-dialog-hero {
     margin-bottom: 28px;
-  }
-
-  .essay-dialog-hero .work-media {
-    aspect-ratio: 4 / 3;
   }
 }
 
@@ -1715,10 +1721,6 @@ h1 span {
     transition: none !important;
     transform: none !important;
     filter: none !important;
-  }
-
-  .essay-dialog-backdrop {
-    backdrop-filter: none;
   }
 
   .splash,

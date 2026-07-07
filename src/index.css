@@ -652,11 +652,6 @@ h1 span {
   cursor: pointer;
   outline: none;
   touch-action: manipulation;
-  transition: transform 160ms var(--ease-out-strong);
-}
-
-.essay-dialog-trigger:active {
-  transform: scale(0.99);
 }
 
 .essay-dialog-trigger:focus-visible {

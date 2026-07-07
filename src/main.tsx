@@ -596,8 +596,14 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
   useEffect(() => {
     if (!isOpen) {
       setIsScrollReady(false);
+      // AnimatePresence freezes the exiting panel's props, so the
+      // data-scroll-ready attribute never updates during the close morph;
+      // hide overflow directly on the still-mounted node instead.
+      if (dialogRef.current) dialogRef.current.style.overflow = "hidden";
       return;
     }
+
+    if (dialogRef.current) dialogRef.current.style.overflow = "";
 
     if (prefersReducedMotion) {
       setIsScrollReady(true);
@@ -676,6 +682,7 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           role="button"
           tabIndex={0}
           transition={isOpen ? modalEnterTransition : modalExitTransition}
+          whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
         >
           <h2 className="card-title">
             {item.title}

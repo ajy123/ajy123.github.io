@@ -4,3 +4,5 @@ dist/
 .DS_Store
 .claude/skills/
 .agents/
+PRODUCT.md
+design.md

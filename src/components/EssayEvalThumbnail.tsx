@@ -5,7 +5,7 @@ import {
   useMotionValueEvent,
   useReducedMotion,
 } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { interpolate } from "flubber";
 
 const ACCENT = "#174C3A";
@@ -150,28 +150,38 @@ const renderPath = (
   )
 );
 
-export function EssayEvalThumbnail() {
+type EssayEvalThumbnailProps = {
+  className?: string;
+  interactive?: boolean;
+};
+
+export function EssayEvalThumbnail({
+  className = "",
+  interactive = true,
+}: EssayEvalThumbnailProps) {
   const [hovered, setHovered] = useState(false);
+  const rawMaskId = useId().replace(/:/g, "");
+  const topQuarterMaskId = `essay-eval-top-quarter-mask-${rawMaskId}`;
   const prefersReducedMotion = useReducedMotion();
   const isActive = hovered && !prefersReducedMotion;
 
   return (
     <motion.div
       aria-label="Interactive thumbnail for The eval is the spec"
-      className="work-media"
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
+      className={`work-media${className ? ` ${className}` : ""}`}
+      onHoverStart={interactive ? () => setHovered(true) : undefined}
+      onHoverEnd={interactive ? () => setHovered(false) : undefined}
+      onFocus={interactive ? () => setHovered(true) : undefined}
+      onBlur={interactive ? () => setHovered(false) : undefined}
       role="img"
       style={{
         background: "var(--surface-subtle)",
         borderRadius: 0,
         containerType: "inline-size",
-        cursor: "pointer",
+        cursor: interactive ? "pointer" : "default",
         display: "flex",
       }}
-      tabIndex={0}
+      tabIndex={interactive ? 0 : undefined}
     >
       <div
         aria-hidden="true"
@@ -190,11 +200,17 @@ export function EssayEvalThumbnail() {
           xmlns="http://www.w3.org/2000/svg"
           style={{ width: "min(78%, 330px)", height: "auto" }}
         >
-          <mask id="essay-eval-top-quarter-mask" fill="white">
+          <mask id={topQuarterMaskId} fill="white">
             <path d="M164 46L212 46C212 72.5097 190.51 94 164 94L164 46Z" />
           </mask>
           {SHAPES_BEFORE_STRIPES.map((shape, index) =>
-            renderPath(shape, index, isActive),
+            renderPath(
+              shape.maskId
+                ? { ...shape, maskId: topQuarterMaskId }
+                : shape,
+              index,
+              isActive,
+            ),
           )}
           <motion.rect
             animate={{

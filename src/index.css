@@ -641,6 +641,189 @@ h1 span {
   stroke: none;
 }
 
+.work-card-askable,
+.essay-dialog-trigger {
+  display: flex;
+  flex-direction: column;
+}
+
+.essay-dialog-trigger {
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+  touch-action: manipulation;
+}
+
+.essay-dialog-trigger:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 8px;
+}
+
+.essay-dialog-trigger:hover .card-title,
+.essay-dialog-trigger:focus-visible .card-title {
+  color: var(--ink-strong);
+}
+
+.essay-dialog-visual {
+  display: block;
+}
+
+.essay-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(10px);
+}
+
+.essay-dialog-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 48px);
+  overflow-y: auto;
+}
+
+.essay-dialog-panel {
+  position: relative;
+  width: min(820px, 100%);
+  max-height: min(820px, calc(100dvh - 48px));
+  padding: clamp(28px, 4vw, 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 4px;
+  outline: none;
+  box-shadow: none;
+}
+
+.essay-dialog-close {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  margin: 0 0 -40px auto;
+  place-items: center;
+  color: var(--body);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.essay-dialog-close:hover {
+  color: var(--ink-strong);
+}
+
+.essay-dialog-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.essay-dialog-close path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.essay-dialog-header {
+  max-width: 680px;
+  padding-right: 56px;
+  margin-bottom: 28px;
+}
+
+.essay-dialog-title {
+  max-width: 12ch;
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.essay-dialog-meta {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.essay-dialog-dek {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.essay-dialog-hero {
+  margin-bottom: 34px;
+}
+
+.essay-dialog-hero .work-media {
+  aspect-ratio: 16 / 9;
+}
+
+.essay-dialog-body {
+  max-width: 68ch;
+  margin: 0 auto;
+}
+
+.essay-dialog-section {
+  margin: 0;
+}
+
+.essay-dialog-section + .essay-dialog-section {
+  margin-top: 34px;
+}
+
+.essay-dialog-section h3 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.essay-dialog-section p {
+  margin: 0;
+  color: var(--body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.essay-dialog-section p + p {
+  margin-top: 14px;
+}
+
+.essay-dialog-takeaway {
+  margin: 34px 0 0;
+  padding-top: 20px;
+  color: var(--ink);
+  border-top: 1px solid var(--hairline-faint);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
 @media (hover: none) {
   .work-media-control {
     opacity: 1;
@@ -1464,6 +1647,45 @@ h1 span {
   .contextual-ask-hint {
     display: none;
   }
+
+  .essay-dialog-stage {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .essay-dialog-panel {
+    max-height: calc(100dvh - 20px);
+    padding: 24px 18px 30px;
+    border-radius: 0;
+  }
+
+  .essay-dialog-close {
+    top: 0;
+    width: 38px;
+    height: 38px;
+    margin-bottom: -38px;
+  }
+
+  .essay-dialog-header {
+    padding-right: 48px;
+    margin-bottom: 22px;
+  }
+
+  .essay-dialog-title {
+    max-width: 11ch;
+  }
+
+  .essay-dialog-dek {
+    font-size: 16px;
+  }
+
+  .essay-dialog-hero {
+    margin-bottom: 28px;
+  }
+
+  .essay-dialog-hero .work-media {
+    aspect-ratio: 4 / 3;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1493,6 +1715,10 @@ h1 span {
     transition: none !important;
     transform: none !important;
     filter: none !important;
+  }
+
+  .essay-dialog-backdrop {
+    backdrop-filter: none;
   }
 
   .splash,

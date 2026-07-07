@@ -3,6 +3,7 @@ import {
   Suspense,
   createElement,
   lazy,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   useContext,
   useEffect,
@@ -10,6 +11,13 @@ import {
   useState,
 } from "react";
 import { Agentation } from "agentation";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from "motion/react";
+import { createPortal } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { CursorChat } from "./CursorChat";
 import { requestCursorChatOpen } from "./chatEvents";
@@ -67,6 +75,18 @@ type WorkItem = {
   };
 };
 
+type EssaySection = {
+  heading: string;
+  body: string[];
+};
+
+type EssayItem = WorkItem & {
+  id: string;
+  dek: string;
+  sections: EssaySection[];
+  takeaway: string;
+};
+
 const workItems: WorkItem[] = [
   {
     eyebrow: "Case study",
@@ -117,8 +137,9 @@ const workItems: WorkItem[] = [
   },
 ];
 
-const aiPracticeItems: WorkItem[] = [
+const aiPracticeItems: EssayItem[] = [
   {
+    id: "eval-is-the-spec",
     eyebrow: "Essay",
     title: "The eval is the spec",
     role: "Applied AI",
@@ -131,7 +152,35 @@ const aiPracticeItems: WorkItem[] = [
       "how does it apply to design?",
       "what's an eval, simply?",
     ],
-    summary: "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality."
+    summary:
+      "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality.",
+    dek:
+      "In AI products, the interface is only half the spec. The other half is the test that tells the model what good work means.",
+    sections: [
+      {
+        heading: "The hard part is the part that changes",
+        body: [
+          "A conventional product spec can describe a report screen with exact states: what loads, what fails, what the citation chip looks like, what the empty state says. That still matters.",
+          "But the most important surface in an AI product is often generated fresh every run. The paragraph, recommendation, synthesis, or follow-up question is not a static component. It is behavior.",
+        ],
+      },
+      {
+        heading: "So the eval becomes the design artifact",
+        body: [
+          "An eval names the quality bar in a way the team can actually inspect. It turns fuzzy taste into repeatable checks: did the answer cite the right source, preserve uncertainty, avoid overclaiming, and help the user decide what to do next?",
+          "That makes the eval closer to a spec than a QA afterthought. It is where product judgment, content strategy, and system behavior meet.",
+        ],
+      },
+      {
+        heading: "Designing with evals changes the conversation",
+        body: [
+          "Instead of arguing whether an answer feels smart, the team can ask what failure mode it triggered. Instead of polishing one golden demo, the team can test the shape of quality across messy inputs.",
+          "For me, that is the practical bridge between design and AI systems: define the experience, then define the evidence that the experience is actually happening.",
+        ],
+      },
+    ],
+    takeaway:
+      "The UI shows the promise. The eval proves whether the product can keep it.",
   },
 ];
 
@@ -465,6 +514,244 @@ function WorkMedia({ item }: { item: WorkItem }) {
   );
 }
 
+function CloseGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
+function getFocusableElements(container: HTMLElement | null) {
+  if (!container) return [];
+
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((node) => !node.hasAttribute("disabled"));
+}
+
+function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement | null>(null);
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const dialogId = `essay-dialog-${item.id}`;
+  const dialogTitleId = `essay-dialog-title-${item.id}`;
+  const dialogDescriptionId = `essay-dialog-description-${item.id}`;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusDialog = window.requestAnimationFrame(() => {
+      dialogRef.current?.focus();
+    });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements(dialogRef.current);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogRef.current?.focus();
+        return;
+      }
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusDialog);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      window.setTimeout(() => {
+        triggerRef.current?.focus();
+      }, 0);
+    };
+  }, [isOpen]);
+
+  const openDialog = () => setIsOpen(true);
+  const closeDialog = () => setIsOpen(false);
+
+  const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openDialog();
+  };
+
+  const modalTransition = prefersReducedMotion
+    ? { duration: 0.01 }
+    : { duration: 0.28, ease: [0.23, 1, 0.32, 1] as const };
+
+  return (
+    <Reveal
+      as="article"
+      className="work-card case-card"
+      delay={120 + index * 90}
+    >
+      <LayoutGroup id={`essay-dialog-${item.id}`}>
+        <p className="card-eyebrow">{item.eyebrow}</p>
+        <motion.div
+          ref={triggerRef}
+          aria-controls={dialogId}
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          aria-label={`${item.title}. Open essay.`}
+          className="work-card-askable essay-dialog-trigger"
+          data-ask-anchor={item.askAnchorPreference}
+          data-ask-hint={item.askHint}
+          data-ask-kind={item.askKind}
+          data-ask-prompts={JSON.stringify(item.askPromptChips)}
+          layoutId={`essay-dialog-panel-${item.id}`}
+          onClick={openDialog}
+          onKeyDown={handleTriggerKeyDown}
+          role="button"
+          tabIndex={0}
+          transition={modalTransition}
+        >
+          <motion.h2
+            className="card-title"
+            layoutId={`essay-dialog-title-copy-${item.id}`}
+            transition={modalTransition}
+          >
+            {item.title}
+          </motion.h2>
+          <p className="card-role">{item.role}</p>
+          <p className="card-meta">{item.year}</p>
+          <motion.div
+            className="essay-dialog-visual"
+            layoutId={`essay-dialog-visual-${item.id}`}
+            transition={modalTransition}
+          >
+            <EssayEvalThumbnail interactive={false} />
+          </motion.div>
+          <p className="card-summary">{item.summary}</p>
+        </motion.div>
+
+        {createPortal(
+          <AnimatePresence>
+            {isOpen ? (
+              <motion.div
+                key={`${item.id}-backdrop`}
+                aria-hidden="true"
+                className="essay-dialog-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={modalTransition}
+              />
+            ) : null}
+            {isOpen ? (
+              <motion.div
+                key={`${item.id}-stage`}
+                className="essay-dialog-stage"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onMouseDown={(event) => {
+                  if (event.target === event.currentTarget) closeDialog();
+                }}
+                transition={modalTransition}
+              >
+                <motion.article
+                  ref={dialogRef}
+                  aria-describedby={dialogDescriptionId}
+                  aria-labelledby={dialogTitleId}
+                  aria-modal="true"
+                  className="essay-dialog-panel"
+                  id={dialogId}
+                  layoutId={`essay-dialog-panel-${item.id}`}
+                  role="dialog"
+                  tabIndex={-1}
+                  transition={modalTransition}
+                >
+                  <button
+                    ref={closeRef}
+                    aria-label="Close essay"
+                    className="essay-dialog-close"
+                    onClick={closeDialog}
+                    type="button"
+                  >
+                    <CloseGlyph />
+                  </button>
+
+                  <div className="essay-dialog-header">
+                    <p className="card-eyebrow">{item.eyebrow}</p>
+                    <motion.h2
+                      className="essay-dialog-title"
+                      id={dialogTitleId}
+                      layoutId={`essay-dialog-title-copy-${item.id}`}
+                      transition={modalTransition}
+                    >
+                      {item.title}
+                    </motion.h2>
+                    <p className="essay-dialog-meta">
+                      {item.role} · {item.year}
+                    </p>
+                    <p className="essay-dialog-dek">{item.dek}</p>
+                  </div>
+
+                  <motion.div
+                    className="essay-dialog-hero"
+                    layoutId={`essay-dialog-visual-${item.id}`}
+                    transition={modalTransition}
+                  >
+                    <EssayEvalThumbnail interactive={false} />
+                  </motion.div>
+
+                  <div
+                    className="essay-dialog-body"
+                    id={dialogDescriptionId}
+                  >
+                    {item.sections.map((section) => (
+                      <section
+                        className="essay-dialog-section"
+                        key={section.heading}
+                      >
+                        <h3>{section.heading}</h3>
+                        {section.body.map((paragraph) => (
+                          <p key={paragraph}>{paragraph}</p>
+                        ))}
+                      </section>
+                    ))}
+                    <p className="essay-dialog-takeaway">{item.takeaway}</p>
+                  </div>
+                </motion.article>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>,
+          document.body,
+        )}
+      </LayoutGroup>
+    </Reveal>
+  );
+}
+
 function WorkCanvas() {
   return (
     <main className="work-canvas" aria-label="Selected work">
@@ -525,29 +812,7 @@ function WorkCanvas() {
 
       <div className="work-grid">
         {aiPracticeItems.map((item, index) => (
-          <Reveal
-            as="article"
-            className="work-card case-card"
-            delay={120 + index * 90}
-            key={item.title}
-          >
-            <p className="card-eyebrow">{item.eyebrow}</p>
-            <AskableRegion
-              className="work-card-askable"
-              hint={item.askHint}
-              kind={item.askKind}
-              anchorPreference={item.askAnchorPreference}
-              promptChips={item.askPromptChips}
-            >
-              <h2 className="card-title">{item.title}</h2>
-              <p className="card-role">{item.role}</p>
-              <p className="card-meta">{item.year}</p>
-              <EssayEvalThumbnail />
-              {item.summary ? (
-                <p className="card-summary">{item.summary}</p>
-              ) : null}
-            </AskableRegion>
-          </Reveal>
+          <EssayPracticeCard item={item} index={index} key={item.title} />
         ))}
       </div>
     </main>

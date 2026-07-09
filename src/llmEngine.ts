@@ -49,6 +49,19 @@ export function onInitProgress(fn: (report: InitProgressReport) => void): () => 
   return () => progressListeners.delete(fn);
 }
 
+// Dev-only test hook: lets verification scripts (CDP, no WebGPU in headless
+// Chrome) drive the same progress fan-out the real engine warmup uses.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__devFireInitProgress = (
+    report: InitProgressReport,
+    markReady?: boolean,
+  ) => {
+    lastProgress = report;
+    if (markReady) ready = true;
+    progressListeners.forEach((fn) => fn(report));
+  };
+}
+
 // One init attempt: fresh worker, dynamic-imported runtime, races against a
 // worker-error rejection so a dead worker fails loud instead of hanging.
 async function createEngineOnce(): Promise<WebWorkerMLCEngine> {

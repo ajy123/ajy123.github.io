@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
-// WebGL halftone background for the loading splash.
-// Pure decoration: it renders behind the splash content and unmounts when the
-// splash dismisses, so it costs nothing once the portfolio is up. It never
+// WebGL halftone background for the loading intro.
+// Pure decoration: it renders behind the intro content and unmounts when the
+// intro dismisses, so it costs nothing once the portfolio is up. It never
 // touches the LLM warmup (that runs on WebGPU; this is plain WebGL).
 
 export type SplashPaper = "cream" | "white";
@@ -12,6 +12,15 @@ type SplashShaderProps = {
   cellPx?: number; // halftone cell size, in CSS px
   speed?: number; // animation time multiplier
   enabled?: boolean;
+  drive?: RefObject<SplashShaderDrive | null>;
+};
+
+export type SplashShaderDrive = {
+  originPx: [number, number] | null; // CSS px client coords; null falls back to center
+  originAmp: number;
+  develop: number;
+  grain: number;
+  wellStrength: number;
 };
 
 // Base paper/ink colors fed to the shader (it adds micro-tints on top).
@@ -49,6 +58,10 @@ uniform float u_reduced;
 uniform vec3 u_paper;
 uniform vec3 u_ink;
 uniform float u_cell;
+uniform float u_originAmp;
+uniform float u_develop;
+uniform float u_grain;
+uniform float u_wellStrength;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -137,6 +150,8 @@ void main() {
     float kDecay = 1.0 - kDt / 1.6;
     fld += kBand * kDecay * u_keyAmp * 0.30;
   }
+  fld += exp(-ar * ar * 14.0) * u_originAmp * 0.55;
+  fld += exp(-ar * 3.2) * u_originAmp * 0.20;
 
   float breathAmp = 0.045 + 0.030 * u_focus;
   float breathHz = 0.28 + 0.10 * u_focus;
@@ -148,19 +163,25 @@ void main() {
   vec2 wellSize = vec2(0.22, 0.12);
   float wellD = length((cellP - aoP) / wellSize);
   float wellInner = smoothstep(1.35, 0.92, wellD);
-  fld = mix(fld, 0.0, wellInner * 0.99);
+  fld = mix(fld, 0.0, wellInner * 0.99 * u_wellStrength);
 
   float wellHalo = smoothstep(2.2, 1.35, wellD);
-  fld = mix(fld, fld * 0.30, wellHalo * mix(0.55, 0.80, u_focus));
+  fld = mix(
+    fld,
+    fld * 0.30,
+    wellHalo * mix(0.55, 0.80, u_focus) * u_wellStrength
+  );
 
   float birthR = u_birth * 1.9;
   float birthVis = smoothstep(birthR + 0.08, birthR - 0.08, length(p - aoP));
   fld *= birthVis;
+  fld *= u_develop;
 
   fld = clamp(fld, 0.0, 1.0);
 
   float radius = smoothstep(0.08, 0.98, fld);
-  radius = pow(radius, 0.92);
+  float developT = smoothstep(0.35, 1.0, u_develop);
+  radius = pow(radius, mix(1.6, 0.92, developT));
   float d = length(cellLoc) / 1.414;
   float aa = 1.6 / cellPx;
   float jitter = (hash21(cellID) - 0.5) * 0.015;
@@ -173,7 +194,7 @@ void main() {
   vec3 col = mix(paper, ink, dotMask);
 
   float g1 = hash21(fc + vec2(fract(t * 13.73), fract(t * 7.31)));
-  col += (g1 - 0.5) * 0.020 * (1.0 - 0.7 * u_reduced);
+  col += (g1 - 0.5) * 0.020 * (1.0 + u_grain) * (1.0 - 0.7 * u_reduced);
   col += (vnoise(fc * 0.006) - 0.5) * 0.012 * vec3(1.0, 0.97, 0.92);
 
   float vig = smoothstep(1.08, 0.38, length(uv - 0.5));
@@ -191,12 +212,13 @@ export function SplashShader({
   cellPx = 14,
   speed = 1,
   enabled = true,
+  drive,
 }: SplashShaderProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Latest props read live inside the rAF loop so prop/panel changes apply
   // without rebuilding the GL context.
-  const propsRef = useRef({ paper, cellPx, speed, enabled });
-  propsRef.current = { paper, cellPx, speed, enabled };
+  const propsRef = useRef({ paper, cellPx, speed, enabled, drive });
+  propsRef.current = { paper, cellPx, speed, enabled, drive };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -208,7 +230,7 @@ export function SplashShader({
       premultipliedAlpha: false,
       powerPreference: "low-power",
     });
-    if (!gl) return; // no WebGL → the CSS .splash cream floor shows through
+    if (!gl) return; // no WebGL: the CSS intro floor shows through.
 
     const compile = (type: number, src: string) => {
       const sh = gl.createShader(type);
@@ -268,6 +290,10 @@ export function SplashShader({
       paper: loc("u_paper"),
       ink: loc("u_ink"),
       cell: loc("u_cell"),
+      originAmp: loc("u_originAmp"),
+      develop: loc("u_develop"),
+      grain: loc("u_grain"),
+      wellStrength: loc("u_wellStrength"),
     };
 
     const reduced = window.matchMedia(
@@ -295,8 +321,17 @@ export function SplashShader({
 
     // Interaction state in device px, y-flipped to gl_FragCoord's bottom-left
     // origin. Listeners live on window so the canvas can stay pointer-events:none
-    // and clicks still reach the splash button beneath.
-    const state = { mx: W / 2, my: H / 2, mAct: 0, cx: W / 2, cy: H / 2, clickT: -1000 };
+    // and clicks still reach intro controls above it.
+    const state = {
+      mx: W / 2,
+      my: H / 2,
+      mAct: 0,
+      cx: W / 2,
+      cy: H / 2,
+      ox: W / 2,
+      oy: H / 2,
+      clickT: -1000,
+    };
     const toGl = (clientX: number, clientY: number): [number, number] => {
       const r = canvas.getBoundingClientRect();
       return [(clientX - r.left) * dpr, (r.height - (clientY - r.top)) * dpr];
@@ -329,20 +364,37 @@ export function SplashShader({
       const birth = reduced ? 1 : Math.min(1, t / 1.1);
       const birthEase = birth * birth * (3 - 2 * birth);
       const pr = PAPER_RGB[propsRef.current.paper] ?? PAPER_RGB.cream;
+      const driveState = propsRef.current.drive?.current;
+      const driveAttached = Boolean(propsRef.current.drive);
+      const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+      let targetOrigin: [number, number] = [W / 2, H / 2];
+      if (driveState?.originPx) {
+        targetOrigin = toGl(driveState.originPx[0], driveState.originPx[1]);
+      }
+      const originEase = driveAttached ? 1 - Math.exp(-dt * 9) : 1;
+      state.ox += (targetOrigin[0] - state.ox) * originEase;
+      state.oy += (targetOrigin[1] - state.oy) * originEase;
 
       gl.uniform2f(u.res, W, H);
       gl.uniform1f(u.dpr, dpr);
-      gl.uniform2f(u.actionOrigin, W / 2, H / 2);
+      gl.uniform2f(u.actionOrigin, state.ox, state.oy);
       gl.uniform3f(u.paper, pr[0], pr[1], pr[2]);
       gl.uniform3f(u.ink, INK_RGB[0], INK_RGB[1], INK_RGB[2]);
       gl.uniform1f(u.cell, propsRef.current.cellPx);
       gl.uniform1f(u.focus, 0.0);
       gl.uniform1f(u.keyAmp, 0.0);
       gl.uniform1f(u.keyT, -1000.0);
+      gl.uniform1f(u.originAmp, driveState ? Math.max(0, driveState.originAmp) : 0);
+      gl.uniform1f(u.develop, driveState ? clamp01(driveState.develop) : 1);
+      gl.uniform1f(u.grain, driveState ? Math.max(0, driveState.grain) : 0);
+      gl.uniform1f(
+        u.wellStrength,
+        driveState ? clamp01(driveState.wellStrength) : 1,
+      );
       gl.uniform1f(u.reduced, reduced ? 1 : 0);
       gl.uniform1f(u.time, t);
       gl.uniform2f(u.mouse, state.mx, state.my);
-      gl.uniform1f(u.mAct, reduced ? 0 : state.mAct);
+      gl.uniform1f(u.mAct, reduced || driveAttached ? 0 : state.mAct);
       gl.uniform2f(u.click, state.cx, state.cy);
       gl.uniform1f(u.clickT, state.clickT);
       gl.uniform1f(u.birth, birthEase);

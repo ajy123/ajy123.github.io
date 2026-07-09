@@ -30,13 +30,8 @@ import { CursorTrail } from "./components/CursorTrail";
 import { EssayEvalThumbnail } from "./components/EssayEvalThumbnail";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
-import { SplashShader } from "./components/SplashShader";
-import {
-  isEngineReady,
-  isWebGPUAvailable,
-  onInitProgress,
-  preloadEngine,
-} from "./llmEngine";
+import { ScrollIntro } from "./components/ScrollIntro";
+import { isWebGPUAvailable, preloadEngine } from "./llmEngine";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
 import deeliCaseStudyPosterUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -183,13 +178,7 @@ const aiPracticeItems: EssayItem[] = [
   },
 ];
 
-const MIN_SPLASH_MS = 2400;
-// Hold the splash past the floor only while the model is still downloading —
-// shards bank in the browser cache, so every extra second here shrinks the
-// wait a first ask would otherwise hit. Cached repeat visits release at the
-// floor; slow connections are never held past the cap.
-const MAX_SPLASH_MS = 8000;
-const SPLASH_EXIT_MS = 280;
+const INTRO_EXIT_MS = 280;
 const ContextualAskHintWithDials = import.meta.env.DEV
   ? lazy(() =>
       import("./components/ContextualAskHintDials").then((module) => ({
@@ -888,52 +877,6 @@ function WorkCanvas() {
   );
 }
 
-type SplashProps = {
-  progress: number;
-  isLeaving: boolean;
-  onSkip: () => void;
-};
-
-function Splash({
-  progress,
-  isLeaving,
-  onSkip,
-}: SplashProps) {
-  const percent = Math.max(0, Math.min(100, Math.round(progress * 100)));
-
-  return (
-    <button
-      className={`splash splash--cream ${isLeaving ? "is-leaving" : ""}`}
-      type="button"
-      aria-busy={!isLeaving}
-      aria-live="polite"
-      aria-label="Enter portfolio"
-      onClick={onSkip}
-    >
-      <SplashShader paper="cream" enabled cellPx={8} speed={0.8} />
-      <span className="splash-inner">
-        <span className="splash-title">Welcome</span>
-        <span className="splash-progress" aria-hidden="true">
-          <span style={{ transform: `scaleX(${percent / 100})` }} />
-        </span>
-        <span className="splash-note">
-          downloading the tiny brain that answers questions — it keeps loading
-          while you browse
-        </span>
-        <span className="splash-hint">
-          <span>Enter to enter</span>
-          <span className="splash-hint-dot" aria-hidden="true">
-            ·
-          </span>
-          <span>
-            <span className="splash-key">/</span> to ask
-          </span>
-        </span>
-      </span>
-    </button>
-  );
-}
-
 function ContextualAskHintLayer() {
   if (ContextualAskHintWithDials) {
     return (
@@ -970,81 +913,88 @@ function CursorChatLayer({ suspended }: { suspended: boolean }) {
   return <CursorChat suspended={suspended} />;
 }
 
+function IntroLayer({
+  isLeaving,
+  onDismiss,
+}: {
+  isLeaving: boolean;
+  onDismiss: () => void;
+}) {
+  return <ScrollIntro isLeaving={isLeaving} onDismiss={onDismiss} />;
+}
+
+function hasSeenIntroThisSession() {
+  try {
+    return sessionStorage.getItem("joanna-intro-seen") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markIntroSeen() {
+  try {
+    sessionStorage.setItem("joanna-intro-seen", "1");
+  } catch {
+    // Private browsing or storage denial should not block entry.
+  }
+}
+
+function isTypingTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target.isContentEditable
+  );
+}
+
+// DEV-only: an explicit valid ?introVariant= means "show me the intro" —
+// bypass the seen-this-session skip for local critique runs.
+function hasIntroVariantOverride() {
+  if (!import.meta.env.DEV) return false;
+  try {
+    const value = new URLSearchParams(window.location.search).get("introVariant");
+    return value === "print" || value === "off";
+  } catch {
+    return false;
+  }
+}
+
 function App() {
-  const [showSplash, setShowSplash] = useState(() => isWebGPUAvailable());
-  const [splashLeaving, setSplashLeaving] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [showIntro, setShowIntro] = useState(
+    () => hasIntroVariantOverride() || !hasSeenIntroThisSession(),
+  );
+  const [introLeaving, setIntroLeaving] = useState(false);
   const exitTimerRef = useRef<number | null>(null);
-  const revealTimerRef = useRef<number | null>(null);
-  const capTimerRef = useRef<number | null>(null);
-  const readyPollRef = useRef<number | null>(null);
-  const splashFloorPassedRef = useRef(false);
-  const unsubscribeProgressRef = useRef<(() => void) | null>(null);
-  const dismissedSplashRef = useRef(false);
+  const dismissedIntroRef = useRef(false);
   const pendingChatOpenRef = useRef(false);
 
-  const stopSplashListeners = () => {
-    if (revealTimerRef.current !== null) {
-      window.clearTimeout(revealTimerRef.current);
-      revealTimerRef.current = null;
-    }
-
-    if (capTimerRef.current !== null) {
-      window.clearTimeout(capTimerRef.current);
-      capTimerRef.current = null;
-    }
-
-    if (readyPollRef.current !== null) {
-      window.clearInterval(readyPollRef.current);
-      readyPollRef.current = null;
-    }
-
-    unsubscribeProgressRef.current?.();
-    unsubscribeProgressRef.current = null;
-  };
-
-  const dismissSplash = () => {
-    if (dismissedSplashRef.current) return;
-    dismissedSplashRef.current = true;
-    stopSplashListeners();
+  const dismissIntro = () => {
+    if (dismissedIntroRef.current) return;
+    dismissedIntroRef.current = true;
+    markIntroSeen();
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (reduceMotion) {
-      setShowSplash(false);
+      setShowIntro(false);
       return;
     }
 
-    setSplashLeaving(true);
+    setIntroLeaving(true);
     exitTimerRef.current = window.setTimeout(() => {
-      setShowSplash(false);
-    }, SPLASH_EXIT_MS);
+      setShowIntro(false);
+    }, INTRO_EXIT_MS);
   };
 
   useEffect(() => {
     if (!isWebGPUAvailable()) return;
-
     preloadEngine();
+  }, []);
 
-    unsubscribeProgressRef.current = onInitProgress((report) => {
-      setProgress(report.progress);
-    });
-
-    // Release when both the floor has passed AND the engine is ready; the cap
-    // releases unconditionally so a slow download never holds the page hostage.
-    const maybeDismiss = () => {
-      if (splashFloorPassedRef.current && isEngineReady()) dismissSplash();
-    };
-    revealTimerRef.current = window.setTimeout(() => {
-      splashFloorPassedRef.current = true;
-      maybeDismiss();
-    }, MIN_SPLASH_MS);
-    capTimerRef.current = window.setTimeout(dismissSplash, MAX_SPLASH_MS);
-    readyPollRef.current = window.setInterval(maybeDismiss, 250);
-
+  useEffect(() => {
     return () => {
-      stopSplashListeners();
       if (exitTimerRef.current !== null) {
         window.clearTimeout(exitTimerRef.current);
         exitTimerRef.current = null;
@@ -1053,34 +1003,34 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (showSplash || !pendingChatOpenRef.current) return;
+    if (showIntro || !pendingChatOpenRef.current) return;
 
     pendingChatOpenRef.current = false;
     window.setTimeout(() => requestCursorChatOpen(), 0);
-  }, [showSplash]);
+  }, [showIntro]);
 
-  // Splash keyboard affordances: Enter/Space enters; slash enters then opens chat.
-  // Pure UI — routes through dismissSplash, so freeze + reduced-motion apply.
+  // Intro keyboard affordances: Enter/Escape enter; slash enters then opens chat.
+  // Space is intentionally left to the overlay's native scroll container.
   useEffect(() => {
-    if (!showSplash) return;
+    if (!showIntro) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "/" && !(event.target instanceof HTMLTextAreaElement)) {
+      if (event.key === "/" && !isTypingTarget(event.target)) {
         event.preventDefault();
         pendingChatOpenRef.current = true;
-        dismissSplash();
+        dismissIntro();
         return;
       }
 
-      if (event.key === "Enter" || event.key === " " || event.code === "Space") {
+      if (event.key === "Enter" || event.key === "Escape") {
         event.preventDefault();
-        dismissSplash();
+        dismissIntro();
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showSplash]);
+  }, [showIntro]);
 
   const shell = (
     <div className="portfolio-shell">
@@ -1092,16 +1042,12 @@ function App() {
   return (
     <>
       {shell}
-      <CursorTrailLayer suspended={showSplash} />
+      <CursorTrailLayer suspended={showIntro} />
       <ContextualAskHintLayer />
-      <CursorChatLayer suspended={showSplash} />
+      <CursorChatLayer suspended={showIntro} />
       {import.meta.env.DEV ? <Agentation /> : null}
-      {showSplash ? (
-        <Splash
-          progress={progress}
-          isLeaving={splashLeaving}
-          onSkip={dismissSplash}
-        />
+      {showIntro ? (
+        <IntroLayer isLeaving={introLeaving} onDismiss={dismissIntro} />
       ) : null}
     </>
   );

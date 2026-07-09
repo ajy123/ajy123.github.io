@@ -862,26 +862,41 @@ h1 span {
   transform: translateY(0);
 }
 
-.splash {
-  all: unset;
+.intro {
   position: fixed;
   inset: 0;
   z-index: 40;
   box-sizing: border-box;
-  display: grid;
-  place-items: center;
   color: var(--ink);
   background: var(--surface-warm);
-  cursor: pointer;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   animation: splashIn 360ms var(--ease) both;
 }
 
-.splash--cream {
-  background: var(--surface-warm);
+.intro--reduced {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
 
-/* Splash backgrounds paint over the cream fallback and stay click-through so
- * the splash button still receives clicks. */
+/* Masked shader host: the sentence bitmap punches soft letterform pockets
+ * out of the halftone field (mask-image set imperatively per layout). The
+ * cream .intro floor shows through the holes. */
+.intro-shader-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* Shader backgrounds paint over the cream fallback and stay click-through. */
 .splash-shader-canvas {
   position: absolute;
   inset: 0;
@@ -892,76 +907,216 @@ h1 span {
   pointer-events: none;
 }
 
-.splash.is-leaving {
+.intro.is-leaving {
   pointer-events: none;
   animation: splashOut 280ms var(--ease) both;
 }
 
-.splash-inner {
+.intro-track {
+  min-height: var(--intro-track, 350vh);
+}
+
+.intro-stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+  padding: 44px 24px;
+}
+
+.intro-copy {
   position: relative;
   z-index: 1;
   display: flex;
-  width: min(420px, calc(100vw - 48px));
+  width: min(980px, calc(100vw - 48px));
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  gap: 28px;
   text-align: center;
 }
 
-.splash-title {
-  color: var(--ink);
-  font-size: clamp(44px, 8vw, 56px);
+.intro-sentence {
+  max-width: 980px;
+  margin: 0;
+  color: var(--ghost);
+  font-size: clamp(40px, 7vw, 72px);
   font-weight: 700;
-  line-height: 1;
-}
-
-.splash-progress {
-  position: relative;
-  display: block;
-  width: min(260px, 70%);
-  height: 3px;
-  overflow: hidden;
-  background: var(--hairline-faint);
-  border-radius: 9999px;
-}
-
-.splash-progress span {
-  position: absolute;
-  inset: 0;
-  background: var(--ink);
-  border-radius: inherit;
-  transform-origin: left center;
-  transition: transform 220ms var(--ease);
-}
-
-.splash-note {
-  max-width: 300px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
+  letter-spacing: 0;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
-.splash-hint {
+.intro-sentence > span {
+  display: inline;
+}
+
+.intro-word {
+  --fill: 0;
+  --fill-color: var(--ink);
+  display: inline;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--fill-color) calc(var(--fill) * 100%),
+    var(--ghost) calc(var(--fill) * 100%)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.intro-word--scramble {
+  display: inline;
+  color: var(--ghost);
+}
+
+.intro-scramble-token {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Scattered letters travel on transform only, so the sentence's layout box
+ * never moves; will-change is justified — chars animate for most of the
+ * intro's life. */
+.intro-scramble-char {
+  display: inline-block;
+  color: var(--ghost);
+  will-change: transform;
+}
+
+/* The lead inks itself on load so the first frame is never all-ghost;
+ * the rest of the print sentence waits for the scroll. */
+.intro-lead {
+  color: var(--ghost);
+  animation: introLeadInk 700ms var(--ease) 400ms forwards;
+}
+
+@keyframes introLeadInk {
+  to {
+    color: var(--ink);
+  }
+}
+
+.intro-cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 34px;
   color: var(--muted);
-  font-size: 13px;
-  letter-spacing: 0.04em;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  /* visibility flips after the fade-out so the hidden CTA is neither
+   * clickable nor in the tab order before its reveal. */
+  visibility: hidden;
+  transition:
+    opacity 220ms var(--ease),
+    transform 220ms var(--ease),
+    visibility 0s linear 220ms;
+  cursor: pointer;
+  font-size: 12px;
   line-height: 1;
 }
 
-.splash-hint-dot {
-  color: rgba(117, 113, 105, 0.7);
+.intro-cta.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s, 0s, 0s;
 }
 
-.splash-key {
+.intro-cta.is-visible:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .intro-cta.is-visible:hover {
+    color: var(--ink);
+  }
+}
+
+.intro-keycap {
   display: inline-flex;
-  min-width: 18px;
-  height: 18px;
+  min-width: 58px;
+  height: 28px;
   align-items: center;
   justify-content: center;
+  color: var(--white);
+  /* Darker step of the brand orange: white 11px label needs 4.5:1 (AA);
+   * #f44800 only reaches 3.64. The hot words stay #f44800 (large-text 3:1). */
+  background: #d63e00;
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22),
+    0 1px 0 rgba(31, 30, 29, 0.18);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  transition:
+    box-shadow 120ms var(--ease),
+    transform 120ms var(--ease);
+}
+
+.intro-keycap.is-ready {
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.2),
+    0 0 0 rgba(31, 30, 29, 0);
+  transform: translateY(2px);
+}
+
+/* Print CTA: the sentence's closing line, set in the print world — ink,
+ * paper, and a typewriter key. The base .intro-cta transform states are
+ * disabled because the inner span carries the spring. */
+.intro-cta--print {
+  flex-direction: column;
+  gap: 8px;
+  transform: none;
+}
+
+.intro-cta--print.is-visible {
+  transform: none;
+}
+
+.intro-cta--print.is-visible:active {
+  transform: scale(0.97);
+}
+
+.intro-cta-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.intro-cta-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  color: var(--muted);
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 600;
+  line-height: 1;
+  transition: color 200ms var(--ease);
+}
+
+/* Ready: the line inks when the local model finishes loading. */
+.intro-cta--print.is-ready .intro-cta-line {
+  color: var(--ink);
+}
+
+/* Paper keycap: a typewriter key, not a UI chip. */
+.intro-key--paper {
+  display: inline-flex;
+  height: 1.5em;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5em;
   color: var(--body);
   background: rgba(250, 249, 245, 0.92);
   border: 1px solid rgba(31, 30, 29, 0.18);
@@ -969,12 +1124,88 @@ h1 span {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     0 1px 0 rgba(31, 30, 29, 0.12);
-  font-size: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.8em;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0;
-  margin-right: 4px;
-  vertical-align: middle;
+  transition:
+    box-shadow 120ms var(--ease),
+    transform 120ms var(--ease);
+}
+
+.intro-cta--print.is-ready .intro-key--paper,
+.intro-cta--print.is-visible:active .intro-key--paper {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(31, 30, 29, 0.18),
+    0 0 0 rgba(31, 30, 29, 0);
+}
+
+.intro-cta-status {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .intro-cta--print.is-visible:hover .intro-cta-status {
+    color: var(--body);
+  }
+}
+
+.intro-skip {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  padding: 10px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  transition: transform 140ms var(--ease);
+}
+
+.intro-skip:active {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .intro-skip:hover {
+    color: var(--ink);
+  }
+}
+
+.intro-scrollhint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 1;
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  /* Full-opacity muted: this is instruction text, and 0.7 dropped it below
+   * the 4.5:1 AA floor at 11px. */
+  transform: translateX(-50%);
+  transition: opacity 180ms var(--ease);
+}
+
+.intro-scrollhint.is-hidden {
+  opacity: 0;
+}
+
+.intro-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 [data-ask-hint] {
@@ -1666,6 +1897,18 @@ h1 span {
     display: none;
   }
 
+  .intro-stage {
+    padding: 36px 20px;
+  }
+
+  .intro-copy {
+    width: min(100%, calc(100vw - 40px));
+  }
+
+  .intro-sentence {
+    font-size: clamp(38px, 12vw, 56px);
+  }
+
   .essay-dialog-stage {
     align-items: stretch;
     padding: 10px;
@@ -1723,12 +1966,22 @@ h1 span {
     filter: none !important;
   }
 
-  .splash,
-  .splash.is-leaving {
+  .intro,
+  .intro.is-leaving {
     animation: none;
   }
 
-  .splash-progress span {
+  /* The lead's ink-in animation is disabled above, so land it inked. */
+  .intro-lead {
+    animation: none;
+    color: var(--ink);
+  }
+
+  .intro-cta,
+  .intro-keycap,
+  .intro-cta-line,
+  .intro-key--paper,
+  .intro-scrollhint {
     transition: none;
   }
 }

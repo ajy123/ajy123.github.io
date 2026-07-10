@@ -1,23 +1,12 @@
 import { useEffect, useRef } from "react";
 
-export type CursorTrailDials = {
-  pixelSize: number;
-  fadeMs: number;
-  maxAlpha: number;
-  wandererCount: number;
-  pathLength: number;
-  stepMs: number;
-  spawnIntervalMs: number;
-  turnChance: number;
-};
-
-export const DEFAULT_CURSOR_TRAIL_DIALS: CursorTrailDials = {
+const CURSOR_TRAIL_DEFAULTS = {
   pixelSize: 10,
-  fadeMs: 800,
-  maxAlpha: 0.55,
+  fadeMs: 250,
+  maxAlpha: 0.5,
   wandererCount: 0,
-  pathLength: 35,
-  stepMs: 175,
+  pathLength: 24,
+  stepMs: 155,
   spawnIntervalMs: 1500,
   turnChance: 0.3,
 };
@@ -41,7 +30,6 @@ type GridPoint = {
   y: number;
 };
 
-const PRIMARY_CELL_COLOR = "#F44800";
 const DIRECTIONS: GridPoint[] = [
   { x: 1, y: 0 },
   { x: 1, y: 1 },
@@ -65,6 +53,13 @@ function randomInt(maxExclusive: number) {
   return Math.floor(Math.random() * maxExclusive);
 }
 
+function readCellColor() {
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
+    "#f44800"
+  );
+}
+
 function directionIndexFor(direction: GridPoint) {
   return DIRECTIONS.findIndex(
     (candidate) => candidate.x === direction.x && candidate.y === direction.y,
@@ -72,23 +67,11 @@ function directionIndexFor(direction: GridPoint) {
 }
 
 export function CursorTrail({
-  dials = DEFAULT_CURSOR_TRAIL_DIALS,
   suspended = false,
 }: {
-  dials?: CursorTrailDials;
   suspended?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const {
-    pixelSize: dialPixelSize,
-    fadeMs: dialFadeMs,
-    maxAlpha: dialMaxAlpha,
-    wandererCount: dialWandererCount,
-    pathLength: dialPathLength,
-    stepMs: dialStepMs,
-    spawnIntervalMs: dialSpawnIntervalMs,
-    turnChance: dialTurnChance,
-  } = dials;
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -98,14 +81,24 @@ export function CursorTrail({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const pixelSize = Math.max(1, Math.round(dialPixelSize));
-    const fadeMs = Math.max(1, dialFadeMs);
-    const maxAlpha = clamp(dialMaxAlpha, 0.05, 1);
-    const targetWandererCount = clamp(Math.round(dialWandererCount), 0, 8);
-    const pathLength = Math.max(1, Math.round(dialPathLength));
-    const stepMs = Math.max(1, dialStepMs);
-    const spawnIntervalMs = Math.max(100, dialSpawnIntervalMs);
-    const turnChance = clamp(dialTurnChance, 0, 1);
+    const {
+      pixelSize: configuredPixelSize,
+      fadeMs: configuredFadeMs,
+      maxAlpha: configuredMaxAlpha,
+      wandererCount: configuredWandererCount,
+      pathLength: configuredPathLength,
+      stepMs: configuredStepMs,
+      spawnIntervalMs: configuredSpawnIntervalMs,
+      turnChance: configuredTurnChance,
+    } = CURSOR_TRAIL_DEFAULTS;
+    const pixelSize = Math.max(1, Math.round(configuredPixelSize));
+    const fadeMs = Math.max(1, configuredFadeMs);
+    const maxAlpha = clamp(configuredMaxAlpha, 0.05, 1);
+    const targetWandererCount = clamp(Math.round(configuredWandererCount), 0, 8);
+    const pathLength = Math.max(1, Math.round(configuredPathLength));
+    const stepMs = Math.max(1, configuredStepMs);
+    const spawnIntervalMs = Math.max(100, configuredSpawnIntervalMs);
+    const turnChance = clamp(configuredTurnChance, 0, 1);
 
     let dpr = window.devicePixelRatio || 1;
     let rafId: number | null = null;
@@ -115,6 +108,7 @@ export function CursorTrail({
     let pendingSpawnCount = 0;
     let gridColumns = 1;
     let gridRows = 1;
+    let cellColor = readCellColor();
     const cells = new Map<string, Cell>();
     const trails: Trail[] = [];
     const spawnTimers = new Set<number>();
@@ -141,7 +135,7 @@ export function CursorTrail({
 
     const render = (now: number) => {
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      ctx.fillStyle = PRIMARY_CELL_COLOR;
+      ctx.fillStyle = cellColor;
 
       for (const [key, cell] of cells) {
         const progress = (now - cell.fadeStart) / fadeMs;
@@ -331,6 +325,10 @@ export function CursorTrail({
         spawnTrail(Math.random() * 800);
       }
     };
+    const themeObserver = new MutationObserver(() => {
+      cellColor = readCellColor();
+      if (cells.size > 0) startRender();
+    });
 
     resize();
 
@@ -345,6 +343,10 @@ export function CursorTrail({
 
     window.addEventListener("resize", resize);
     document.addEventListener("visibilitychange", onVisibilityChange);
+    themeObserver.observe(document.documentElement, {
+      attributeFilter: ["data-theme"],
+      attributes: true,
+    });
 
     if (targetWandererCount > 0) {
       maintainTrails();
@@ -369,21 +371,12 @@ export function CursorTrail({
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      themeObserver.disconnect();
       cells.clear();
       trails.length = 0;
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
-  }, [
-    dialFadeMs,
-    dialMaxAlpha,
-    dialPathLength,
-    dialPixelSize,
-    dialSpawnIntervalMs,
-    dialStepMs,
-    dialTurnChance,
-    dialWandererCount,
-    suspended,
-  ]);
+  }, [suspended]);
 
   return (
     <canvas

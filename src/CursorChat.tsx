@@ -63,12 +63,6 @@ type Thread = {
   zoneContext?: CursorChatZoneContext;
 };
 
-export type CursorChatDials = {
-  chipStaggerMs: number;
-  radiusTight: number;
-  radiusRoomy: number;
-};
-
 const COMPOSER_WIDTH = 320;
 const COMPOSER_MAX_HEIGHT = 360;
 const EDGE = 14;
@@ -157,7 +151,7 @@ function getZoneTagLabel(zoneContext?: CursorChatZoneContext) {
   return `ASKING ABOUT: ${labelByKind[zoneContext.kind] ?? "THIS PAGE"}`;
 }
 
-export const DEFAULT_CURSOR_CHAT_DIALS: CursorChatDials = {
+const CURSOR_CHAT_DEFAULTS = {
   chipStaggerMs: 40,
   radiusTight: 4,
   radiusRoomy: 14,
@@ -373,10 +367,8 @@ function buildMessages(
 }
 
 export function CursorChat({
-  dials = DEFAULT_CURSOR_CHAT_DIALS,
   suspended = false,
 }: {
-  dials?: CursorChatDials;
   suspended?: boolean;
 }) {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -834,8 +826,8 @@ export function CursorChat({
             {
               left: activePosition.left,
               top: activePosition.top,
-              "--chat-radius-tight": `${dials.radiusTight}px`,
-              "--chat-radius-roomy": `${dials.radiusRoomy}px`,
+              "--chat-radius-tight": `${CURSOR_CHAT_DEFAULTS.radiusTight}px`,
+              "--chat-radius-roomy": `${CURSOR_CHAT_DEFAULTS.radiusRoomy}px`,
             } as CSSProperties
           }
           role="dialog"
@@ -963,7 +955,7 @@ export function CursorChat({
                   key={chip.id}
                   style={
                     {
-                      "--chip-delay": `${index * dials.chipStaggerMs}ms`,
+                      "--chip-delay": `${index * CURSOR_CHAT_DEFAULTS.chipStaggerMs}ms`,
                     } as CSSProperties
                   }
                   type="button"

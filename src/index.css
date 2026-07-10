@@ -5,7 +5,8 @@
 
   /* Palette from design.md — ink / grey / white, no brand accent. */
   --canvas: #ffffff; /* default page floor */
-  --white: #ffffff;
+  --white: #ffffff; /* on-accent foreground text for keycap/pin labels */
+  --surface-elevated: #ffffff; /* elevated surface background */
   --surface-subtle: #f7f7f7; /* faint card / divider fill */
   --surface-warm: #faf9f5; /* warm off-white control surface */
   --ghost: #e0e0e0; /* oversized decorative section titles */
@@ -15,6 +16,20 @@
   --ink-strong: #000000; /* max-contrast text, links */
   --hairline: rgba(31, 30, 29, 0.4); /* 1px control borders */
   --hairline-faint: rgba(31, 30, 29, 0.12);
+  --accent: #f44800;
+  --selection-bg: #e35727;
+  --selection-ink: #ffffff;
+  --overlay: rgba(255, 255, 255, 0.85);
+  --shadow-soft: rgba(22, 21, 19, 0.12);
+  --control-dark: rgba(17, 17, 17, 0.72);
+  --control-dark-hover: rgba(17, 17, 17, 0.9);
+  --error-ink: #6d342f;
+  --error-surface: #f8eeee;
+  --contrib-0: #ececec;
+  --contrib-1: #c2c2c0;
+  --contrib-2: #6d6d6d;
+  --contrib-3: #363634;
+  --contrib-4: #000000;
 
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
@@ -22,10 +37,40 @@
   font-family: var(--font-body);
   color: var(--ink);
   background: var(--canvas);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-theme="dark"] {
+  --canvas: #0f0e0d;
+  --white: #ffffff; /* stays white: on-accent text, not a surface */
+  --surface-elevated: #181614;
+  --surface-subtle: #1a1917;
+  --surface-warm: #171512;
+  /* --ghost: decorative, contrast-exempt, tuned between parity #2A2724 and audible #6a635a. */
+  --ghost: #4a4540;
+  --muted: #aaa49a;
+  --body: #e8e6e1;
+  --ink: #f1efe9;
+  --ink-strong: #ffffff;
+  --hairline: rgba(240, 238, 230, 0.32);
+  --hairline-faint: rgba(240, 238, 230, 0.1);
+  --accent: #ff6a2a;
+  --overlay: rgba(15, 14, 13, 0.82);
+  --shadow-soft: rgba(0, 0, 0, 0.38);
+  --control-dark: rgba(241, 239, 233, 0.16);
+  --control-dark-hover: rgba(241, 239, 233, 0.24);
+  --error-ink: #ffd8d0;
+  --error-surface: #3a1f1c;
+  --contrib-0: #24221f;
+  --contrib-1: #4b463f;
+  --contrib-2: #837a6e;
+  --contrib-3: #c7b79e;
+  --contrib-4: #ffe0ad;
+  color-scheme: dark;
 }
 
 *,
@@ -73,8 +118,8 @@ svg {
 }
 
 ::selection {
-  color: var(--white);
-  background: rgb(13, 81, 255); /* matches the cursor-trail blue */
+  color: var(--selection-ink);
+  background: var(--selection-bg);
 }
 
 .portfolio-shell {
@@ -312,23 +357,23 @@ h1 span {
   width: var(--rl-cell, 12.285px);
   height: var(--rl-cell, 12.285px);
   border-radius: var(--rl-cell-radius, 2px);
-  background: #ececec; /* level 0 — empty week, one step darker */
+  background: var(--contrib-0); /* level 0 — empty week, one step darker */
 }
 
 .contrib-cell[data-level="1"] {
-  background: #c2c2c0;
+  background: var(--contrib-1);
 }
 
 .contrib-cell[data-level="2"] {
-  background: #6d6d6d;
+  background: var(--contrib-2);
 }
 
 .contrib-cell[data-level="3"] {
-  background: #363634;
+  background: var(--contrib-3);
 }
 
 .contrib-cell[data-level="4"] {
-  background: #000;
+  background: var(--contrib-4);
 }
 
 /* ===========================================================================
@@ -600,7 +645,7 @@ h1 span {
   height: 36px;
   place-items: center;
   color: var(--white);
-  background: rgba(17, 17, 17, 0.72);
+  background: var(--control-dark);
   border: 0;
   border-radius: 999px;
   cursor: pointer;
@@ -613,7 +658,7 @@ h1 span {
 }
 
 .work-media-control:hover {
-  background: rgba(17, 17, 17, 0.9);
+  background: var(--control-dark-hover);
 }
 
 .work-media-control:focus-visible,
@@ -676,7 +721,7 @@ h1 span {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--overlay);
 }
 
 .essay-dialog-stage {
@@ -702,7 +747,7 @@ h1 span {
   border: 0;
   border-radius: 4px;
   outline: none;
-  box-shadow: 0 18px 48px rgba(22, 21, 19, 0.12);
+  box-shadow: 0 18px 48px var(--shadow-soft);
 }
 
 .essay-dialog-panel[data-scroll-ready="false"] {
@@ -1312,7 +1357,7 @@ h1 span {
   align-items: center;
   justify-content: center;
   color: var(--white);
-  background: #f44800;
+  background: var(--accent);
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -1366,10 +1411,10 @@ h1 span {
   overflow: auto;
   padding: 10px;
   color: var(--ink);
-  background: rgba(250, 249, 245, 0.97);
+  background: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   border: 1px solid var(--hairline-faint);
   border-radius: var(--chat-radius-roomy, 14px);
-  box-shadow: 0 18px 48px rgba(22, 21, 19, 0.12);
+  box-shadow: 0 18px 48px var(--shadow-soft);
   transform-origin: var(--chat-origin, top left);
   animation: cursorChatIn 320ms var(--spring) both;
 }
@@ -1505,7 +1550,7 @@ h1 span {
   box-sizing: border-box;
   max-width: 100%;
   padding: 7px 9px;
-  color: rgba(52, 50, 47, 0.9);
+  color: var(--body);
   background: var(--surface-warm);
   border: 1px solid var(--hairline-faint);
   border-radius: 2px;
@@ -1527,7 +1572,7 @@ h1 span {
 .cursor-chat-suggestions button:hover,
 .cursor-chat-suggestions button:focus-visible {
   color: var(--ink-strong);
-  background: rgba(250, 249, 245, 0.98);
+  background: color-mix(in srgb, var(--surface-warm) 98%, var(--ink) 2%);
   border-color: var(--hairline);
 }
 
@@ -1586,7 +1631,7 @@ h1 span {
 }
 
 .cursor-chat-brainmeter span[data-filled="true"] {
-  background: #f44800;
+  background: var(--accent);
 }
 
 /* Typewriter caret: marks where the serif ink will land. */
@@ -1595,7 +1640,7 @@ h1 span {
   width: 7px;
   height: 0.95em;
   margin-left: 4px;
-  background: #f44800;
+  background: var(--accent);
   vertical-align: -0.12em;
   animation: cursorChatCaret 1.1s steps(1) infinite;
 }
@@ -1613,8 +1658,8 @@ h1 span {
 .cursor-chat-error .cursor-chat-response {
   padding: 10px 11px;
   border-top: 0;
-  color: #6d342f;
-  background: #f8eeee;
+  color: var(--error-ink);
+  background: var(--error-surface);
   border-radius: 8px;
   box-shadow: none;
   line-height: 1.45;
@@ -1625,7 +1670,7 @@ h1 span {
   box-sizing: border-box;
   display: inline-block;
   margin-top: 6px;
-  color: #6d342f;
+  color: var(--error-ink);
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 12px;
@@ -1655,7 +1700,7 @@ h1 span {
   align-items: center;
   justify-content: center;
   color: var(--white);
-  background: #f44800;
+  background: var(--accent);
   border-radius: 5px;
   cursor: pointer;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
@@ -1698,7 +1743,7 @@ h1 span {
   overflow: hidden;
   background: var(--surface-warm);
   border-radius: 2px;
-  box-shadow: 0 1px 6px rgba(22, 21, 19, 0.1);
+  box-shadow: 0 1px 6px var(--shadow-soft);
 }
 
 .cursor-chat-pin-open {
@@ -1717,7 +1762,7 @@ h1 span {
   align-items: center;
   justify-content: center;
   color: var(--white);
-  background: #f44800;
+  background: var(--accent);
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 11px;
   font-weight: 700;
@@ -1844,6 +1889,80 @@ h1 span {
   to {
     opacity: 0;
   }
+}
+
+/* ===========================================================================
+   Dark-mode skeuomorphic treatments. The keycap/pill models above are drawn for
+   a lit room: bright white top-edge highlights + warm-dark drop shadows. Under
+   the lamp-off theme the top edge catches far less light (inset highlights drop
+   to ~0.08) and the sense of depth shifts onto deeper, near-black bottom
+   shadows. Accent key faces stay accent (the brand moment); their labels stay
+   var(--white) = #fff. Divider rules flip to a light hairline so they still read
+   on a dark surface (a dark line on near-black vanishes).
+   =========================================================================== */
+
+/* Rail-footer "keycap" variant — physical keyboard keys. */
+html[data-theme="dark"] .rail-footer-body[data-variant="keycap"] .rail-link {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 var(--rl-key-depth, 3px) 0 rgba(0, 0, 0, 0.44),
+    0 calc(var(--rl-key-depth, 3px) + 1px) 3px rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .rail-footer-body[data-variant="keycap"] .rail-link:active {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); /* pressed flat */
+}
+
+/* Rail-footer "divided" variant — row rules become light hairlines on dark. */
+html[data-theme="dark"] .rail-footer-body[data-variant="divided"] .rail-link {
+  border-top-color: rgba(240, 238, 230, var(--rl-divider-opacity, 0.12));
+}
+html[data-theme="dark"] .rail-footer-body[data-variant="divided"] .contrib {
+  border-bottom-color: rgba(240, 238, 230, var(--rl-divider-opacity, 0.12));
+}
+html[data-theme="dark"] .rail-footer-body[data-variant="divided"] > p {
+  border-top-color: rgba(240, 238, 230, var(--rl-divider-opacity, 0.12));
+}
+
+/* Intro CTA accent keycap — face stays #d63e00, deeper drop, dark inner edge. */
+html[data-theme="dark"] .intro-keycap {
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .intro-keycap.is-ready {
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Intro print "paper" typewriter key — dark paper, quiet top edge, deep shadow. */
+html[data-theme="dark"] .intro-key--paper {
+  background: rgba(23, 21, 18, 0.92);
+  border-color: rgba(240, 238, 230, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 0 rgba(0, 0, 0, 0.34);
+}
+html[data-theme="dark"] .intro-cta--print.is-ready .intro-key--paper,
+html[data-theme="dark"] .intro-cta--print.is-visible:active .intro-key--paper {
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Cursor-chat send — orange accent key; quieter lit edge, deeper drop on dark. */
+html[data-theme="dark"] .cursor-chat-send {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .cursor-chat-send:active:not(:disabled) {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Cursor-chat brain-meter empty cells — faint light fill (filled keeps accent). */
+html[data-theme="dark"] .cursor-chat-brainmeter span:not([data-filled="true"]) {
+  background: rgba(255, 255, 255, 0.09);
 }
 
 @media (max-width: 860px) {
@@ -1983,5 +2102,25 @@ h1 span {
   .intro-key--paper,
   .intro-scrollhint {
     transition: none;
+  }
+}
+
+/* Print — a dark-themed page must print as light ink-on-paper, not ink slabs.
+   Force the light color-scheme and re-assert the core light token values under
+   the dark selector so the printed page reads as the light theme. */
+@media print {
+  html[data-theme="dark"] {
+    color-scheme: light;
+    --canvas: #ffffff;
+    --surface-elevated: #ffffff;
+    --surface-subtle: #f7f7f7;
+    --surface-warm: #faf9f5;
+    --ghost: #e0e0e0;
+    --muted: #757169;
+    --body: #141413;
+    --ink: #111111;
+    --ink-strong: #000000;
+    --hairline: rgba(31, 30, 29, 0.4);
+    --hairline-faint: rgba(31, 30, 29, 0.12);
   }
 }

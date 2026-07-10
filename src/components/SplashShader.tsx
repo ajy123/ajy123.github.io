@@ -23,12 +23,63 @@ export type SplashShaderDrive = {
   wellStrength: number;
 };
 
-// Base paper/ink colors fed to the shader (it adds micro-tints on top).
-const PAPER_RGB: Record<SplashPaper, [number, number, number]> = {
+type Rgb = [number, number, number];
+
+const FALLBACK_PAPER_RGB: Record<SplashPaper, Rgb> = {
   cream: [0.98, 0.976, 0.961], // --surface-warm #FAF9F5
   white: [1, 1, 1], // --canvas #FFFFFF
 };
-const INK_RGB: [number, number, number] = [0.067, 0.067, 0.067]; // --ink #111111
+const FALLBACK_INK_RGB: Rgb = [0.067, 0.067, 0.067]; // --ink #111111
+
+function cssColorToRgb(value: string, fallback: Rgb): Rgb {
+  const color = value.trim();
+  if (!color) return fallback;
+
+  const hex = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hex) {
+    const raw = hex[1];
+    const full =
+      raw.length === 3
+        ? raw
+            .split("")
+            .map((char) => char + char)
+            .join("")
+        : raw;
+    return [
+      parseInt(full.slice(0, 2), 16) / 255,
+      parseInt(full.slice(2, 4), 16) / 255,
+      parseInt(full.slice(4, 6), 16) / 255,
+    ];
+  }
+
+  const rgb = color.match(/rgba?\(([^)]+)\)/i);
+  if (rgb) {
+    const channels = rgb[1]
+      .split(",")
+      .slice(0, 3)
+      .map((part) => Number.parseFloat(part.trim()));
+    if (channels.every(Number.isFinite)) {
+      return [channels[0] / 255, channels[1] / 255, channels[2] / 255];
+    }
+  }
+
+  return fallback;
+}
+
+function readThemeColors(): Record<SplashPaper | "ink", Rgb> {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    cream: cssColorToRgb(
+      styles.getPropertyValue("--surface-warm"),
+      FALLBACK_PAPER_RGB.cream,
+    ),
+    white: cssColorToRgb(
+      styles.getPropertyValue("--canvas"),
+      FALLBACK_PAPER_RGB.white,
+    ),
+    ink: cssColorToRgb(styles.getPropertyValue("--ink"), FALLBACK_INK_RGB),
+  };
+}
 
 const VERT = `
 attribute vec2 a_pos;
@@ -299,6 +350,7 @@ export function SplashShader({
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    let themeColors = readThemeColors();
 
     let W = 1;
     let H = 1;
@@ -363,7 +415,7 @@ export function SplashShader({
       state.mAct = Math.max(0, state.mAct - dt * 1.6);
       const birth = reduced ? 1 : Math.min(1, t / 1.1);
       const birthEase = birth * birth * (3 - 2 * birth);
-      const pr = PAPER_RGB[propsRef.current.paper] ?? PAPER_RGB.cream;
+      const pr = themeColors[propsRef.current.paper] ?? themeColors.cream;
       const driveState = propsRef.current.drive?.current;
       const driveAttached = Boolean(propsRef.current.drive);
       const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
@@ -379,7 +431,7 @@ export function SplashShader({
       gl.uniform1f(u.dpr, dpr);
       gl.uniform2f(u.actionOrigin, state.ox, state.oy);
       gl.uniform3f(u.paper, pr[0], pr[1], pr[2]);
-      gl.uniform3f(u.ink, INK_RGB[0], INK_RGB[1], INK_RGB[2]);
+      gl.uniform3f(u.ink, themeColors.ink[0], themeColors.ink[1], themeColors.ink[2]);
       gl.uniform1f(u.cell, propsRef.current.cellPx);
       gl.uniform1f(u.focus, 0.0);
       gl.uniform1f(u.keyAmp, 0.0);
@@ -407,6 +459,14 @@ export function SplashShader({
       if (reduced) renderFrame(performance.now(), 0);
     });
     ro.observe(canvas);
+    const themeObserver = new MutationObserver(() => {
+      themeColors = readThemeColors();
+      if (reduced) renderFrame(performance.now(), 0);
+    });
+    themeObserver.observe(document.documentElement, {
+      attributeFilter: ["data-theme"],
+      attributes: true,
+    });
 
     if (reduced) {
       renderFrame(performance.now(), 0); // single static frame, no loop
@@ -423,6 +483,7 @@ export function SplashShader({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("click", onClick);
       // Delete this run's GL resources but DON'T loseContext(): a canvas hands

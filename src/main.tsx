@@ -186,20 +186,6 @@ const ContextualAskHintWithDials = import.meta.env.DEV
       })),
     )
   : null;
-const CursorTrailWithDials = import.meta.env.DEV
-  ? lazy(() =>
-      import("./components/CursorTrailDials").then((module) => ({
-        default: module.CursorTrailWithDials,
-      })),
-    )
-  : null;
-const CursorChatWithDials = import.meta.env.DEV
-  ? lazy(() =>
-      import("./components/CursorChatDials").then((module) => ({
-        default: module.CursorChatWithDials,
-      })),
-    )
-  : null;
 
 function Reveal({
   children,
@@ -889,30 +875,6 @@ function ContextualAskHintLayer() {
   return <ContextualAskHint />;
 }
 
-function CursorTrailLayer({ suspended }: { suspended: boolean }) {
-  if (CursorTrailWithDials) {
-    return (
-      <Suspense fallback={null}>
-        <CursorTrailWithDials suspended={suspended} />
-      </Suspense>
-    );
-  }
-
-  return <CursorTrail suspended={suspended} />;
-}
-
-function CursorChatLayer({ suspended }: { suspended: boolean }) {
-  if (CursorChatWithDials) {
-    return (
-      <Suspense fallback={null}>
-        <CursorChatWithDials suspended={suspended} />
-      </Suspense>
-    );
-  }
-
-  return <CursorChat suspended={suspended} />;
-}
-
 function IntroLayer({
   isLeaving,
   onDismiss,
@@ -1042,9 +1004,9 @@ function App() {
   return (
     <>
       {shell}
-      <CursorTrailLayer suspended={showIntro} />
+      <CursorTrail suspended={showIntro} />
       <ContextualAskHintLayer />
-      <CursorChatLayer suspended={showIntro} />
+      <CursorChat suspended={showIntro} />
       {import.meta.env.DEV ? <Agentation /> : null}
       {showIntro ? (
         <IntroLayer isLeaving={introLeaving} onDismiss={dismissIntro} />

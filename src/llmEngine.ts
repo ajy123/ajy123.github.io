@@ -12,6 +12,7 @@ import type {
 // "Llama-3.2-1B-Instruct-q4f16_1-MLC" (~0.7GB) or "Qwen2.5-1.5B-Instruct-q4f16_1-MLC"
 // if answer quality matters more than load time.
 const MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
+export const MODEL_DOWNLOAD_MB = 350;
 
 // Re-init this many times on a failed load. Each retry resumes from shards
 // already cached in the browser, so a dropped connection self-heals.
@@ -35,12 +36,45 @@ export function isEngineReady(): boolean {
   return ready;
 }
 
-export function preloadEngine(): void {
-  if (!isWebGPUAvailable()) return;
-  void getEngine().catch(() => {
-    // The chat's Retry path owns surfacing load failures. Preload should never
-    // produce an unhandled rejection or block the portfolio from rendering.
-  });
+export function preloadEngine(): Promise<void> {
+  if (!isWebGPUAvailable()) {
+    return Promise.reject(new Error("WebGPU is not available"));
+  }
+
+  if (import.meta.env.DEV) {
+    const testResponse = (
+      window as unknown as { __cursorChatTestResponse?: unknown }
+    ).__cursorChatTestResponse;
+    // Deterministic browser verification without fetching the model. The
+    // direct DEV guard lets Rollup remove this branch from production.
+    if (typeof testResponse === "string") {
+      if (ready) return Promise.resolve();
+      const progress = {
+        progress: 0.42,
+        text: "loading deterministic test model",
+        timeElapsed: 0,
+      } as InitProgressReport;
+      lastProgress = progress;
+      progressListeners.forEach((fn) => fn(progress));
+      return new Promise((resolve) => {
+        window.setTimeout(() => {
+          ready = true;
+          (
+            window as unknown as { __cursorChatTestReadyAt?: number }
+          ).__cursorChatTestReadyAt = performance.now();
+          const complete = { ...progress, progress: 1, text: "test model ready" };
+          lastProgress = complete;
+          progressListeners.forEach((fn) => fn(complete));
+          resolve();
+        }, 400);
+      });
+    }
+  }
+
+  // Resolve only after getEngine has completed initialization and marked the
+  // shared engine ready. Callers that fire-and-forget this preload own handling
+  // its rejection because the chat's Retry path surfaces load failures.
+  return getEngine().then(() => undefined);
 }
 
 export function onInitProgress(fn: (report: InitProgressReport) => void): () => void {
@@ -153,6 +187,24 @@ export function streamChat(
   onToken: (full: string) => void,
   signal: AbortSignal,
 ): Promise<string> {
+  if (import.meta.env.DEV) {
+    const testResponse = (
+      window as unknown as { __cursorChatTestResponse?: unknown }
+    ).__cursorChatTestResponse;
+    if (typeof testResponse === "string") {
+      return enqueue(async () => {
+        let full = "";
+        for (const part of testResponse.split(/(\s+)/)) {
+          if (signal.aborted) throw new AbortError();
+          full += part;
+          onToken(full);
+          await new Promise((resolve) => window.setTimeout(resolve, 12));
+        }
+        return full;
+      });
+    }
+  }
+
   return enqueue(async () => {
     if (signal.aborted) throw new AbortError();
 

@@ -4,6 +4,7 @@ import {
   createElement,
   lazy,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
   useContext,
   useEffect,
@@ -20,14 +21,20 @@ import {
 import { createPortal } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { CursorChat } from "./CursorChat";
-import { requestCursorChatOpen } from "./chatEvents";
+import {
+  isCoarsePointer,
+  requestCursorChatOpen,
+  toSuggestedPrompts,
+} from "./chatEvents";
 import {
   ContextualAskHint,
   type AskableKind,
   type AskAnchorPreference,
 } from "./components/ContextualAskHint";
 import { CursorTrail } from "./components/CursorTrail";
+import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayEvalThumbnail } from "./components/EssayEvalThumbnail";
+import { SiteLogo } from "./components/SiteLogo";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
@@ -47,6 +54,8 @@ type RevealProps = {
   askKind?: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
   askPromptChips?: string[];
+  askFollowUpPromptChips?: string[];
+  askContextText?: string;
 };
 
 type WorkItem = {
@@ -61,6 +70,7 @@ type WorkItem = {
   askKind: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
   askPromptChips: string[];
+  askFollowUpPromptChips: string[];
   media?: {
     type: "video";
     src: string;
@@ -92,9 +102,14 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "why a chat instead of search?",
-      "what changed after launch?",
-      "what was Joanna's role?",
+      "did the chat replace keyword search?",
+      "did it cut report time by 50%+?",
+      "does it pin down intent before answering?",
+    ],
+    askFollowUpPromptChips: [
+      "does the chat show its work as it builds?",
+      "did it create consult-grade reports?",
+      "did Joanna lead design and part PM on a team of 5?",
     ],
     summary:
       "Designed a chat that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
@@ -115,9 +130,14 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "what did the identity include?",
-      "how was it done in a week?",
-      "what constraints shaped it?",
+      "did the identity include a brand site and sales kit?",
+      "did the brand work take one week?",
+      "was it built for the Computex debut?",
+    ],
+    askFollowUpPromptChips: [
+      "was Joanna's role solo design and build?",
+      "did it open pilots in semiconductors, aerospace, and research?",
+      "is the live site deeli.ai?",
     ],
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
@@ -142,9 +162,14 @@ const aiPracticeItems: EssayItem[] = [
     askKind: "essay",
     askAnchorPreference: "edge",
     askPromptChips: [
-      "what's the main argument?",
-      "how does it apply to design?",
-      "what's an eval, simply?",
+      "does the essay argue that the eval becomes the spec?",
+      "can model-written sentences change every run?",
+      "does an eval define product quality?",
+    ],
+    askFollowUpPromptChips: [
+      "is the interface only half the AI product spec?",
+      "does a test tell the model what good work means?",
+      "can a static layout spec control fresh model sentences?",
     ],
     summary:
       "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality.",
@@ -179,6 +204,15 @@ const aiPracticeItems: EssayItem[] = [
 ];
 
 const INTRO_EXIT_MS = 280;
+// DEV: the logo's dial panel wraps SiteLogo; prod mounts the bare mark. The
+// wrapper is lazy + DEV-gated so neither dialkit JS nor its CSS reaches prod.
+const SiteLogoWithDials = import.meta.env.DEV
+  ? lazy(() =>
+      import("./components/LogoDials").then((module) => ({
+        default: module.SiteLogoWithDials,
+      })),
+    )
+  : null;
 const ContextualAskHintWithDials = import.meta.env.DEV
   ? lazy(() =>
       import("./components/ContextualAskHintDials").then((module) => ({
@@ -186,6 +220,66 @@ const ContextualAskHintWithDials = import.meta.env.DEV
       })),
     )
   : null;
+
+// Touch entry point #2 of three: on a coarse pointer, tapping an askable zone
+// opens the chat the same way the hover badge does on desktop. Ignores taps
+// that land on real controls (links, buttons, the video toggle).
+function handleAskableTap(
+  event: ReactMouseEvent<HTMLElement>,
+  {
+    hint,
+    kind,
+    chips,
+    followUpChips,
+    contextText,
+  }: {
+    hint: string;
+    kind: AskableKind;
+    chips: string[];
+    followUpChips: string[];
+    contextText?: string;
+  },
+) {
+  if (!isCoarsePointer()) return;
+  if (
+    event.target instanceof Element &&
+    event.target.closest(
+      "a, button, input, textarea, select, option, label, video, audio, [role='button'], [role='link'], [role='switch'], [contenteditable='true']",
+    )
+  ) {
+    return;
+  }
+
+  requestCursorChatOpen({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    suggestedPrompts: toSuggestedPrompts(chips.length ? chips : [hint]),
+    followUpPrompts: toSuggestedPrompts(followUpChips),
+    zoneContext: {
+      hint,
+      kind,
+      contextText: (() => {
+        const element = event.currentTarget;
+        const text =
+          contextText ??
+          element.textContent?.replace(/\s+/g, " ").trim() ??
+          "";
+        const links = Array.from(
+          element.querySelectorAll<HTMLAnchorElement>("a[href]"),
+        )
+          .slice(0, 4)
+          .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
+          .join("; ");
+        return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
+      })(),
+    },
+  });
+}
+
+// Slash is a keyboard affordance; on touch the same zones respond to a tap.
+function askActionSuffix() {
+  return isCoarsePointer() ? "Tap to ask." : "Press slash to ask.";
+}
 
 function Reveal({
   children,
@@ -196,6 +290,8 @@ function Reveal({
   askKind,
   askAnchorPreference,
   askPromptChips,
+  askFollowUpPromptChips,
+  askContextText,
 }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -240,8 +336,20 @@ function Reveal({
             "data-ask-kind": askKind,
             "data-ask-anchor": askAnchorPreference,
             "data-ask-prompts": JSON.stringify(askPromptChips ?? [askHint]),
+            "data-ask-follow-up-prompts": JSON.stringify(
+              askFollowUpPromptChips ?? [],
+            ),
+            "data-ask-context": askContextText,
             tabIndex: 0,
-            "aria-label": `${askHint}. Press slash to ask.`,
+            "aria-label": `${askHint}. ${askActionSuffix()}`,
+            onClick: (event: ReactMouseEvent<HTMLElement>) =>
+              handleAskableTap(event, {
+                hint: askHint,
+                kind: askKind ?? "profile",
+                chips: askPromptChips ?? [askHint],
+                followUpChips: askFollowUpPromptChips ?? [],
+                contextText: askContextText,
+              }),
           }
         : {}),
     },
@@ -256,6 +364,8 @@ function AskableRegion({
   kind,
   anchorPreference,
   promptChips,
+  followUpPromptChips,
+  contextText,
 }: {
   children: ReactNode;
   className?: string;
@@ -263,6 +373,8 @@ function AskableRegion({
   kind: AskableKind;
   anchorPreference?: AskAnchorPreference;
   promptChips?: string[];
+  followUpPromptChips?: string[];
+  contextText?: string;
 }) {
   return (
     <div
@@ -271,8 +383,19 @@ function AskableRegion({
       data-ask-kind={kind}
       data-ask-anchor={anchorPreference}
       data-ask-prompts={JSON.stringify(promptChips ?? [hint])}
+      data-ask-follow-up-prompts={JSON.stringify(followUpPromptChips ?? [])}
+      data-ask-context={contextText}
       tabIndex={0}
-      aria-label={`${hint}. Press slash to ask.`}
+      aria-label={`${hint}. ${askActionSuffix()}`}
+      onClick={(event) =>
+        handleAskableTap(event, {
+          hint,
+          kind,
+          chips: promptChips ?? [hint],
+          followUpChips: followUpPromptChips ?? [],
+          contextText,
+        })
+      }
     >
       {children}
     </div>
@@ -332,6 +455,17 @@ function PauseGlyph() {
   );
 }
 
+function SiteLogoMount() {
+  if (SiteLogoWithDials) {
+    return (
+      <Suspense fallback={<SiteLogo />}>
+        <SiteLogoWithDials />
+      </Suspense>
+    );
+  }
+  return <SiteLogo />;
+}
+
 function ProfileRail() {
   const [copied, setCopied] = useState(false);
   const dials = useContext(FooterDialsContext);
@@ -353,14 +487,24 @@ function ProfileRail() {
           askKind="profile"
           askAnchorPreference="margin"
           askPromptChips={[
-            "what roles suit her best?",
-            "what should I ask her about?",
-            "what's her background?",
+            "what is Joanna's role?",
+            "what kind of products does she build?",
+            "does she work across design and code?",
           ]}
+          askFollowUpPromptChips={[
+            "what is her product focus?",
+            "what did she build for Deeli?",
+            "what is Joanna's email?",
+          ]}
+          askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
-          <h1>
-            <span>Joanna Yen</span>
-          </h1>
+          <div className="profile-identity">
+            <SiteLogoMount />
+
+            <h1>
+              <span>Joanna Yen</span>
+            </h1>
+          </div>
 
           <p className="sidebar-bio">
             Designer and engineer who sweats the details and ships them. I build
@@ -651,6 +795,21 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           data-ask-hint={item.askHint}
           data-ask-kind={item.askKind}
           data-ask-prompts={JSON.stringify(item.askPromptChips)}
+          data-ask-follow-up-prompts={JSON.stringify(
+            item.askFollowUpPromptChips,
+          )}
+          data-ask-context={[
+            item.title,
+            item.role,
+            item.year,
+            item.summary,
+            item.dek,
+            item.takeaway,
+            ...item.sections.flatMap((section) => [
+              section.heading,
+              ...section.body,
+            ]),
+          ].join(" ")}
           layoutId={`essay-dialog-panel-${item.id}`}
           onClick={openDialog}
           onKeyDown={handleTriggerKeyDown}
@@ -820,6 +979,17 @@ function WorkCanvas() {
               kind={item.askKind}
               anchorPreference={item.askAnchorPreference}
               promptChips={item.askPromptChips}
+              followUpPromptChips={item.askFollowUpPromptChips}
+              contextText={[
+                item.title,
+                item.role,
+                item.year,
+                item.status,
+                item.summary,
+                item.liveHref ? `Live site: ${item.liveHref}` : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               <h2 className="card-title">{item.title}</h2>
               <p className="card-role">{item.role}</p>
@@ -952,7 +1122,21 @@ function App() {
 
   useEffect(() => {
     if (!isWebGPUAvailable()) return;
-    preloadEngine();
+    // Consent gate: a first-time visitor has not agreed to the ~350MB model
+    // download, so preload only for returning visitors who already loaded it
+    // once. Everyone else waits for the in-chat consent prompt.
+    let hasLoadedBefore = false;
+    try {
+      hasLoadedBefore = localStorage.getItem("joanna-llm-loaded") === "1";
+    } catch {
+      hasLoadedBefore = false;
+    }
+    if (hasLoadedBefore) {
+      void preloadEngine().catch(() => {
+        // Returning-user warmup is opportunistic. The chat's Retry path owns
+        // surfacing a load failure if they open it after a failed preload.
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -1006,6 +1190,7 @@ function App() {
       {shell}
       <CursorTrail suspended={showIntro} />
       <ContextualAskHintLayer />
+      <SelectionAskPill suspended={showIntro} />
       <CursorChat suspended={showIntro} />
       {import.meta.env.DEV ? <Agentation /> : null}
       {showIntro ? (

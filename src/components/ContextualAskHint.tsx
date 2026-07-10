@@ -40,6 +40,8 @@ type ActiveHint = {
   kind: AskableKind;
   anchorPreference: AskAnchorPreference;
   suggestedPrompts: SuggestedPrompt[];
+  followUpPrompts: SuggestedPrompt[];
+  contextText: string;
 };
 
 type HintStage = "pin" | "expanded" | "exiting";
@@ -87,12 +89,11 @@ function canShowHoverHints() {
   );
 }
 
-function parsePromptChips(element: HTMLElement) {
-  const fallback = [element.dataset.askHint ?? "Ask about this"];
-  if (!element.dataset.askPrompts) return fallback;
+function parsePromptChips(data: string | undefined, fallback: string[]) {
+  if (!data) return fallback;
 
   try {
-    const parsed = JSON.parse(element.dataset.askPrompts);
+    const parsed = JSON.parse(data);
     if (!Array.isArray(parsed)) return fallback;
     const prompts = parsed
       .filter((value): value is string => typeof value === "string")
@@ -110,7 +111,21 @@ function toPromptId(value: string, index: number) {
 }
 
 function getSuggestedPrompts(element: HTMLElement): SuggestedPrompt[] {
-  return parsePromptChips(element).map((prompt, index) => ({
+  return parsePromptChips(
+    element.dataset.askPrompts,
+    [element.dataset.askHint ?? "Ask about this"],
+  ).map((prompt, index) => ({
+    id: toPromptId(prompt, index),
+    label: prompt,
+    prompt,
+  }));
+}
+
+function getFollowUpPrompts(element: HTMLElement): SuggestedPrompt[] {
+  return parsePromptChips(
+    element.dataset.askFollowUpPrompts,
+    [],
+  ).map((prompt, index) => ({
     id: toPromptId(prompt, index),
     label: prompt,
     prompt,
@@ -118,6 +133,14 @@ function getSuggestedPrompts(element: HTMLElement): SuggestedPrompt[] {
 }
 
 function readActiveHint(element: HTMLElement): ActiveHint {
+  const text =
+    element.dataset.askContext ??
+    element.textContent?.replace(/\s+/g, " ").trim() ??
+    "";
+  const links = Array.from(element.querySelectorAll<HTMLAnchorElement>("a[href]"))
+    .slice(0, 4)
+    .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
+    .join("; ");
   return {
     element,
     hint: element.dataset.askHint ?? "Ask about this",
@@ -125,6 +148,8 @@ function readActiveHint(element: HTMLElement): ActiveHint {
     anchorPreference:
       (element.dataset.askAnchor as AskAnchorPreference | undefined) ?? "cursor",
     suggestedPrompts: getSuggestedPrompts(element),
+    followUpPrompts: getFollowUpPrompts(element),
+    contextText: `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200),
   };
 }
 
@@ -330,7 +355,12 @@ export function ContextualAskHint({
       clientX: anchor.x,
       clientY: anchor.y,
       suggestedPrompts: current.suggestedPrompts,
-      zoneContext: { hint: current.hint, kind: current.kind },
+      followUpPrompts: current.followUpPrompts,
+      zoneContext: {
+        hint: current.hint,
+        kind: current.kind,
+        contextText: current.contextText,
+      },
     });
   };
 
@@ -444,6 +474,15 @@ export function ContextualAskHint({
       }
 
       if (event.key === "Enter" && focusedZone) {
+        // Native activation must win: never swallow Enter for real controls
+        // (button / role=switch / the theme-toggle .site-logo) that happen to
+        // live inside a [data-ask-hint] zone.
+        if (
+          event.target instanceof Element &&
+          event.target.closest('button, [role="switch"], .site-logo')
+        ) {
+          return;
+        }
         event.preventDefault();
         event.stopImmediatePropagation();
         const focusedHint =

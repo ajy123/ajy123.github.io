@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -7,27 +8,69 @@ import {
 } from "react";
 import type { ChatCompletionMessageParam } from "@mlc-ai/web-llm";
 import {
+  MODEL_DOWNLOAD_MB,
   isAbortError,
   isEngineReady,
   isWebGPUAvailable,
   onInitProgress,
+  preloadEngine,
   streamChat,
 } from "./llmEngine";
 import {
   CURSOR_CHAT_OPENED_EVENT,
   CURSOR_CHAT_REQUEST_OPEN_EVENT,
+  requestCursorChatOpen,
   type CursorChatZoneContext,
   type CursorChatRequestOpenDetail,
   type SuggestedPrompt,
 } from "./chatEvents";
 import { SITE_CONTEXT } from "./siteContext";
+import { setLlmBusy } from "./llmActivity";
+import {
+  playKeyClick,
+  setKeyClickMuted,
+  useKeyClickMuted,
+} from "./keyclick";
 
 type ChatStatus =
   | "draft"
+  | "consent"
   | "loading"
   | "streaming"
   | "done"
   | "error";
+
+const LLM_LOADED_KEY = "joanna-llm-loaded";
+
+// Consent to download the ~350MB model persists across sessions in
+// localStorage; this module flag skips the prompt for the rest of the current
+// session even before the flag is written (i.e. mid-download).
+let consentGivenThisSession = false;
+
+function hasLlmLoadedFlag(): boolean {
+  try {
+    return localStorage.getItem(LLM_LOADED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markLlmLoaded(): void {
+  try {
+    localStorage.setItem(LLM_LOADED_KEY, "1");
+    if (import.meta.env.DEV) {
+      (
+        window as unknown as { __cursorChatLoadedFlagAt?: number }
+      ).__cursorChatLoadedFlagAt = performance.now();
+    }
+  } catch {
+    // Private browsing / storage denial — consentGivenThisSession still holds.
+  }
+}
+
+// Viewport at/under this width opens the composer bottom-docked regardless of
+// entry point; it's the small-screen layout, not a touch-only concern.
+const DOCK_MAX_VIEWPORT = 860;
 
 type CapturedContext = {
   url: string;
@@ -53,6 +96,8 @@ type Thread = {
   response: string;
   history: ChatTurn[];
   context: CapturedContext | null;
+  selectedTextOverride?: string;
+  nearbyTextOverride?: string;
   status: ChatStatus;
   isPinned: boolean;
   createdAt: number;
@@ -60,12 +105,21 @@ type Thread = {
   dragPageTop?: number;
   draftPlaceholder?: string;
   suggestedPrompts?: SuggestedPrompt[];
+  promptPool?: SuggestedPrompt[];
+  shownPromptIds: string[];
   zoneContext?: CursorChatZoneContext;
+  // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
+  docked?: boolean;
 };
 
 const COMPOSER_WIDTH = 320;
 const COMPOSER_MAX_HEIGHT = 360;
 const EDGE = 14;
+// Gap between the anchor point and the panel's tight corner. Kept smaller than
+// EDGE so the sharpened corner visibly touches what it points at.
+const ANCHOR_GAP = 6;
+// Must match cursorChatOut's duration in index.css.
+const LEAVE_MS = 170;
 const AUDIENCE_PRESETS = {
   recruiter: "recruiter",
   "product-design": "product design",
@@ -79,26 +133,34 @@ const AUDIENCE_PROMPTS: Record<
 > = {
   recruiter: {
     chips: [
-      "what's she strongest at?",
-      "what has she shipped recently?",
-      "walk me through her background",
-      "what roles is she looking for?",
+      "what is Joanna's role?",
+      "what did she build for Deeli?",
+      "what does Joanna focus on?",
+      "did she build Deeli's site in a week?",
+      "what industries did that work reach?",
+      "what is Joanna's email?",
     ],
     placeholder: "or ask what's on your checklist",
   },
   "product design": {
     chips: [
-      "how was this chat built?",
-      "what's her design process?",
-      "what did she actually ship?",
+      "what is Joanna's AI product focus?",
+      "what was her role on the brand identity?",
+      "does she work across Figma and code?",
+      "what did she build in a week?",
+      "which industries opened Deeli pilots?",
+      "where is the Deeli site?",
     ],
     placeholder: "or ask how anything here was made",
   },
   default: {
     chips: [
-      "what did she actually ship?",
-      "what's she strongest at?",
-      "how was this chat built?",
+      "what is Joanna's role?",
+      "what did she build for Deeli?",
+      "what does Joanna focus on?",
+      "did she build Deeli's site in a week?",
+      "what industries did the Deeli work reach?",
+      "what is Joanna's email?",
     ],
     placeholder: "or ask anything about her work",
   },
@@ -107,13 +169,6 @@ const AUDIENCE_PROMPTS: Record<
 function getAudiencePrompts() {
   const role = getAudienceRole();
   return (role && AUDIENCE_PROMPTS[role]) || AUDIENCE_PROMPTS.default;
-}
-
-function shufflePrompts(prompts: string[]) {
-  return prompts
-    .map((prompt) => ({ prompt, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ prompt }) => prompt);
 }
 
 function toSuggestedPromptId(value: string, index: number) {
@@ -125,7 +180,8 @@ function toSuggestedPromptId(value: string, index: number) {
 }
 
 function pickAudienceSuggestions(): SuggestedPrompt[] {
-  return shufflePrompts(getAudiencePrompts().chips)
+  return getAudiencePrompts()
+    .chips
     .slice(0, 3)
     .map((prompt, index) => ({
       id: toSuggestedPromptId(prompt, index),
@@ -135,8 +191,51 @@ function pickAudienceSuggestions(): SuggestedPrompt[] {
 }
 
 function pickDraftPlaceholder(fromSelection: boolean): string {
-  if (fromSelection) return "Ask about what you selected";
+  if (fromSelection) return "ask about what you selected";
   return getAudiencePrompts().placeholder;
+}
+
+// Union of a thread's opening suggestions and the full audience chip set,
+// deduped by prompt text. This is the pool follow-up suggestions draw from
+// after each answered turn.
+function buildPromptPool(
+  initial: SuggestedPrompt[] | undefined,
+  followUps: SuggestedPrompt[] | undefined,
+): SuggestedPrompt[] {
+  const audience: SuggestedPrompt[] = getAudiencePrompts().chips.map(
+    (prompt, index) => ({
+      id: toSuggestedPromptId(prompt, index),
+      label: prompt,
+      prompt,
+    }),
+  );
+
+  const seen = new Set<string>();
+  const pool: SuggestedPrompt[] = [];
+  for (const entry of [...(initial ?? []), ...(followUps ?? []), ...audience]) {
+    const key = entry.prompt.trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    pool.push(entry);
+  }
+  return pool;
+}
+
+// Up to 3 pool prompts not already asked in this thread (history includes the
+// just-answered prompt, so that is excluded too). Empty → no chips render.
+function followUpsFor(
+  thread: Thread,
+  history: ChatTurn[],
+): SuggestedPrompt[] | undefined {
+  const used = new Set(history.map((turn) => turn.prompt.trim().toLowerCase()));
+  const shown = new Set(thread.shownPromptIds);
+  const picks = (thread.promptPool ?? [])
+    .filter(
+      (entry) =>
+        !used.has(entry.prompt.trim().toLowerCase()) && !shown.has(entry.id),
+    )
+    .slice(0, 3);
+  return picks.length ? picks : undefined;
 }
 
 function getZoneTagLabel(zoneContext?: CursorChatZoneContext) {
@@ -152,9 +251,9 @@ function getZoneTagLabel(zoneContext?: CursorChatZoneContext) {
 }
 
 const CURSOR_CHAT_DEFAULTS = {
-  chipStaggerMs: 40,
-  radiusTight: 4,
-  radiusRoomy: 14,
+  chipStaggerMs: 70,
+  radiusTight: 2,
+  radiusRoomy: 16,
 };
 
 type AnchorCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -197,8 +296,15 @@ function getElementLabel(element: Element | null) {
 
 function getBoundedText(element: Element | null) {
   const source =
-    element?.closest("section, article, aside, main, footer") ?? element;
-  return (source?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 900);
+    element?.closest("[data-ask-hint]") ??
+    element?.closest("section, article, aside, main, footer") ??
+    element;
+  const text = (source?.textContent ?? "").replace(/\s+/g, " ").trim();
+  const links = Array.from(source?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? [])
+    .slice(0, 4)
+    .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
+    .join("; ");
+  return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
 }
 
 function getSelectionAnchor() {
@@ -231,11 +337,11 @@ function placeComposer(pageX: number, pageY: number) {
   const opensUp = point.y + COMPOSER_MAX_HEIGHT + EDGE > window.innerHeight;
 
   const preferredLeft = opensLeft
-    ? point.x - COMPOSER_WIDTH - EDGE
-    : point.x + EDGE;
+    ? point.x - COMPOSER_WIDTH - ANCHOR_GAP
+    : point.x + ANCHOR_GAP;
   const preferredTop = opensUp
-    ? point.y - COMPOSER_MAX_HEIGHT - EDGE
-    : point.y + EDGE;
+    ? point.y - COMPOSER_MAX_HEIGHT - ANCHOR_GAP
+    : point.y + ANCHOR_GAP;
 
   return {
     left: Math.min(
@@ -253,16 +359,41 @@ function placeComposer(pageX: number, pageY: number) {
 
 function placePin(pageX: number, pageY: number) {
   const point = getViewportPoint(pageX, pageY);
+  const touchWidth =
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.innerWidth <= DOCK_MAX_VIEWPORT;
+  const targetWidth = touchWidth ? 88 : 44;
+  const roomOnRight = window.innerWidth - point.x - EDGE;
+  const side = roomOnRight >= targetWidth + 8 ? "right" : "left";
+  const preferredControlLeft =
+    side === "right" ? point.x + 8 : point.x - targetWidth - 8;
+  const controlLeft = Math.min(
+    Math.max(preferredControlLeft, EDGE),
+    window.innerWidth - EDGE - targetWidth,
+  );
+  const controlTop = Math.min(
+    Math.max(point.y - 52, EDGE),
+    window.innerHeight - EDGE - 44,
+  );
   return {
-    left: Math.min(Math.max(point.x, EDGE), window.innerWidth - 36),
-    top: Math.min(Math.max(point.y, EDGE), window.innerHeight - 36),
+    left: point.x,
+    top: point.y,
+    controlX: controlLeft - point.x,
+    controlY: controlTop - point.y,
+    side,
   };
 }
 
-function captureContext(pageX: number, pageY: number): CapturedContext {
+function captureContext(
+  pageX: number,
+  pageY: number,
+  selectedTextOverride = "",
+  nearbyTextOverride = "",
+): CapturedContext {
   const point = getViewportPoint(pageX, pageY);
   const selection = window.getSelection();
-  const selectedText = selection?.toString().trim() ?? "";
+  const selectedText =
+    selectedTextOverride || selection?.toString().trim() || "";
   const element = document.elementFromPoint(point.x, point.y);
   const audienceRole = getAudienceRole();
   const context = {
@@ -270,7 +401,7 @@ function captureContext(pageX: number, pageY: number): CapturedContext {
     title: document.title,
     ...(audienceRole ? { audienceRole } : {}),
     selectedText,
-    nearbyText: getBoundedText(element),
+    nearbyText: nearbyTextOverride || getBoundedText(element),
     element: getElementLabel(element),
     position: { x: Math.round(pageX), y: Math.round(pageY) },
     viewport: {
@@ -282,6 +413,11 @@ function captureContext(pageX: number, pageY: number): CapturedContext {
   console.groupCollapsed("[cursor-chat] captured context");
   console.log(context);
   console.groupEnd();
+  if (import.meta.env.DEV) {
+    (
+      window as unknown as { __cursorChatLastContext?: CapturedContext }
+    ).__cursorChatLastContext = context;
+  }
 
   return context;
 }
@@ -301,16 +437,6 @@ const THINKING_PHRASE_DELAYS_MS = [3000, 5500, 8000];
 
 const BRAIN_METER_CELLS = 12;
 
-function renderResponseText(response: string, isStreaming: boolean) {
-  if (!isStreaming) return response;
-
-  return response.split(/(\s+)/).map((part, index) => (
-    <span className="cursor-chat-response-token" key={index}>
-      {part}
-    </span>
-  ));
-}
-
 function buildMessages(
   prompt: string,
   context: CapturedContext,
@@ -325,7 +451,6 @@ function buildMessages(
         : "";
 
   const contextLines = [
-    `URL: ${context.url}`,
     `Page title: ${context.title}`,
     context.audienceRole ? `Audience role: ${context.audienceRole}` : "",
     zoneContext
@@ -335,7 +460,6 @@ function buildMessages(
       ? `Selected text (the visitor's primary focus): ${context.selectedText}`
       : "",
     context.nearbyText ? `Nearby content on the page: ${context.nearbyText}` : "",
-    `Element under cursor: ${context.element}`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -344,9 +468,10 @@ function buildMessages(
     "You are a concise assistant embedded directly in Joanna Yen's portfolio website. " +
     "Answer the visitor's question about Joanna and the page they are looking at. " +
     "Ground your answer in the site profile and page context below. Prefer the selected text when present. " +
-    "If a fact is not in the context, say you don't know rather than inventing it. " +
+    "Use only facts explicitly stated in that context. Do not speculate, infer missing implementation details, or add examples that are not written there. " +
+    "If a fact is not in the context, say you don't know rather than inventing it. Answer in no more than two short sentences. " +
     (audienceGuidance ? `${audienceGuidance} ` : "") +
-    "Keep replies short, plain, and helpful.\n\n" +
+    "Keep replies direct, plain, and helpful.\n\n" +
     SITE_CONTEXT +
     "\n\nPage context:\n" +
     contextLines;
@@ -381,9 +506,76 @@ export function CursorChat({
   const activeIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const suspendedRef = useRef(suspended);
+  const pendingConsentDraftRef = useRef("");
+  const panelRef = useRef<HTMLElement | null>(null);
+  const previousPanelHeightRef = useRef<number | null>(null);
+  const heightTimerRef = useRef<number | null>(null);
+  const suggestionExitTimerRef = useRef<number | null>(null);
+  const [exitingSuggestions, setExitingSuggestions] = useState<
+    SuggestedPrompt[] | null
+  >(null);
+  const [announcement, setAnnouncement] = useState("");
+
+  // Exit choreography: the panel plays cursorChatOut before it unmounts, so
+  // closing reads as a collapse toward the anchor instead of a teleport. State
+  // drives the class; the ref guards handlers captured by the mount effect.
+  const [leavingId, setLeavingId] = useState<string | null>(null);
+  const leavingIdRef = useRef<string | null>(null);
+  const leaveTimerRef = useRef<number | null>(null);
+
+  const beginLeave = (id: string, finish: () => void) => {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) {
+      finish();
+      return;
+    }
+
+    leavingIdRef.current = id;
+    setLeavingId(id);
+    leaveTimerRef.current = window.setTimeout(() => {
+      leavingIdRef.current = null;
+      leaveTimerRef.current = null;
+      setLeavingId(null);
+      finish();
+    }, LEAVE_MS);
+  };
+
+  const restoreFocus = () => {
+    window.requestAnimationFrame(() => {
+      const previous = previousFocusRef.current;
+      if (previous?.isConnected) {
+        previous.focus();
+        return;
+      }
+      const pinButtons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".cursor-chat-pin-open"),
+      );
+      const fallback =
+        pinButtons[pinButtons.length - 1] ??
+        document.querySelector<HTMLButtonElement>(".cursor-chat-fab");
+      fallback?.focus();
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (leaveTimerRef.current !== null) {
+        window.clearTimeout(leaveTimerRef.current);
+      }
+      if (heightTimerRef.current !== null) {
+        window.clearTimeout(heightTimerRef.current);
+      }
+      if (suggestionExitTimerRef.current !== null) {
+        window.clearTimeout(suggestionExitTimerRef.current);
+      }
+    };
+  }, []);
 
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
   const activeZoneTag = getZoneTagLabel(activeThread?.zoneContext);
+  const soundMuted = useKeyClickMuted();
 
   // Engine download progress (0..1). While a thread is "loading" but the model
   // is still downloading, the UI shows an honest progress state instead of
@@ -391,8 +583,14 @@ export function CursorChat({
   const [engineProgress, setEngineProgress] = useState(() =>
     isEngineReady() ? 1 : 0,
   );
-  useEffect(() => onInitProgress((report) => setEngineProgress(report.progress)), []);
-  const engineIsReady = isEngineReady() || engineProgress >= 1;
+  useEffect(
+    () =>
+      onInitProgress((report) => {
+        setEngineProgress(report.progress);
+      }),
+    [],
+  );
+  const engineIsReady = isEngineReady();
 
   // Generation narration index; restarts per thread and only once the engine
   // is actually generating (not while downloading).
@@ -407,6 +605,22 @@ export function CursorChat({
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [isGenerating, activeThread?.id]);
 
+  // Publish "model is working" to ambient listeners (the logo's thinking
+  // shimmer). Any thread counts, not just the active one — background
+  // generation is still generation. No cleanup here: `threads` changes on
+  // every streamed token, and a per-change false→true flap would restart the
+  // shimmer's CSS animation each chunk. The store dedupes same-value sets, so
+  // this effect is cheap; a separate unmount-only cleanup clears the bit.
+  useEffect(() => {
+    setLlmBusy(
+      threads.some(
+        (thread) =>
+          thread.status === "loading" || thread.status === "streaming",
+      ),
+    );
+  }, [threads]);
+  useEffect(() => () => setLlmBusy(false), []);
+
   useEffect(() => {
     activeIdRef.current = activeId;
   }, [activeId]);
@@ -414,6 +628,62 @@ export function CursorChat({
   useEffect(() => {
     suspendedRef.current = suspended;
   }, [suspended]);
+
+  const structuralKey = activeThread
+    ? `${activeThread.id}:${activeThread.status}:${(
+        activeThread.suggestedPrompts ?? exitingSuggestions ?? []
+      )
+        .map((prompt) => prompt.id)
+        .join(",")}`
+    : "closed";
+
+  // Animate only structural state changes. Streamed token updates leave this
+  // key unchanged, so the panel grows naturally instead of pumping per chunk.
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) {
+      previousPanelHeightRef.current = null;
+      return;
+    }
+
+    const interruptedHeight = panel.getBoundingClientRect().height;
+    const interrupted = heightTimerRef.current !== null;
+    if (heightTimerRef.current !== null) {
+      window.clearTimeout(heightTimerRef.current);
+      heightTimerRef.current = null;
+      panel.classList.remove("is-height-transitioning");
+      panel.style.height = "";
+    }
+    const nextHeight = panel.getBoundingClientRect().height;
+    const previousHeight = interrupted
+      ? interruptedHeight
+      : previousPanelHeightRef.current;
+    previousPanelHeightRef.current = nextHeight;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (
+      reduceMotion ||
+      previousHeight === null ||
+      Math.abs(nextHeight - previousHeight) < 1
+    ) {
+      return;
+    }
+
+    panel.classList.add("is-height-transitioning");
+    panel.style.height = `${previousHeight}px`;
+    const frame = window.requestAnimationFrame(() => {
+      panel.style.height = `${nextHeight}px`;
+    });
+    heightTimerRef.current = window.setTimeout(() => {
+      panel.classList.remove("is-height-transitioning");
+      panel.style.height = "";
+      previousPanelHeightRef.current = panel.getBoundingClientRect().height;
+      heightTimerRef.current = null;
+    }, 280);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [structuralKey]);
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -425,11 +695,15 @@ export function CursorChat({
     const openComposer = ({
       anchorOverride,
       suggestedPrompts,
+      followUpPrompts,
       zoneContext,
+      docked,
     }: {
       anchorOverride?: { x: number; y: number };
       suggestedPrompts?: SuggestedPrompt[];
+      followUpPrompts?: SuggestedPrompt[];
       zoneContext?: CursorChatZoneContext;
+      docked?: boolean;
     } = {}) => {
       if (suspendedRef.current) return;
 
@@ -449,9 +723,18 @@ export function CursorChat({
       const threadSuggestedPrompts =
         suggestedPrompts ??
         (!anchorOverride && !fromSelection ? pickAudienceSuggestions() : undefined);
+      // Explicit request wins; otherwise the small-screen layout docks.
+      const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;
       const id = crypto.randomUUID();
+      const anchorElement = document.elementFromPoint(anchor.x, anchor.y);
+      const nearbyTextOverride =
+        zoneContext?.contextText || getBoundedText(anchorElement);
 
-      setDraft("");
+      const restoredDraft = pendingConsentDraftRef.current;
+      pendingConsentDraftRef.current = "";
+      setDraft(restoredDraft);
+      setAnnouncement("");
+      setExitingSuggestions(null);
       activeIdRef.current = id;
       setThreads((current) => [
         ...current,
@@ -463,11 +746,18 @@ export function CursorChat({
           response: "",
           history: [],
           context: null,
+          selectedTextOverride: selectionAnchor?.selectedText,
+          nearbyTextOverride,
           status: "draft",
           isPinned: false,
           createdAt: Date.now(),
           suggestedPrompts: threadSuggestedPrompts,
+          promptPool: buildPromptPool(threadSuggestedPrompts, followUpPrompts),
+          shownPromptIds: (threadSuggestedPrompts ?? []).map(
+            (prompt) => prompt.id,
+          ),
           zoneContext,
+          docked: isDocked,
           draftPlaceholder: pickDraftPlaceholder(fromSelection),
         },
       ]);
@@ -502,7 +792,9 @@ export function CursorChat({
       openComposer({
         anchorOverride: anchor,
         suggestedPrompts: detail?.suggestedPrompts,
+        followUpPrompts: detail?.followUpPrompts,
         zoneContext: detail?.zoneContext,
+        docked: detail?.docked,
       });
     };
 
@@ -538,12 +830,19 @@ export function CursorChat({
   // stray Escape never eats a conversation. Unanswered drafts still discard.
   const closeActive = () => {
     const id = activeIdRef.current;
-    if (!id) return;
+    if (!id || leavingIdRef.current) return;
 
     abortRef.current?.abort();
     abortRef.current = null;
+    beginLeave(id, () => finishCloseActive(id));
+  };
+
+  const finishCloseActive = (id: string) => {
     setThreads((current) => {
       const thread = current.find((item) => item.id === id);
+      if (thread?.status === "consent") {
+        pendingConsentDraftRef.current = thread.prompt;
+      }
       const keep =
         thread && (thread.status === "done" || thread.history.length > 0);
 
@@ -565,15 +864,119 @@ export function CursorChat({
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
-    previousFocusRef.current?.focus();
+    restoreFocus();
   };
 
   const removeThread = (id: string) => {
     setThreads((current) => current.filter((thread) => thread.id !== id));
   };
 
-  const submitThread = async (promptOverride?: string) => {
+  // Stop keeps the thread open: partial text becomes the answer; a stop before
+  // any text arrived just returns the thread to a draft you can resend.
+  const stopActive = () => {
     if (!activeThread) return;
+    const id = activeThread.id;
+    const stoppedResponse = activeThread.response;
+
+    if (!stoppedResponse) {
+      setDraft(activeThread.prompt);
+      setAnnouncement("Generation stopped. Your prompt is ready to edit.");
+    } else {
+      setAnnouncement(`Response stopped. ${stoppedResponse}`);
+    }
+    window.requestAnimationFrame(() => textareaRef.current?.focus());
+
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setThreads((current) =>
+      current.map((thread) => {
+        if (thread.id !== id) return thread;
+        if (!thread.response) {
+          return { ...thread, status: "draft" as ChatStatus };
+        }
+        const nextHistory = [
+          ...thread.history,
+          { prompt: thread.prompt, response: thread.response },
+        ];
+        const suggestedPrompts = followUpsFor(thread, nextHistory);
+        return {
+          ...thread,
+          status: "done" as ChatStatus,
+          history: nextHistory,
+          suggestedPrompts,
+          shownPromptIds: [
+            ...thread.shownPromptIds,
+            ...(suggestedPrompts ?? []).map((prompt) => prompt.id),
+          ],
+        };
+      }),
+    );
+  };
+
+  // Generation core, shared by a fresh submit and consent-accept. Assumes the
+  // thread already holds `message` as its prompt and `context` captured.
+  const runGeneration = async (
+    id: string,
+    message: string,
+    context: CapturedContext,
+    history: ChatTurn[],
+    zoneContext: CursorChatZoneContext | undefined,
+  ) => {
+    const patch = (updater: (thread: Thread) => Thread) =>
+      setThreads((current) =>
+        current.map((thread) => (thread.id === id ? updater(thread) : thread)),
+      );
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      await preloadEngine();
+      if (controller.signal.aborted) return;
+      markLlmLoaded();
+      // Re-render the loading state now that isEngineReady() is true, allowing
+      // the progress meter to hand off cleanly to the thinking state.
+      patch((thread) => ({ ...thread }));
+      const messages = buildMessages(message, context, history, zoneContext);
+      const response = await streamChat(
+        messages,
+        (full) => {
+          patch((thread) => ({ ...thread, status: "streaming", response: full }));
+        },
+        controller.signal,
+      );
+      patch((thread) => {
+        const nextHistory = [...thread.history, { prompt: message, response }];
+        const suggestedPrompts = followUpsFor(thread, nextHistory);
+        return {
+          ...thread,
+          status: "done",
+          response,
+          history: nextHistory,
+          suggestedPrompts,
+          shownPromptIds: [
+            ...thread.shownPromptIds,
+            ...(suggestedPrompts ?? []).map((prompt) => prompt.id),
+          ],
+        };
+      });
+      setAnnouncement(response);
+    } catch (error) {
+      if (isAbortError(error)) return;
+      console.error("[cursor-chat] model response failed", error);
+      patch((thread) => ({
+        ...thread,
+        status: "error",
+        response: "Could not get a response. Retry keeps your prompt.",
+      }));
+      setAnnouncement("Could not get a response. Retry keeps your prompt.");
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
+    }
+  };
+
+  const submitThread = async (promptOverride?: string) => {
+    if (!activeThread || leavingIdRef.current) return;
 
     const id = activeThread.id;
     const message =
@@ -588,7 +991,38 @@ export function CursorChat({
       return;
     }
 
-    const context = captureContext(activeThread.pageX, activeThread.pageY);
+    // The send keycap clicks like the key it draws itself as. After the
+    // guards: a rejected submit (empty draft, already generating) makes no
+    // sound. Every submit path is a user gesture (click / Enter / chip), so
+    // the lazy AudioContext creation inside is autoplay-safe.
+    playKeyClick();
+
+    const context = captureContext(
+      activeThread.pageX,
+      activeThread.pageY,
+      activeThread.selectedTextOverride,
+      activeThread.nearbyTextOverride,
+    );
+    const history = activeThread.history;
+    const zoneContext = activeThread.zoneContext;
+    if (activeThread.suggestedPrompts?.length) {
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (!reduceMotion) {
+        setExitingSuggestions(activeThread.suggestedPrompts);
+        if (suggestionExitTimerRef.current !== null) {
+          window.clearTimeout(suggestionExitTimerRef.current);
+        }
+        suggestionExitTimerRef.current = window.setTimeout(() => {
+          setExitingSuggestions(null);
+          suggestionExitTimerRef.current = null;
+        }, 140);
+      } else {
+        setExitingSuggestions(null);
+      }
+    }
+    setAnnouncement("");
     setDraft("");
 
     const patch = (updater: (thread: Thread) => Thread) =>
@@ -608,65 +1042,71 @@ export function CursorChat({
 
     // No WebGPU: cannot run the local model. Show a clear inline message.
     if (!isWebGPUAvailable()) {
+      const nextHistory = [
+        ...history,
+        { prompt: message, response: UNSUPPORTED_MESSAGE },
+      ];
       patch((thread) => ({
         ...thread,
         status: "done",
         response: UNSUPPORTED_MESSAGE,
-        history: [
-          ...thread.history,
-          { prompt: message, response: UNSUPPORTED_MESSAGE },
-        ],
+        history: nextHistory,
       }));
+      setAnnouncement(UNSUPPORTED_MESSAGE);
       return;
     }
 
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    try {
-      const messages = buildMessages(
-        message,
-        context,
-        activeThread.history,
-        activeThread.zoneContext,
-      );
-      const response = await streamChat(
-        messages,
-        (full) => {
-          patch((thread) => ({ ...thread, status: "streaming", response: full }));
-        },
-        controller.signal,
-      );
-      patch((thread) => ({
-        ...thread,
-        status: "done",
-        response,
-        history: [...thread.history, { prompt: message, response }],
-      }));
-    } catch (error) {
-      if (isAbortError(error)) return;
-      console.error("[cursor-chat] model response failed", error);
-      patch((thread) => ({
-        ...thread,
-        status: "error",
-        response: "Could not get a response. Retry keeps your prompt.",
-      }));
-    } finally {
-      if (abortRef.current === controller) abortRef.current = null;
+    // Consent gate: the very first ask triggers the ~350MB download. Hold the
+    // prompt on the thread and ask permission before starting. Skipped once the
+    // model is ready, already loaded on a past visit, or agreed to this session.
+    if (
+      !isEngineReady() &&
+      !hasLlmLoadedFlag() &&
+      !consentGivenThisSession
+    ) {
+      patch((thread) => ({ ...thread, status: "consent" }));
+      return;
     }
+
+    await runGeneration(id, message, context, history, zoneContext);
+  };
+
+  // Consent accepted: remember the choice, then run the prompt already stored
+  // on the thread through the shared generation core (the brain-meter takes
+  // over as the download begins).
+  const acceptConsent = () => {
+    const thread = activeThread;
+    if (!thread || thread.status !== "consent" || !thread.context) return;
+
+    consentGivenThisSession = true;
+    playKeyClick();
+
+    const { id, prompt, context, history, zoneContext } = thread;
+    setThreads((current) =>
+      current.map((item) =>
+        item.id === id
+          ? { ...item, status: "loading" as ChatStatus, response: "" }
+          : item,
+      ),
+    );
+    void runGeneration(id, prompt, context, history, zoneContext);
   };
 
   const collapseActive = () => {
     if (!activeThread || activeThread.status === "draft") return;
+    if (leavingIdRef.current) return;
 
-    setThreads((current) =>
-      current.map((thread) =>
-        thread.id === activeThread.id ? { ...thread, isPinned: true } : thread,
-      ),
-    );
-    activeIdRef.current = null;
-    setActiveId(null);
-    previousFocusRef.current?.focus();
+    const id = activeThread.id;
+    beginLeave(id, () => {
+      setThreads((current) =>
+        current.map((thread) =>
+          thread.id === id ? { ...thread, isPinned: true } : thread,
+        ),
+      );
+      activeIdRef.current = null;
+      setActiveId(null);
+      restoreFocus();
+    });
   };
 
   const reopenThread = (id: string) => {
@@ -697,22 +1137,26 @@ export function CursorChat({
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const activePosition = activeThread
-    ? (() => {
-        const placed = placeComposer(activeThread.pageX, activeThread.pageY);
-        if (
-          activeThread.dragPageLeft == null ||
-          activeThread.dragPageTop == null
-        ) {
-          return placed;
-        }
-        return {
-          ...placed,
-          left: activeThread.dragPageLeft - window.scrollX,
-          top: activeThread.dragPageTop - window.scrollY,
-        };
-      })()
-    : null;
+  // Docked composers are laid out entirely by CSS (fixed to the bottom rail),
+  // so placeComposer is skipped and drag is disabled (activePosition stays null).
+  const isDockedActive = activeThread?.docked === true;
+  const activePosition =
+    activeThread && !isDockedActive
+      ? (() => {
+          const placed = placeComposer(activeThread.pageX, activeThread.pageY);
+          if (
+            activeThread.dragPageLeft == null ||
+            activeThread.dragPageTop == null
+          ) {
+            return placed;
+          }
+          return {
+            ...placed,
+            left: activeThread.dragPageLeft - window.scrollX,
+            top: activeThread.dragPageTop - window.scrollY,
+          };
+        })()
+      : null;
 
   const handleTopbarPointerDown = (
     event: ReactPointerEvent<HTMLDivElement>,
@@ -784,48 +1228,64 @@ export function CursorChat({
             <div
               className="cursor-chat-pin"
               key={thread.id}
-              style={{ left: position.left, top: position.top }}
+              data-side={position.side}
+              style={
+                {
+                  left: position.left,
+                  top: position.top,
+                  "--pin-control-x": `${position.controlX}px`,
+                  "--pin-control-y": `${position.controlY}px`,
+                } as CSSProperties
+              }
             >
-              <button
-                className="cursor-chat-pin-open"
-                type="button"
-                aria-label={`Reopen chat: ${thread.prompt}`}
-                onClick={() => reopenThread(thread.id)}
-              >
-                <span className="cursor-chat-pin-key" aria-hidden="true">
-                  /
-                </span>
-                <span className="cursor-chat-pin-label">{snippet}</span>
-              </button>
-              <button
-                className="cursor-chat-pin-remove"
-                type="button"
-                aria-label="Remove pinned chat"
-                onClick={() => removeThread(thread.id)}
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-                  <path
-                    d="M2 2l6 6M8 2l-6 6"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-              </button>
+              <span className="cursor-chat-pin-anchor" aria-hidden="true" />
+              <div className="cursor-chat-pin-controls" data-side={position.side}>
+                <button
+                  className="cursor-chat-pin-open"
+                  type="button"
+                  aria-label={`Reopen chat: ${thread.prompt}`}
+                  onClick={() => reopenThread(thread.id)}
+                >
+                  <span className="cursor-chat-pin-key" aria-hidden="true">
+                    /
+                  </span>
+                  <span className="cursor-chat-pin-label">{snippet}</span>
+                </button>
+                <button
+                  className="cursor-chat-pin-remove"
+                  type="button"
+                  aria-label="Remove pinned chat"
+                  onClick={() => removeThread(thread.id)}
+                >
+                  <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                    <path
+                      d="M2 2l6 6M8 2l-6 6"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           );
         })}
 
-      {activeThread && activePosition ? (
+      {activeThread && (isDockedActive || activePosition) ? (
         <section
-          className={`cursor-chat cursor-chat-${activeThread.status}`}
-          data-anchor-corner={activePosition.anchorCorner}
+          ref={panelRef}
+          className={`cursor-chat cursor-chat-${activeThread.status}${
+            leavingId === activeThread.id ? " is-leaving" : ""
+          }`}
+          data-anchor-corner={activePosition?.anchorCorner}
+          data-docked={isDockedActive ? "true" : undefined}
           data-dragged={activeThread.dragPageLeft != null ? "true" : undefined}
           style={
             {
-              left: activePosition.left,
-              top: activePosition.top,
+              ...(activePosition
+                ? { left: activePosition.left, top: activePosition.top }
+                : {}),
               "--chat-radius-tight": `${CURSOR_CHAT_DEFAULTS.radiusTight}px`,
               "--chat-radius-roomy": `${CURSOR_CHAT_DEFAULTS.radiusRoomy}px`,
             } as CSSProperties
@@ -833,6 +1293,7 @@ export function CursorChat({
           role="dialog"
           aria-label="Cursor chat"
         >
+          {/* Intentionally non-modal: the page remains available for context. */}
           <div
             className={`cursor-chat-topbar${isDragging ? " is-dragging" : ""}`}
             onPointerDown={handleTopbarPointerDown}
@@ -845,6 +1306,46 @@ export function CursorChat({
                 {activeZoneTag}
               </span>
             ) : null}
+            <button
+              className="cursor-chat-iconbtn"
+              type="button"
+              aria-pressed={!soundMuted}
+              aria-label="Send sound"
+              title={soundMuted ? "Send sound: off" : "Send sound: on"}
+              onClick={() => {
+                const next = !soundMuted;
+                setKeyClickMuted(next);
+                // Unmuting previews the click — the toggle is its own demo.
+                if (!next) playKeyClick();
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path
+                  d="M2 4.5h1.8L7 2v8L3.8 7.5H2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+                {soundMuted ? (
+                  <path
+                    d="M8.6 4.6L11 7.4M11 4.6L8.6 7.4"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                ) : (
+                  <path
+                    d="M8.7 4.1c1.1 1 1.1 2.8 0 3.8"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                )}
+              </svg>
+            </button>
             {activeThread.status === "done" ? (
               <button
                 className="cursor-chat-iconbtn"
@@ -895,16 +1396,16 @@ export function CursorChat({
 
           {activeThread.response ||
           activeThread.status === "loading" ? (
-            <div className="cursor-chat-response" aria-live="polite">
+            <div className="cursor-chat-response">
               {activeThread.status === "loading" && !engineIsReady ? (
                 <>
                   <p className="cursor-chat-thinking">
                     {engineProgress <= 0
                       ? "finding the tiny brain…"
-                      : `still waking the tiny brain — ${Math.min(
+                      : `waking the tiny brain — ${Math.min(
                           99,
                           Math.round(engineProgress * 100),
-                        )}%`}
+                        )}% of ~${MODEL_DOWNLOAD_MB} MB`}
                   </p>
                   <span className="cursor-chat-brainmeter" aria-hidden="true">
                     {Array.from({ length: BRAIN_METER_CELLS }, (_, index) => (
@@ -926,15 +1427,24 @@ export function CursorChat({
                 </p>
               ) : (
                 <p>
-                  {renderResponseText(
-                    activeThread.response,
-                    activeThread.status === "streaming",
-                  )}
+                  {activeThread.response}
                   {activeThread.status === "streaming" ? (
                     <span className="cursor-chat-caret" aria-hidden="true" />
                   ) : null}
                 </p>
               )}
+              {activeThread.status === "loading" ||
+              activeThread.status === "streaming" ? (
+                <button
+                  className="cursor-chat-stop"
+                  type="button"
+                  aria-label="Stop generating"
+                  onClick={stopActive}
+                >
+                  <span className="cursor-chat-stop-square" aria-hidden="true" />
+                  stop
+                </button>
+              ) : null}
               {activeThread.status === "error" ? (
                 <button
                   className="cursor-chat-retry"
@@ -947,10 +1457,36 @@ export function CursorChat({
             </div>
           ) : null}
 
-          {activeThread.status === "draft" &&
-          activeThread.suggestedPrompts?.length ? (
-            <div className="cursor-chat-suggestions" aria-label="Suggested prompts">
-              {activeThread.suggestedPrompts.map((chip, index) => (
+          {activeThread.status === "consent" ? (
+            <div className="cursor-chat-consent">
+              <p className="cursor-chat-consent-copy">
+                first ask downloads a small local model (~{MODEL_DOWNLOAD_MB} MB,
+                once). after
+                that everything runs in your browser — nothing you ask leaves
+                this page.
+              </p>
+              <button
+                className="cursor-chat-consent-accept"
+                type="button"
+                onClick={acceptConsent}
+              >
+                load the tiny brain
+              </button>
+            </div>
+          ) : null}
+
+          {((activeThread.status === "draft" ||
+            activeThread.status === "done") &&
+            activeThread.suggestedPrompts?.length) ||
+          exitingSuggestions?.length ? (
+            <div
+              className={`cursor-chat-suggestions${
+                activeThread.suggestedPrompts?.length ? "" : " is-exiting"
+              }`}
+              aria-label="Suggested prompts"
+            >
+              {(activeThread.suggestedPrompts ?? exitingSuggestions ?? []).map(
+                (chip, index) => (
                 <button
                   key={chip.id}
                   style={
@@ -959,11 +1495,13 @@ export function CursorChat({
                     } as CSSProperties
                   }
                   type="button"
+                  disabled={!activeThread.suggestedPrompts?.length}
                   onClick={() => void submitThread(chip.prompt)}
                 >
                   {chip.label}
                 </button>
-              ))}
+                ),
+              )}
             </div>
           ) : null}
 
@@ -978,11 +1516,12 @@ export function CursorChat({
                 maxLength={2000}
                 placeholder={
                   activeThread.status === "done"
-                    ? "Continue the chat"
+                    ? "continue the chat"
                     : activeThread.draftPlaceholder ??
                       "or ask anything about her work"
                 }
                 aria-label="Cursor chat message"
+                aria-describedby="cursor-chat-composer-help"
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
@@ -991,6 +1530,14 @@ export function CursorChat({
                   }
                 }}
               />
+              <span className="sr-only" id="cursor-chat-composer-help">
+                Enter sends. Shift+Enter inserts a new line.
+              </span>
+              {draft.length >= 1800 ? (
+                <span className="cursor-chat-counter" aria-hidden="true">
+                  {2000 - draft.length} left
+                </span>
+              ) : null}
               <button
                 className="cursor-chat-send"
                 type="button"
@@ -1002,7 +1549,34 @@ export function CursorChat({
               </button>
             </div>
           ) : null}
+          <span
+            className="sr-only"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {announcement}
+          </span>
         </section>
+      ) : null}
+
+      {/*
+        Touch entry point #1 of three: a fixed orange keycap FAB. Visibility is
+        CSS-only (coarse pointer / narrow viewport); it opens the composer
+        bottom-docked. Hidden whenever a thread is already open or the intro is
+        up so it never fights the panel.
+      */}
+      {!activeThread && !suspended ? (
+        <button
+          className="cursor-chat-fab"
+          type="button"
+          aria-label="Ask about Joanna's work"
+          onClick={() => requestCursorChatOpen({ docked: true })}
+        >
+          <span className="cursor-chat-fab-key" aria-hidden="true">
+            /
+          </span>
+        </button>
       ) : null}
     </>
   );

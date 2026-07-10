@@ -13,11 +13,35 @@
       "skillPath": "skills/brandkit/SKILL.md",
       "computedHash": "b63012f3c3d21197e0185d3e9cc7ec40c589fb10e0b5a32a561739de31aa3f20"
     },
+    "critique-composition": {
+      "source": "owl-listener/designer-skills",
+      "sourceType": "github",
+      "skillPath": "visual-critique/skills/critique-composition/SKILL.md",
+      "computedHash": "418cb5e3b3b70b0fba19d129f028ff25ed52f03a0dd3e64ac40172ed56b2a7a5"
+    },
+    "critique-typography": {
+      "source": "owl-listener/designer-skills",
+      "sourceType": "github",
+      "skillPath": "visual-critique/skills/critique-typography/SKILL.md",
+      "computedHash": "8a854441c3e7352658b937b9c137c99de3bd29d97c22d24ffd28498c0659f3ef"
+    },
+    "critique-visual-hierarchy": {
+      "source": "owl-listener/designer-skills",
+      "sourceType": "github",
+      "skillPath": "visual-critique/skills/critique-visual-hierarchy/SKILL.md",
+      "computedHash": "c49261e33c468bd140046dcaf53cb9b7c16360305de8f90a8a496503fc8fd8da"
+    },
     "design-critique": {
       "source": "anthropics/knowledge-work-plugins",
       "sourceType": "github",
       "skillPath": "design/skills/design-critique/SKILL.md",
       "computedHash": "55100e100ac2789175128df2899e8ace3c8732300cd2719df26c57b13e391ff8"
+    },
+    "design-motion-principles": {
+      "source": "kylezantos/design-motion-principles",
+      "sourceType": "github",
+      "skillPath": "skills/design-motion-principles/SKILL.md",
+      "computedHash": "6410c1844f511249f11f38d30d217cfecf7f595f45a868d74284b6380bab47d7"
     },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",

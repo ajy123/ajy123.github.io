@@ -2,6 +2,7 @@
 :root {
   --font-body: Figtree, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
   /* Palette from design.md — ink / grey / white, no brand accent. */
   --canvas: #ffffff; /* default page floor */
@@ -17,8 +18,10 @@
   --hairline: rgba(31, 30, 29, 0.4); /* 1px control borders */
   --hairline-faint: rgba(31, 30, 29, 0.12);
   --accent: #f44800;
-  --selection-bg: #e35727;
-  --selection-ink: #ffffff;
+  /* Orange tint: orange ink over a restrained orange wash.
+   * Light ink deepened to #bd4319 to retain AA. */
+  --selection-bg: rgba(230, 95, 46, 0.1);
+  --selection-ink: #bd4319;
   --overlay: rgba(255, 255, 255, 0.85);
   --shadow-soft: rgba(22, 21, 19, 0.12);
   --control-dark: rgba(17, 17, 17, 0.72);
@@ -59,6 +62,8 @@ html[data-theme="dark"] {
   --hairline: rgba(240, 238, 230, 0.32);
   --hairline-faint: rgba(240, 238, 230, 0.1);
   --accent: #ff6a2a;
+  --selection-bg: rgba(230, 95, 46, 0.1); /* orange tint wash */
+  --selection-ink: #ff7a45; /* orange ink on dark canvas */
   --overlay: rgba(15, 14, 13, 0.82);
   --shadow-soft: rgba(0, 0, 0, 0.38);
   --control-dark: rgba(241, 239, 233, 0.16);
@@ -161,6 +166,13 @@ svg {
   padding-top: 14px;
 }
 
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 18px;
+}
+
 h1,
 h2,
 p {
@@ -175,6 +187,10 @@ h1 {
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
+}
+
+.profile-identity h1 {
+  margin: 0;
 }
 
 h1 span {
@@ -1356,12 +1372,12 @@ h1 span {
   height: var(--ask-pin-size, 20px);
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--selection-ink);
   background: var(--accent);
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -1374,11 +1390,11 @@ h1 span {
   min-width: 0;
   padding: 0 10px;
   color: var(--ink);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.25;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   text-align: left;
   text-transform: uppercase;
   text-wrap: balance;
@@ -1409,14 +1425,20 @@ h1 span {
   max-width: calc(100vw - 28px);
   max-height: min(360px, calc(100vh - 28px));
   overflow: auto;
-  padding: 10px;
+  padding: 12px;
   color: var(--ink);
   background: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   border: 1px solid var(--hairline-faint);
   border-radius: var(--chat-radius-roomy, 14px);
-  box-shadow: 0 18px 48px var(--shadow-soft);
+  box-shadow: 0 8px 24px var(--shadow-soft);
   transform-origin: var(--chat-origin, top left);
   animation: cursorChatIn 320ms var(--spring) both;
+}
+
+/* Height is measured in the component and this hook is applied only while a
+ * structural state changes. Streamed text never toggles it. */
+.cursor-chat.is-height-transitioning {
+  transition: height 260ms var(--ease-out-strong);
 }
 
 .cursor-chat > * {
@@ -1451,9 +1473,9 @@ h1 span {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   min-height: 22px;
-  margin: -4px -4px 4px;
+  margin: 0 0 8px;
   cursor: grab;
   touch-action: none;
 }
@@ -1466,11 +1488,11 @@ h1 span {
   min-width: 0;
   overflow: hidden;
   color: var(--muted);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -1518,7 +1540,7 @@ h1 span {
   width: 100%;
   max-height: 154px;
   overflow-y: auto;
-  padding: 10px 40px 10px 11px;
+  padding: 12px 44px 12px 12px;
   color: var(--ink);
   background: var(--surface-subtle);
   border-radius: 8px;
@@ -1535,8 +1557,17 @@ h1 span {
 .cursor-chat-suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 8px;
+}
+
+.cursor-chat-suggestions.is-exiting {
+  pointer-events: none;
+}
+
+.cursor-chat-suggestions.is-exiting button {
+  animation: cursorChipOut 140ms var(--ease) both;
+  animation-delay: 0ms;
 }
 
 /*
@@ -1548,14 +1579,17 @@ h1 span {
   all: unset;
   position: relative;
   box-sizing: border-box;
+  /* Full-width stack kills the ragged right edge of wrapped chips. */
+  width: 100%;
   max-width: 100%;
-  padding: 7px 9px;
+  min-height: 44px;
+  padding: 8px 12px;
   color: var(--body);
   background: var(--surface-warm);
   border: 1px solid var(--hairline-faint);
   border-radius: 2px;
   cursor: pointer;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -1582,15 +1616,25 @@ h1 span {
 
 .cursor-chat-message,
 .cursor-chat-response {
-  padding: 10px 11px;
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.45;
 }
 
+/*
+ * The visitor's prompt is subordinate to the answer: a clearly deeper fill
+ * (surface-subtle alone is near-invisible on the warm panel) and smaller,
+ * muted type so the reply reads as the primary ink.
+ */
 .cursor-chat-message {
   margin-bottom: 8px;
-  background: var(--surface-subtle);
+  background: color-mix(in srgb, var(--ink) 6%, var(--surface-warm));
+}
+
+.cursor-chat-message p {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 /*
@@ -1599,8 +1643,8 @@ h1 span {
  */
 .cursor-chat-response {
   position: relative;
-  margin-bottom: 10px;
-  padding: 9px 2px 2px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
   border-top: 1px solid var(--hairline-faint);
   color: var(--ink);
   background: transparent;
@@ -1651,12 +1695,8 @@ h1 span {
   }
 }
 
-.cursor-chat-response-token {
-  animation: cursorChatTokenIn 140ms var(--ease-out-strong) both;
-}
-
 .cursor-chat-error .cursor-chat-response {
-  padding: 10px 11px;
+  padding: 8px 12px;
   border-top: 0;
   color: var(--error-ink);
   background: var(--error-surface);
@@ -1665,18 +1705,67 @@ h1 span {
   line-height: 1.45;
 }
 
+/* Stop speaks the uppercase-mono system voice; halts without closing. */
+.cursor-chat-stop {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 8px;
+  color: var(--muted);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition:
+    color 160ms var(--ease),
+    border-color 160ms var(--ease);
+}
+
+.cursor-chat-stop:hover,
+.cursor-chat-stop:focus-visible {
+  color: var(--ink);
+  border-color: var(--hairline);
+}
+
+.cursor-chat-stop-square {
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+}
+
 .cursor-chat-retry {
   all: unset;
   box-sizing: border-box;
-  display: inline-block;
-  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-top: 8px;
+  padding: 4px 8px;
   color: var(--error-ink);
+  border: 1px solid color-mix(in srgb, var(--error-ink) 32%, transparent);
+  border-radius: 2px;
   cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition:
+    color 160ms var(--ease),
+    border-color 160ms var(--ease);
+}
+
+.cursor-chat-retry:hover,
+.cursor-chat-retry:focus-visible {
+  color: var(--ink);
+  border-color: var(--hairline);
 }
 
 .cursor-chat-message p,
@@ -1699,11 +1788,11 @@ h1 span {
   height: 24px;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--selection-ink);
   background: var(--accent);
   border-radius: 5px;
   cursor: pointer;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -1738,10 +1827,34 @@ h1 span {
 .cursor-chat-pin {
   position: fixed;
   z-index: 1002;
+  width: 4px;
+  height: 4px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.cursor-chat-pin-anchor {
+  position: absolute;
+  inset: 0;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--surface-warm);
+}
+
+.cursor-chat-pin-controls {
+  position: absolute;
+  top: var(--pin-control-y, -52px);
+  left: var(--pin-control-x, 8px);
   display: inline-flex;
+  min-width: 44px;
+  height: 44px;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
+  pointer-events: auto;
   background: var(--surface-warm);
+  border: 1px solid var(--hairline-faint);
   border-radius: 2px;
   box-shadow: 0 1px 6px var(--shadow-soft);
 }
@@ -1750,7 +1863,11 @@ h1 span {
   all: unset;
   box-sizing: border-box;
   display: inline-flex;
+  position: relative;
+  min-width: 44px;
+  height: 44px;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -1761,40 +1878,61 @@ h1 span {
   height: 20px;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--selection-ink);
   background: var(--accent);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
 }
 
 .cursor-chat-pin-label {
-  max-width: 0;
-  padding: 0;
+  position: absolute;
+  top: 11px;
+  left: 82px;
+  width: max-content;
+  max-width: min(200px, calc(100vw - 112px));
+  padding: 4px 8px;
   overflow: hidden;
   opacity: 0;
   filter: blur(2px);
   color: var(--ink);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline-faint);
+  border-left: 0;
+  border-radius: 0 2px 2px 0;
   white-space: nowrap;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  clip-path: inset(0 100% 0 0);
+  transform-origin: left center;
+  pointer-events: none;
   transition:
-    max-width 200ms var(--ease-out-strong),
-    padding 200ms var(--ease-out-strong),
+    clip-path 200ms var(--ease-out-strong),
     opacity 140ms var(--ease-out-strong) 40ms,
     filter 140ms var(--ease-out-strong) 40ms;
 }
 
-.cursor-chat-pin:hover .cursor-chat-pin-label,
-.cursor-chat-pin:focus-within .cursor-chat-pin-label {
-  max-width: 200px;
-  padding: 0 4px 0 10px;
+.cursor-chat-pin[data-side="left"] .cursor-chat-pin-label,
+.cursor-chat-pin-controls[data-side="left"] .cursor-chat-pin-label {
+  right: 82px;
+  left: auto;
+  border-right: 0;
+  border-left: 1px solid var(--hairline-faint);
+  border-radius: 2px 0 0 2px;
+  clip-path: inset(0 0 0 100%);
+  transform-origin: right center;
+}
+
+.cursor-chat-pin-controls:hover .cursor-chat-pin-label,
+.cursor-chat-pin-controls:focus-within .cursor-chat-pin-label {
   opacity: 1;
   filter: blur(0);
+  clip-path: inset(0 0 0 0);
 }
 
 .cursor-chat-pin-remove {
@@ -1802,7 +1940,7 @@ h1 span {
   box-sizing: border-box;
   display: inline-flex;
   width: 0;
-  height: 20px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -1815,14 +1953,75 @@ h1 span {
     color 160ms var(--ease);
 }
 
-.cursor-chat-pin:hover .cursor-chat-pin-remove,
-.cursor-chat-pin:focus-within .cursor-chat-pin-remove {
-  width: 20px;
+.cursor-chat-pin-controls:hover .cursor-chat-pin-remove,
+.cursor-chat-pin-controls:focus-within .cursor-chat-pin-remove {
+  width: 44px;
   opacity: 1;
 }
 
 .cursor-chat-pin-remove:hover {
   color: var(--ink);
+}
+
+@media (pointer: coarse), (max-width: 860px) {
+  .cursor-chat-iconbtn,
+  .cursor-chat-send,
+  .cursor-chat-stop,
+  .cursor-chat-retry {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .cursor-chat-iconbtn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cursor-chat-send {
+    right: 0;
+    bottom: 0;
+    width: 44px;
+    height: 44px;
+    color: transparent;
+    background: transparent;
+    box-shadow: none !important;
+  }
+
+  .cursor-chat-send::before {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    border-radius: 5px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 1px 0 rgba(31, 30, 29, 0.18);
+    content: "";
+  }
+
+  .cursor-chat-send::after {
+    position: absolute;
+    color: var(--selection-ink);
+    content: "\23ce";
+  }
+
+  .cursor-chat textarea {
+    min-height: 52px;
+    padding-right: 56px;
+  }
+
+  .cursor-chat-pin-controls {
+    min-width: 88px;
+  }
+
+  .cursor-chat-pin-remove {
+    width: 44px;
+    opacity: 1;
+  }
+
+  .cursor-chat-pin-label {
+    display: none;
+  }
 }
 
 @keyframes cursorChatIn {
@@ -1834,6 +2033,35 @@ h1 span {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/*
+ * Exit mirrors the entrance: the panel collapses toward its anchor corner
+ * (transform-origin already points there) instead of vanishing. Duration must
+ * match LEAVE_MS in CursorChat.tsx.
+ */
+.cursor-chat.is-leaving {
+  pointer-events: none;
+  animation: cursorChatOut 170ms var(--ease) both;
+}
+
+@keyframes cursorChatOut {
+  to {
+    opacity: 0;
+    transform: translateY(var(--chat-enter-y, 6px)) scale(0.92);
+  }
+}
+
+/* The pin the panel collapses into arrives with a small spring, not a pop. */
+.cursor-chat-pin {
+  animation: cursorChatPinIn 220ms var(--spring) both;
+}
+
+@keyframes cursorChatPinIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }
 
@@ -1849,25 +2077,231 @@ h1 span {
   }
 }
 
-@keyframes cursorChatTokenIn {
+@keyframes cursorChipOut {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/*
+ * Consent gate before the ~350MB model download. The copy is content voice
+ * (Figtree, muted); the accept button is the lowercase-mono keycap voice, a
+ * bordered chip in the suggestion family so it reads as an action, not a
+ * primary CTA that would over-sell the download.
+ */
+.cursor-chat-consent {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--hairline-faint);
+}
+
+.cursor-chat-consent-copy {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cursor-chat-consent-accept {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 7px 11px;
+  color: var(--selection-ink);
+  background: var(--accent);
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 1px 0 rgba(31, 30, 29, 0.18);
+  transition:
+    transform 120ms var(--ease),
+    box-shadow 120ms var(--ease);
+}
+
+.cursor-chat-consent-accept:hover {
+  transform: translateY(-1px);
+}
+
+.cursor-chat-consent-accept:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/*
+ * Bottom-docked composer for touch / small viewports: pinned to the bottom
+ * rail, full-bleed within the safe-area gutters, all corners roomy. Enters by
+ * rising from below rather than collapsing toward an anchor corner.
+ */
+.cursor-chat[data-docked="true"] {
+  left: 14px;
+  right: 14px;
+  width: auto;
+  top: auto;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  border-radius: var(--chat-radius-roomy, 14px);
+  --chat-origin: bottom center;
+  --chat-enter-y: 12px;
+}
+
+.cursor-chat[data-docked="true"] .cursor-chat-topbar {
+  cursor: default;
+  touch-action: auto;
+}
+
+/*
+ * Touch entry FAB: an orange keycap of the same family as .cursor-chat-send and
+ * .cursor-chat-pin-key, scaled up. Hidden by default; shown only on coarse
+ * pointers or narrow viewports. The 44px button is the hit target; the 40px
+ * inner span is the visible keycap.
+ */
+.cursor-chat-fab {
+  all: unset;
+  box-sizing: border-box;
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  right: 18px;
+  z-index: 1002;
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: cursorChatFabIn 180ms var(--ease) both;
+}
+
+.cursor-chat-fab-key {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: var(--selection-ink);
+  background: var(--accent);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 6px 18px rgba(22, 21, 19, 0.28),
+    0 1px 0 rgba(31, 30, 29, 0.18);
+  transition: transform 120ms var(--ease);
+}
+
+.cursor-chat-fab:active .cursor-chat-fab-key {
+  transform: translateY(1px);
+}
+
+@media (pointer: coarse), (max-width: 860px) {
+  .cursor-chat-fab {
+    display: inline-flex;
+  }
+}
+
+@keyframes cursorChatFabIn {
   from {
     opacity: 0;
-    filter: blur(2px);
+    transform: scale(0.8);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
+    transform: scale(1);
   }
+}
+
+/*
+ * Selection ask pill (touch): floats under a text selection. Same warm-surface,
+ * hairline, sharp-radius family as .cursor-chat-pin. Centered on its anchor via
+ * translateX(-50%); the JS clamps that center to the viewport.
+ */
+.selection-ask-pill {
+  all: unset;
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 1002;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px 5px 5px;
+  transform: translateX(-50%);
+  color: var(--ink);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 2px;
+  box-shadow: 0 2px 10px var(--shadow-soft);
+  cursor: pointer;
+  animation: cursorChatFabIn 160ms var(--ease) both;
+}
+
+.selection-ask-pill-key {
+  display: inline-flex;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  color: var(--selection-ink);
+  background: var(--accent);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.selection-ask-pill-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.cursor-chat-counter {
+  position: absolute;
+  right: 48px;
+  bottom: 8px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 @keyframes cursorChatThinking {
   from {
-    opacity: 0.45;
+    opacity: 0.6;
   }
 
   to {
-    opacity: 0.9;
+    opacity: 0.85;
   }
 }
 
@@ -1963,6 +2397,22 @@ html[data-theme="dark"] .cursor-chat-send:active:not(:disabled) {
 /* Cursor-chat brain-meter empty cells — faint light fill (filled keeps accent). */
 html[data-theme="dark"] .cursor-chat-brainmeter span:not([data-filled="true"]) {
   background: rgba(255, 255, 255, 0.09);
+}
+
+/* Consent accept + FAB keycaps — quieter lit edge, deeper drop on dark. */
+html[data-theme="dark"] .cursor-chat-consent-accept {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .cursor-chat-consent-accept:active {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+html[data-theme="dark"] .cursor-chat-fab-key {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 6px 18px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 860px) {
@@ -2078,6 +2528,25 @@ html[data-theme="dark"] .cursor-chat-brainmeter span:not([data-filled="true"]) {
     animation: none;
   }
 
+  .cursor-chat.is-height-transitioning,
+  .cursor-chat-suggestions,
+  .cursor-chat-suggestions button,
+  .cursor-chat.is-leaving,
+  .cursor-chat-pin,
+  .cursor-chat-pin-label,
+  .cursor-chat-thinking,
+  .cursor-chat-caret,
+  .cursor-chat-fab,
+  .selection-ask-pill {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .cursor-chat-suggestions.is-exiting button {
+    opacity: 0;
+    transform: none;
+  }
+
   .contextual-ask-surface,
   .contextual-ask-copy {
     transition: none !important;
@@ -2124,3 +2593,173 @@ html[data-theme="dark"] .cursor-chat-brainmeter span:not([data-filled="true"]) {
     --hairline-faint: rgba(31, 30, 29, 0.12);
   }
 }
+
+/* ===========================================================================
+   Site logo — the mark IS the theme switch. One <button role="switch"> hosts
+   the affordance + all semantics; the KeyLogo / GridLogo art inside is
+   aria-hidden. KeyLogo reuses the site's keycap language (see .intro-key--paper
+   and its dark twin); GridLogo reuses ContribGraph's --contrib-* cell ramp.
+   =========================================================================== */
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px; /* ≥48px hit area regardless of the 40px art */
+  height: 48px;
+  margin: 0 0 0 -4px; /* the 40px key art stays flush with the rail edge */
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none; /* double-click must not select the adjacent h1 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.site-logo[data-logo-variant="grid"] {
+  /* The 32px grid is centred in a 48px hit area; trim that visual inset. */
+  margin-right: -4px;
+  margin-left: -8px;
+}
+.site-logo:focus-visible {
+  outline: 2px solid var(--ink-strong);
+  outline-offset: 2px;
+}
+
+/* --- KeyLogo (Direction A) — two-layer keycap --------------------------- */
+.keylogo {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+/* Static edge/shadow wall — the key's side; the cap moves against it. */
+.keylogo-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--keylogo-radius, 8px);
+  background: #e4dfd4;
+  box-shadow: 0 3px 5px var(--shadow-soft);
+}
+/* Moving cap — ONLY transform animates. Base transition = springy release. */
+.keylogo-cap {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--keylogo-radius, 8px);
+  background: var(--surface-warm);
+  border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transform: translateY(calc(-1 * var(--keylogo-travel, 4px)));
+  transition: transform var(--keylogo-release-ms, 420ms) var(--spring);
+}
+/* Top face — inset ~10%/side (mechanical bevel). */
+.keylogo-face {
+  position: absolute;
+  inset: 10%;
+  border-radius: calc(var(--keylogo-radius, 8px) - 3px);
+  border: 1px solid var(--hairline-faint);
+}
+/* Legend — small, upper-left quadrant of the cap face; oversized legends fill
+   the face and read "generic button" instead of "keycap". */
+.keylogo-legend {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  color: var(--ink);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: var(--keylogo-legend, 10px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+/* Press-down: fast, non-springy; cap drops but keeps ≥1px edge visible.
+   :active only fires for pointer + Space; [data-pressed="true"] mirrors it for
+   Enter (driven by SiteLogo's onKeyDown/onKeyUp key handlers). */
+.site-logo:active .keylogo-cap,
+.site-logo[data-pressed="true"] .keylogo-cap {
+  transform: translateY(-1px);
+  transition: transform var(--keylogo-press-ms, 34ms) var(--ease-out-strong);
+  will-change: transform;
+}
+/* Reduced motion / spam burst — release loses its spring. */
+.site-logo[data-motion="reduced"] .keylogo-cap,
+.site-logo[data-spam="1"] .keylogo-cap {
+  transition: transform 140ms var(--ease-out-strong);
+}
+/* Hover sells pressable in two opposite directions: the cap lifts 2px beyond
+   rest while the edge shadow deepens beneath it. */
+@media (hover: hover) and (pointer: fine) {
+  .site-logo:hover .keylogo-cap {
+    transform: translateY(calc(-1 * var(--keylogo-travel, 4px) - 2px));
+    will-change: transform;
+  }
+  .site-logo:hover .keylogo-edge {
+    box-shadow: 0 5px 8px var(--shadow-soft);
+  }
+  html[data-theme="dark"] .site-logo:hover .keylogo-edge {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 5px 8px rgba(0, 0, 0, 0.6);
+  }
+}
+/* KeyLogo dark twin — dark cap face, quiet lit edge, warm ember legend. The
+   edge wall is lifted above the near-black canvas and gets a lit top rim so
+   the cap still reads raised (a pure-black wall + black shadow flattens). */
+html[data-theme="dark"] .keylogo-edge {
+  background: #221f1b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+html[data-theme="dark"] .keylogo-cap {
+  background: var(--surface-elevated);
+  border-color: var(--hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+html[data-theme="dark"] .keylogo-legend {
+  color: #ffe0ad;
+}
+
+/* --- GridLogo (Direction B) — 4×4 activity grid, ContribGraph ramp ------ */
+.gridlogo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: var(--gridlogo-gap, 3px);
+  width: var(--gridlogo-size, 32px);
+  height: var(--gridlogo-size, 32px);
+}
+.gridlogo-cell {
+  border-radius: var(--rl-cell-radius, 2px);
+  background: var(--contrib-0);
+  /* Default = uniform crossfade (ambient change / reduced motion / spam).
+     The opacity leg catches the shimmer's exit: when data-thinking drops,
+     each cell settles from its mid-breath value to 1 instead of popping. */
+  transition:
+    background-color 200ms var(--ease),
+    opacity 260ms ease-out;
+}
+.gridlogo-cell[data-level="1"] {
+  background: var(--contrib-1);
+}
+.gridlogo-cell[data-level="2"] {
+  background: var(--contrib-2);
+}
+.gridlogo-cell[data-level="3"] {
+  background: var(--contrib-3);
+}
+.gridlogo-cell[data-level="4"] {
+  background: var(--contrib-4);
+}
+/* User press: shorter flip so the per-cell delays (set inline, top-left →
+   bottom-right) read as a wave that lands ≤300ms after the token flip. */
+.gridlogo[data-sweep="on"] .gridlogo-cell {
+  /* Shorten only the background leg; the opacity settle keeps its own pace. */
+  transition-duration: 130ms, 260ms;
+}
+/* Thinking shimmer lives in GridLogo.tsx as WAAPI (Blink won't transition
+   from an animated value on animation removal, so the exit needs JS). The
+   cells' opacity transition above is the other half of that handshake: it
+   turns the frozen mid-breath value into a ~260ms settle back to full — the
+   "answer landed" beat. data-thinking="on" is kept as a state hook for
+   tests/dials. */

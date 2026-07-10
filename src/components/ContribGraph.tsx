@@ -1,27 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContribDays, type ContribDay } from "../contribData";
 
 /**
  * Last-30-days GitHub contributions heatmap for the left rail. Purely additive:
- * fetches a public JSON endpoint at mount, draws the cells in the site's grey
- * ramp, and links to the profile. Makes ZERO engine/splash calls; on any fetch
- * failure it renders null so the rail is unaffected.
+ * reads the shared contribution window (src/contribData — the same data path
+ * GridLogo consumes, so the page fetches at most once), draws the cells in the
+ * site's grey ramp, and links to the profile. Makes ZERO engine/splash calls;
+ * on any fetch failure it renders null so the rail is unaffected.
  */
-type ContribDay = { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 };
-type ContribResponse = {
-  total: { lastYear: number };
-  contributions: ContribDay[];
-};
-
-// Free, no-token public mirror of the GitHub contributions calendar.
-const ENDPOINT = "https://github-contributions-api.jogruber.de/v4";
-const WINDOW_DAYS = 30;
-
-// Local-date "YYYY-MM-DD" (not toISOString, which is UTC and can skew a day).
-function ymd(d: Date) {
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
-}
 
 // External-link cue — same glyph as the rail's ArrowIcon, inlined to avoid a
 // circular import with main.tsx.
@@ -35,49 +20,7 @@ function LinkArrow() {
 }
 
 export function ContribGraph({ user }: { user: string }) {
-  const [days, setDays] = useState<ContribDay[] | null>(null);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    (async () => {
-      try {
-        // Fetch by calendar YEAR, not ?y=last: the rolling endpoint caches hard
-        // and goes stale for low-activity accounts. A year fetch also returns
-        // future dates (→ Dec 31, all zero), so we filter to today then take the
-        // trailing window. Pull the previous year too when the 30-day window
-        // crosses the Jan boundary.
-        const now = new Date();
-        const todayStr = ymd(now);
-        const back = new Date(now);
-        back.setDate(back.getDate() - (WINDOW_DAYS - 1));
-        const years =
-          back.getFullYear() === now.getFullYear()
-            ? [now.getFullYear()]
-            : [back.getFullYear(), now.getFullYear()];
-
-        const all: ContribDay[] = [];
-        for (const y of years) {
-          const res = await fetch(`${ENDPOINT}/${user}?y=${y}`, {
-            signal: ctrl.signal,
-          });
-          if (!res.ok) return;
-          const data: ContribResponse = await res.json();
-          if (Array.isArray(data.contributions)) {
-            all.push(...data.contributions);
-          }
-        }
-
-        // Drop future-dated cells, then keep the trailing WINDOW_DAYS up to today.
-        const window = all
-          .filter((d) => d.date <= todayStr)
-          .slice(-WINDOW_DAYS);
-        if (window.length) setDays(window);
-      } catch {
-        // network error / abort — leave days null, block stays absent.
-      }
-    })();
-    return () => ctrl.abort();
-  }, [user]);
+  const days = useContribDays(user);
 
   if (!days || !days.length) return null;
 

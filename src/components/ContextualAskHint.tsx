@@ -44,7 +44,7 @@ type ActiveHint = {
   contextText: string;
 };
 
-type HintStage = "pin" | "expanded" | "exiting";
+type HintStage = "expanded" | "exiting";
 
 type Point = {
   x: number;
@@ -223,6 +223,25 @@ function getFocusAnchor(element: HTMLElement): Point {
   };
 }
 
+/*
+ * "edge"/"margin" pin the hint to the zone's right edge (inside/outside
+ * respectively) so it reads as attached to the card rather than dropped
+ * wherever the cursor happened to dwell; only the y follows the pointer.
+ */
+function getPreferredAnchor(
+  element: HTMLElement,
+  preference: AskAnchorPreference,
+  pointer: Point,
+): Point {
+  if (preference === "cursor") return pointer;
+  const rect = element.getBoundingClientRect();
+  const x = preference === "edge" ? rect.right - 24 : rect.right + 12;
+  return {
+    x: clamp(x, 12, window.innerWidth - 12),
+    y: clamp(pointer.y, rect.top + 12, rect.bottom - 12),
+  };
+}
+
 function readConverted() {
   try {
     return sessionStorage.getItem("ask-hint-converted") === "1";
@@ -268,7 +287,6 @@ export function ContextualAskHint({
     y: window.innerHeight / 2,
   });
   const dwellTimerRef = useRef<number | null>(null);
-  const expandTimerRef = useRef<number | null>(null);
   const exitTimerRef = useRef<number | null>(null);
   const [active, setActive] = useState<ActiveHint | null>(null);
   const [hintStage, setHintStage] = useState<HintStage>("expanded");
@@ -277,13 +295,6 @@ export function ContextualAskHint({
     if (dwellTimerRef.current !== null) {
       window.clearTimeout(dwellTimerRef.current);
       dwellTimerRef.current = null;
-    }
-  };
-
-  const clearExpandTimer = () => {
-    if (expandTimerRef.current !== null) {
-      window.clearTimeout(expandTimerRef.current);
-      expandTimerRef.current = null;
     }
   };
 
@@ -296,7 +307,6 @@ export function ContextualAskHint({
 
   const hide = () => {
     clearDwellTimer();
-    clearExpandTimer();
     pendingElementRef.current = null;
 
     const current = activeRef.current;
@@ -318,14 +328,11 @@ export function ContextualAskHint({
     element: HTMLElement,
     {
       anchor = pointerRef.current,
-      skipPin = false,
     }: {
       anchor?: Point;
-      skipPin?: boolean;
     } = {},
   ) => {
     clearDwellTimer();
-    clearExpandTimer();
     clearExitTimer();
     pendingElementRef.current = null;
 
@@ -333,19 +340,14 @@ export function ContextualAskHint({
     clearZoneState(activeRef.current?.element ?? null);
     activeRef.current = next;
     visibleRef.current = true;
-    anchorRef.current = { ...anchor };
+    anchorRef.current = getPreferredAnchor(element, next.anchorPreference, {
+      ...anchor,
+    });
     applyZoneState(next.element);
 
-    if (skipPin) {
-      setHintStage("expanded");
-    } else {
-      setHintStage("pin");
-      expandTimerRef.current = window.setTimeout(() => {
-        expandTimerRef.current = null;
-        if (visibleRef.current) setHintStage("expanded");
-      }, Math.max(0, dials.expandDelayMs));
-    }
-
+    // Always open with the full label: the old collapsed pin stage read as a
+    // glitch when caught on its own in a zone's whitespace.
+    setHintStage("expanded");
     setActive(next);
   };
 
@@ -377,7 +379,6 @@ export function ContextualAskHint({
 
     return () => {
       clearDwellTimer();
-      clearExpandTimer();
       clearExitTimer();
     };
   }, []);
@@ -406,7 +407,7 @@ export function ContextualAskHint({
       const converted = readConverted();
       dwellTimerRef.current = window.setTimeout(() => {
         if (pendingElementRef.current === element) {
-          show(element, { skipPin: converted });
+          show(element);
         }
       }, converted ? 250 : Math.max(0, dials.dwellMs));
     };
@@ -441,7 +442,7 @@ export function ContextualAskHint({
 
       const element = getAskableElement(event.target);
       if (!element) return;
-      show(element, { anchor: getFocusAnchor(element), skipPin: true });
+      show(element, { anchor: getFocusAnchor(element) });
     };
 
     const onFocusOut = (event: FocusEvent) => {

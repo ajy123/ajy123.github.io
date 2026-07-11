@@ -42,7 +42,9 @@ export function SiteLogoWithDials() {
       pulseMaxCells: [d.pulseMaxCells, 2, 6, 1],
       forceThinking: d.forceThinking,
     },
-    { id: "site-logo", persist: { key: "joanna-logo-dials" } },
+    // v2: bumped when the defaults were retuned (24px/2.6/16%/0.5) so stale
+    // persisted panels don't silently mask the new defaults in dev.
+    { id: "site-logo", persist: { key: "joanna-logo-dials-v2" } },
   );
 
   const dials: LogoDialsValues = {

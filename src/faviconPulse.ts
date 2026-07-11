@@ -27,7 +27,10 @@ import { CELLS, COLS, FALLBACK_LEVELS, subscribePulse } from "./logoPulse";
 const SIZE = 64;
 const CELL_XS = [0, 23, 46]; // svg 0/11.5/23 × 2 (cell 9 + gap 2.5)
 const CELL = 18; // svg 9 × 2
-const CELL_R = 5; // svg 2.5 × 2
+// Tracks the logo's cellRadius dial default (16% of the cell = svg 1.44,
+// ×2 retina = 2.88, rounded to 3 → effectively 16.7%). Update alongside
+// DEFAULT_LOGO_DIALS.cellRadius and public/favicon.svg's rx.
+const CELL_R = 3;
 
 // Favicon swaps throttled to 10fps (100ms). The pulse emits at ~60fps; we
 // coalesce to every ~6th frame.
@@ -115,14 +118,15 @@ function render(): void {
   // strip paints behind it.
   c.clearRect(0, 0, SIZE, SIZE);
 
-  // Cells: dimmed idle ramp (0.45, the thinking field) + glow overlay on top —
-  // the same "bright blob on a dark field" the logo shows.
+  // Cells: dimmed idle ramp (1 − scrim = 0.5, tracking the logo's
+  // scrimOpacity dial default) + glow overlay on top — the same "bright blob
+  // on a dim field" the logo shows.
   for (let i = 0; i < CELLS; i++) {
     const x = CELL_XS[i % COLS];
     const y = CELL_XS[Math.floor(i / COLS)];
     const level = levels[i] ?? 0;
 
-    c.globalAlpha = 0.45;
+    c.globalAlpha = 0.5;
     c.fillStyle = RAMP[level] ?? RAMP[0];
     roundRectPath(c, x, y, CELL, CELL, CELL_R);
     c.fill();

@@ -1201,10 +1201,12 @@ function App() {
   );
 }
 
-// One-time cleanup: the site is light-only now (the theme switch is retired),
-// so drop any persisted choice left in returning visitors' browsers.
+// One-time cleanup: the site is light-only now (the theme switch is retired)
+// and the send-keycap click sound is gone (with its mute preference), so drop
+// any persisted choices left in returning visitors' browsers.
 try {
   localStorage.removeItem("theme");
+  localStorage.removeItem("chat-sound");
 } catch {
   // storage denied — nothing to clean up.
 }

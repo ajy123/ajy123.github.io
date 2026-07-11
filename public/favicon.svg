@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- One bold orange squircle — a single living-grid cell blown up to the
-       full canvas. Same 34% rounding as the logo's cells (rx 9.5 of 28), the
+  <!-- One bold orange square — a single living-grid cell blown up to the
+       full canvas. Same 16% rounding as the logo's cells (rx 4.5 of 28), the
        brand accent at full strength, transparent background. The tab glyph is
        the mark's atom; the page shows the whole organism. -->
-  <rect x="2" y="2" width="28" height="28" rx="9.5" fill="#f44800"/>
+  <rect x="2" y="2" width="28" height="28" rx="4.5" fill="#f44800"/>
 </svg>

@@ -214,7 +214,7 @@ export function streamChat(
     const chunks = await engine.chat.completions.create({
       messages,
       stream: true,
-      temperature: 0.6,
+      temperature: 0.1,
     });
 
     let full = "";

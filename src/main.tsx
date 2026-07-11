@@ -35,6 +35,7 @@ import { CursorTrail } from "./components/CursorTrail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayEvalThumbnail } from "./components/EssayEvalThumbnail";
 import { SiteLogo } from "./components/SiteLogo";
+import { TextScramble } from "./components/TextScramble";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
@@ -160,7 +161,7 @@ const aiPracticeItems: EssayItem[] = [
     year: "2026",
     askHint: "Ask why evals became the spec",
     askKind: "essay",
-    askAnchorPreference: "edge",
+    askAnchorPreference: "cursor",
     askPromptChips: [
       "does the essay argue that the eval becomes the spec?",
       "does the essay say generated paragraphs are behavior, not static components?",
@@ -466,7 +467,7 @@ function SiteLogoMount() {
   return <SiteLogo />;
 }
 
-function ProfileRail() {
+function ProfileRail({ suspended }: { suspended: boolean }) {
   const [copied, setCopied] = useState(false);
   const dials = useContext(FooterDialsContext);
   const footerBodyRef = useRef<HTMLDivElement | null>(null);
@@ -499,12 +500,32 @@ function ProfileRail() {
           askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
           <div className="profile-identity">
-            <SiteLogoMount />
-
             <h1>
               <span>Joanna Yen</span>
             </h1>
           </div>
+
+          {/*
+            Persistent chat entry affordance: the only always-visible way to
+            discover the "/" composer on a fine-pointer desktop (the FAB below
+            only shows on touch / narrow viewports). Hidden while the intro
+            overlay is up so it can't be reached before the shell is dismissed.
+          */}
+          {!suspended ? (
+            <button
+              className="rail-ask"
+              type="button"
+              aria-keyshortcuts="/"
+              onClick={() => requestCursorChatOpen()}
+            >
+              <span className="rail-ask-key" aria-hidden="true">
+                /
+              </span>
+              <span className="rail-ask-label">
+                <TextScramble text="Ask about my work" durationMs={800} />
+              </span>
+            </button>
+          ) : null}
 
           <p className="sidebar-bio">
             Designer and engineer who sweats the details and ships them. I build
@@ -1222,7 +1243,7 @@ function App() {
 
   const shell = (
     <div className="portfolio-shell">
-      <ProfileRail />
+      <ProfileRail suspended={showIntro} />
       <WorkCanvas />
     </div>
   );

@@ -12,6 +12,7 @@
   --surface-warm: #faf9f5; /* warm off-white control surface */
   --ghost: #e0e0e0; /* oversized decorative section titles */
   --muted: #757169; /* secondary text, captions, eyebrows — AA on all surfaces */
+  --muted-strong: #57534b; /* muted ink at small sizes — 7.1:1 on warm surfaces */
   --body: #141413; /* control/label text on warm surface */
   --ink: #111111; /* primary text, headings */
   --ink-strong: #000000; /* max-contrast text, links */
@@ -250,6 +251,77 @@ h1 span {
 
 .rail-link.is-copied .rail-link-sub {
   color: var(--ink);
+}
+
+/*
+ * Persistent chat entry pill: the only zero-interaction, always-visible way
+ * to discover the "/" composer on a fine pointer (the cursor-chat-fab below
+ * only shows on touch / narrow viewports). Sits directly under the name so
+ * it's the first action the rail offers; the bottom margin hands off to the
+ * bio without crowding the identity block's own 18px.
+ * min-height keeps the hit target >=40px even though the row's text is small.
+ */
+.rail-ask {
+  display: flex;
+  min-height: 40px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 0;
+  color: var(--muted);
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .rail-ask:hover .rail-ask-label {
+    color: var(--accent);
+  }
+}
+
+.rail-ask:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rail-ask-label {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: var(--rl-label-size, 12px);
+  transition: color 160ms var(--ease-out-strong);
+}
+
+.rail-ask-key {
+  display: inline-flex;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  /* Ink on accent: 5.19:1 — the glyph is the only place the shortcut is
+     shown, so it must clear the 4.5:1 text bar despite being aria-hidden. */
+  color: var(--ink);
+  background: var(--accent);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Keyboard hint only makes sense where a keyboard is the primary input. */
+@media (pointer: coarse) {
+  .rail-ask-key {
+    display: none;
+  }
 }
 
 .rail-footer p {
@@ -1348,17 +1420,6 @@ a.card-eyebrow-flag:focus-visible {
   transition-duration: 120ms;
 }
 
-.contextual-ask-hint--pin .contextual-ask-surface {
-  background: transparent;
-  clip-path: inset(
-    0
-    calc(100% - var(--ask-pin-size, 20px))
-    0
-    0
-    round 0
-  );
-}
-
 .contextual-ask-hint--expanded .contextual-ask-surface {
   clip-path: inset(0 0 0 0 round 2px);
 }
@@ -1418,11 +1479,6 @@ a.card-eyebrow-flag:focus-visible {
     filter 140ms var(--ease-out-strong) 40ms;
 }
 
-.contextual-ask-hint--pin .contextual-ask-copy {
-  opacity: 0;
-  filter: blur(2px);
-}
-
 .contextual-ask-hint--expanded .contextual-ask-copy {
   opacity: 1;
   filter: blur(0);
@@ -1434,15 +1490,20 @@ a.card-eyebrow-flag:focus-visible {
  * otherwise-flat system (see design.md "Elevation").
  */
 .cursor-chat {
+  /* Shared with the sticky topbar fill so scrolled content can't ghost
+     through a mismatched header strip. */
+  --chat-panel-fill: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   position: fixed;
   z-index: 1003;
-  width: 320px;
+  width: 360px;
   max-width: calc(100vw - 28px);
   max-height: min(360px, calc(100vh - 28px));
   overflow: auto;
-  padding: 12px;
+  /* 16px ≥ the 14px corner radius, so content clears the rounded corners;
+     12px left chip hover pills 5px from the panel edge. */
+  padding: 16px;
   color: var(--ink);
-  background: color-mix(in srgb, var(--surface-warm) 97%, transparent);
+  background: var(--chat-panel-fill);
   border: 1px solid var(--hairline-faint);
   border-radius: var(--chat-radius-roomy, 14px);
   box-shadow: 0 8px 24px var(--shadow-soft);
@@ -1485,12 +1546,20 @@ a.card-eyebrow-flag:focus-visible {
 
 /* Slim header strip: real drag handle + ghost window controls. */
 .cursor-chat-topbar {
+  /* Sticky against the panel's own scroll so pin/close stay reachable on
+     long answers; -16px cancels the panel padding, the side bleeds + fill
+     keep scrolled content from peeking around the controls. */
+  position: sticky;
+  top: -16px;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
   min-height: 22px;
-  margin: 0 0 8px;
+  margin: -16px -16px 8px;
+  padding: 16px 16px 4px;
+  background: var(--chat-panel-fill);
   cursor: grab;
   touch-action: none;
 }
@@ -1572,7 +1641,9 @@ a.card-eyebrow-flag:focus-visible {
 .cursor-chat-suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  /* Rows carry their own 8px padding; near-zero gap keeps the borderless
+     list reading as one group instead of three floating lines. */
+  gap: 2px;
   margin-bottom: 8px;
 }
 
@@ -1586,47 +1657,73 @@ a.card-eyebrow-flag:focus-visible {
 }
 
 /*
- * Chips speak the hint badge's mono annotation voice: lowercase questions in
- * the same type/radius family as .contextual-ask-copy and the pin (sharp 2px,
- * warm surface). UPPERCASE mono = system labels; lowercase mono = questions.
+ * Chips speak the hint badge's mono annotation voice: lowercase mono
+ * questions led by a subdirectory arrow — the arrow alone signals
+ * "tappable", so the rows carry no border or resting fill. The hover pill
+ * bleeds past the text column (negative margin) while the label stays flush
+ * with the answer's left edge.
  */
 .cursor-chat-suggestions button {
   all: unset;
   position: relative;
   box-sizing: border-box;
-  /* Full-width stack kills the ragged right edge of wrapped chips. */
-  width: 100%;
-  max-width: 100%;
-  min-height: 44px;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% + 16px);
+  max-width: calc(100% + 16px);
+  margin: 0 -8px;
+  /* 12px text + 2x8px padding ≈ 32px box; min-height tops it up to a
+     36px target without the old 44px row's dead air. */
+  min-height: 36px;
+  padding: 8px;
   color: var(--body);
-  background: var(--surface-warm);
-  border: 1px solid var(--hairline-faint);
-  border-radius: 2px;
+  border-radius: 6px;
   cursor: pointer;
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 1.3;
   animation: cursorChipIn 360ms var(--spring) both;
   animation-delay: var(--chip-delay, 0ms);
   transition:
     color 180ms var(--ease),
-    border-color 180ms var(--ease),
-    background 180ms var(--ease),
-    transform 180ms var(--ease);
+    background 180ms var(--ease);
 }
 
-.cursor-chat-suggestions button:hover,
+.cursor-chat-suggestion-arrow {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition:
+    color 180ms var(--ease),
+    transform 180ms var(--ease-out-strong);
+}
+
+/*
+ * Hover ink is selection-ink, not raw accent: #f44800 on the warm panel is
+ * 3.45:1 — fine for the arrow glyph, a fail for 12px text. #bd4319 is 5:1.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .cursor-chat-suggestions button:hover {
+    color: var(--selection-ink);
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+
+  .cursor-chat-suggestions button:hover .cursor-chat-suggestion-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+}
+
 .cursor-chat-suggestions button:focus-visible {
-  color: var(--ink-strong);
-  background: color-mix(in srgb, var(--surface-warm) 98%, var(--ink) 2%);
-  border-color: var(--hairline);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  color: var(--selection-ink);
 }
 
 .cursor-chat-suggestions button:active {
-  transform: translateY(1px);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .cursor-chat-message,
@@ -1648,7 +1745,7 @@ a.card-eyebrow-flag:focus-visible {
 }
 
 .cursor-chat-message p {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 13px;
 }
 
@@ -1665,8 +1762,53 @@ a.card-eyebrow-flag:focus-visible {
   background: transparent;
   border-radius: 0;
   box-shadow: none;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/*
+ * Streaming fade-in. Each streamed delta is its own inline span (keyed stably
+ * in CursorChat) that fades opacity 0→1 once as it lands, then holds at full
+ * ink via the `both` fill — so settled text never re-animates on unrelated
+ * re-renders. Resting opacity is 1, so reduced motion (below) shows text
+ * instantly with the animation removed.
+ */
+.cursor-chat-stream-chunk {
+  animation: cursorChatStreamIn 260ms var(--ease) both;
+}
+
+@keyframes cursorChatStreamIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Inline project thumbnail, appended below the answer text so it never shifts
+ * the text above it. Fades up once when a known project is named.
+ */
+.cursor-chat-media {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: var(--chat-radius-roomy, 14px);
+  animation: cursorChatMediaIn 320ms var(--ease) both;
+}
+
+@keyframes cursorChatMediaIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cursor-chat-thinking {
@@ -2384,7 +2526,7 @@ a.card-eyebrow-flag:focus-visible {
   }
 
   .cursor-chat {
-    width: min(320px, calc(100vw - 28px));
+    width: min(360px, calc(100vw - 28px));
   }
 
   .contextual-ask-hint {

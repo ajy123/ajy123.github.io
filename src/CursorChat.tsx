@@ -1,6 +1,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -26,6 +27,10 @@ import {
 } from "./chatEvents";
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
+// Same posters the WorkCanvas case-study cards use (see workItems in main.tsx),
+// reused as inline thumbnails when a response names one of those projects.
+import researchChatThumbUrl from "../images/deeli-casestudy-poster.jpg?url";
+import brandIdentityThumbUrl from "../images/case-study-test-poster.jpg?url";
 
 type ChatStatus =
   | "draft"
@@ -107,7 +112,7 @@ type Thread = {
   docked?: boolean;
 };
 
-const COMPOSER_WIDTH = 320;
+const COMPOSER_WIDTH = 360;
 const COMPOSER_MAX_HEIGHT = 360;
 const EDGE = 14;
 // Gap between the anchor point and the panel's tight corner. Kept smaller than
@@ -486,6 +491,80 @@ function buildMessages(
   return messages;
 }
 
+// Keyword → inline thumbnail. Only projects with real assets; keywords track
+// how the model actually names them (see SITE_CONTEXT / workItems). Patterns are
+// non-global so .exec always reports the first match's index.
+type ResponseMedia = { src: string; alt: string };
+const RESPONSE_MEDIA: { pattern: RegExp; media: ResponseMedia }[] = [
+  {
+    pattern: /research chat|keyword search/i,
+    media: {
+      src: researchChatThumbUrl,
+      alt: "Poster from the research chat case study",
+    },
+  },
+  {
+    // Not /deeli/: both case studies are Deeli work, so the company name
+    // would bind this poster to research-chat answers via earliest-match.
+    pattern: /brand identity|sales kit|computex/i,
+    media: {
+      src: brandIdentityThumbUrl,
+      alt: "Poster from Deeli's brand identity case study",
+    },
+  },
+];
+
+// First project named in the response wins — matched by the earliest position
+// in the text (not array order), so a growing stream never swaps the image once
+// one keyword has appeared. At most one image per turn.
+function matchResponseMedia(text: string): ResponseMedia | null {
+  let best: { index: number; media: ResponseMedia } | null = null;
+  for (const entry of RESPONSE_MEDIA) {
+    const hit = entry.pattern.exec(text);
+    if (hit && (best === null || hit.index < best.index)) {
+      best = { index: hit.index, media: entry.media };
+    }
+  }
+  return best?.media ?? null;
+}
+
+// Streaming fade-in. streamChat hands us the full accumulated text each step, so
+// we diff against what we've already emitted and wrap only the new tail in its
+// own span. Each span fades opacity 0→1 exactly once on mount, keyed by a stable
+// id so already-settled spans never re-animate on unrelated re-renders (pin,
+// drag, chip hover). prefers-reduced-motion disables the fade in CSS, so text
+// appears instantly. Chunk-level (per streamed delta), not per character.
+function StreamedResponseText({ text }: { text: string }) {
+  const seenRef = useRef(text.length);
+  const nextIdRef = useRef(1);
+  const [chunks, setChunks] = useState<{ id: number; text: string }[]>(() =>
+    text ? [{ id: 0, text }] : [],
+  );
+
+  useEffect(() => {
+    if (text.length > seenRef.current) {
+      const delta = text.slice(seenRef.current);
+      seenRef.current = text.length;
+      setChunks((prev) => [...prev, { id: nextIdRef.current++, text: delta }]);
+    } else if (text.length < seenRef.current) {
+      // Response replaced (retry / a reused instance): reseed with a fresh id
+      // so the new opening chunk mounts and fades rather than silently swapping.
+      seenRef.current = text.length;
+      setChunks(text ? [{ id: nextIdRef.current++, text }] : []);
+    }
+  }, [text]);
+
+  return (
+    <>
+      {chunks.map((chunk) => (
+        <span key={chunk.id} className="cursor-chat-stream-chunk">
+          {chunk.text}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export function CursorChat({
   suspended = false,
 }: {
@@ -820,8 +899,8 @@ export function CursorChat({
     textarea.style.height = `${Math.min(textarea.scrollHeight, 154)}px`;
   }, [draft, activeId]);
 
-  // Closing an answered thread pins it in place instead of destroying it, so a
-  // stray Escape never eats a conversation. Unanswered drafts still discard.
+  // Close discards the thread — pinning is only ever the explicit pin
+  // button's job. Auto-pinning on close left "random" pin markers behind.
   const closeActive = () => {
     const id = activeIdRef.current;
     if (!id || leavingIdRef.current) return;
@@ -837,23 +916,7 @@ export function CursorChat({
       if (thread?.status === "consent") {
         pendingConsentDraftRef.current = thread.prompt;
       }
-      const keep =
-        thread && (thread.status === "done" || thread.history.length > 0);
-
-      if (!keep) return current.filter((item) => item.id !== id);
-
-      return current.map((item) => {
-        if (item.id !== id) return item;
-        const lastTurn = item.history[item.history.length - 1];
-        const revertToLastTurn = item.status !== "done" && lastTurn;
-        return {
-          ...item,
-          isPinned: true,
-          status: "done" as ChatStatus,
-          prompt: revertToLastTurn ? lastTurn.prompt : item.prompt,
-          response: revertToLastTurn ? lastTurn.response : item.response,
-        };
-      });
+      return current.filter((item) => item.id !== id);
     });
     activeIdRef.current = null;
     setActiveId(null);
@@ -1199,6 +1262,19 @@ export function CursorChat({
     setIsDragging(false);
   };
 
+  // Inline thumbnail for the active answer, if it names a known project.
+  // Memoized on the response text: CursorChat re-renders on drags/ticks/
+  // keystrokes, and the regexes only need to run when the text changes.
+  const activeResponse = activeThread?.response;
+  const activeStatus = activeThread?.status;
+  const responseMedia = useMemo(
+    () =>
+      activeResponse !== undefined && activeStatus !== "error"
+        ? matchResponseMedia(activeResponse)
+        : null,
+    [activeResponse, activeStatus],
+  );
+
   void tick;
 
   return (
@@ -1315,12 +1391,7 @@ export function CursorChat({
             <button
               className="cursor-chat-iconbtn"
               type="button"
-              aria-label={
-                activeThread.status === "done" ||
-                activeThread.history.length > 0
-                  ? "Close chat (stays pinned on the page)"
-                  : "Close chat"
-              }
+              aria-label="Close chat"
               onClick={closeActive}
             >
               <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
@@ -1373,12 +1444,24 @@ export function CursorChat({
                   <span className="cursor-chat-caret" aria-hidden="true" />
                 </p>
               ) : (
-                <p>
-                  {activeThread.response}
-                  {activeThread.status === "streaming" ? (
-                    <span className="cursor-chat-caret" aria-hidden="true" />
+                <>
+                  <p>
+                    <StreamedResponseText text={activeThread.response} />
+                    {activeThread.status === "streaming" ? (
+                      <span className="cursor-chat-caret" aria-hidden="true" />
+                    ) : null}
+                  </p>
+                  {responseMedia ? (
+                    <img
+                      key={responseMedia.src}
+                      className="cursor-chat-media"
+                      src={responseMedia.src}
+                      alt={responseMedia.alt}
+                      loading="lazy"
+                      draggable={false}
+                    />
                   ) : null}
-                </p>
+                </>
               )}
               {activeThread.status === "loading" ||
               activeThread.status === "streaming" ? (
@@ -1445,6 +1528,12 @@ export function CursorChat({
                   disabled={!activeThread.suggestedPrompts?.length}
                   onClick={() => void submitThread(chip.prompt)}
                 >
+                  <span
+                    className="cursor-chat-suggestion-arrow"
+                    aria-hidden="true"
+                  >
+                    ↳
+                  </span>
                   {chip.label}
                 </button>
                 ),

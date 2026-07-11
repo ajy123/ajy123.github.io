@@ -789,7 +789,9 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
       delay={120 + index * 90}
     >
       <LayoutGroup id={`essay-dialog-${item.id}`}>
-        <p className="card-eyebrow">{item.eyebrow}</p>
+        <p className="card-eyebrow">
+          {item.year} · {item.eyebrow}
+        </p>
         <motion.div
           ref={triggerRef}
           aria-controls={dialogId}
@@ -827,8 +829,9 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           <h2 className="card-title">
             {item.title}
           </h2>
-          <p className="card-role">{item.role}</p>
-          <p className="card-meta">{item.year}</p>
+          <div className="card-role-row">
+            <p className="card-role">{item.role}</p>
+          </div>
           <motion.div
             className="essay-dialog-visual"
             layoutId={`essay-dialog-visual-${item.id}`}
@@ -904,16 +907,16 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                     initial={contentInitial}
                     transition={contentTransition}
                   >
-                    <p className="card-eyebrow">{item.eyebrow}</p>
+                    <p className="card-eyebrow">
+                      {item.year} · {item.eyebrow}
+                    </p>
                     <h2
                       className="essay-dialog-title"
                       id={dialogTitleId}
                     >
                       {item.title}
                     </h2>
-                    <p className="essay-dialog-meta">
-                      {item.role} · {item.year}
-                    </p>
+                    <p className="essay-dialog-meta">{item.role}</p>
                     <p className="essay-dialog-dek">{item.dek}</p>
                   </motion.div>
 

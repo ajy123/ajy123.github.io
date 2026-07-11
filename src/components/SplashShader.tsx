@@ -459,14 +459,6 @@ export function SplashShader({
       if (reduced) renderFrame(performance.now(), 0);
     });
     ro.observe(canvas);
-    const themeObserver = new MutationObserver(() => {
-      themeColors = readThemeColors();
-      if (reduced) renderFrame(performance.now(), 0);
-    });
-    themeObserver.observe(document.documentElement, {
-      attributeFilter: ["data-theme"],
-      attributes: true,
-    });
 
     if (reduced) {
       renderFrame(performance.now(), 0); // single static frame, no loop
@@ -483,7 +475,6 @@ export function SplashShader({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      themeObserver.disconnect();
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("click", onClick);
       // Delete this run's GL resources but DON'T loseContext(): a canvas hands

@@ -4,104 +4,60 @@ import { useDialKit } from "dialkit";
 // dynamic import (main.tsx), so dialkit's stylesheet never leaks into the
 // production bundle (memory lesson: gate the CSS, not just the JS).
 import "dialkit/styles.css";
-import {
-  DEFAULT_LOGO_DIALS,
-  SiteLogo,
-  type LogoDialsValues,
-  type LogoVariant,
-} from "./SiteLogo";
+import { DEFAULT_LOGO_DIALS, SiteLogo, type LogoDialsValues } from "./SiteLogo";
 
 /**
- * Dev-only tuner for SiteLogo: a variant switch (key | grid) plus per-variant
- * craft dials. It does NOT render its own <DialRoot> — dialkit shows every
- * registered panel in the single app-wide root (mounted by
- * ContextualAskHintDials), so a second root would duplicate all panels.
- *
- * On variant change it mirrors the choice to localStorage (so a plain reload
- * keeps the previewed mark) and swaps the favicon <link> to the matching
- * preview asset set.
+ * Dev-only tuner for SiteLogo's GridLogo mark. Does NOT render its own
+ * <DialRoot> — dialkit shows every registered panel in the single app-wide
+ * root (mounted by ContextualAskHintDials), so a second root would duplicate
+ * all panels.
  */
-function swapFavicon(variant: LogoVariant) {
-  const href = variant === "key" ? "/favicon-key.svg" : "/favicon.svg";
-  const head = document.head;
-  let link = head.querySelector<HTMLLinkElement>('link[rel="icon"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "icon";
-    head.appendChild(link);
-  }
-  // Remove + re-insert rather than mutate href in place — more reliable across
-  // engines (spec §4).
-  link.remove();
-  link.setAttribute("href", href);
-  head.appendChild(link);
-}
-
-// Panel default honors a variant already chosen (dial UI or a test driver
-// writing localStorage) so reloads and CDP runs land on the stored variant.
-function storedVariant(): LogoVariant {
-  try {
-    return localStorage.getItem("logo-variant") === "key" ? "key" : "grid";
-  } catch {
-    return "grid";
-  }
-}
-
 export function SiteLogoWithDials() {
   const d = DEFAULT_LOGO_DIALS;
+
+  // One-time cleanup: the retired key/grid variant switch used to persist its
+  // choice here; stale values would otherwise linger in users' browsers.
+  useEffect(() => {
+    try {
+      localStorage.removeItem("logo-variant");
+    } catch {
+      // storage denied — nothing to clean up.
+    }
+  }, []);
+
   const params = useDialKit(
     "Logo",
     {
-      variant: { type: "select", options: ["grid", "key"], default: storedVariant() },
-      key: {
-        travel: [d.key.travel, 0, 10, 0.5],
-        pressMs: [d.key.pressMs, 0, 120, 2],
-        releaseMs: [d.key.releaseMs, 120, 700, 10],
-        radius: [d.key.radius, 2, 14, 0.5],
-        legend: [d.key.legend, 8, 20, 0.5],
-      },
-      grid: {
-        cellGap: [d.grid.cellGap, 1, 8, 0.5],
-        sweepPerCell: [d.grid.sweepPerCell, 0, 50, 1],
-        forceFallback: d.grid.forceFallback,
-        shimmerMs: [d.grid.shimmerMs, 400, 2400, 50],
-        shimmerMin: [d.grid.shimmerMin, 0.1, 0.9, 0.05],
-        shimmerPerCell: [d.grid.shimmerPerCell, 0, 160, 5],
-        forceThinking: d.grid.forceThinking,
-      },
+      size: [d.size, 20, 56, 2],
+      cellGap: [d.cellGap, 0.5, 8, 0.1],
+      cellRadius: [d.cellRadius, 0, 50, 1],
+      scrimOpacity: [d.scrimOpacity, 0, 0.9, 0.05],
+      forceFallback: d.forceFallback,
+      pulseGrowMs: [d.pulseGrowMs, 60, 500, 10],
+      pulseHoldMs: [d.pulseHoldMs, 0, 800, 10],
+      pulseFadeMs: [d.pulseFadeMs, 60, 800, 10],
+      pulseGapMs: [d.pulseGapMs, 0, 600, 10],
+      // Retuned for the 3×3 (9-cell) field: max blob is 6 of 9 cells (was
+      // 4–9 of 16) so a maxed-out dial still reads as a blob, not a flood.
+      pulseMaxCells: [d.pulseMaxCells, 2, 6, 1],
+      forceThinking: d.forceThinking,
     },
     { id: "site-logo", persist: { key: "joanna-logo-dials" } },
   );
 
-  const variant = params.variant as LogoVariant;
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("logo-variant", variant);
-    } catch {
-      // storage denied — preview still works for this session.
-    }
-    swapFavicon(variant);
-  }, [variant]);
-
   const dials: LogoDialsValues = {
-    key: {
-      travel: params.key.travel,
-      pressMs: params.key.pressMs,
-      releaseMs: params.key.releaseMs,
-      radius: params.key.radius,
-      legend: params.key.legend,
-    },
-    grid: {
-      cellGap: params.grid.cellGap,
-      sweepPerCell: params.grid.sweepPerCell,
-      forceFallback: params.grid.forceFallback,
-      shimmerMs: params.grid.shimmerMs,
-      shimmerMin: params.grid.shimmerMin,
-      shimmerPerCell: params.grid.shimmerPerCell,
-      forceThinking: params.grid.forceThinking,
-    },
+    size: params.size,
+    cellGap: params.cellGap,
+    cellRadius: params.cellRadius,
+    scrimOpacity: params.scrimOpacity,
+    forceFallback: params.forceFallback,
+    pulseGrowMs: params.pulseGrowMs,
+    pulseHoldMs: params.pulseHoldMs,
+    pulseFadeMs: params.pulseFadeMs,
+    pulseGapMs: params.pulseGapMs,
+    pulseMaxCells: params.pulseMaxCells,
+    forceThinking: params.forceThinking,
   };
 
-  return <SiteLogo variant={variant} dials={dials} />;
+  return <SiteLogo dials={dials} />;
 }

@@ -325,11 +325,6 @@ export function CursorTrail({
         spawnTrail(Math.random() * 800);
       }
     };
-    const themeObserver = new MutationObserver(() => {
-      cellColor = readCellColor();
-      if (cells.size > 0) startRender();
-    });
-
     resize();
 
     if (suspended) {
@@ -343,10 +338,6 @@ export function CursorTrail({
 
     window.addEventListener("resize", resize);
     document.addEventListener("visibilitychange", onVisibilityChange);
-    themeObserver.observe(document.documentElement, {
-      attributeFilter: ["data-theme"],
-      attributes: true,
-    });
 
     if (targetWandererCount > 0) {
       maintainTrails();
@@ -371,7 +362,6 @@ export function CursorTrail({
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibilityChange);
-      themeObserver.disconnect();
       cells.clear();
       trails.length = 0;
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);

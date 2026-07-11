@@ -563,15 +563,6 @@ h1 span {
   line-height: 1.4;
 }
 
-/* Only the essay card still renders .card-meta (a bare year line). */
-.card-meta {
-  margin: 0 0 16px;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
 .card-summary {
   margin: 14px 0 0;
   color: var(--muted);

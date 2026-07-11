@@ -2464,33 +2464,37 @@ h1 span {
   justify-content: center;
   width: 48px;
   height: 48px;
-  /* The 32px grid is centred in a 48px box; trim that visual inset so the mark
-     stays flush with the rail edge and keeps the header alignment. */
+  /* The grid (24px by default, dial-driven) is centred in a 48px box; the
+     negative margins trim part of that visual inset so the mark hangs near the
+     rail edge. Tuned by eye alongside the 24px dial defaults — if the size
+     dial changes materially, re-check this trim. */
   margin: 0 -4px 0 -8px;
   padding: 0;
 }
 
 /* --- GridLogo — bare 3×3 activity grid ---------------------------------
-   Borderless (no tile, no fill): the grid fills its 32px box edge to edge, in
-   the same --contrib-* cell language as the rail graph (the favicon's cube
-   glyph is its own mark now, but shares the ramp language via faviconPulse's
-   busy-state overlay). */
+   Borderless (no tile, no fill): the grid fills its dial-sized box (24px
+   default) edge to edge, in the favicon's orange ramp language (the rail
+   graph keeps the quieter --contrib-* greys).
+   All --gridlogo-* vars are set inline by GridLogo from DEFAULT_LOGO_DIALS —
+   the fallbacks here mirror those defaults and are dead in practice; keep
+   them in sync when the dial defaults change. */
 .gridlogo {
   /* Glow colour for the thinking pulse — the ramp's hottest step, so the blob
-     reads as activity surging; one family with the cube favicon. */
+     reads as activity surging; one family with the favicon. */
   --glow-color: #d63e00;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: var(--gridlogo-gap, 3px);
-  width: var(--gridlogo-size, 32px);
-  height: var(--gridlogo-size, 32px);
+  gap: var(--gridlogo-gap, 2.08px);
+  width: var(--gridlogo-size, 24px);
+  height: var(--gridlogo-size, 24px);
 }
 .gridlogo-cell {
   position: relative; /* anchors the scrim/glow overlays below */
-  /* Chunky rounding — the cube favicon's softness carried into the mark
-     (percentage tracks cell size as the gap dial changes it; dial-driven). */
-  border-radius: var(--gridlogo-cell-radius, 34%);
+  /* Gentle rounding (16% default) — softened square, not bubble; percentage
+     tracks cell size as the gap dial changes it; dial-driven. */
+  border-radius: var(--gridlogo-cell-radius, 16%);
   /* Activity ramp in the favicon's orange family (same steps as the busy
      canvas in faviconPulse.ts) — NOT the rail's --contrib-* greys; the rail
      graph keeps its own quieter language. */
@@ -2533,7 +2537,7 @@ h1 span {
   transition: opacity 260ms ease-out;
 }
 .gridlogo[data-thinking="on"] .gridlogo-cell::before {
-  opacity: var(--gridlogo-scrim, 0.55);
+  opacity: var(--gridlogo-scrim, 0.5);
 }
 .gridlogo-cell::after {
   background: var(--glow-color);

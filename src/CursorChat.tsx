@@ -26,11 +26,6 @@ import {
 } from "./chatEvents";
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
-import {
-  playKeyClick,
-  setKeyClickMuted,
-  useKeyClickMuted,
-} from "./keyclick";
 
 type ChatStatus =
   | "draft"
@@ -575,7 +570,6 @@ export function CursorChat({
 
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
   const activeZoneTag = getZoneTagLabel(activeThread?.zoneContext);
-  const soundMuted = useKeyClickMuted();
 
   // Engine download progress (0..1). While a thread is "loading" but the model
   // is still downloading, the UI shows an honest progress state instead of
@@ -991,12 +985,6 @@ export function CursorChat({
       return;
     }
 
-    // The send keycap clicks like the key it draws itself as. After the
-    // guards: a rejected submit (empty draft, already generating) makes no
-    // sound. Every submit path is a user gesture (click / Enter / chip), so
-    // the lazy AudioContext creation inside is autoplay-safe.
-    playKeyClick();
-
     const context = captureContext(
       activeThread.pageX,
       activeThread.pageY,
@@ -1079,7 +1067,6 @@ export function CursorChat({
     if (!thread || thread.status !== "consent" || !thread.context) return;
 
     consentGivenThisSession = true;
-    playKeyClick();
 
     const { id, prompt, context, history, zoneContext } = thread;
     setThreads((current) =>
@@ -1306,46 +1293,6 @@ export function CursorChat({
                 {activeZoneTag}
               </span>
             ) : null}
-            <button
-              className="cursor-chat-iconbtn"
-              type="button"
-              aria-pressed={!soundMuted}
-              aria-label="Send sound"
-              title={soundMuted ? "Send sound: off" : "Send sound: on"}
-              onClick={() => {
-                const next = !soundMuted;
-                setKeyClickMuted(next);
-                // Unmuting previews the click — the toggle is its own demo.
-                if (!next) playKeyClick();
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-                <path
-                  d="M2 4.5h1.8L7 2v8L3.8 7.5H2z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinejoin="round"
-                  fill="none"
-                />
-                {soundMuted ? (
-                  <path
-                    d="M8.6 4.6L11 7.4M11 4.6L8.6 7.4"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                ) : (
-                  <path
-                    d="M8.7 4.1c1.1 1 1.1 2.8 0 3.8"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                )}
-              </svg>
-            </button>
             {activeThread.status === "done" ? (
               <button
                 className="cursor-chat-iconbtn"

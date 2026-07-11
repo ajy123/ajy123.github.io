@@ -31,13 +31,13 @@ export interface GridDials {
 export type LogoDialsValues = GridDials;
 
 export const DEFAULT_LOGO_DIALS: LogoDialsValues = {
-  size: 32,
-  // 3×3 cells are bigger than the old 4×4's, so the gap shrinks to match —
-  // 2.5 read as a wide moat once cells grew; 1.6 keeps them close-packed.
-  cellGap: 1.6,
-  // ≈ the cube favicon's chunky rounding, carried into the mark.
-  cellRadius: 34,
-  scrimOpacity: 0.55,
+  // Tuned live via DialKit (2026-07): a smaller, airier mark — 24px with a
+  // wider 2.6 gap and gentler 16% rounding reads crisper beside the heading
+  // than the original chunky 32px/34% take.
+  size: 24,
+  cellGap: 2.6,
+  cellRadius: 16,
+  scrimOpacity: 0.5,
   forceFallback: false,
   // Cluster pulse cadence — the video's measured ~850ms cycle (grow+hold+
   // fade+gap). minCells is fixed at 2 by design, so it has no dial.

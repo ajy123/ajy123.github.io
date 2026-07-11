@@ -39,6 +39,7 @@ import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
 import { isWebGPUAvailable, preloadEngine } from "./llmEngine";
+import { initFaviconPulse } from "./faviconPulse";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
 import deeliCaseStudyPosterUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -1199,6 +1200,18 @@ function App() {
     </>
   );
 }
+
+// One-time cleanup: the site is light-only now (the theme switch is retired),
+// so drop any persisted choice left in returning visitors' browsers.
+try {
+  localStorage.removeItem("theme");
+} catch {
+  // storage denied — nothing to clean up.
+}
+
+// Animate the browser-tab favicon while the in-page LLM is busy (mirrors the
+// logo's cluster pulse; restores the static favicon at rest).
+initFaviconPulse();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

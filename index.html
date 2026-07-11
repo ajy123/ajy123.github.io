@@ -7,31 +7,7 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" sizes="32x32" href="/favicon-32.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta
-      name="theme-color"
-      content="#ffffff"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#0F0E0D"
-      media="(prefers-color-scheme: dark)"
-    />
-    <script>
-      (function () {
-        var stored = null;
-        try {
-          stored = localStorage.getItem("theme");
-        } catch (e) {}
-        var theme =
-          stored === "light" || stored === "dark"
-            ? stored
-            : matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
-        document.documentElement.dataset.theme = theme;
-      })();
-    </script>
+    <meta name="theme-color" content="#ffffff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

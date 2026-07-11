@@ -539,10 +539,10 @@ h1 span {
 .card-eyebrow {
   margin: 0 0 6px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
   line-height: 1.4;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -550,50 +550,26 @@ h1 span {
   margin: 0 0 6px;
   color: var(--ink);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .card-role {
   margin: 0 0 4px;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.card-meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0 0 16px;
   color: var(--muted);
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
 }
 
-.card-meta-copy {
-  min-width: 0;
-}
-
-.card-meta a {
-  flex-shrink: 0;
-  margin-left: auto;
+/* Only the essay card still renders .card-meta (a bare year line). */
+.card-meta {
+  margin: 0 0 16px;
   color: var(--muted);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 3px;
-  transition:
-    color 180ms var(--ease),
-    text-decoration-color 180ms var(--ease);
-}
-
-.card-meta a:hover,
-.card-meta a:focus-visible {
-  color: var(--ink);
-  text-decoration-color: currentColor;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 .card-summary {
@@ -602,6 +578,69 @@ h1 span {
   font-size: 14px;
   font-weight: 400;
   line-height: 1.55;
+}
+
+/* Work-card role row: role copy left, a quiet uppercase status flag or the
+ * live-site link right-aligned on the same line. */
+.card-role-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 16px;
+}
+
+.card-role-row .card-role {
+  margin: 0;
+}
+
+.card-eyebrow-flag {
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+a.card-eyebrow-flag {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color 180ms var(--ease),
+    text-decoration-color 180ms var(--ease);
+}
+
+a.card-eyebrow-flag:hover,
+a.card-eyebrow-flag:focus-visible {
+  color: var(--ink-strong);
+  text-decoration-color: currentColor;
+}
+
+/* Live-project media: the link is an invisible overlay above the video and
+ * below the play/pause control, so the control never nests inside the anchor. */
+.work-media-frame {
+  position: relative;
+}
+
+.work-media-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.work-media-frame .work-media-control {
+  z-index: 2;
+}
+
+.work-media-frame:hover .work-media-control,
+.work-media-frame:focus-within .work-media-control {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Full-width media, square corners, flat — depth comes from the image only. */
@@ -1351,6 +1390,22 @@ h1 span {
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
+}
+
+/* Action pills (kind="action") perform navigation instead of opening chat —
+ * full accent fill + ↗ glyph so the two cursor grammars never read alike:
+ * orange filled = go somewhere, warm neutral = ask something. */
+.contextual-ask-hint[data-kind="action"] .contextual-ask-surface {
+  background: var(--accent);
+}
+
+.contextual-ask-hint[data-kind="action"] .contextual-ask-copy {
+  color: #fff;
+}
+
+.contextual-ask-hint[data-kind="action"] .contextual-ask-key {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .contextual-ask-copy {

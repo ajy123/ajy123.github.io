@@ -98,7 +98,7 @@ const workItems: WorkItem[] = [
     title: "From keyword search to a research chat",
     role: "Led design + part PM, team of 5",
     year: "2026",
-    status: "Case study coming soon",
+    status: "Coming soon",
     askHint: "Ask how this became a chat",
     askKind: "project",
     askAnchorPreference: "cursor",
@@ -126,7 +126,6 @@ const workItems: WorkItem[] = [
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
-    status: "Case study coming soon",
     askHint: "Ask what shipped for Computex",
     askKind: "project",
     askAnchorPreference: "cursor",
@@ -623,7 +622,13 @@ function WorkMedia({ item }: { item: WorkItem }) {
         type="button"
         aria-label={isPlaying ? "Pause preview" : "Play preview"}
         title={isPlaying ? "Pause preview" : "Play preview"}
-        onClick={togglePlayback}
+        data-ask-ignore="true"
+        onClick={(event) => {
+          // Keep playback toggling from bubbling into the card's askable
+          // region (and the "See it live" overlay on live projects).
+          event.stopPropagation();
+          void togglePlayback();
+        }}
       >
         {isPlaying ? <PauseGlyph /> : <PlayGlyph />}
       </button>
@@ -956,6 +961,87 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
   );
 }
 
+function WorkCardMedia({ item }: { item: WorkItem }) {
+  if (!item.liveHref) return <WorkMedia item={item} />;
+
+  // Action zone: the media of a live project navigates to it. The cursor hint
+  // becomes an accent "See it live" pill (kind="action") instead of a chat ask
+  // — media pill = go somewhere, text pill = ask something. The link is an
+  // invisible overlay (a sibling of the media, never a wrapper) so the
+  // play/pause button stays valid, independently reachable interactive
+  // content instead of a button nested inside an anchor.
+  return (
+    <div
+      className="work-media-frame"
+      data-ask-hint="See it live"
+      data-ask-kind="action"
+      data-ask-anchor="cursor"
+    >
+      <WorkMedia item={item} />
+      <a
+        className="work-media-link"
+        href={item.liveHref}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Open ${item.title} live site (video preview)`}
+        onClick={(event) => event.stopPropagation()}
+      />
+    </div>
+  );
+}
+
+function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+  return (
+    <Reveal
+      as="article"
+      className="work-card case-card"
+      delay={120 + index * 90}
+    >
+      <p className="card-eyebrow">
+        {item.year} · {item.eyebrow}
+      </p>
+      <AskableRegion
+        className="work-card-askable"
+        hint={item.askHint}
+        kind={item.askKind}
+        anchorPreference={item.askAnchorPreference}
+        promptChips={item.askPromptChips}
+        followUpPromptChips={item.askFollowUpPromptChips}
+        contextText={[
+          item.title,
+          item.role,
+          item.year,
+          item.status,
+          item.summary,
+          item.liveHref ? `Live site: ${item.liveHref}` : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <h2 className="card-title">{item.title}</h2>
+        <div className="card-role-row">
+          <p className="card-role">{item.role}</p>
+          {item.liveHref ? (
+            <a
+              className="card-eyebrow-flag"
+              href={item.liveHref}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(event) => event.stopPropagation()}
+            >
+              See it live ↗
+            </a>
+          ) : item.status ? (
+            <p className="card-eyebrow-flag">{item.status}</p>
+          ) : null}
+        </div>
+        <WorkCardMedia item={item} />
+        {item.summary ? <p className="card-summary">{item.summary}</p> : null}
+      </AskableRegion>
+    </Reveal>
+  );
+}
+
 function WorkCanvas() {
   return (
     <main className="work-canvas" aria-label="Selected work">
@@ -967,55 +1053,7 @@ function WorkCanvas() {
 
       <div className="work-grid">
         {workItems.map((item, index) => (
-          <Reveal
-            as="article"
-            className="work-card case-card"
-            delay={120 + index * 90}
-            key={item.title}
-          >
-            <p className="card-eyebrow">{item.eyebrow}</p>
-            <AskableRegion
-              className="work-card-askable"
-              hint={item.askHint}
-              kind={item.askKind}
-              anchorPreference={item.askAnchorPreference}
-              promptChips={item.askPromptChips}
-              followUpPromptChips={item.askFollowUpPromptChips}
-              contextText={[
-                item.title,
-                item.role,
-                item.year,
-                item.status,
-                item.summary,
-                item.liveHref ? `Live site: ${item.liveHref}` : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              <h2 className="card-title">{item.title}</h2>
-              <p className="card-role">{item.role}</p>
-              <p className="card-meta">
-                <span className="card-meta-copy">
-                  {item.year}
-                  {item.status ? ` · ${item.status}` : ""}
-                </span>
-                {item.liveHref ? (
-                  <a
-                    href={item.liveHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Open ${item.title} live site`}
-                  >
-                    See it live ↗
-                  </a>
-                ) : null}
-              </p>
-              <WorkMedia item={item} />
-              {item.summary ? (
-                <p className="card-summary">{item.summary}</p>
-              ) : null}
-            </AskableRegion>
-          </Reveal>
+          <WorkCard item={item} index={index} key={item.title} />
         ))}
       </div>
 

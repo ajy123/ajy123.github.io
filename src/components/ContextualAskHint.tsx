@@ -12,7 +12,7 @@ import {
 } from "../chatEvents";
 import { TextScramble } from "./TextScramble";
 
-export type AskableKind = "project" | "essay" | "profile" | "contact";
+export type AskableKind = "project" | "essay" | "profile" | "contact" | "action";
 
 export type AskAnchorPreference = "cursor" | "edge" | "margin";
 
@@ -79,7 +79,20 @@ function isEditableTarget(target: EventTarget | null) {
 
 function getAskableElement(target: EventTarget | null) {
   if (!(target instanceof Element)) return null;
+  // Controls inside a zone (e.g. the media play/pause button) opt out so the
+  // pill never competes with their own affordance.
+  if (target.closest("[data-ask-ignore]")) return null;
   return target.closest<HTMLElement>("[data-ask-hint]");
+}
+
+// "action" zones don't converse — activating one performs the zone's own
+// navigation (the zone root if it is a link, else its first link).
+function activateActionZone(hint: ActiveHint) {
+  const link =
+    hint.element instanceof HTMLAnchorElement
+      ? hint.element
+      : hint.element.querySelector<HTMLAnchorElement>("a[href]");
+  link?.click();
 }
 
 function canShowHoverHints() {
@@ -368,6 +381,12 @@ export function ContextualAskHint({
     const current = activeRef.current;
     if (!current) return;
 
+    if (current.kind === "action") {
+      activateActionZone(current);
+      hide();
+      return;
+    }
+
     requestChatForHint(current, anchorRef.current);
     hide();
   };
@@ -475,11 +494,11 @@ export function ContextualAskHint({
 
       if (event.key === "Enter" && focusedZone) {
         // Native activation must win: never swallow Enter for real controls
-        // (button / role=switch / the theme-toggle .site-logo) that happen to
-        // live inside a [data-ask-hint] zone.
+        // (button / role=switch / links / the theme-toggle .site-logo) that
+        // happen to live inside or be a [data-ask-hint] zone.
         if (
           event.target instanceof Element &&
-          event.target.closest('button, [role="switch"], .site-logo')
+          event.target.closest('button, [role="switch"], a[href], .site-logo')
         ) {
           return;
         }
@@ -489,6 +508,13 @@ export function ContextualAskHint({
           activeRef.current?.element === focusedZone
             ? activeRef.current
             : readActiveHint(focusedZone);
+        // Explicit action check — the a[href] exclusion above only covers
+        // zones whose root is itself a link.
+        if (focusedHint.kind === "action") {
+          activateActionZone(focusedHint);
+          hide();
+          return;
+        }
         const anchor =
           activeRef.current?.element === focusedZone && visibleRef.current
             ? anchorRef.current
@@ -541,7 +567,9 @@ export function ContextualAskHint({
       data-kind={active.kind}
       data-stage={visualStage}
       type="button"
-      aria-label={`Open chat suggestions: ${copy}`}
+      aria-label={
+        active.kind === "action" ? copy : `Open chat suggestions: ${copy}`
+      }
       onMouseDown={(event) => event.preventDefault()}
       onClick={openActiveChat}
       onPointerLeave={(event) => {
@@ -557,7 +585,9 @@ export function ContextualAskHint({
       }
     >
       <span className="contextual-ask-surface">
-        <span className="contextual-ask-key">/</span>
+        <span className="contextual-ask-key">
+          {active.kind === "action" ? "↗" : "/"}
+        </span>
         <span className="contextual-ask-copy">
           <TextScramble
             text={copy}

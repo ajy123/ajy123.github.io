@@ -137,19 +137,19 @@ const AUDIENCE_PROMPTS: Record<
       "what did she build for Deeli?",
       "what does Joanna focus on?",
       "did she build Deeli's site in a week?",
-      "what industries did that work reach?",
+      "is Joanna a designer and engineer?",
       "what is Joanna's email?",
     ],
     placeholder: "or ask what's on your checklist",
   },
   "product design": {
     chips: [
-      "what is Joanna's AI product focus?",
+      "does Joanna build AI products that hold data rigor and design quality equally?",
       "what was her role on the brand identity?",
-      "does she work across Figma and code?",
+      "does Joanna work across Figma and code?",
       "what did she build in a week?",
-      "which industries opened Deeli pilots?",
-      "where is the Deeli site?",
+      "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
+      "is Joanna a designer and engineer?",
     ],
     placeholder: "or ask how anything here was made",
   },
@@ -159,7 +159,7 @@ const AUDIENCE_PROMPTS: Record<
       "what did she build for Deeli?",
       "what does Joanna focus on?",
       "did she build Deeli's site in a week?",
-      "what industries did the Deeli work reach?",
+      "is Joanna a designer and engineer?",
       "what is Joanna's email?",
     ],
     placeholder: "or ask anything about her work",
@@ -469,7 +469,7 @@ function buildMessages(
     "Answer the visitor's question about Joanna and the page they are looking at. " +
     "Ground your answer in the site profile and page context below. Prefer the selected text when present. " +
     "Use only facts explicitly stated in that context. Do not speculate, infer missing implementation details, or add examples that are not written there. " +
-    "If a fact is not in the context, say you don't know rather than inventing it. Answer in no more than two short sentences. " +
+    "If a fact is not in the context, say you don't know rather than inventing it. For a yes-or-no question, begin with Yes or No and restate only the supporting fact. Answer in no more than two short sentences. " +
     (audienceGuidance ? `${audienceGuidance} ` : "") +
     "Keep replies direct, plain, and helpful.\n\n" +
     SITE_CONTEXT +

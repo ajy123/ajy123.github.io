@@ -102,14 +102,14 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "did the chat replace keyword search?",
-      "did it cut report time by 50%+?",
+      "does the page title say from keyword search to a research chat?",
+      "does the page say time-to-report was cut 50%+?",
       "does it pin down intent before answering?",
     ],
     askFollowUpPromptChips: [
-      "does the chat show its work as it builds?",
-      "did it create consult-grade reports?",
-      "did Joanna lead design and part PM on a team of 5?",
+      "does the page say the chat shows its work as it builds?",
+      "does the page use the phrase consult-grade reports?",
+      "does the page list Joanna's role as led design + part PM, team of 5?",
     ],
     summary:
       "Designed a chat that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
@@ -131,12 +131,12 @@ const workItems: WorkItem[] = [
     askAnchorPreference: "cursor",
     askPromptChips: [
       "did the identity include a brand site and sales kit?",
-      "did the brand work take one week?",
-      "was it built for the Computex debut?",
+      "were Deeli's brand site and sales kit built in a week?",
+      "does the page say the Deeli work was built for the Computex debut?",
     ],
     askFollowUpPromptChips: [
       "was Joanna's role solo design and build?",
-      "did it open pilots in semiconductors, aerospace, and research?",
+      "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
       "is the live site deeli.ai?",
     ],
     summary:
@@ -163,13 +163,13 @@ const aiPracticeItems: EssayItem[] = [
     askAnchorPreference: "edge",
     askPromptChips: [
       "does the essay argue that the eval becomes the spec?",
-      "can model-written sentences change every run?",
+      "does the essay say generated paragraphs are behavior, not static components?",
       "does an eval define product quality?",
     ],
     askFollowUpPromptChips: [
       "is the interface only half the AI product spec?",
       "does a test tell the model what good work means?",
-      "can a static layout spec control fresh model sentences?",
+      "does the essay say exact states in a conventional product spec still matter?",
     ],
     summary:
       "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality.",
@@ -489,11 +489,11 @@ function ProfileRail() {
           askPromptChips={[
             "what is Joanna's role?",
             "what kind of products does she build?",
-            "does she work across design and code?",
+            "does Joanna work across Figma and code?",
           ]}
           askFollowUpPromptChips={[
             "what is her product focus?",
-            "what did she build for Deeli?",
+            "did Joanna build Deeli's site in a week?",
             "what is Joanna's email?",
           ]}
           askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."

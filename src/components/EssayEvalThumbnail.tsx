@@ -153,17 +153,19 @@ const renderPath = (
 type EssayEvalThumbnailProps = {
   className?: string;
   interactive?: boolean;
+  active?: boolean;
 };
 
 export function EssayEvalThumbnail({
   className = "",
   interactive = true,
+  active = false,
 }: EssayEvalThumbnailProps) {
   const [hovered, setHovered] = useState(false);
   const rawMaskId = useId().replace(/:/g, "");
   const topQuarterMaskId = `essay-eval-top-quarter-mask-${rawMaskId}`;
   const prefersReducedMotion = useReducedMotion();
-  const isActive = hovered && !prefersReducedMotion;
+  const isActive = (hovered || active) && !prefersReducedMotion;
 
   return (
     <motion.div

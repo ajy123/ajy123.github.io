@@ -51,6 +51,7 @@ import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
 import { isWebGPUAvailable, preloadEngine } from "./llmEngine";
+import { initAnalytics } from "./analytics";
 import { initFaviconPulse } from "./faviconPulse";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
@@ -1445,6 +1446,8 @@ try {
 // Animate the browser-tab favicon while the in-page LLM is busy (mirrors the
 // logo's cluster pulse; restores the static favicon at rest).
 initFaviconPulse();
+
+initAnalytics();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

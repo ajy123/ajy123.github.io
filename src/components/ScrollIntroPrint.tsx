@@ -194,7 +194,12 @@ export function ScrollIntroPrint({
             transition={{ type: "spring", stiffness: 220, damping: 18 }}
           >
             <span className="intro-cta-line">
-              <span className="intro-key--paper">Enter ↵</span> to enter
+              {/* Both copies render; CSS's pointer:coarse gate picks one, the
+                  same mechanism as .rail-ask-key. */}
+              <span className="intro-cta-copy--fine">
+                <span className="intro-key--paper">Enter ↵</span> to enter
+              </span>
+              <span className="intro-cta-copy--coarse">tap to enter</span>
             </span>
           </motion.span>
         </button>

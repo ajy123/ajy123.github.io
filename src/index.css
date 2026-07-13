@@ -1412,6 +1412,27 @@ a.card-eyebrow-flag:focus-visible {
     0 0 0 rgba(31, 30, 29, 0);
 }
 
+/* Coarse pointers have no Enter key — swap the keycap sentence for tap copy.
+   Same CSS-only gate as .rail-ask-key, so hybrid devices that attach or shed
+   a mouse re-evaluate live, with both variants inside the measured CTA. */
+.intro-cta-copy--fine {
+  display: contents;
+}
+
+.intro-cta-copy--coarse {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .intro-cta-copy--fine {
+    display: none;
+  }
+
+  .intro-cta-copy--coarse {
+    display: inline;
+  }
+}
+
 .intro-skip {
   position: absolute;
   top: 14px;
@@ -2562,6 +2583,11 @@ a.card-eyebrow-flag:focus-visible {
     min-height: auto;
     padding: 48px 0 32px;
     box-shadow: none;
+    /* Desktop's space-between spreads identity/footer across a fixed 100dvh
+       rail; stacked here the container is content-height, so any leftover
+       free space must not become a gap — flow the two blocks together and
+       let .rail-footer's 44px margin-top be the only rhythm between them. */
+    justify-content: flex-start;
   }
 
   .profile-content {
@@ -2625,18 +2651,81 @@ a.card-eyebrow-flag:focus-visible {
 
   .essay-dialog-close {
     top: 0;
-    width: 38px;
-    height: 38px;
-    margin-bottom: -38px;
   }
 
   .essay-dialog-header {
-    padding-right: 48px;
+    /* Keeps ~10px clearance past the 44px touch-size close button. */
+    padding-right: 54px;
     margin-bottom: 22px;
   }
 
   .essay-dialog-hero {
     margin-bottom: 28px;
+  }
+}
+
+/* 44px meets the touch-target minimum (was 40px, mouse-era sizing). Same
+   compound gate as the chat controls: coarse pointers need it at any width —
+   tablets open this dialog well above 860px. Desktop header padding (56px)
+   already clears 44px, so only the button grows here. */
+@media (pointer: coarse), (max-width: 860px) {
+  .essay-dialog-close {
+    width: 44px;
+    height: 44px;
+    margin-bottom: -44px;
+  }
+}
+
+/* thin scrollbar-width reads as barely-there for a mouse in a narrow window;
+   fine pointers get the OS's normal-weight scrollbar as an affordance, still
+   quiet (muted, no track fill). */
+@media (max-width: 860px) and (pointer: fine) {
+  .essay-carousel {
+    scrollbar-width: auto;
+    scrollbar-color: var(--muted) transparent;
+  }
+}
+
+/* Small phones: the 860px step's 40px ghost heading and 80% carousel card
+   still crowd a ~375-390px viewport. Additive step-down only. */
+@media (max-width: 560px) {
+  .section-heading {
+    font-size: 32px;
+  }
+
+  .portfolio-shell {
+    padding: 0 16px;
+  }
+
+  /* Slimmer next-card peek than the 80% used at ≤860 — leaves more of the
+     active card breathing room on the narrowest phones. */
+  .essay-carousel > * {
+    flex-basis: 92%;
+  }
+}
+
+/* Between the stacked mobile layout and the full 1200px desktop shell, the
+   fixed 280px rail crowds work-grid down to ~262px columns. Give the rail
+   40px and the gap 24px back to the content column (64px total ≈ one extra
+   card gutter) so two work columns stay readable further down. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .portfolio-shell {
+    gap: 40px;
+  }
+
+  .profile-rail,
+  .profile-sticky {
+    width: 240px;
+  }
+}
+
+/* Even with the narrower rail, two work columns dip under ~300px until the
+   window clears ~990px — run a single column there so cards keep their
+   proportions next to the sticky rail. */
+@media (min-width: 861px) and (max-width: 990px) {
+  .work-grid {
+    grid-template-columns: 1fr;
+    row-gap: 42px;
   }
 }
 

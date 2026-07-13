@@ -602,6 +602,29 @@ h1 span {
   row-gap: 64px;
 }
 
+/* AI Practice is a carousel: two essays in view, the rest scroll in.
+   Snap keeps cards aligned to the same left edge as the grid above.
+   The scroll container clips overflow, so padding + negative margin keep
+   the cards' 8px-offset focus rings inside the scrollport. */
+.essay-carousel {
+  display: flex;
+  gap: 16px;
+  margin: -12px -12px 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 12px;
+  padding: 12px 12px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline) transparent;
+}
+
+.essay-carousel > * {
+  flex: 0 0 calc(50% - 8px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
 /* case-card: transparent, no border/shadow, eyebrow → title → meta → image. */
 .work-card {
   display: flex;
@@ -961,6 +984,127 @@ a.card-eyebrow-flag:focus-visible {
 
 .essay-dialog-section p + p {
   margin-top: 14px;
+}
+
+.essay-dialog-figure {
+  margin: 18px 0 0;
+  padding: clamp(16px, 3vw, 26px) clamp(12px, 2.5vw, 20px) clamp(12px, 2.5vw, 18px);
+  background: var(--surface-subtle);
+  overflow-x: auto;
+}
+
+/* min-width keeps the figures' 8.5px mono labels legible on phones —
+   narrow screens scroll the figure instead of shrinking it to ~50%. */
+.essay-dialog-figure > svg {
+  display: block;
+  width: 100%;
+  min-width: 540px;
+  height: auto;
+}
+
+.essay-dialog-section .essay-figure-caption {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.essay-scenario-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.essay-scenario-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 12px;
+  background: var(--surface-elevated);
+}
+
+.essay-scenario-card svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.essay-dialog-section .essay-scenario-title {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.essay-dialog-section .essay-scenario-desc {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.essay-coverage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.essay-coverage-table th {
+  padding: 4px 8px 6px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.essay-coverage-table th:first-child {
+  text-align: left;
+}
+
+.essay-coverage-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--hairline-faint);
+  text-align: center;
+  line-height: 0;
+}
+
+.essay-coverage-table td.scenario {
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.essay-coverage-table svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.essay-coverage-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.essay-coverage-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .essay-dialog-takeaway {
@@ -2523,6 +2667,12 @@ a.card-eyebrow-flag:focus-visible {
   .work-grid {
     grid-template-columns: 1fr;
     row-gap: 42px;
+  }
+
+  /* 80% keeps the next card's peek above Reveal's 0.16 intersection
+     threshold, so the peeking card is visible, not a blank strip. */
+  .essay-carousel > * {
+    flex-basis: 80%;
   }
 
   .cursor-chat {

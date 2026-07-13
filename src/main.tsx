@@ -50,7 +50,7 @@ import { TextScramble } from "./components/TextScramble";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
-import { isWebGPUAvailable, preloadEngine } from "./llmEngine";
+import { initAnalytics } from "./analytics";
 import { initFaviconPulse } from "./faviconPulse";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
@@ -1353,25 +1353,6 @@ function App() {
   };
 
   useEffect(() => {
-    if (!isWebGPUAvailable()) return;
-    // Consent gate: a first-time visitor has not agreed to the ~350MB model
-    // download, so preload only for returning visitors who already loaded it
-    // once. Everyone else waits for the in-chat consent prompt.
-    let hasLoadedBefore = false;
-    try {
-      hasLoadedBefore = localStorage.getItem("joanna-llm-loaded") === "1";
-    } catch {
-      hasLoadedBefore = false;
-    }
-    if (hasLoadedBefore) {
-      void preloadEngine().catch(() => {
-        // Returning-user warmup is opportunistic. The chat's Retry path owns
-        // surfacing a load failure if they open it after a failed preload.
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     return () => {
       if (exitTimerRef.current !== null) {
         window.clearTimeout(exitTimerRef.current);
@@ -1445,6 +1426,8 @@ try {
 // Animate the browser-tab favicon while the in-page LLM is busy (mirrors the
 // logo's cluster pulse; restores the static favicon at rest).
 initFaviconPulse();
+
+initAnalytics();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

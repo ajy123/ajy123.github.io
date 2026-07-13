@@ -7,16 +7,12 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import type { ChatCompletionMessageParam } from "@mlc-ai/web-llm";
 import {
-  MODEL_DOWNLOAD_MB,
+  ChatRequestError,
   isAbortError,
-  isEngineReady,
-  isWebGPUAvailable,
-  onInitProgress,
-  preloadEngine,
   streamChat,
-} from "./llmEngine";
+  type ChatMessage,
+} from "./chatApi";
 import {
   CURSOR_CHAT_OPENED_EVENT,
   CURSOR_CHAT_REQUEST_OPEN_EVENT,
@@ -27,6 +23,11 @@ import {
 } from "./chatEvents";
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
+import {
+  trackChatQuery,
+  trackChatResponse,
+  type ChatQuerySource,
+} from "./analytics";
 // Same posters the WorkCanvas case-study cards use (see workItems in main.tsx),
 // reused as inline thumbnails when a response names one of those projects.
 import researchChatThumbUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -34,39 +35,10 @@ import brandIdentityThumbUrl from "../images/case-study-test-poster.jpg?url";
 
 type ChatStatus =
   | "draft"
-  | "consent"
   | "loading"
   | "streaming"
   | "done"
   | "error";
-
-const LLM_LOADED_KEY = "joanna-llm-loaded";
-
-// Consent to download the ~350MB model persists across sessions in
-// localStorage; this module flag skips the prompt for the rest of the current
-// session even before the flag is written (i.e. mid-download).
-let consentGivenThisSession = false;
-
-function hasLlmLoadedFlag(): boolean {
-  try {
-    return localStorage.getItem(LLM_LOADED_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markLlmLoaded(): void {
-  try {
-    localStorage.setItem(LLM_LOADED_KEY, "1");
-    if (import.meta.env.DEV) {
-      (
-        window as unknown as { __cursorChatLoadedFlagAt?: number }
-      ).__cursorChatLoadedFlagAt = performance.now();
-    }
-  } catch {
-    // Private browsing / storage denial — consentGivenThisSession still holds.
-  }
-}
 
 // Viewport at/under this width opens the composer bottom-docked regardless of
 // entry point; it's the small-screen layout, not a touch-only concern.
@@ -422,9 +394,6 @@ function captureContext(
   return context;
 }
 
-const UNSUPPORTED_MESSAGE =
-  "This browser cannot run the local model. It needs WebGPU (recent Chrome, Edge, or Arc).";
-
 // Generation narration: silent-ish pulse first, truthful stage phrases only
 // when the wait drags on. Ends on "composing…" and holds.
 const THINKING_PHRASES = [
@@ -435,14 +404,32 @@ const THINKING_PHRASES = [
 ];
 const THINKING_PHRASE_DELAYS_MS = [3000, 5500, 8000];
 
-const BRAIN_METER_CELLS = 12;
+// Only the most recent turns are re-sent to the API. Older turns rarely matter
+// for a portfolio chat, and an unbounded history would eventually trip the
+// worker's 40-message / 24k-char request limit and error the thread. The char
+// budget matters as much as the turn count: 8 turns of 2000-char prompts
+// (the composer's maxLength) plus full-length replies alone would blow the
+// worker's 24k cap, so trimming stops at whichever bound hits first.
+const MAX_HISTORY_TURNS = 8;
+const MAX_HISTORY_CHARS = 14000;
+
+function recentHistory(history: ChatTurn[]): ChatTurn[] {
+  const kept: ChatTurn[] = [];
+  let chars = 0;
+  for (const turn of history.slice(-MAX_HISTORY_TURNS).reverse()) {
+    chars += turn.prompt.length + turn.response.length;
+    if (chars > MAX_HISTORY_CHARS && kept.length > 0) break;
+    kept.unshift(turn);
+  }
+  return kept;
+}
 
 function buildMessages(
   prompt: string,
   context: CapturedContext,
   history: ChatTurn[] = [],
   zoneContext?: CursorChatZoneContext,
-): ChatCompletionMessageParam[] {
+): ChatMessage[] {
   const audienceGuidance =
     context.audienceRole === "recruiter"
       ? "Audience role: recruiter. Tailor the answer toward role fit, experience, collaboration, impact, and why Joanna is relevant to hiring or recruiting evaluation. Do not claim personal knowledge of the visitor."
@@ -476,11 +463,9 @@ function buildMessages(
     "\n\nPage context:\n" +
     contextLines;
 
-  const messages: ChatCompletionMessageParam[] = [
-    { role: "system", content: system },
-  ];
+  const messages: ChatMessage[] = [{ role: "system", content: system }];
 
-  history.forEach((turn) => {
+  recentHistory(history).forEach((turn) => {
     messages.push(
       { role: "user", content: turn.prompt },
       { role: "assistant", content: turn.response },
@@ -578,9 +563,15 @@ export function CursorChat({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeIdRef = useRef<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  // One controller per thread: generations can overlap (a pinned thread keeps
+  // streaming while another submits), so a shared controller would let one
+  // thread's close/stop abort a different thread's request.
+  const abortControllersRef = useRef(new Map<string, AbortController>());
+  const abortThread = (id: string) => {
+    abortControllersRef.current.get(id)?.abort();
+    abortControllersRef.current.delete(id);
+  };
   const suspendedRef = useRef(suspended);
-  const pendingConsentDraftRef = useRef("");
   const panelRef = useRef<HTMLElement | null>(null);
   const previousPanelHeightRef = useRef<number | null>(null);
   const heightTimerRef = useRef<number | null>(null);
@@ -650,25 +641,9 @@ export function CursorChat({
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
   const activeZoneTag = getZoneTagLabel(activeThread?.zoneContext);
 
-  // Engine download progress (0..1). While a thread is "loading" but the model
-  // is still downloading, the UI shows an honest progress state instead of
-  // pretending to think.
-  const [engineProgress, setEngineProgress] = useState(() =>
-    isEngineReady() ? 1 : 0,
-  );
-  useEffect(
-    () =>
-      onInitProgress((report) => {
-        setEngineProgress(report.progress);
-      }),
-    [],
-  );
-  const engineIsReady = isEngineReady();
-
-  // Generation narration index; restarts per thread and only once the engine
-  // is actually generating (not while downloading).
+  // Generation narration index; restarts per thread.
   const [thinkingPhase, setThinkingPhase] = useState(0);
-  const isGenerating = activeThread?.status === "loading" && engineIsReady;
+  const isGenerating = activeThread?.status === "loading";
   useEffect(() => {
     setThinkingPhase(0);
     if (!isGenerating) return;
@@ -803,9 +778,7 @@ export function CursorChat({
       const nearbyTextOverride =
         zoneContext?.contextText || getBoundedText(anchorElement);
 
-      const restoredDraft = pendingConsentDraftRef.current;
-      pendingConsentDraftRef.current = "";
-      setDraft(restoredDraft);
+      setDraft("");
       setAnnouncement("");
       setExitingSuggestions(null);
       activeIdRef.current = id;
@@ -905,19 +878,12 @@ export function CursorChat({
     const id = activeIdRef.current;
     if (!id || leavingIdRef.current) return;
 
-    abortRef.current?.abort();
-    abortRef.current = null;
+    abortThread(id);
     beginLeave(id, () => finishCloseActive(id));
   };
 
   const finishCloseActive = (id: string) => {
-    setThreads((current) => {
-      const thread = current.find((item) => item.id === id);
-      if (thread?.status === "consent") {
-        pendingConsentDraftRef.current = thread.prompt;
-      }
-      return current.filter((item) => item.id !== id);
-    });
+    setThreads((current) => current.filter((item) => item.id !== id));
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
@@ -925,6 +891,7 @@ export function CursorChat({
   };
 
   const removeThread = (id: string) => {
+    abortThread(id);
     setThreads((current) => current.filter((thread) => thread.id !== id));
   };
 
@@ -943,8 +910,7 @@ export function CursorChat({
     }
     window.requestAnimationFrame(() => textareaRef.current?.focus());
 
-    abortRef.current?.abort();
-    abortRef.current = null;
+    abortThread(id);
     setThreads((current) =>
       current.map((thread) => {
         if (thread.id !== id) return thread;
@@ -970,8 +936,8 @@ export function CursorChat({
     );
   };
 
-  // Generation core, shared by a fresh submit and consent-accept. Assumes the
-  // thread already holds `message` as its prompt and `context` captured.
+  // Generation core. Assumes the thread already holds `message` as its prompt
+  // and `context` captured.
   const runGeneration = async (
     id: string,
     message: string,
@@ -984,16 +950,12 @@ export function CursorChat({
         current.map((thread) => (thread.id === id ? updater(thread) : thread)),
       );
 
+    abortThread(id); // a retry replaces any in-flight request for this thread
     const controller = new AbortController();
-    abortRef.current = controller;
+    abortControllersRef.current.set(id, controller);
+    const startedAt = performance.now();
 
     try {
-      await preloadEngine();
-      if (controller.signal.aborted) return;
-      markLlmLoaded();
-      // Re-render the loading state now that isEngineReady() is true, allowing
-      // the progress meter to hand off cleanly to the thinking state.
-      patch((thread) => ({ ...thread }));
       const messages = buildMessages(message, context, history, zoneContext);
       const response = await streamChat(
         messages,
@@ -1018,17 +980,27 @@ export function CursorChat({
         };
       });
       setAnnouncement(response);
+      trackChatResponse("done", Math.round(performance.now() - startedAt));
     } catch (error) {
       if (isAbortError(error)) return;
+      const status = error instanceof ChatRequestError ? error.status : undefined;
+      trackChatResponse("error", Math.round(performance.now() - startedAt), status);
       console.error("[cursor-chat] model response failed", error);
+      // A rate limit is the one failure where "retry now" is the wrong advice.
+      const copy =
+        status === 429
+          ? "You're sending messages quickly — give it a minute, then retry."
+          : "Could not get a response. Retry keeps your prompt.";
       patch((thread) => ({
         ...thread,
         status: "error",
-        response: "Could not get a response. Retry keeps your prompt.",
+        response: copy,
       }));
-      setAnnouncement("Could not get a response. Retry keeps your prompt.");
+      setAnnouncement(copy);
     } finally {
-      if (abortRef.current === controller) abortRef.current = null;
+      if (abortControllersRef.current.get(id) === controller) {
+        abortControllersRef.current.delete(id);
+      }
     }
   };
 
@@ -1036,10 +1008,15 @@ export function CursorChat({
     if (!activeThread || leavingIdRef.current) return;
 
     const id = activeThread.id;
-    const message =
-      promptOverride?.trim() ||
-      draft.trim() ||
-      (activeThread.status === "error" ? activeThread.prompt.trim() : "");
+    // One precedence chain decides both what is sent and how it's classified,
+    // so the analytics label can't drift from the submission logic.
+    const [message, querySource]: [string, ChatQuerySource] = promptOverride?.trim()
+      ? [promptOverride.trim(), "suggested"]
+      : draft.trim()
+        ? [draft.trim(), "typed"]
+        : activeThread.status === "error"
+          ? [activeThread.prompt.trim(), "retry"]
+          : ["", "typed"];
     if (
       !message ||
       activeThread.status === "loading" ||
@@ -1056,6 +1033,8 @@ export function CursorChat({
     );
     const history = activeThread.history;
     const zoneContext = activeThread.zoneContext;
+
+    trackChatQuery(message, querySource, zoneContext?.kind);
     if (activeThread.suggestedPrompts?.length) {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
@@ -1091,55 +1070,7 @@ export function CursorChat({
       suggestedPrompts: undefined,
     }));
 
-    // No WebGPU: cannot run the local model. Show a clear inline message.
-    if (!isWebGPUAvailable()) {
-      const nextHistory = [
-        ...history,
-        { prompt: message, response: UNSUPPORTED_MESSAGE },
-      ];
-      patch((thread) => ({
-        ...thread,
-        status: "done",
-        response: UNSUPPORTED_MESSAGE,
-        history: nextHistory,
-      }));
-      setAnnouncement(UNSUPPORTED_MESSAGE);
-      return;
-    }
-
-    // Consent gate: the very first ask triggers the ~350MB download. Hold the
-    // prompt on the thread and ask permission before starting. Skipped once the
-    // model is ready, already loaded on a past visit, or agreed to this session.
-    if (
-      !isEngineReady() &&
-      !hasLlmLoadedFlag() &&
-      !consentGivenThisSession
-    ) {
-      patch((thread) => ({ ...thread, status: "consent" }));
-      return;
-    }
-
     await runGeneration(id, message, context, history, zoneContext);
-  };
-
-  // Consent accepted: remember the choice, then run the prompt already stored
-  // on the thread through the shared generation core (the brain-meter takes
-  // over as the download begins).
-  const acceptConsent = () => {
-    const thread = activeThread;
-    if (!thread || thread.status !== "consent" || !thread.context) return;
-
-    consentGivenThisSession = true;
-
-    const { id, prompt, context, history, zoneContext } = thread;
-    setThreads((current) =>
-      current.map((item) =>
-        item.id === id
-          ? { ...item, status: "loading" as ChatStatus, response: "" }
-          : item,
-      ),
-    );
-    void runGeneration(id, prompt, context, history, zoneContext);
   };
 
   const collapseActive = () => {
@@ -1415,30 +1346,7 @@ export function CursorChat({
           {activeThread.response ||
           activeThread.status === "loading" ? (
             <div className="cursor-chat-response">
-              {activeThread.status === "loading" && !engineIsReady ? (
-                <>
-                  <p className="cursor-chat-thinking">
-                    {engineProgress <= 0
-                      ? "finding the tiny brain…"
-                      : `waking the tiny brain — ${Math.min(
-                          99,
-                          Math.round(engineProgress * 100),
-                        )}% of ~${MODEL_DOWNLOAD_MB} MB`}
-                  </p>
-                  <span className="cursor-chat-brainmeter" aria-hidden="true">
-                    {Array.from({ length: BRAIN_METER_CELLS }, (_, index) => (
-                      <span
-                        key={index}
-                        data-filled={
-                          index < Math.round(engineProgress * BRAIN_METER_CELLS)
-                            ? "true"
-                            : undefined
-                        }
-                      />
-                    ))}
-                  </span>
-                </>
-              ) : activeThread.status === "loading" ? (
+              {activeThread.status === "loading" ? (
                 <p className="cursor-chat-thinking">
                   {THINKING_PHRASES[thinkingPhase]}
                   <span className="cursor-chat-caret" aria-hidden="true" />
@@ -1484,24 +1392,6 @@ export function CursorChat({
                   Retry
                 </button>
               ) : null}
-            </div>
-          ) : null}
-
-          {activeThread.status === "consent" ? (
-            <div className="cursor-chat-consent">
-              <p className="cursor-chat-consent-copy">
-                first ask downloads a small local model (~{MODEL_DOWNLOAD_MB} MB,
-                once). after
-                that everything runs in your browser — nothing you ask leaves
-                this page.
-              </p>
-              <button
-                className="cursor-chat-consent-accept"
-                type="button"
-                onClick={acceptConsent}
-              >
-                load the tiny brain
-              </button>
             </div>
           ) : null}
 
@@ -1584,6 +1474,14 @@ export function CursorChat({
                 ⏎
               </button>
             </div>
+          ) : null}
+          {/* Provenance: the old local model promised "nothing leaves this
+              page"; the hosted model can't, so say where asks go. Draft-only
+              keeps answers uncluttered. */}
+          {activeThread.status === "draft" ? (
+            <p className="cursor-chat-disclosure">
+              answers via OpenAI · asks are logged to improve this site
+            </p>
           ) : null}
           <span
             className="sr-only"

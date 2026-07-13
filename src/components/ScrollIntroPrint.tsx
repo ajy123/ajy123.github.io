@@ -13,7 +13,6 @@ import {
 } from "./SplashShader";
 import { ScrambleWord } from "./IntroScrambleWord";
 import { buildSentenceMask } from "./introShaderMask";
-import { useEngineTelemetry } from "./introTelemetry";
 import type {
   IntroDials,
   IntroFill,
@@ -49,16 +48,12 @@ export function ScrollIntroPrint({
   scaffoldFills,
   sentence,
 }: ScrollIntroPrintProps) {
-  // Telemetry is data, not motion — reduced-motion users still get honest
-  // download state; only the scrub is skipped.
-  const telemetry = useEngineTelemetry(true);
   const sentenceRef = useRef<HTMLHeadingElement | null>(null);
   const ctaRef = useRef<HTMLButtonElement | null>(null);
   const wordRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const wordCentersRef = useRef<Array<[number, number] | null>>([]);
   const ctaCenterRef = useRef<[number, number] | null>(null);
   const dialsRef = useRef(dials);
-  const telemetryRef = useRef(telemetry);
   const driveRef = useRef<SplashShaderDrive>({
     originPx: null,
     originAmp: 0,
@@ -68,7 +63,6 @@ export function ScrollIntroPrint({
   });
 
   dialsRef.current = dials;
-  telemetryRef.current = telemetry;
 
   const shaderWrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -146,16 +140,13 @@ export function ScrollIntroPrint({
         dialsRef.current.developFloor +
         (1 - dialsRef.current.developFloor) *
           Math.pow(next, dialsRef.current.developGamma);
-      const grain = telemetryRef.current.webgpu
-        ? (1 - telemetryRef.current.progress) * dialsRef.current.grainGain
-        : 0;
       const pulse = Math.sin(local * Math.PI);
 
       driveRef.current = {
         originPx,
         originAmp: activeIndex === 3 ? dialsRef.current.swellAmp * 0.32 : dialsRef.current.swellAmp * pulse,
         develop,
-        grain,
+        grain: 0,
         wellStrength: reducedMotion ? 1 : drain,
       };
     },
@@ -166,13 +157,7 @@ export function ScrollIntroPrint({
 
   useEffect(() => {
     writeDrive(progress.get());
-  }, [progress, telemetry.progress, telemetry.webgpu, writeDrive]);
-
-  const modelLine = !telemetry.webgpu
-    ? ""
-    : telemetry.ready
-      ? "model ready"
-      : "enter anyway — brain keeps loading while you browse";
+  }, [progress, writeDrive]);
 
   return (
     <>
@@ -195,7 +180,7 @@ export function ScrollIntroPrint({
           staticResolved={reducedMotion}
         />
         <button
-          className={`intro-cta intro-cta--print ${ctaVisible ? "is-visible" : ""} ${telemetry.ready ? "is-ready" : ""}`}
+          className={`intro-cta intro-cta--print ${ctaVisible ? "is-visible" : ""}`}
           type="button"
           onClick={onDismiss}
           ref={ctaRef}
@@ -211,9 +196,6 @@ export function ScrollIntroPrint({
             <span className="intro-cta-line">
               <span className="intro-key--paper">Enter ↵</span> to enter
             </span>
-            {modelLine ? (
-              <span className="intro-cta-status">{modelLine}</span>
-            ) : null}
           </motion.span>
         </button>
       </div>
@@ -226,9 +208,6 @@ export function ScrollIntroPrint({
       >
         scroll
       </div>
-      <span className="intro-live" aria-live="polite">
-        {telemetry.ready ? "model ready" : ""}
-      </span>
     </>
   );
 }

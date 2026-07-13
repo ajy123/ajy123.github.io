@@ -50,7 +50,6 @@ import { TextScramble } from "./components/TextScramble";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
-import { isWebGPUAvailable, preloadEngine } from "./llmEngine";
 import { initAnalytics } from "./analytics";
 import { initFaviconPulse } from "./faviconPulse";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
@@ -1352,25 +1351,6 @@ function App() {
       setShowIntro(false);
     }, INTRO_EXIT_MS);
   };
-
-  useEffect(() => {
-    if (!isWebGPUAvailable()) return;
-    // Consent gate: a first-time visitor has not agreed to the ~350MB model
-    // download, so preload only for returning visitors who already loaded it
-    // once. Everyone else waits for the in-chat consent prompt.
-    let hasLoadedBefore = false;
-    try {
-      hasLoadedBefore = localStorage.getItem("joanna-llm-loaded") === "1";
-    } catch {
-      hasLoadedBefore = false;
-    }
-    if (hasLoadedBefore) {
-      void preloadEngine().catch(() => {
-        // Returning-user warmup is opportunistic. The chat's Retry path owns
-        // surfacing a load failure if they open it after a failed preload.
-      });
-    }
-  }, []);
 
   useEffect(() => {
     return () => {

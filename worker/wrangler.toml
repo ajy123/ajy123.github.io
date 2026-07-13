@@ -1,0 +1,5 @@
+# Deploy: cd worker && npx wrangler deploy
+# Secret:  npx wrangler secret put OPENAI_API_KEY
+name = "worker-portfolio"
+main = "src/index.js"
+compatibility_date = "2026-07-01"

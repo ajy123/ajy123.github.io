@@ -25,6 +25,14 @@
   --selection-ink: #bd4319;
   --overlay: rgba(255, 255, 255, 0.85);
   --shadow-soft: rgba(22, 21, 19, 0.12);
+  /* Paper-plate material — a typewriter keycap over the intro's halftone
+   * field. Shared by .intro-key--paper, the coarse CTA, and .intro-skip so
+   * the look stays in one place. */
+  --plate-fill: rgba(250, 249, 245, 0.92);
+  --plate-border: rgba(31, 30, 29, 0.18);
+  --plate-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(31, 30, 29, 0.12);
   --control-dark: rgba(17, 17, 17, 0.72);
   --control-dark-hover: rgba(17, 17, 17, 0.9);
   --error-ink: #6d342f;
@@ -1403,12 +1411,10 @@ a.card-eyebrow-flag:focus-visible {
   justify-content: center;
   padding: 0 0.5em;
   color: var(--body);
-  background: rgba(250, 249, 245, 0.92);
-  border: 1px solid rgba(31, 30, 29, 0.18);
+  background: var(--plate-fill);
+  border: 1px solid var(--plate-border);
   border-radius: 5px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 1px 0 rgba(31, 30, 29, 0.12);
+  box-shadow: var(--plate-shadow);
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.8em;
   font-weight: 600;
@@ -1442,19 +1448,42 @@ a.card-eyebrow-flag:focus-visible {
   }
 
   .intro-cta-copy--coarse {
-    display: inline;
+    /* Same paper-plate material as .intro-key--paper: bare --muted text
+       fell under 4.5:1 over the shader's halftone field, and coarse
+       pointers have no hover state to recover contrast on. */
+    display: inline-flex;
+    align-items: center;
+    height: 1.5em;
+    padding: 0 0.6em;
+    color: var(--body);
+    background: var(--plate-fill);
+    border: 1px solid var(--plate-border);
+    border-radius: 5px;
+    box-shadow: var(--plate-shadow);
   }
 }
 
 .intro-skip {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   z-index: 2;
-  padding: 10px;
-  color: var(--muted);
-  background: transparent;
-  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 44x44 meets the touch-target minimum (was ~32px); the plate grows
+     around the label instead of the glyph ballooning. */
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 14px;
+  color: var(--muted-strong);
+  /* Same paper-plate material as .intro-key--paper — bare text in the
+     densest corner of the halftone field was low-contrast and easy to
+     lose against the shader. */
+  background: var(--plate-fill);
+  border: 1px solid var(--plate-border);
+  border-radius: 5px;
+  box-shadow: var(--plate-shadow);
   cursor: pointer;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 12px;
@@ -2700,6 +2729,24 @@ a.card-eyebrow-flag:focus-visible {
 
   .essay-dialog-hero {
     margin-bottom: 28px;
+  }
+}
+
+/* Mobile wraps the print sentence to 6-8 lines; desktop's tight 1.05
+   line-height puts wrapped lines close enough to collide with the halftone
+   mask's dilated+feathered per-glyph pockets (introShaderMask.ts), which
+   reads as a double-image halo across line breaks. Loosen leading below the
+   same 860px step where the font drops to the 56px ceiling and starts
+   multi-line wrapping — desktop's 2-3 line layout keeps the tighter rhythm.
+   Compound `pointer: coarse` gate (matching this file's other touch rules)
+   also relieves large phones in landscape, which exceed 860px wide but are
+   short enough to wrap deep. */
+@media (pointer: coarse), (max-width: 860px) {
+  .intro-sentence {
+    line-height: 1.2;
+    /* `balance` rags harder as the line count climbs; `pretty` avoids
+       orphaned fragments (a lone "to the pixels.") on narrow measures. */
+    text-wrap: pretty;
   }
 }
 

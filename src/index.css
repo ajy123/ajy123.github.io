@@ -294,11 +294,20 @@ h1 span {
 
 .rail-ask-label {
   color: var(--ink);
+  font-family: var(--font-mono);
   font-weight: 600;
   font-size: var(--rl-label-size, 12px);
   transition: color 160ms var(--ease-out-strong);
 }
 
+/*
+ * Keycap glyph — shared visual language across the rail chip, contextual
+ * hint, selection pill, and touch FAB (see index.css search "keycap glyph
+ * system" for the other three). Ink on accent: 5.19:1, computed from the
+ * :root hex values (#111111 on #f44800) — clears the 4.5:1 text bar despite
+ * being aria-hidden in every instance. 4px radius on the ~18-20px keys; the
+ * FAB's 40px key uses 8px, the same ~1:5 radius-to-size ratio.
+ */
 .rail-ask-key {
   display: inline-flex;
   flex: 0 0 18px;
@@ -306,8 +315,6 @@ h1 span {
   height: 18px;
   align-items: center;
   justify-content: center;
-  /* Ink on accent: 5.19:1 — the glyph is the only place the shortcut is
-     shown, so it must clear the 4.5:1 text bar despite being aria-hidden. */
   color: var(--ink);
   background: var(--accent);
   border-radius: 4px;
@@ -321,6 +328,12 @@ h1 span {
 @media (pointer: coarse) {
   .rail-ask-key {
     display: none;
+  }
+
+  /* The chip itself still renders on touch (only its keycap hides), so its
+     hit area must clear the 44px minimum like the other three affordances. */
+  .rail-ask {
+    min-height: 44px;
   }
 }
 
@@ -1517,6 +1530,11 @@ a.card-eyebrow-flag:focus-visible {
   will-change: transform;
 }
 
+.contextual-ask-hint:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .contextual-ask-surface {
   display: inline-flex;
   max-width: min(
@@ -1530,10 +1548,12 @@ a.card-eyebrow-flag:focus-visible {
   color: var(--ink);
   background: var(--surface-warm);
   border: 0;
-  border-radius: 2px;
+  /* 4px system radius (see .rail-ask-key); its left corners sit flush over the
+     key's 4px left corners, its right corners round the copy end. */
+  border-radius: 4px;
   box-shadow: none;
   opacity: 1;
-  clip-path: inset(0 0 0 0 round 2px);
+  clip-path: inset(0 0 0 0 round 4px);
   filter: blur(0);
   transform: scale(1);
   transform-origin: calc(var(--ask-pin-size, 20px) / 2) 50%;
@@ -1561,9 +1581,10 @@ a.card-eyebrow-flag:focus-visible {
 }
 
 .contextual-ask-hint--expanded .contextual-ask-surface {
-  clip-path: inset(0 0 0 0 round 2px);
+  clip-path: inset(0 0 0 0 round 4px);
 }
 
+/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale. */
 .contextual-ask-hint .contextual-ask-key {
   display: inline-flex;
   flex: 0 0 var(--ask-pin-size, 20px);
@@ -1572,10 +1593,12 @@ a.card-eyebrow-flag:focus-visible {
   height: var(--ask-pin-size, 20px);
   align-items: center;
   justify-content: center;
-  color: var(--selection-ink);
+  color: var(--ink);
   background: var(--accent);
   border: 0;
-  border-radius: 0;
+  /* Left corners keep the 4px system radius; right corners square off so the
+     key butts flush against the copy inside the shared surface. */
+  border-radius: 4px 0 0 4px;
   box-shadow: none;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -1612,7 +1635,9 @@ a.card-eyebrow-flag:focus-visible {
   line-height: 1.25;
   letter-spacing: 0.05em;
   text-align: left;
-  text-transform: uppercase;
+  /* Sentence case everywhere — the source hint strings are already written
+     that way (e.g. "Ask how this became a chat"); this used to force them
+     uppercase, which was the odd one out among the 4 keycap affordances. */
   text-wrap: balance;
   transition:
     opacity 140ms var(--ease-out-strong) 40ms,
@@ -2419,13 +2444,21 @@ a.card-eyebrow-flag:focus-visible {
   animation: cursorChatFabIn 180ms var(--ease) both;
 }
 
+.cursor-chat-fab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale.
+   8px is the same radius-to-size ratio as the 4px/~20px keys elsewhere
+   (0.2), scaled to this key's 40px size. */
 .cursor-chat-fab-key {
   display: inline-flex;
   width: 40px;
   height: 40px;
   align-items: center;
   justify-content: center;
-  color: var(--selection-ink);
+  color: var(--ink);
   background: var(--accent);
   border-radius: 8px;
   font-family: var(--font-mono);
@@ -2486,6 +2519,12 @@ a.card-eyebrow-flag:focus-visible {
   animation: cursorChatFabIn 160ms var(--ease) both;
 }
 
+.selection-ask-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale. */
 .selection-ask-pill-key {
   display: inline-flex;
   flex: 0 0 20px;
@@ -2493,9 +2532,9 @@ a.card-eyebrow-flag:focus-visible {
   height: 20px;
   align-items: center;
   justify-content: center;
-  color: var(--selection-ink);
+  color: var(--ink);
   background: var(--accent);
-  border-radius: 2px;
+  border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;

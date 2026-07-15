@@ -266,6 +266,20 @@ function getElementLabel(element: Element | null) {
   return `${tag}${id}${classes}`;
 }
 
+// Matches getBoundedText's nearbyText clamp — keeps a big selection from
+// pushing the request past the worker's MAX_TOTAL_CHARS (24k) limit.
+const MAX_SELECTED_CHARS = 2200;
+
+// Contract with the Cloudflare Worker: validMessages() 400s any request whose
+// system message does not start with this exact string, so the endpoint can't
+// be scripted as a general-purpose proxy with a custom persona. This constant
+// is the single source of truth on the client; worker/src/index.js keeps a
+// byte-identical copy in its own SYSTEM_PREFIX. Keep the two in sync — a DEV
+// assertion in buildMessages fails loudly if the assembled prompt drifts off
+// this prefix, so drift is caught the first time chat is exercised locally.
+export const CHAT_SYSTEM_PREFIX =
+  "You are a concise assistant embedded directly in Joanna Yen's portfolio website.";
+
 function getBoundedText(element: Element | null) {
   const source =
     element?.closest("[data-ask-hint]") ??
@@ -364,8 +378,15 @@ function captureContext(
 ): CapturedContext {
   const point = getViewportPoint(pageX, pageY);
   const selection = window.getSelection();
-  const selectedText =
-    selectedTextOverride || selection?.toString().trim() || "";
+  // Clamp to the same bound as getBoundedText's nearbyText. A large selection
+  // (a whole essay, Ctrl+A) would otherwise ship unbounded into the system
+  // prompt and can push the request past the worker's 24k-char cap, which
+  // 400s as a generic "could not get a response" the user can't retry past.
+  const selectedText = (
+    selectedTextOverride ||
+    selection?.toString().trim() ||
+    ""
+  ).slice(0, MAX_SELECTED_CHARS);
   const element = document.elementFromPoint(point.x, point.y);
   const audienceRole = getAudienceRole();
   const context = {
@@ -452,7 +473,11 @@ function buildMessages(
     .join("\n");
 
   const system =
-    "You are a concise assistant embedded directly in Joanna Yen's portfolio website. " +
+    // MUST stay the literal first characters of every system prompt: the
+    // Worker's validMessages() rejects any request whose system message does
+    // not start with this exact string (see CHAT_SYSTEM_PREFIX). Reword the
+    // rest freely; do not edit the prefix without matching worker/src/index.js.
+    `${CHAT_SYSTEM_PREFIX} ` +
     "Answer the visitor's question about Joanna and the page they are looking at. " +
     "Ground your answer in the site profile and page context below. Prefer the selected text when present. " +
     "Use only facts explicitly stated in that context. Do not speculate, infer missing implementation details, or add examples that are not written there. " +
@@ -462,6 +487,16 @@ function buildMessages(
     SITE_CONTEXT +
     "\n\nPage context:\n" +
     contextLines;
+
+  // Fail loudly in dev if the system prompt no longer starts with the exact
+  // prefix the worker gates on — otherwise the drift only shows up as a 502/400
+  // in production. Stripped from prod bundles by the DEV guard.
+  if (import.meta.env.DEV && !system.startsWith(CHAT_SYSTEM_PREFIX)) {
+    console.error(
+      "[cursor-chat] system prompt no longer starts with CHAT_SYSTEM_PREFIX — " +
+        "the worker will 400 every request. Keep worker SYSTEM_PREFIX in sync.",
+    );
+  }
 
   const messages: ChatMessage[] = [{ role: "system", content: system }];
 

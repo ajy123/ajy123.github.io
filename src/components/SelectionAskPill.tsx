@@ -109,7 +109,7 @@ export function SelectionAskPill({
       <span className="selection-ask-pill-key" aria-hidden="true">
         /
       </span>
-      <span className="selection-ask-pill-label">ask about this</span>
+      <span className="selection-ask-pill-label">Ask about this</span>
     </button>
   );
 }

@@ -18,6 +18,8 @@ const ALLOWED_ROLES = new Set(["system", "user", "assistant"]);
 // The Origin check is not authentication (curl can spoof it), so pin the
 // system prompt: only the site's own persona may pass, which stops the
 // endpoint being scripted as a general-purpose proxy with a custom persona.
+// MUST stay byte-identical to CHAT_SYSTEM_PREFIX in src/CursorChat.tsx — a
+// DEV assertion in the client's buildMessages() catches drift on that side.
 const SYSTEM_PREFIX =
   "You are a concise assistant embedded directly in Joanna Yen's portfolio website.";
 

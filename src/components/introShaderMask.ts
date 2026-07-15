@@ -9,9 +9,24 @@
 // scroll), so the mask costs nothing per frame.
 
 // Dilation and feather scale with the glyph size so the gutter reads the same
-// at every breakpoint.
-const DILATE_EM = 0.1;
-const FEATHER_EM = 0.14;
+// at every breakpoint. At the mobile clamp floor the sentence wraps to many
+// more lines at a proportionally tighter physical line-height, so the
+// full-size gutter bleeds into the line above/below (a double-image halo);
+// both terms lerp down toward the mobile end of the font-size clamp.
+const DILATE_EM_MAX = 0.1;
+const DILATE_EM_MIN = 0.06;
+const FEATHER_EM_MAX = 0.14;
+const FEATHER_EM_MIN = 0.08;
+const FONT_SIZE_MAX = 72;
+const FONT_SIZE_MIN = 40;
+
+function lerpEm(min: number, max: number, fontSize: number): number {
+  const t = Math.min(
+    1,
+    Math.max(0, (fontSize - FONT_SIZE_MIN) / (FONT_SIZE_MAX - FONT_SIZE_MIN)),
+  );
+  return min + (max - min) * t;
+}
 
 function drawWord(
   context: CanvasRenderingContext2D,
@@ -65,8 +80,8 @@ export function buildSentenceMask(
   const fontSize = Number.parseFloat(style.fontSize);
   if (!Number.isFinite(fontSize) || fontSize <= 0) return null;
   const font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
-  const dilate = fontSize * DILATE_EM;
-  const feather = fontSize * FEATHER_EM;
+  const dilate = fontSize * lerpEm(DILATE_EM_MIN, DILATE_EM_MAX, fontSize);
+  const feather = fontSize * lerpEm(FEATHER_EM_MIN, FEATHER_EM_MAX, fontSize);
 
   // Keep the mask bitmap at a working resolution: 1x is plenty under the
   // feather blur and keeps the data URL small.

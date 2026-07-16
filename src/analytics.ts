@@ -77,3 +77,16 @@ export function trackChatResponse(
 ): void {
   capture("chat_response", { outcome, duration_ms: durationMs, status });
 }
+
+// first_touch = the visitor's first role pick this session (the intent
+// signal, never overwritten by a later toggle). switch = a later change —
+// it revises the view, not the intent — with switchCount incrementing each
+// time. A dismiss of the ask logs nothing; it's not a signal either way.
+export type AudienceRoleTrigger = "first_touch" | "switch";
+
+export function trackAudienceRole(
+  role: string,
+  { trigger, switchCount }: { trigger: AudienceRoleTrigger; switchCount: number },
+): void {
+  capture("audience_role", { role, trigger, switchCount });
+}

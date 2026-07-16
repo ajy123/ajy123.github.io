@@ -24,6 +24,7 @@ import {
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
 import {
+  trackAudienceRole,
   trackChatQuery,
   trackChatResponse,
   type ChatQuerySource,
@@ -82,6 +83,20 @@ type Thread = {
   zoneContext?: CursorChatZoneContext;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
+  // First-open role ask (Component B): shown once per session, above the
+  // suggestion chips. See openComposer for the session gate.
+  showRoleAsk?: boolean;
+  // Whether this thread's chips/placeholder came from pickAudienceSuggestions
+  // (the default "/" / FAB / intro-dismiss path) rather than an explicit
+  // override (contextual hint, text selection) — a role pick only re-derives
+  // suggestions for threads that started out audience-driven.
+  audienceSuggestionsEligible?: boolean;
+  // The `fromSelection` flag captured at open time, replayed into
+  // pickDraftPlaceholder when a role pick re-derives the placeholder.
+  fromSelectionOnOpen?: boolean;
+  // The explicit followUpPrompts this thread opened with, replayed into
+  // buildPromptPool when a role pick re-derives the pool (so they aren't lost).
+  followUpPromptsOnOpen?: SuggestedPrompt[];
 };
 
 const COMPOSER_WIDTH = 360;
@@ -230,14 +245,61 @@ const CURSOR_CHAT_DEFAULTS = {
 
 type AnchorCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
+// Session keys for the first-open role ask (Component B). Kept alongside
+// getAudienceRole so the read/write sides of the sessionStorage contract sit
+// together. sessionGet/Set swallow the private-browsing throw in one place.
+const AUDIENCE_ROLE_KEY = "ask-audience-role";
+const AUDIENCE_ROLE_ASKED_KEY = "ask-audience-role-asked";
+const AUDIENCE_ROLE_LOGGED_KEY = "ask-audience-role-logged";
+
+function sessionGet(key: string): string | null {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function sessionSet(key: string, value: string): void {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    // Storage may be unavailable in private browsing modes.
+  }
+}
+
+const readStoredAudienceRole = (): string | null =>
+  sessionGet(AUDIENCE_ROLE_KEY);
+const writeStoredAudienceRole = (role: keyof typeof AUDIENCE_PRESETS): void =>
+  sessionSet(AUDIENCE_ROLE_KEY, role);
+
+const hasAskedAudienceRole = (): boolean =>
+  sessionGet(AUDIENCE_ROLE_ASKED_KEY) === "1";
+const markAudienceRoleAsked = (): void =>
+  sessionSet(AUDIENCE_ROLE_ASKED_KEY, "1");
+
+// First pick this session is the "intent" signal and must never be
+// overwritten by a later toggle; this flag is the one-shot gate for that.
+const hasLoggedAudienceRoleFirstTouch = (): boolean =>
+  sessionGet(AUDIENCE_ROLE_LOGGED_KEY) === "1";
+const markAudienceRoleFirstTouchLogged = (): void =>
+  sessionSet(AUDIENCE_ROLE_LOGGED_KEY, "1");
+
 function getAudienceRole(): CapturedContext["audienceRole"] {
   const audience = new URLSearchParams(window.location.search)
     .get("audience")
     ?.trim()
     .toLowerCase();
 
-  if (!audience) return undefined;
-  return AUDIENCE_PRESETS[audience as keyof typeof AUDIENCE_PRESETS];
+  if (audience) {
+    return AUDIENCE_PRESETS[audience as keyof typeof AUDIENCE_PRESETS];
+  }
+
+  // Fallback: the deferred first-open role ask (Component B) writes the
+  // visitor's pick here instead of a URL param.
+  const stored = readStoredAudienceRole()?.trim().toLowerCase();
+  if (!stored) return undefined;
+  return AUDIENCE_PRESETS[stored as keyof typeof AUDIENCE_PRESETS];
 }
 
 function isEditableTarget(target: EventTarget | null) {
@@ -607,6 +669,9 @@ export function CursorChat({
     abortControllersRef.current.delete(id);
   };
   const suspendedRef = useRef(suspended);
+  // Increments on every role change after the first — the "switch" trigger's
+  // counter. The first pick itself is logged as first_touch, never counted.
+  const audienceRoleSwitchCountRef = useRef(0);
   const panelRef = useRef<HTMLElement | null>(null);
   const previousPanelHeightRef = useRef<number | null>(null);
   const heightTimerRef = useRef<number | null>(null);
@@ -803,15 +868,23 @@ export function CursorChat({
       const selectionAnchor = getSelectionAnchor();
       const anchor = anchorOverride ?? selectionAnchor ?? pointerRef.current;
       const fromSelection = !anchorOverride && selectionAnchor !== null;
+      const audienceSuggestionsEligible = !anchorOverride && !fromSelection;
       const threadSuggestedPrompts =
         suggestedPrompts ??
-        (!anchorOverride && !fromSelection ? pickAudienceSuggestions() : undefined);
+        (audienceSuggestionsEligible ? pickAudienceSuggestions() : undefined);
       // Explicit request wins; otherwise the small-screen layout docks.
       const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;
       const id = crypto.randomUUID();
       const anchorElement = document.elementFromPoint(anchor.x, anchor.y);
       const nearbyTextOverride =
         zoneContext?.contextText || getBoundedText(anchorElement);
+      // Deferred role ask (Component B): fires once per session, on whichever
+      // path is first to call openComposer — the "/" key, the FAB, the intro
+      // dismiss, a contextual hint, or a text selection all funnel through
+      // here, so gating here (rather than main.tsx's intro-only hook) is the
+      // only place that sees every entry point.
+      const showRoleAsk = !hasAskedAudienceRole();
+      if (showRoleAsk) markAudienceRoleAsked();
 
       setDraft("");
       setAnnouncement("");
@@ -840,6 +913,10 @@ export function CursorChat({
           zoneContext,
           docked: isDocked,
           draftPlaceholder: pickDraftPlaceholder(fromSelection),
+          showRoleAsk,
+          audienceSuggestionsEligible,
+          fromSelectionOnOpen: fromSelection,
+          followUpPromptsOnOpen: followUpPrompts,
         },
       ]);
       setActiveId(id);
@@ -1103,6 +1180,8 @@ export function CursorChat({
       response: "",
       isPinned: false,
       suggestedPrompts: undefined,
+      // An ignored first-open role ask tucks away once the visitor sends.
+      showRoleAsk: false,
     }));
 
     await runGeneration(id, message, context, history, zoneContext);
@@ -1142,6 +1221,68 @@ export function CursorChat({
   const retryActive = () => {
     if (!activeThread) return;
     void submitThread();
+  };
+
+  // A pick from the first-open role ask. Persists the role (so
+  // getAudienceRole() picks it up everywhere), logs the intent once as
+  // first_touch and every later change as a switch, then re-derives the
+  // *current* thread's chips + placeholder so the tailoring updates live
+  // instead of waiting for the next open.
+  const pickAudienceRole = (
+    id: string,
+    role: keyof typeof AUDIENCE_PRESETS,
+  ) => {
+    writeStoredAudienceRole(role);
+
+    if (hasLoggedAudienceRoleFirstTouch()) {
+      audienceRoleSwitchCountRef.current += 1;
+      trackAudienceRole(role, {
+        trigger: "switch",
+        switchCount: audienceRoleSwitchCountRef.current,
+      });
+    } else {
+      markAudienceRoleFirstTouchLogged();
+      trackAudienceRole(role, { trigger: "first_touch", switchCount: 0 });
+    }
+
+    setThreads((current) =>
+      current.map((thread) => {
+        if (thread.id !== id) return thread;
+        // The placeholder is audience-driven, so it refreshes for every thread.
+        const draftPlaceholder = pickDraftPlaceholder(
+          thread.fromSelectionOnOpen ?? false,
+        );
+        // But chips/pool only re-derive for threads that opened with the
+        // default audience-driven suggestions; a contextual hint's or a
+        // selection's own suggestions are intentional and stay untouched.
+        if (!thread.audienceSuggestionsEligible) {
+          return { ...thread, showRoleAsk: false, draftPlaceholder };
+        }
+        const nextSuggestedPrompts = pickAudienceSuggestions();
+        return {
+          ...thread,
+          showRoleAsk: false,
+          suggestedPrompts: nextSuggestedPrompts,
+          promptPool: buildPromptPool(
+            nextSuggestedPrompts,
+            thread.followUpPromptsOnOpen,
+          ),
+          shownPromptIds: (nextSuggestedPrompts ?? []).map(
+            (prompt) => prompt.id,
+          ),
+          draftPlaceholder,
+        };
+      }),
+    );
+  };
+
+  // Dismissing the ask logs nothing — it's not a signal either way.
+  const dismissRoleAsk = (id: string) => {
+    setThreads((current) =>
+      current.map((thread) =>
+        thread.id === id ? { ...thread, showRoleAsk: false } : thread,
+      ),
+    );
   };
 
   const dragStateRef = useRef<{
@@ -1372,6 +1513,39 @@ export function CursorChat({
             </button>
           </div>
 
+          {activeThread.showRoleAsk ? (
+            <div className="cursor-chat-roleask" role="group" aria-label="Who are you here as?">
+              <span className="cursor-chat-roleask-label">here for</span>
+              <button
+                type="button"
+                className="cursor-chat-roleask-pick"
+                onClick={() => pickAudienceRole(activeThread.id, "recruiter")}
+              >
+                hiring
+              </button>
+              <span className="cursor-chat-roleask-sep" aria-hidden="true">
+                ·
+              </span>
+              <button
+                type="button"
+                className="cursor-chat-roleask-pick"
+                onClick={() =>
+                  pickAudienceRole(activeThread.id, "product-design")
+                }
+              >
+                exploring
+              </button>
+              <button
+                type="button"
+                className="cursor-chat-roleask-dismiss"
+                aria-label="Dismiss"
+                onClick={() => dismissRoleAsk(activeThread.id)}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          ) : null}
+
           {activeThread.prompt ? (
             <div className="cursor-chat-message">
               <p>{activeThread.prompt}</p>
@@ -1510,12 +1684,15 @@ export function CursorChat({
               </button>
             </div>
           ) : null}
-          {/* Provenance: the old local model promised "nothing leaves this
-              page"; the hosted model can't, so say where asks go. Draft-only
-              keeps answers uncluttered. */}
-          {activeThread.status === "draft" ? (
+          {/* Provenance + hallucination warning, persistent under the
+              composer for the same statuses the composer itself renders
+              (draft/done/error) so it doesn't vanish after the first send. */}
+          {activeThread.status === "draft" ||
+          activeThread.status === "done" ||
+          activeThread.status === "error" ? (
             <p className="cursor-chat-disclosure">
-              answers via OpenAI · asks are logged to improve this site
+              answers can be wrong — verify what matters · logged to improve
+              this site
             </p>
           ) : null}
           <span

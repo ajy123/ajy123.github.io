@@ -4,6 +4,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  useState,
   type CSSProperties,
 } from "react";
 import { motion, useMotionValueEvent, type MotionValue } from "motion/react";
@@ -61,6 +62,16 @@ export function ScrollIntroPrint({
     grain: 0,
     wellStrength: reducedMotion ? 1 : 0,
   });
+  // Set on press so the scroll-driven writeDrive stops overwriting the shader
+  // well the moment the exit begins — otherwise touch/trackpad momentum still
+  // firing `progress` during the 280ms exit clobbers the press spike.
+  const dismissingRef = useRef(false);
+  // Dev-only: timestamp the press so we can confirm the drain envelope
+  // (underline commit + shader well) stays within INTRO_EXIT_MS on unmount.
+  const pressAtRef = useRef<number | null>(null);
+  // Drives the underline-commit class through React (not an imperative
+  // classList.add) so it can't be reconciled away by a re-render mid-exit.
+  const [committing, setCommitting] = useState(false);
 
   dialsRef.current = dials;
 
@@ -101,6 +112,8 @@ export function ScrollIntroPrint({
 
   const writeDrive = useCallback(
     (latest: number) => {
+      // Frozen once the press starts so the manual well spike survives the exit.
+      if (dismissingRef.current) return;
       const next = clamp01(latest);
       const activeIndex =
         next < dialsRef.current.beat1End
@@ -159,6 +172,39 @@ export function ScrollIntroPrint({
     writeDrive(progress.get());
   }, [progress, writeDrive]);
 
+  useEffect(() => {
+    return () => {
+      // SC3: the press-drain is bounded by the loader's unmount, so press→exit
+      // is the envelope's upper bound. Should sit at ~INTRO_EXIT_MS (280ms).
+      if (import.meta.env.DEV && pressAtRef.current != null) {
+        // eslint-disable-next-line no-console
+        console.info(
+          `[intro] press→exit ${Math.round(performance.now() - pressAtRef.current)}ms`,
+        );
+      }
+    };
+  }, []);
+
+  const handleActivate = useCallback(() => {
+    // The strike: freeze the scroll drive, then open the shader well hard at the
+    // CTA's center so the halftone drains *through* the button as the loader
+    // exits. Reduced motion has no live shader (drive is undefined), so skip the
+    // spike and just dismiss.
+    dismissingRef.current = true;
+    const origin = ctaCenterRef.current;
+    if (!reducedMotion && origin) {
+      driveRef.current = {
+        ...driveRef.current,
+        originPx: origin,
+        originAmp: dialsRef.current.swellAmp,
+        wellStrength: 1,
+      };
+    }
+    setCommitting(true);
+    if (import.meta.env.DEV) pressAtRef.current = performance.now();
+    onDismiss();
+  }, [onDismiss, reducedMotion]);
+
   return (
     <>
       <div className="intro-shader-wrap" ref={shaderWrapRef} aria-hidden="true">
@@ -180,9 +226,9 @@ export function ScrollIntroPrint({
           staticResolved={reducedMotion}
         />
         <button
-          className={`intro-cta intro-cta--print ${ctaVisible ? "is-visible" : ""}`}
+          className={`intro-cta intro-cta--print ${ctaVisible ? "is-visible" : ""} ${committing ? "is-committing" : ""}`}
           type="button"
-          onClick={onDismiss}
+          onClick={handleActivate}
           ref={ctaRef}
         >
           {/* The CTA lands with the same spring family as the letters —
@@ -195,11 +241,13 @@ export function ScrollIntroPrint({
           >
             <span className="intro-cta-line">
               {/* Both copies render; CSS's pointer:coarse gate picks one, the
-                  same mechanism as .rail-ask-key. */}
+                  same mechanism as .rail-ask-key. Coarse has no Enter key, so it
+                  drops the ↵ and shows "Read on" as a tappable plate. */}
               <span className="intro-cta-copy--fine">
-                <span className="intro-key--paper">Enter ↵</span> to enter
+                <span className="intro-cta-word">Read on</span>
+                <span className="intro-key--paper">↵</span>
               </span>
-              <span className="intro-cta-copy--coarse">tap to enter</span>
+              <span className="intro-cta-copy--coarse">Read on</span>
             </span>
           </motion.span>
         </button>

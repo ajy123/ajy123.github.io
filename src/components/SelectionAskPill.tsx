@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import {
   CURSOR_CHAT_OPENED_EVENT,
-  isCoarsePointer,
   requestCursorChatOpen,
 } from "../chatEvents";
 
-// Touch entry point #3 of three: after a text selection on a touch device, a
-// small pill floats under the selection offering to ask about it. Desktop uses
-// the "/" key + hover badge; this is the coarse-pointer equivalent for the
-// select-then-ask gesture, which has no keyboard on mobile.
+// After a text selection, a small pill floats under the selection offering to
+// ask about it — on desktop it doubles as the discoverable affordance for the
+// "/" key; on touch it is the only entry for select-then-ask.
 
 const DEBOUNCE_MS = 350;
 const EDGE = 14;
@@ -58,7 +56,6 @@ export function SelectionAskPill({
       setPos(null);
       return;
     }
-    if (!isCoarsePointer()) return;
 
     let timer: number | null = null;
 

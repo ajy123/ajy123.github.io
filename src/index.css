@@ -1752,7 +1752,7 @@ a.card-eyebrow-flag:focus-visible {
      through a mismatched header strip. */
   --chat-panel-fill: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   position: fixed;
-  z-index: 1003;
+  z-index: 1103;
   width: 360px;
   max-width: calc(100vw - 28px);
   max-height: min(360px, calc(100vh - 28px));
@@ -2320,7 +2320,7 @@ a.card-eyebrow-flag:focus-visible {
  */
 .cursor-chat-pin {
   position: fixed;
-  z-index: 1002;
+  z-index: 1102;
   width: 4px;
   height: 4px;
   overflow: visible;
@@ -2624,7 +2624,7 @@ a.card-eyebrow-flag:focus-visible {
   position: fixed;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
   right: 18px;
-  z-index: 1002;
+  z-index: 1102;
   display: none;
   width: 44px;
   height: 44px;
@@ -2693,7 +2693,7 @@ a.card-eyebrow-flag:focus-visible {
   all: unset;
   box-sizing: border-box;
   position: fixed;
-  z-index: 1002;
+  z-index: 1102;
   display: inline-flex;
   min-height: 44px;
   align-items: center;

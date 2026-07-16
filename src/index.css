@@ -2282,7 +2282,7 @@ a.card-eyebrow-flag:focus-visible {
   height: 24px;
   align-items: center;
   justify-content: center;
-  color: var(--selection-ink);
+  color: var(--ink);
   background: var(--accent);
   border-radius: 5px;
   cursor: pointer;
@@ -2372,7 +2372,8 @@ a.card-eyebrow-flag:focus-visible {
   height: 20px;
   align-items: center;
   justify-content: center;
-  color: var(--selection-ink);
+  border-radius: 4px;
+  color: var(--ink);
   background: var(--accent);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -2726,7 +2727,7 @@ a.card-eyebrow-flag:focus-visible {
   background: var(--accent);
   border-radius: 4px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
 }

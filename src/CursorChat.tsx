@@ -12,6 +12,7 @@ import {
   isAbortError,
   streamChat,
   type ChatMessage,
+  type ChatTier,
 } from "./chatApi";
 import {
   CURSOR_CHAT_OPENED_EVENT,
@@ -505,6 +506,23 @@ function recentHistory(history: ChatTurn[]): ChatTurn[] {
     kept.unshift(turn);
   }
   return kept;
+}
+
+// Complexity routing: selection asks, essay zones, follow-up depth, and long
+// questions go to the stronger model; one-shot profile lookups stay on the
+// fast cheap one. The worker owns the tier→model map, so this only names the
+// intent, never a model.
+function pickTier(
+  prompt: string,
+  context: CapturedContext,
+  history: ChatTurn[],
+  zoneContext?: CursorChatZoneContext,
+): ChatTier {
+  if (context.selectedText) return "deep";
+  if (zoneContext?.kind === "essay") return "deep";
+  if (history.length >= 2) return "deep";
+  if (prompt.length > 160) return "deep";
+  return "quick";
 }
 
 function buildMessages(
@@ -1075,6 +1093,7 @@ export function CursorChat({
           patch((thread) => ({ ...thread, status: "streaming", response: full }));
         },
         controller.signal,
+        pickTier(message, context, history, zoneContext),
       );
       patch((thread) => {
         const nextHistory = [...thread.history, { prompt: message, response }];

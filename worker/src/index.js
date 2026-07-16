@@ -9,8 +9,14 @@ const ALLOWED_ORIGINS = ["https://ajy123.github.io"];
 const DEV_ORIGIN =
   /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?$/;
 
-const MODEL = "gpt-4o-mini";
-const MAX_COMPLETION_TOKENS = 512;
+// Complexity-routed models. The client sends a tier hint; anything but a
+// known tier name falls back to "quick", so the endpoint never trusts a raw
+// model string and requests from older cached bundles (no tier field) keep
+// working.
+const TIERS = {
+  quick: { model: "gpt-4o-mini", maxTokens: 512 },
+  deep: { model: "gpt-4o", maxTokens: 1024 },
+};
 const MAX_MESSAGES = 40;
 const MAX_TOTAL_CHARS = 24000;
 const ALLOWED_ROLES = new Set(["system", "user", "assistant"]);
@@ -114,6 +120,10 @@ export default {
       return jsonError(400, "invalid_messages", origin);
     }
 
+    // Explicit comparison, not TIERS[body.tier]: an object lookup would let
+    // keys like "constructor" resolve truthy and reach upstream malformed.
+    const tier = body?.tier === "deep" ? TIERS.deep : TIERS.quick;
+
     const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -121,11 +131,11 @@ export default {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: tier.model,
         messages: body.messages,
         stream: true,
         temperature: 0.1,
-        max_tokens: MAX_COMPLETION_TOKENS,
+        max_tokens: tier.maxTokens,
       }),
     });
 

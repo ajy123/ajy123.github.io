@@ -11,6 +11,10 @@ export type ChatMessage = {
   content: string;
 };
 
+// Complexity hint for the worker's model routing. The worker owns the
+// tier→model map and treats anything but "deep" as "quick".
+export type ChatTier = "quick" | "deep";
+
 // Carries the HTTP status so the UI can give status-specific guidance
 // (a 429 should say "wait", not "retry now").
 export class ChatRequestError extends Error {
@@ -42,6 +46,7 @@ export function streamChat(
   messages: ChatMessage[],
   onToken: (full: string) => void,
   signal: AbortSignal,
+  tier: ChatTier = "quick",
 ): Promise<string> {
   if (import.meta.env.DEV) {
     const testResponse = (
@@ -69,7 +74,7 @@ export function streamChat(
     const response = await fetch(CHAT_ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({ messages, tier }),
       signal,
     });
     if (!response.ok || !response.body) {

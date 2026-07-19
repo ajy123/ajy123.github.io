@@ -1,0 +1,3035 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From search box to research partner — Joanna Yen</title>
+<meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry — from keyword search to an agentic research partner.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-body: Figtree, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-hand: "Caveat", cursive;
+  --canvas:#ffffff;
+  --surface-subtle:#f7f7f7;
+  --surface-warm:#faf9f5;
+  --ghost:#e0e0e0;
+  --muted:#757169;
+  --muted-strong:#57534b;
+  --body:#141413;
+  --ink:#111111;
+  --ink-strong:#000000;
+  --hairline:rgba(31,30,29,0.4);
+  --hairline-faint:rgba(31,30,29,0.12);
+  --accent:#f44800;
+  --accent-deep:#d63e00;
+  --accent-wash:rgba(244,72,0,0.08);
+  --radius:4px;
+  --ease:cubic-bezier(0.25,0.46,0.45,0.94);
+  --ease-out-strong:cubic-bezier(0.23,1,0.32,1);
+  color-scheme: light;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
+::selection{color:var(--accent-deep);background:var(--accent-wash);}
+
+.gal-head{max-width:1120px;margin:0 auto;padding:56px 40px 8px;}
+.gal-kicker{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
+.gal-h1{font-size:clamp(28px,4vw,38px);font-weight:700;letter-spacing:-0.02em;line-height:1.05;margin:12px 0 0;text-wrap:balance;}
+.gal-lede{font-size:17px;line-height:1.55;color:var(--muted-strong);max-width:60ch;margin:14px 0 0;}
+.gal-legend{display:flex;flex-wrap:wrap;gap:18px;margin:22px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--muted);}
+.gal-legend b{color:var(--ink);font-weight:600;}
+
+.gal-block{max-width:1120px;margin:0 auto;padding:44px 40px;}
+.gal-block + .gal-block{border-top:1px solid var(--hairline-faint);}
+.gal-block-head{margin:0 0 30px;}
+.gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
+.gal-sec b{color:var(--accent-deep);}
+.gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
+.gal-block-note{font-size:14px;line-height:1.55;color:var(--muted-strong);max-width:64ch;margin:8px 0 0;}
+
+/* product embed framing (SOLUTION) — Emil hairline figure */
+.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.gal-embed{margin:0;display:flex;flex-direction:column;}
+.gal-embed-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+.gal-embed-frame{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:14px;overflow:hidden;}
+.gal-embed-frame img{display:block;width:100%;height:auto;border-radius:2px;box-shadow:0 0 0 1px var(--hairline-faint);}
+.gal-embed-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px 0 0;}
+@media(max-width:720px){.gal-embeds{grid-template-columns:1fr;}}
+.gal-foot{max-width:1120px;margin:0 auto;padding:24px 40px 80px;color:var(--muted);font-family:var(--font-mono);font-size:11px;}
+
+/* ---- case-study prose (portfolio .essay-dialog vocabulary) ---- */
+.gal-copy{max-width:1120px;margin:0 auto;padding:4px 40px 4px;}
+.gal-copy-inner{max-width:68ch;}
+.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 16px;text-wrap:balance;color:var(--ink);}
+.gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;}
+.gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
+.gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
+.gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
+.gal-copy li b{color:var(--ink);font-weight:600;}
+.gal-copy .gal-kick{font-size:16px;font-weight:600;color:var(--ink);margin-top:2px;}
+.gal-copy .gal-fork{font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--accent);margin:6px 0 2px;line-height:1.45;}
+.gal-copy .gal-pm{font-size:13.5px;line-height:1.55;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:14px;margin:16px 0 0;font-style:italic;}
+.gal-optlabel{max-width:1120px;margin:22px auto 0;padding:0 40px;}
+.gal-optlabel span{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:10px;}
+.gal-optlabel span::before,.gal-optlabel span::after{content:"";height:1px;width:38px;background:var(--hairline-faint);}
+
+
+/* ---- interactive product-widget hosting (SOLUTION) ---- */
+.gal-widget-wrap{max-width:1120px;margin:0 auto;padding:6px 40px 30px;}
+.gal-widget-wrap > .sol-widget{max-width:680px;}
+.gal-widget-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;max-width:680px;}
+.gal-move p{margin-bottom:6px;}
+
+
+/* ---- final-page shell ---- */
+.cs-top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 1px 0 0 var(--hairline-faint);}
+.cs-top-inner{max-width:1120px;margin:0 auto;padding:14px 40px;display:flex;align-items:baseline;justify-content:space-between;}
+.cs-top a{font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;}
+.cs-top a:hover{color:var(--accent-deep);}
+.cs-top-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.cs-hero{max-width:1120px;margin:0 auto;padding:72px 40px 20px;}
+.cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
+.cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
+.cs-hero-lede{font-size:19px;line-height:1.6;color:var(--body);max-width:62ch;margin:22px 0 0;}
+.cs-hero-lede b{color:var(--ink);}
+.cs-hero-meta{display:flex;flex-wrap:wrap;gap:14px 28px;margin:30px 0 0;padding-top:18px;box-shadow:0 -1px 0 0 var(--hairline-faint);}
+.cs-hero-meta div{font-size:13px;color:var(--muted-strong);}
+.cs-hero-meta b{display:block;font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.cs-sechead{max-width:1120px;margin:0 auto;padding:54px 40px 0;}
+.cs-sechead + .gal-block{border-top:none !important;padding-top:18px;}
+.cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
+.cs-sec-eyebrow b{color:var(--accent-deep);}
+.cs-foot{max-width:1120px;margin:0 auto;padding:40px 40px 90px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--muted);box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
+.cs-foot a{color:var(--ink);text-decoration:none;}
+.cs-foot a:hover{color:var(--accent-deep);}
+.gal-block + .gal-block{border-top:none;}
+
+/* ---- FIX 4: five-decisions skim rail ---- */
+.cs-rail{max-width:1120px;margin:0 auto;padding:34px 40px 6px;}
+.cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-rail ol{list-style:none;margin:0;padding:0;max-width:68ch;}
+.cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
+.cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
+.cs-rail a{display:flex;align-items:baseline;gap:14px;padding:10px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
+.cs-rail a:hover{color:var(--accent-deep);}
+.cs-rail a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+.cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
+@media(max-width:560px){.cs-rail-sec{display:none;}}
+#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:64px;}
+
+/* ---- FIX 2: design-principles strip ---- */
+.cs-principles{max-width:1120px;margin:6px auto 26px;padding:0 40px;}
+.cs-principles-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+.cs-principles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--hairline-faint);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);overflow:hidden;max-width:760px;}
+.cs-principles-grid>div{background:var(--surface-warm);padding:14px 16px;}
+.cs-principles-grid b{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.cs-principles-grid span{font-size:13px;line-height:1.5;color:var(--muted-strong);}
+@media(max-width:640px){.cs-principles-grid{grid-template-columns:1fr;}}
+
+/* ---- FIX 1: considered/chose/because decision rows ---- */
+.cs-decision{max-width:1120px;margin:14px auto 4px;padding:0 40px;}
+.cs-decision dl{max-width:68ch;margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
+.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
+.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
+.cs-decision dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--body);}
+.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
+@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
+
+/* ---- FIX 3: one call, on the record (citation legend) ---- */
+.cs-onrecord{max-width:1120px;margin:8px auto 0;padding:0 40px 8px;}
+.cs-onrecord-inner{max-width:68ch;}
+.cs-onrecord-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-onrecord-goal{font-size:14.5px;line-height:1.55;color:var(--body);margin:0 0 14px;}
+.cs-onrecord-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 14px;}
+.cs-opt{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 14px;}
+.cs-opt-name{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-strong);margin:0 0 10px;}
+.cs-opt-mock{position:relative;height:56px;background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:8px;margin-bottom:10px;}
+.cs-mock-legend{display:flex;gap:4px;margin-bottom:6px;}
+.cs-swatch{width:22px;height:6px;border-radius:2px;display:inline-block;}
+.cs-sw-a{background:var(--muted-strong);} .cs-sw-b{background:var(--accent);} .cs-sw-c{background:var(--ghost);}
+.cs-mock-lines{display:block;height:22px;background:repeating-linear-gradient(to bottom,var(--hairline-faint) 0 1px,transparent 1px 8px);margin-top:4px;}
+.cs-opt-mock-b .cs-mock-lines{margin-top:2px;height:30px;}
+.cs-mock-tip{position:absolute;right:8px;bottom:6px;font-family:var(--font-mono);font-size:9px;color:var(--muted);background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:2px 6px;}
+.cs-opt-note{font-size:12.5px;line-height:1.5;color:var(--muted-strong);margin:0;}
+.cs-onrecord-verdict{font-size:14.5px;line-height:1.6;color:var(--body);margin:0 0 8px;}
+.cs-onrecord-verdict b{color:var(--ink);}
+.cs-verdict-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;transform:translateY(-1px);}
+.cs-onrecord-src{font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--muted);margin:0;}
+@media(max-width:600px){.cs-onrecord-opts{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="cs-top"><div class="cs-top-inner">
+  <a href="/">Joanna Yen</a>
+  <span class="cs-top-label">Case study · Deeli</span>
+</div></nav>
+
+<header class="cs-hero">
+  <p class="cs-hero-eyebrow">Case study · Deeli · 2026</p>
+  <h1 class="cs-hero-title">From search box to research partner.</h1>
+  <p class="cs-hero-lede">A top-5 semiconductor foundry makes billion-dollar capacity bets &mdash; and ran its deep-tech research through a keyword box. I redesigned Deeli&rsquo;s core product around one bet: <b>stop returning documents, return the synthesis.</b> Three weeks after launch, the account behind 82% of booked revenue had made it a daily habit.</p>
+  <div class="cs-hero-meta">
+    <div><b>Role</b>Product design &mdash; problem scoping, interaction, output</div>
+    <div><b>Team</b>Solo design · 10-engineer build</div>
+    <div><b>Shipped</b>June 2026</div>
+    <div><b>Measured</b>First 3 weeks live, real customer logs</div>
+  </div>
+</header>
+
+<nav class="cs-rail" aria-label="Five design decisions">
+  <p class="cs-rail-title">The five calls, in fifteen seconds</p>
+  <ol>
+    <li><a href="#the-fork"><span class="cs-rail-num">01</span> Stop optimizing search — return the synthesis <span class="cs-rail-sec">Process</span></a></li>
+    <li><a href="#move-1"><span class="cs-rail-num">02</span> Take the question; show the interpretation as footnotes, never rewrites <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-2"><span class="cs-rail-num">03</span> Aim the report with chips, not a form <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-3a"><span class="cs-rail-num">04</span> Replace the spinner with agents narrating their sources <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-3b"><span class="cs-rail-num">05</span> Make every claim inspectable — citations, legend, drill-down <span class="cs-rail-sec">Solution</span></a></li>
+  </ol>
+</nav>
+
+<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>01</b> · Problem</span></div>
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h3 class="gal-headline">It answered the topic, not the question.</h3>
+    <p class="gal-lede-p">The old product took a keyword, matched a topic, and printed that topic's template &mdash; the same report for everyone, with no sign of how it got there.</p>
+    <ul>
+      <li><b>No intent.</b> The input took keywords, not questions. Users couldn't say <i>why</i> they were asking &mdash; so it couldn't answer what they meant.</li>
+      <li><b>No personalization.</b> A capacity planner and a partnerships lead typed the same topic, got the same report. One shape, wrong for most jobs.</li>
+      <li><b>No transparency.</b> Reports arrived with no sources and no reasoning &mdash; trust an answer you couldn't check.</li>
+      <li><b>Dated feel.</b> Users raised on conversational AI expected to be understood. A keyword box read as broken on sight.</li>
+    </ul>
+    <p class="gal-kick">Retrieval wasn't the problem &mdash; it worked. The design was: no way to express intent, adapt the output, or show the work.</p>
+  </div></div>
+  <!-- ===== ANCHOR 1: PROBLEM ===== -->
+<section class="anchor" id="anchor-problem">
+<style>
+#anchor-problem{font-family:var(--font-body);color:var(--body);}
+#anchor-problem .pr-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:stretch;}
+#anchor-problem .pr-fig{flex:1 1 460px;max-width:520px;min-width:0;display:flex;flex-direction:column;align-items:center;margin:0;}
+#anchor-problem .pr-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;text-align:center;}
+#anchor-problem .pr-canvas{width:100%;aspect-ratio:3/2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);padding:20px 18px;}
+#anchor-problem .pr-canvas svg{width:100%;height:100%;display:block;overflow:visible;}
+#anchor-problem .pr-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;margin:14px 0 0;max-width:440px;}
+#anchor-problem .pr-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);}
+#anchor-problem .pr-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px;fill:var(--ink);}
+#anchor-problem .pr-node-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;fill:var(--muted-strong);}
+#anchor-problem .pr-tag-accent{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;fill:var(--accent);}
+#anchor-problem .pr-tag-muted{font-family:var(--font-mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;fill:var(--muted);}
+#anchor-problem .pr-q{font-family:var(--font-mono);font-size:34px;font-weight:600;fill:var(--ink-strong);}
+@media (prefers-reduced-motion:no-preference){
+  #anchor-problem .pr-node,#anchor-problem .pr-sealed{transition:filter .2s var(--ease);}
+}
+</style>
+
+<div class="pr-wrap">
+
+  <figure class="pr-fig">
+    <div class="pr-eyebrow">The sameness failure</div>
+    <div class="pr-canvas">
+      <svg viewBox="0 0 480 320" role="img" aria-label="Three personas typing the same keyword all receive one identical templated report">
+        <defs>
+          <marker id="pr-arrowhead-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path>
+          </marker>
+        </defs>
+        <text x="20" y="38" class="pr-lbl">Capacity planner</text>
+        <rect x="20" y="46" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <text x="67" y="67" text-anchor="middle" class="pr-val">HBM</text>
+        <path d="M114,63 Q250,63 320,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="20" y="138" class="pr-lbl">Partnerships lead</text>
+        <rect x="20" y="146" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <text x="67" y="167" text-anchor="middle" class="pr-val">HBM</text>
+        <path d="M114,163 L318,163" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="20" y="238" class="pr-lbl">Competitive analyst</text>
+        <rect x="20" y="246" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <text x="67" y="267" text-anchor="middle" class="pr-val">HBM</text>
+        <path d="M114,263 Q250,263 320,186" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="390" y="90" text-anchor="middle" class="pr-tag-accent">Identical</text>
+        <rect class="pr-node" x="320" y="100" width="140" height="120" rx="4" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"></rect>
+        <text x="390" y="124" text-anchor="middle" class="pr-node-lbl">Report</text>
+        <line x1="345" y1="145" x2="445" y2="145" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <line x1="345" y1="163" x2="445" y2="163" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <line x1="345" y1="181" x2="420" y2="181" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <circle cx="454" cy="106" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
+      </svg>
+    </div>
+    <figcaption class="pr-caption">Capacity planning, partnerships, and competitive research &mdash; three different jobs &mdash; all typed &ldquo;HBM&rdquo; into the same keyword box and got the same templated report back.</figcaption>
+  </figure>
+
+  <figure class="pr-fig">
+    <div class="pr-eyebrow">The black box</div>
+    <div class="pr-canvas">
+      <svg viewBox="0 0 480 260" role="img" aria-label="A keyword enters a sealed, unexplainable process and a report comes out, with no visible sources or reasoning">
+        <defs>
+          <marker id="pr-arrowhead-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path>
+          </marker>
+          <pattern id="pr-hatch-b" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="8" height="8" fill="var(--surface-subtle)"></rect>
+            <line x1="0" y1="0" x2="0" y2="8" stroke="var(--hairline-faint)" stroke-width="2"></line>
+          </pattern>
+        </defs>
+        <text x="70" y="75" text-anchor="middle" class="pr-lbl">Query</text>
+        <rect x="20" y="90" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <text x="70" y="120" text-anchor="middle" class="pr-val">HBM</text>
+        <path d="M120,115 L178,115" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <rect class="pr-sealed" x="185" y="65" width="140" height="110" rx="4" fill="url(#pr-hatch-b)" stroke="var(--accent)" stroke-width="1.5"></rect>
+        <text x="255" y="132" text-anchor="middle" class="pr-q">?</text>
+        <circle cx="317" cy="73" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
+        <text x="255" y="196" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
+        <path d="M325,115 L378,115" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <text x="430" y="80" text-anchor="middle" class="pr-lbl">Report</text>
+        <rect x="380" y="90" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <line x1="395" y1="110" x2="465" y2="110" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <line x1="395" y1="124" x2="450" y2="124" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+      </svg>
+    </div>
+    <figcaption class="pr-caption">A keyword goes in. A report comes out. Nothing in between can be inspected, questioned, or trusted.</figcaption>
+  </figure>
+
+</div>
+</section>
+</div>
+
+<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>02</b> · Process</span></div>
+<div class="gal-block" id="the-fork">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h3 class="gal-headline">Interviews told me the goal. An LLM found the pattern.</h3>
+    <p class="gal-lede-p"><i>A top-5 foundry making billion-dollar capacity bets was running its deep-tech research through a keyword box.</i></p>
+    <p>Discovery ran on three inputs, and every one narrowed to the same decision: <b>92 real queries</b> read as a behavior transcript, <b>263 tagged issues</b> clustered by frequency &times; scale of impact, and <b>21 benchmark runs</b> that put a price on retrieval. The phase-by-phase detail is in the rail below &mdash; but the three inputs all pointed one way.</p>
+    <p class="gal-fork">Stop optimizing search. Stop returning documents. Return the synthesis.</p>
+  </div></div>
+  <!-- ===== ANCHOR 2: PROCESS ===== -->
+<section class="anchor" id="anchor-process">
+<style>
+  #anchor-process{font-family:var(--font-body);color:var(--body);}
+  #anchor-process .pc-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:center;}
+  #anchor-process .pc-figure{flex:1 1 100%;max-width:none;min-width:0;margin:0;display:flex;flex-direction:column;}
+  #anchor-process .pc-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  #anchor-process .pc-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:30px 30px;display:grid;grid-template-columns:repeat(3,1fr);column-gap:0;}
+  #anchor-process .pc-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
+  #anchor-process .pc-rail-row{display:flex;flex-direction:column;gap:9px;padding:2px 26px;box-shadow:inset 1px 0 0 0 var(--hairline-faint);opacity:0;transform:translateY(8px);animation:pc-rise .38s var(--ease-out-strong) forwards;}
+  #anchor-process .pc-rail-row:first-of-type{padding-left:0;box-shadow:none;}
+  #anchor-process .pc-rail-row:nth-of-type(1){animation-delay:.02s;}
+  #anchor-process .pc-rail-row:nth-of-type(2){animation-delay:.14s;}
+  #anchor-process .pc-rail-row:nth-of-type(3){animation-delay:.26s;}
+  #anchor-process .pc-num{font-family:var(--font-mono);font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ghost);margin-bottom:2px;}
+  #anchor-process .pc-content{display:flex;flex-direction:column;gap:9px;padding-top:4px;}
+  #anchor-process .pc-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);}
+  #anchor-process .pc-line{font-size:13px;color:var(--muted-strong);line-height:1.55;max-width:none;}
+  #anchor-process .pc-snippet{display:inline-block;font-family:var(--font-mono);font-size:11.5px;color:var(--ink);background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:9px 11px;line-height:1.6;}
+  #anchor-process .pc-snippet u{text-decoration-color:var(--hairline);text-underline-offset:3px;}
+  #anchor-process .pc-chips{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;}
+  #anchor-process .pc-chip{font-family:var(--font-mono);color:var(--ink);background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:5px 9px;white-space:nowrap;}
+  #anchor-process .pc-chip--lg{font-size:11.5px;padding:7px 11px;}
+  #anchor-process .pc-chip--md{font-size:10.5px;}
+  #anchor-process .pc-chip--sm{font-size:9.5px;color:var(--muted-strong);}
+  #anchor-process .pc-bars{display:flex;flex-direction:column;gap:8px;margin-top:2px;}
+  #anchor-process .pc-bar-row{display:flex;align-items:center;gap:9px;}
+  #anchor-process .pc-bar-label{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);width:112px;flex-shrink:0;}
+  #anchor-process .pc-bar-track{flex:1;height:8px;background:var(--surface-warm);border-radius:2px;box-shadow:0 0 0 1px var(--hairline-faint);overflow:hidden;}
+  #anchor-process .pc-bar-fill{height:100%;background:var(--muted-strong);border-radius:2px;transform:scaleX(0);transform-origin:left;animation:pc-grow .42s var(--ease-out-strong) forwards;animation-delay:.3s;}
+  #anchor-process .pc-bar-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:10.5px;color:var(--ink);width:38px;text-align:right;flex-shrink:0;}
+  #anchor-process .pc-fork{grid-column:1 / -1;display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:22px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);opacity:0;animation:pc-fade .3s var(--ease) forwards;animation-delay:.5s;}
+  #anchor-process .pc-fork-dot{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--canvas);}
+  #anchor-process .pc-fork-text{font-family:var(--font-mono);font-size:12.5px;font-weight:600;letter-spacing:.01em;color:var(--accent);line-height:1.4;}
+  #anchor-process .pc-funnel svg{display:block;width:100%;height:auto;}
+  #anchor-process .pc-chip-rect{fill:var(--canvas);stroke:var(--hairline-faint);stroke-width:1;}
+  #anchor-process .pc-chip-main{font-family:var(--font-mono);font-size:13px;font-weight:700;fill:var(--ink);font-variant-numeric:tabular-nums;}
+  #anchor-process .pc-chip-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;fill:var(--muted);}
+  #anchor-process .pc-converge-line{fill:none;stroke:var(--hairline);stroke-width:1;stroke-dasharray:260;stroke-dashoffset:260;animation:pc-draw .5s var(--ease-out-strong) forwards;}
+  #anchor-process .pc-converge-line.pc-l2{animation-delay:.05s;}
+  #anchor-process .pc-converge-line.pc-l3{animation-delay:.1s;}
+  #anchor-process .pc-node{fill:var(--muted-strong);opacity:0;animation:pc-fade .25s var(--ease) forwards;animation-delay:.55s;}
+  #anchor-process .pc-fork-line{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:140;stroke-dashoffset:140;animation:pc-draw .4s var(--ease-out-strong) forwards;animation-delay:.6s;}
+  #anchor-process .pc-fork-endpoint{fill:var(--accent);stroke:var(--canvas);stroke-width:1;opacity:0;animation:pc-fade .25s var(--ease) forwards;animation-delay:.95s;}
+  #anchor-process .pc-fork-label{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;fill:var(--accent);opacity:0;animation:pc-fade .3s var(--ease) forwards;animation-delay:1.05s;}
+  @keyframes pc-rise{to{opacity:1;transform:translateY(0);}}
+  @keyframes pc-fade{to{opacity:1;}}
+  @keyframes pc-grow{to{transform:scaleX(1);}}
+  @keyframes pc-draw{to{stroke-dashoffset:0;}}
+  @media (max-width:760px){
+    #anchor-process .pc-panel{grid-template-columns:1fr;}
+    #anchor-process .pc-rail-row{padding:0 0 20px;box-shadow:none;}
+    #anchor-process .pc-rail-row:first-of-type{padding-left:0;}
+    #anchor-process .pc-fork{margin-top:6px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #anchor-process .pc-rail-row,#anchor-process .pc-bar-fill,#anchor-process .pc-fork,#anchor-process .pc-node,#anchor-process .pc-fork-line,#anchor-process .pc-fork-endpoint,#anchor-process .pc-fork-label,#anchor-process .pc-converge-line{animation:none !important;opacity:1 !important;transform:none !important;stroke-dashoffset:0 !important;}
+  }
+</style>
+<div class="pc-wrap">
+  <figure class="pc-figure">
+    <div class="pc-eyebrow">The three-phase rail</div>
+    <div class="pc-panel">
+      <div class="pc-rail-row">
+        <div class="pc-num">01</div>
+        <div class="pc-content">
+          <div class="pc-label">Listen</div>
+          <p class="pc-line">70% non-keyword, refinement loops mid-session, bilingual switches, one question the pipeline silently dropped.</p>
+          <div class="pc-snippet">silicon interposer <u>與</u> silicon bridge 哪一項技術適合&hellip;</div>
+        </div>
+      </div>
+      <div class="pc-rail-row">
+        <div class="pc-num">02</div>
+        <div class="pc-content">
+          <div class="pc-label">Understand</div>
+          <p class="pc-line">263 tagged issues clustered by frequency &times; impact &mdash; Report Content led, Citations never got fixed.</p>
+          <div class="pc-chips">
+            <span class="pc-chip pc-chip--lg">Report Content &middot; 48</span>
+            <span class="pc-chip pc-chip--md">Agent Logic &middot; 43 &middot; 2.3% fixed</span>
+            <span class="pc-chip pc-chip--sm">Citations &middot; 0% fixed</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-rail-row">
+        <div class="pc-num">03</div>
+        <div class="pc-content">
+          <div class="pc-label">Constrain</div>
+          <p class="pc-line">Benchmarked fast vs. path-grounded retrieval with an ML engineer across 21 runs &mdash; 10 sub-agents already in place.</p>
+          <div class="pc-bars">
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">fast retrieval</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill" style="width:18%"></span></span>
+              <span class="pc-bar-value">$0.02</span>
+            </div>
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">path-grounded</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill" style="width:100%"></span></span>
+              <span class="pc-bar-value">$0.11</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pc-fork">
+        <span class="pc-fork-dot"></span>
+        <span class="pc-fork-text">Stop optimizing search. Stop returning documents. Return the synthesis.</span>
+      </div>
+    </div>
+    <figcaption class="pc-caption">Three phases, one fork: from 92 raw queries to a $0.09-per-run bet on synthesis over search.</figcaption>
+  </figure>
+</div>
+</section>
+</div>
+
+<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>03</b> · Solution</span></div>
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h3 class="gal-headline">Three moves turned a search box into a research partner.</h3>
+    <p class="gal-lede-p">The fork from Process &mdash; <i>stop returning documents, return the synthesis</i> &mdash; only holds if three things become true: the system reads intent, shapes the output to the asker, and shows its work. Each move below took the next-ranked pain from the frequency&nbsp;&times;&nbsp;impact list. The embeds are live recreations of the shipped UI &mdash; try them.</p>
+  </div></div>
+
+  <div class="cs-principles" role="list" aria-label="Design principles">
+    <p class="cs-principles-title">The rules every screen followed</p>
+    <div class="cs-principles-grid">
+      <div role="listitem"><b>Forest green = commitment, only.</b><span>It appears only when the system is ready to act. Watch the submit button below.</span></div>
+      <div role="listitem"><b>Amber = AI-touched, only.</b><span>One color reserved for AI-influenced regions, so provenance reads at a glance.</span></div>
+      <div role="listitem"><b>Not a chatbot.</b><span>No bubbles, no typewriter streaming, no thread &mdash; a research instrument, not a conversation.</span></div>
+      <div role="listitem"><b>Calm at entry, dense at the report.</b><span>The landing asks one question; density is earned where the analyst is paying for it.</span></div>
+    </div>
+  </div>
+
+  <div class="gal-copy" id="move-1"><div class="gal-copy-inner gal-move">
+    <p><b>Move 1 &mdash; take the question, not the keyword.</b> The intent gap topped the ranking, so it got the first move. I replaced the keyword field with an input that accepts whatever a researcher actually has &mdash; a full question, a terse fragment, a bilingual ask &mdash; and let ten sub-agents route it, instead of making the user translate themselves into search syntax. The submit control stays quiet until there&rsquo;s a real ask: forest green is the product&rsquo;s commitment color, and it appears only when there&rsquo;s something to commit to. First three weeks live: 70% of queries were shapes the old box couldn&rsquo;t parse; only 8 of 92 passed through unchanged.</p>
+  </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A chat thread — messages, history, back-and-forth.</dd></div>
+      <div><dt>Chose</dt><dd>One box, with the interpretation shown as footnotes: arm¹ resolves to a numbered chip naming what the system understood.</dd></div>
+      <div><dt>Because</dt><dd>Silently rewriting a researcher's query breaks trust — the reading had to be visible without touching their words.</dd></div>
+    </dl>
+  </div>
+  <div class="gal-widget-wrap">
+    <div class="gal-widget-eyebrow">Move 1 · the shipped input &mdash; interactive</div>
+    <section class="sol-widget" id="sol-w1">
+  <style>
+    #sol-w1{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      box-sizing:border-box;
+    }
+    #sol-w1 *{ box-sizing:border-box; font-family:var(--d-font); }
+
+    #sol-w1 .sol-w1-inner{ max-width:600px; margin:0 auto; }
+
+    #sol-w1 .sol-w1-sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+
+    /* Sanctioned center-aligned entry surface */
+    #sol-w1 .sol-w1-heading{
+      font-size:24px; font-weight:600; line-height:1.2; letter-spacing:-0.01em;
+      color:var(--d-text); text-align:center; margin:0 0 8px;
+    }
+    #sol-w1 .sol-w1-sub{
+      font-size:13px; font-weight:400; line-height:1.5; color:var(--d-sub);
+      text-align:center; margin:0 0 24px;
+    }
+
+    /* Search card */
+    #sol-w1 .sol-w1-card{
+      position:relative;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:16px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:16px 16px 14px;
+      transition:border-color var(--d-fast) var(--d-ease);
+    }
+    #sol-w1 .sol-w1-card.is-focused{
+      border-color:var(--d-primary);
+    }
+
+    #sol-w1 .sol-w1-form{
+      display:flex;
+      flex-direction:column;
+      min-height:96px;
+    }
+    #sol-w1 .sol-w1-card.is-resolved .sol-w1-form{ display:none; }
+
+    #sol-w1 .sol-w1-input{
+      flex:1 1 auto;
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      font-size:14.5px;
+      font-weight:400;
+      line-height:1.4;
+      color:var(--d-text);
+      padding:2px 2px 8px;
+    }
+    #sol-w1 .sol-w1-input::placeholder{ color:var(--d-sub); }
+
+    #sol-w1 .sol-w1-actions{
+      display:flex;
+      justify-content:flex-end;
+    }
+    #sol-w1 .sol-w1-submit{
+      flex:0 0 auto;
+      width:34px; height:34px;
+      border:none;
+      border-radius:10px;
+      background:var(--d-surface-high);
+      color:var(--d-sub);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:default;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+      padding:0;
+    }
+    #sol-w1 .sol-w1-submit svg{ width:16px; height:16px; display:block; }
+    #sol-w1 .sol-w1-submit.is-active{
+      background:var(--d-primary);
+      color:var(--d-white);
+      cursor:pointer;
+    }
+    #sol-w1 .sol-w1-submit.is-active:hover{
+      background:var(--d-primary-container);
+    }
+
+    /* Resolved state */
+    #sol-w1 .sol-w1-resolved{
+      display:none;
+      opacity:0;
+      transition:opacity var(--d-base) var(--d-ease);
+    }
+    #sol-w1 .sol-w1-card.is-resolved .sol-w1-resolved{
+      display:block;
+      opacity:1;
+    }
+    #sol-w1 .sol-w1-resolved-query{
+      font-size:14.5px; font-weight:400; line-height:1.5; color:var(--d-text);
+      margin:0 0 10px;
+      word-break:break-word;
+    }
+    #sol-w1 .sol-w1-entity{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+    }
+    #sol-w1 .sol-w1-entity sup{
+      font-size:10px;
+      font-weight:500;
+      line-height:0;
+      margin-left:1px;
+      color:var(--d-sub);
+    }
+    #sol-w1 .sol-w1-entity-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin:0 0 14px;
+    }
+    #sol-w1 .sol-w1-entity-chip{
+      display:inline-flex;
+      align-items:baseline;
+      gap:6px;
+      background:var(--d-surface-low);
+      border-radius:var(--d-r-sm);
+      padding:4px 10px;
+      font-size:11px;
+      line-height:1.3;
+      letter-spacing:0.02em;
+    }
+    #sol-w1 .sol-w1-entity-chip .sol-w1-entity-num{
+      font-weight:400;
+      color:var(--d-sub);
+    }
+    #sol-w1 .sol-w1-entity-chip .sol-w1-entity-name{
+      font-weight:600;
+      color:var(--d-text);
+    }
+    #sol-w1 .sol-w1-resolved-foot{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #sol-w1 .sol-w1-resolved-text{ min-width:0; }
+    #sol-w1 .sol-w1-resolved-label{
+      font-size:11px; font-weight:500; letter-spacing:0.02em; line-height:1.3;
+      color:var(--d-sub); margin:0 0 3px;
+    }
+    #sol-w1 .sol-w1-resolved-title{
+      font-size:14.5px; font-weight:600; line-height:1.35; color:var(--d-text);
+      margin:0;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    #sol-w1 .sol-w1-ask-another{
+      flex:0 0 auto;
+      border:none;
+      background:transparent;
+      color:var(--d-primary);
+      font-size:12px; font-weight:500;
+      border-radius:var(--d-r-sm);
+      padding:8px 12px;
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease);
+      white-space:nowrap;
+    }
+    #sol-w1 .sol-w1-ask-another:hover{ background:var(--d-surface-low); }
+
+    /* Suggestion chips — prototype look: white, ghost border, rectangular */
+    #sol-w1 .sol-w1-chips{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:8px;
+      margin:16px 0 0;
+      padding:0;
+      list-style:none;
+    }
+    #sol-w1 .sol-w1-chip{
+      border:1px solid var(--d-ghost);
+      background:var(--d-white);
+      color:var(--d-text);
+      font-size:11.5px; font-weight:500; letter-spacing:0.01em; line-height:1.3;
+      border-radius:var(--d-r-md);
+      padding:6px 12px;
+      cursor:pointer;
+      max-width:100%;
+      text-align:left;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w1 .sol-w1-chip:hover{ background:var(--d-surface-low); }
+
+    /* caption */
+    #sol-w1 .sol-w1-caption{
+      font-size:12px; font-weight:400; line-height:1.45; color:var(--d-sub);
+      text-align:center; margin:20px 0 0;
+    }
+
+    /* focus-visible */
+    #sol-w1 button:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+      box-shadow:none;
+    }
+    #sol-w1 .sol-w1-submit:focus-visible{
+      outline-offset:-2px;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #sol-w1 .sol-w1-card,
+      #sol-w1 .sol-w1-submit,
+      #sol-w1 .sol-w1-resolved,
+      #sol-w1 .sol-w1-ask-another,
+      #sol-w1 .sol-w1-chip{
+        transition:none !important;
+        animation:none !important;
+      }
+    }
+  </style>
+
+  <div class="sol-w1-inner">
+    <h2 class="sol-w1-heading">What would you like to research?</h2>
+    <p class="sol-w1-sub">Ask about any technology, market, or company.</p>
+
+    <div class="sol-w1-card" id="sol-w1-card">
+      <form class="sol-w1-form" id="sol-w1-form" novalidate>
+        <label class="sol-w1-sr-only" for="sol-w1-input">Research question</label>
+        <input
+          type="text"
+          id="sol-w1-input"
+          class="sol-w1-input"
+          placeholder="Ask about a technology, patent, or market..."
+          autocomplete="off"
+        />
+        <div class="sol-w1-actions">
+          <button type="submit" class="sol-w1-submit" id="sol-w1-submit" aria-disabled="true" aria-label="Submit research question">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="sol-w1-resolved" id="sol-w1-resolved" role="status" aria-live="polite">
+        <p class="sol-w1-resolved-query" id="sol-w1-resolved-query"></p>
+        <div class="sol-w1-entity-chips" id="sol-w1-entity-chips"></div>
+        <div class="sol-w1-resolved-foot">
+          <div class="sol-w1-resolved-text">
+            <p class="sol-w1-resolved-label">New research brief</p>
+            <p class="sol-w1-resolved-title" id="sol-w1-resolved-title"></p>
+          </div>
+          <button type="button" class="sol-w1-ask-another" id="sol-w1-ask-another">Ask another</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sol-w1-chips" role="group" aria-label="Example research queries">
+      <button type="button" class="sol-w1-chip" data-query="OCS">OCS</button>
+      <button type="button" class="sol-w1-chip" data-query="do you think TSV-coupled inductor is suitable for UMC or not?">do you think TSV-coupled inductor is suitable for UMC or not?</button>
+      <button type="button" class="sol-w1-chip" data-query="silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?</button>
+    </div>
+
+    <p class="sol-w1-caption">Interactive recreation — type or tap a real customer query.</p>
+  </div>
+
+  <script>
+  (function(){
+    var root = document.getElementById('sol-w1');
+    if(!root) return;
+
+    var card = root.querySelector('#sol-w1-card');
+    var form = root.querySelector('#sol-w1-form');
+    var input = root.querySelector('#sol-w1-input');
+    var submitBtn = root.querySelector('#sol-w1-submit');
+    var resolvedQuery = root.querySelector('#sol-w1-resolved-query');
+    var entityChips = root.querySelector('#sol-w1-entity-chips');
+    var resolvedTitle = root.querySelector('#sol-w1-resolved-title');
+    var askAnotherBtn = root.querySelector('#sol-w1-ask-another');
+    var chips = root.querySelectorAll('.sol-w1-chip');
+
+    function updateSubmitState(){
+      var hasText = input.value.trim().length > 0;
+      submitBtn.classList.toggle('is-active', hasText);
+      submitBtn.setAttribute('aria-disabled', hasText ? 'false' : 'true');
+    }
+
+    // Resolution map: report title + entity footnote (segment to underline + chip name)
+    function resolve(raw){
+      var text = raw.trim();
+      var lower = text.toLowerCase();
+      if(lower.indexOf('ocs') !== -1){
+        return { title:'Optical Circuit Switching Technology Overview',
+                 entity:'OCS', chipName:'Optical Circuit Switching' };
+      }
+      if(lower.indexOf('tsv') !== -1){
+        return { title:'TSV-Coupled Inductor Suitability for UMC',
+                 entity:'UMC', chipName:'United Microelectronics' };
+      }
+      if(lower.indexOf('silicon interposer') !== -1 || text.indexOf('聯電') !== -1){
+        return { title:'Silicon Interposer vs Silicon Bridge for UMC',
+                 entity:'聯電', chipName:'UMC' };
+      }
+      var trimmed = text.length > 60 ? text.slice(0, 60) : text;
+      return { title:'Research brief: ' + trimmed, entity:null, chipName:null };
+    }
+
+    // Render query text with the resolved entity underlined + numbered superscript
+    function renderResolvedQuery(text, entity){
+      resolvedQuery.textContent = '';
+      entityChips.textContent = '';
+      var idx = entity ? text.toLowerCase().indexOf(entity.toLowerCase()) : -1;
+      if(idx === -1){
+        resolvedQuery.textContent = text;
+        return false;
+      }
+      resolvedQuery.appendChild(document.createTextNode(text.slice(0, idx)));
+      var span = document.createElement('span');
+      span.className = 'sol-w1-entity';
+      span.appendChild(document.createTextNode(text.slice(idx, idx + entity.length)));
+      var sup = document.createElement('sup');
+      sup.textContent = '1';
+      span.appendChild(sup);
+      resolvedQuery.appendChild(span);
+      resolvedQuery.appendChild(document.createTextNode(text.slice(idx + entity.length)));
+      return true;
+    }
+
+    function renderEntityChip(chipName){
+      var chip = document.createElement('span');
+      chip.className = 'sol-w1-entity-chip';
+      var num = document.createElement('span');
+      num.className = 'sol-w1-entity-num';
+      num.textContent = '1';
+      var name = document.createElement('span');
+      name.className = 'sol-w1-entity-name';
+      name.textContent = chipName;
+      chip.appendChild(num);
+      chip.appendChild(name);
+      entityChips.appendChild(chip);
+    }
+
+    function submitQuery(){
+      var value = input.value.trim();
+      if(!value) return;
+      var r = resolve(value);
+      var wrapped = renderResolvedQuery(value, r.entity);
+      if(wrapped && r.chipName){
+        renderEntityChip(r.chipName);
+        entityChips.style.display = '';
+      } else {
+        entityChips.style.display = 'none';
+      }
+      resolvedTitle.textContent = r.title;
+      card.classList.add('is-resolved');
+      card.classList.remove('is-focused');
+      askAnotherBtn.focus();
+    }
+
+    function resetToEmpty(){
+      card.classList.remove('is-resolved');
+      input.value = '';
+      updateSubmitState();
+      input.focus();
+    }
+
+    input.addEventListener('input', updateSubmitState);
+
+    card.addEventListener('focusin', function(){
+      if(!card.classList.contains('is-resolved')){
+        card.classList.add('is-focused');
+      }
+    });
+    card.addEventListener('focusout', function(){
+      window.setTimeout(function(){
+        if(!card.contains(document.activeElement)){
+          card.classList.remove('is-focused');
+        }
+      }, 0);
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      submitQuery();
+    });
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        input.value = chip.getAttribute('data-query');
+        updateSubmitState();
+        input.focus();
+      });
+    });
+
+    askAnotherBtn.addEventListener('click', resetToEmpty);
+
+    updateSubmitState();
+  })();
+  </script>
+</section>
+  </div>
+
+  <div class="gal-copy" id="move-2"><div class="gal-copy-inner gal-move">
+    <p><b>Move 2 &mdash; chips, not a form.</b> Same keyword, different intent was the next-ranked pain: a capacity planner and a partnerships lead don&rsquo;t want the same report. Instead of guessing, the system asks one question back &mdash; which area, how deep &mdash; as tappable chips. One tap aims the whole report. The template stopped being the shape of the answer; the question did.</p>
+  </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A free-text follow-up question from the assistant.</dd></div>
+      <div><dt>Chose</dt><dd>Three tappable focus chips, plus a dashed 'I'll rewrite' escape hatch.</dd></div>
+      <div><dt>Because</dt><dd>Mid-task engineers won't type a paragraph about scope — chips make aiming a one-tap act, and the escape keeps control with the user.</dd></div>
+    </dl>
+  </div>
+  <div class="gal-widget-wrap">
+    <div class="gal-widget-eyebrow">Move 2 · clarification state &mdash; interactive</div>
+    <section class="sol-widget" id="sol-w2">
+  <style>
+    #sol-w2{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      box-sizing:border-box;
+    }
+    #sol-w2 *{ box-sizing:border-box; font-family:var(--d-font); }
+    #sol-w2 .sol-w2-inner{ max-width:600px; margin:0 auto; }
+
+    /* THE search card — everything lives inside it */
+    #sol-w2 .sol-w2-card{
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:16px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:18px 20px 16px;
+      position:relative;
+    }
+
+    /* Query line with entity footnotes */
+    #sol-w2 .sol-w2-query{
+      margin:0;
+      font-size:14.5px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-text);
+    }
+    #sol-w2 .sol-w2-entity{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+      text-decoration-color:var(--d-sub);
+    }
+    #sol-w2 .sol-w2-query sup{
+      font-size:9px;
+      font-weight:600;
+      line-height:0;
+      vertical-align:super;
+      color:var(--d-text);
+    }
+    #sol-w2 .sol-w2-query sup.sol-w2-fn2{
+      opacity:0;
+      transition:opacity var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-query sup.sol-w2-fn2.is-on{ opacity:1; }
+
+    /* Footnote chips (resolved entities) */
+    #sol-w2 .sol-w2-footnotes{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:8px;
+    }
+    #sol-w2 .sol-w2-fnchip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--d-surface-low);
+      border-radius:var(--d-r-sm);
+      padding:4px 9px;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      color:var(--d-text);
+    }
+    #sol-w2 .sol-w2-fnchip .sol-w2-fnnum{
+      font-weight:600;
+      color:var(--d-sub);
+    }
+    #sol-w2 .sol-w2-fnchip[hidden]{ display:none; }
+
+    /* Clarification question */
+    #sol-w2 .sol-w2-question{
+      margin:18px 0 10px;
+      font-size:13px;
+      font-weight:400;
+      line-height:1.5;
+      color:var(--d-sub);
+    }
+
+    /* Bottom row: choice chips left, arrow submit right */
+    #sol-w2 .sol-w2-bottom{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #sol-w2 .sol-w2-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    #sol-w2 .sol-w2-chip{
+      appearance:none;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:8px;
+      color:var(--d-text);
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      padding:6px 13px;
+      cursor:pointer;
+      transition:border-color var(--d-fast) var(--d-ease),
+                 color var(--d-fast) var(--d-ease),
+                 background var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-chip:hover{ background:var(--d-surface-low); }
+    #sol-w2 .sol-w2-chip[aria-checked="true"]{
+      border-color:var(--d-primary);
+      color:var(--d-primary);
+      font-weight:600;
+      background:var(--d-white);
+    }
+    #sol-w2 .sol-w2-chip:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Dashed ghost chip: "I'll rewrite" */
+    #sol-w2 .sol-w2-rewrite{
+      appearance:none;
+      background:var(--d-white);
+      border:1px dashed var(--d-ghost);
+      border-radius:8px;
+      color:var(--d-sub);
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      padding:6px 13px;
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-rewrite:hover{ background:var(--d-surface-low); }
+    #sol-w2 .sol-w2-rewrite:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Arrow submit — the card's only CTA */
+    #sol-w2 .sol-w2-submit{
+      appearance:none;
+      border:none;
+      flex:none;
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--d-surface-high);
+      color:var(--d-sub);
+      cursor:default;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-submit svg{ width:16px; height:16px; }
+    #sol-w2 .sol-w2-submit.is-armed{
+      background:var(--d-primary);
+      color:var(--d-white);
+      cursor:pointer;
+    }
+    #sol-w2 .sol-w2-submit.is-armed:hover{ background:var(--d-primary-container); }
+    #sol-w2 .sol-w2-submit:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Queued row (post-submit swap) */
+    #sol-w2 .sol-w2-queued{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:12px;
+      padding:4px 0 2px;
+    }
+    #sol-w2 .sol-w2-queued-text{
+      margin:0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+    #sol-w2 .sol-w2-queued-text strong{
+      font-weight:600;
+      color:var(--d-text);
+    }
+    #sol-w2 .sol-w2-adjust{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--d-primary);
+      font-size:12px;
+      font-weight:500;
+      padding:6px 10px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-adjust:hover{ background:var(--d-surface-low); }
+    #sol-w2 .sol-w2-adjust:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Panel swap */
+    #sol-w2 .sol-w2-panel{
+      transition:opacity var(--d-base) var(--d-ease), transform var(--d-base) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-panel[hidden]{ display:none; }
+    #sol-w2 .sol-w2-panel.sol-w2-enter{
+      opacity:0;
+      transform:translateY(4px);
+    }
+
+    /* Caption */
+    #sol-w2 .sol-w2-caption{
+      margin:16px 0 0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #sol-w2 *{
+        transition:none !important;
+        animation:none !important;
+      }
+      #sol-w2 .sol-w2-panel.sol-w2-enter{
+        opacity:1;
+        transform:none;
+      }
+    }
+  </style>
+
+  <div class="sol-w2-inner">
+    <div class="sol-w2-card">
+      <div class="sol-w2-panel" id="sol-w2-clarify">
+        <p class="sol-w2-query"><span class="sol-w2-entity">arm</span><sup>1</sup> robotics market<sup class="sol-w2-fn2" id="sol-w2-fn2" aria-hidden="true">2</sup></p>
+        <div class="sol-w2-footnotes">
+          <span class="sol-w2-fnchip"><span class="sol-w2-fnnum">1</span> Arm Holdings</span>
+          <span class="sol-w2-fnchip" id="sol-w2-fnchip2" hidden><span class="sol-w2-fnnum">2</span> <span id="sol-w2-fnchip2-label"></span></span>
+        </div>
+
+        <p class="sol-w2-question" id="sol-w2-question">Focus the report on…?</p>
+
+        <div class="sol-w2-bottom">
+          <div class="sol-w2-chips" role="radiogroup" aria-labelledby="sol-w2-question">
+            <button type="button" class="sol-w2-chip" role="radio" aria-checked="false" tabindex="0" data-focus="Market landscape">Market landscape</button>
+            <button type="button" class="sol-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Commercial adoption">Commercial adoption</button>
+            <button type="button" class="sol-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Top companies">Top companies</button>
+            <button type="button" class="sol-w2-rewrite" id="sol-w2-rewrite" aria-label="I'll rewrite the question instead — clears the selected focus">I'll rewrite</button>
+          </div>
+          <button type="button" class="sol-w2-submit" id="sol-w2-submit" disabled aria-disabled="true" aria-label="Generate report">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8h11M9 3.5L13.5 8 9 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sol-w2-panel sol-w2-queued" id="sol-w2-queued" hidden>
+        <p class="sol-w2-queued-text" role="status"><strong>Queued</strong> — Arm robotics market — Arm Holdings · Generating</p>
+        <button type="button" class="sol-w2-adjust" id="sol-w2-adjust" aria-label="Adjust focus and choose again">Adjust focus</button>
+      </div>
+    </div>
+
+    <p class="sol-w2-caption">Interactive recreation — same topic, three different reports.</p>
+  </div>
+
+  <script>
+  (function(){
+    var root = document.getElementById('sol-w2');
+    if (!root) return;
+
+    var chips = Array.prototype.slice.call(root.querySelectorAll('.sol-w2-chip'));
+    var rewriteBtn = root.querySelector('#sol-w2-rewrite');
+    var submit = root.querySelector('#sol-w2-submit');
+    var clarifyPanel = root.querySelector('#sol-w2-clarify');
+    var queuedPanel = root.querySelector('#sol-w2-queued');
+    var fn2 = root.querySelector('#sol-w2-fn2');
+    var fnchip2 = root.querySelector('#sol-w2-fnchip2');
+    var fnchip2Label = root.querySelector('#sol-w2-fnchip2-label');
+    var adjustBtn = root.querySelector('#sol-w2-adjust');
+
+    var selected = null;
+
+    function selectChip(chip, moveFocus){
+      selected = chip;
+      chips.forEach(function(c){
+        var isSelected = c === chip;
+        c.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+        c.tabIndex = isSelected ? 0 : -1;
+      });
+      if (moveFocus) chip.focus();
+      // Second footnote: query gains superscript 2 + "2 <focus>" chip
+      fn2.classList.add('is-on');
+      fnchip2Label.textContent = chip.getAttribute('data-focus');
+      fnchip2.hidden = false;
+      armSubmit(true);
+    }
+
+    function clearSelection(){
+      selected = null;
+      chips.forEach(function(c, i){
+        c.setAttribute('aria-checked', 'false');
+        c.tabIndex = i === 0 ? 0 : -1;
+      });
+      fn2.classList.remove('is-on');
+      fnchip2.hidden = true;
+      fnchip2Label.textContent = '';
+      armSubmit(false);
+    }
+
+    function armSubmit(armed){
+      if (armed){
+        submit.disabled = false;
+        submit.removeAttribute('aria-disabled');
+        submit.classList.add('is-armed');
+      } else {
+        submit.disabled = true;
+        submit.setAttribute('aria-disabled', 'true');
+        submit.classList.remove('is-armed');
+      }
+    }
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        selectChip(chip, false);
+      });
+      chip.addEventListener('keydown', function(e){
+        var idx = chips.indexOf(chip);
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+          next = chips[(idx + 1) % chips.length];
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+          next = chips[(idx - 1 + chips.length) % chips.length];
+        } else if (e.key === ' ' || e.key === 'Enter'){
+          e.preventDefault();
+          selectChip(chip, false);
+          return;
+        }
+        if (next){
+          e.preventDefault();
+          selectChip(next, true);
+        }
+      });
+    });
+
+    rewriteBtn.addEventListener('click', clearSelection);
+
+    function swapPanels(fromEl, toEl, afterShow){
+      fromEl.classList.add('sol-w2-enter');
+      window.requestAnimationFrame(function(){
+        fromEl.hidden = true;
+        toEl.hidden = false;
+        toEl.classList.add('sol-w2-enter');
+        window.requestAnimationFrame(function(){
+          toEl.classList.remove('sol-w2-enter');
+          if (afterShow) afterShow();
+        });
+      });
+    }
+
+    submit.addEventListener('click', function(){
+      if (!selected) return;
+      swapPanels(clarifyPanel, queuedPanel, function(){
+        adjustBtn.focus();
+      });
+    });
+
+    adjustBtn.addEventListener('click', function(){
+      swapPanels(queuedPanel, clarifyPanel, function(){
+        if (selected) selected.focus();
+      });
+    });
+  })();
+  </script>
+</section>
+  </div>
+
+  <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
+    <p><b>Move 3 &mdash; narration, not a spinner.</b> Unsourced numbers were rare but fatal &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn. So the pipeline became visible in both directions. While generating, each named agent reports what it&rsquo;s touching &mdash; 145 patents in a cluster, 312 papers matched &mdash; never a spinner. After, every claim carries a citation you can open, scored against a seven-dimension eval, and any term drills down into its own scoped report. 91 of 92 live queries produced a report a researcher could audit before staking a decision on it.</p>
+  </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A progress bar.</dd></div>
+      <div><dt>Chose</dt><dd>Named agents narrating what they touch — 'USPTO · 145 patents in cluster A.'</dd></div>
+      <div><dt>Because</dt><dd>A percentage is theater you can't verify. Naming the sources turns the wait itself into evidence.</dd></div>
+    </dl>
+  </div>
+  <div class="gal-widget-wrap">
+    <div class="gal-widget-eyebrow">Move 3a · generating panel &mdash; plays on scroll, replayable</div>
+    <section class="sol-widget" id="sol-w3">
+  <style>
+    #sol-w3{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      max-width:none;
+      box-sizing:border-box;
+    }
+    #sol-w3 *{ box-sizing:border-box; }
+
+    #sol-w3 .w3-panel{
+      max-width:600px;
+      margin:0 auto;
+      background:var(--d-white);
+      border-radius:8px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:22px 24px 20px;
+    }
+
+    /* ---------- Header ---------- */
+    #sol-w3 .w3-head{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+    }
+    #sol-w3 .w3-head-text{
+      flex:1 1 auto;
+      min-width:0;
+    }
+    #sol-w3 .w3-title{
+      margin:0 0 4px;
+      font-size:20px;
+      font-weight:600;
+      line-height:1.25;
+      letter-spacing:-0.005em;
+      color:var(--d-text);
+    }
+    #sol-w3 .w3-echo{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-style:italic;
+      font-size:13px;
+      line-height:1.45;
+      color:var(--d-sub);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    #sol-w3 .w3-stop{
+      flex:0 0 auto;
+      appearance:none;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:var(--d-r-sm);
+      padding:7px 14px;
+      font-family:var(--d-font);
+      font-size:12.5px;
+      font-weight:500;
+      color:var(--d-text);
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease);
+    }
+    #sol-w3 .w3-stop:hover{ background:var(--d-surface-low); }
+    #sol-w3 .w3-stop:focus-visible{ outline:1px solid var(--d-primary); outline-offset:2px; }
+    #sol-w3 .w3-stop svg{ display:block; color:var(--d-text); }
+    #sol-w3 .w3-stop .w3-ic-play{ display:none; }
+    #sol-w3 .w3-stop.is-paused .w3-ic-stop{ display:none; }
+    #sol-w3 .w3-stop.is-paused .w3-ic-play{ display:block; }
+    #sol-w3 .w3-panel.is-finished .w3-stop{ visibility:hidden; }
+
+    /* ---------- Replay ---------- */
+    #sol-w3 .w3-replay{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--d-primary);
+      font-family:var(--d-font);
+      font-size:12px;
+      font-weight:500;
+      letter-spacing:.02em;
+      padding:5px 8px;
+      margin:6px 0 4px -8px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w3 .w3-replay:hover{ background:var(--d-surface-low); }
+    #sol-w3 .w3-replay:focus-visible{ outline:1px solid var(--d-primary); outline-offset:2px; }
+    #sol-w3 .w3-replay.is-hidden{ display:none; }
+
+    /* ---------- Agent rows ---------- */
+    #sol-w3 .w3-agents{
+      margin-top:6px;
+    }
+    #sol-w3 .w3-agent{
+      padding:13px 0 12px;
+      border-top:1px solid var(--d-ghost);
+    }
+    #sol-w3 .w3-agent:first-child{ border-top:none; }
+
+    #sol-w3 .w3-agent-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:18px;
+    }
+
+    /* indicator: ring (pending) / pulsing dot (active) / check (done) */
+    #sol-w3 .w3-ind{
+      position:relative;
+      flex:0 0 auto;
+      width:12px;
+      height:12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #sol-w3 .w3-ind-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      border:1.5px solid var(--d-surface-high);
+      background:transparent;
+      transition:background var(--d-base) var(--d-ease), border-color var(--d-base) var(--d-ease);
+    }
+    #sol-w3 .w3-agent.is-active .w3-ind-dot{
+      border-color:var(--d-primary);
+      background:var(--d-primary);
+      animation:sol-w3-pulse 1.1s var(--d-ease) infinite;
+    }
+    @keyframes sol-w3-pulse{
+      0%,100%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(0.72); opacity:0.55; }
+    }
+    #sol-w3 .w3-ind-check{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--d-primary);
+      opacity:0;
+      transform:scale(.5);
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease);
+    }
+    #sol-w3 .w3-agent.is-done .w3-ind-dot{ opacity:0; }
+    #sol-w3 .w3-agent.is-done .w3-ind-check{ opacity:1; transform:scale(1); }
+
+    #sol-w3 .w3-agent-name{
+      font-size:13.5px;
+      font-weight:600;
+      line-height:1.4;
+      color:var(--d-sub);
+      transition:color var(--d-base) var(--d-ease);
+    }
+    #sol-w3 .w3-agent.is-active .w3-agent-name,
+    #sol-w3 .w3-agent.is-done .w3-agent-name{
+      color:var(--d-text);
+    }
+
+    #sol-w3 .w3-agent-sep,
+    #sol-w3 .w3-agent-status{
+      font-size:12.5px;
+      line-height:1.4;
+      color:var(--d-sub);
+      font-variant-numeric:tabular-nums;
+      opacity:0;
+      transition:opacity var(--d-base) var(--d-ease);
+    }
+    #sol-w3 .w3-agent.is-active .w3-agent-sep,
+    #sol-w3 .w3-agent.is-active .w3-agent-status,
+    #sol-w3 .w3-agent.is-done .w3-agent-sep,
+    #sol-w3 .w3-agent.is-done .w3-agent-status{
+      opacity:1;
+    }
+
+    /* ---------- Drill-down sub-rows ---------- */
+    #sol-w3 .w3-subs{ padding-left:22px; }
+    #sol-w3 .w3-sub{
+      display:flex;
+      align-items:baseline;
+      gap:7px;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--d-sub);
+      font-variant-numeric:tabular-nums;
+      max-height:0;
+      overflow:hidden;
+      opacity:0;
+      transform:translateY(-2px);
+      transition:max-height var(--d-base) var(--d-ease), opacity var(--d-base) var(--d-ease),
+                 transform var(--d-base) var(--d-ease), margin-top var(--d-base) var(--d-ease);
+    }
+    #sol-w3 .w3-sub.is-in{
+      max-height:36px;
+      opacity:1;
+      transform:translateY(0);
+      margin-top:7px;
+    }
+    #sol-w3 .w3-sub-chev{
+      flex:0 0 auto;
+      color:var(--d-sub);
+      font-size:12px;
+    }
+    #sol-w3 .w3-sub strong{
+      font-weight:600;
+      color:var(--d-text);
+      white-space:nowrap;
+    }
+
+    /* ---------- End line ---------- */
+    #sol-w3 .w3-end{
+      font-size:13px;
+      line-height:1.5;
+      color:var(--d-text);
+      font-variant-numeric:tabular-nums;
+      margin:14px 0 0;
+      padding-top:13px;
+      border-top:1px solid var(--d-ghost);
+      opacity:0;
+      transform:translateY(4px);
+      transition:opacity var(--d-slow) var(--d-ease), transform var(--d-slow) var(--d-ease);
+    }
+    #sol-w3 .w3-end.is-visible{ opacity:1; transform:translateY(0); }
+
+    #sol-w3 .w3-caption{
+      max-width:600px;
+      margin:16px auto 0;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #sol-w3 *{
+        transition:none !important;
+        animation:none !important;
+      }
+    }
+  </style>
+
+  <div class="w3-panel">
+    <div class="w3-head">
+      <div class="w3-head-text">
+        <h3 class="w3-title">TSMC Super Power Rail vs Intel PowerVia</h3>
+        <p class="w3-echo">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
+      </div>
+      <button type="button" class="w3-stop" aria-label="Stop generating">
+        <svg class="w3-ic-stop" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" rx="1.5" fill="currentColor"/></svg>
+        <svg class="w3-ic-play" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1.2v7.6c0 .5.55.8.98.53l6.1-3.8a.62.62 0 0 0 0-1.06l-6.1-3.8A.62.62 0 0 0 2 1.2Z" fill="currentColor"/></svg>
+        <span class="w3-stop-label">Stop</span>
+      </button>
+    </div>
+
+    <button type="button" class="w3-replay" aria-label="Replay the generating sequence">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.66-3.93" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M13.5 2.5v3.3h-3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Replay
+    </button>
+
+    <div class="w3-agents">
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Source Discovery Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="Indexed 581 sources"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>supaboard.ai</strong> &nbsp;found 4 supported claims</span></div>
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>TechInsights</strong> &nbsp;power-delivery brief matched</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Patent Analysis Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="Reviewed 301 patents"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>USPTO</strong> &nbsp;145 patents in cluster A</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Research Papers Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="312 preprints triaged"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>arXiv</strong> &nbsp;312 papers matched</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Market Intelligence Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="124 signals mapped"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>Market data</strong> &nbsp;124 signals</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Synthesis &amp; Review</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="Complete"></span>
+        </div>
+        <div class="w3-subs"></div>
+      </div>
+    </div>
+
+    <p class="w3-end">Report assembled &mdash; 91 of 92 queries this month produced one.</p>
+  </div>
+
+  <p class="w3-caption">Interactive recreation &mdash; the loading state names what it touches.</p>
+
+  <script>
+  (function(){
+    var root = document.getElementById('sol-w3');
+    if(!root) return;
+
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var panel = root.querySelector('.w3-panel');
+    var stopBtn = root.querySelector('.w3-stop');
+    var stopLabel = root.querySelector('.w3-stop-label');
+    var replayBtn = root.querySelector('.w3-replay');
+    var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
+    var endLine = root.querySelector('.w3-end');
+
+    var INIT_MS = 450;      /* Initializing… before Scanning… */
+    var SCAN_MS = 400;      /* Scanning… before first sub-row */
+    var SUB_MS = 400;       /* between drill-down rows */
+    var DONE_MS = 450;      /* after last sub-row before check */
+    var GAP_MS = 200;       /* between agents */
+    var END_MS = 300;       /* before end line */
+
+    /* --- sequencer: array of {d, fn} steps; pausable, fully resettable --- */
+    var seq = [];
+    var seqIndex = 0;
+    var pendingTimer = null;
+    var paused = false;
+    var running = false;
+    var played = false;
+    var observer = null;
+
+    function clearPending(){
+      if(pendingTimer !== null){
+        clearTimeout(pendingTimer);
+        pendingTimer = null;
+      }
+    }
+
+    function runNext(){
+      if(paused || seqIndex >= seq.length) return;
+      var step = seq[seqIndex];
+      pendingTimer = setTimeout(function(){
+        pendingTimer = null;
+        step.fn();
+        seqIndex++;
+        if(seqIndex >= seq.length){
+          running = false;
+        } else {
+          runNext();
+        }
+      }, step.d);
+    }
+
+    function setStatus(el, text){
+      el.querySelector('.w3-agent-status').textContent = text;
+    }
+
+    function buildSequence(){
+      seq = [];
+      agentEls.forEach(function(el, i){
+        var subs = Array.prototype.slice.call(el.querySelectorAll('.w3-sub'));
+        var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
+
+        seq.push({ d: i === 0 ? 300 : GAP_MS, fn: function(){
+          el.classList.add('is-active');
+          setStatus(el, 'Initializing…');
+        }});
+        seq.push({ d: INIT_MS, fn: function(){
+          setStatus(el, 'Scanning…');
+        }});
+        subs.forEach(function(sub, j){
+          seq.push({ d: j === 0 ? SCAN_MS : SUB_MS, fn: function(){
+            sub.classList.add('is-in');
+          }});
+        });
+        seq.push({ d: DONE_MS, fn: function(){
+          el.classList.remove('is-active');
+          el.classList.add('is-done');
+          setStatus(el, doneText);
+        }});
+      });
+      seq.push({ d: END_MS, fn: function(){
+        endLine.classList.add('is-visible');
+        panel.classList.add('is-finished');
+      }});
+    }
+
+    function resetVisualState(){
+      agentEls.forEach(function(el){
+        el.classList.remove('is-active', 'is-done');
+        setStatus(el, '');
+        Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
+          sub.classList.remove('is-in');
+        });
+      });
+      endLine.classList.remove('is-visible');
+      panel.classList.remove('is-finished');
+      stopBtn.classList.remove('is-paused');
+      stopLabel.textContent = 'Stop';
+      stopBtn.setAttribute('aria-label', 'Stop generating');
+    }
+
+    function play(){
+      clearPending();
+      paused = false;
+      running = true;
+      resetVisualState();
+      buildSequence();
+      seqIndex = 0;
+      runNext();
+    }
+
+    function renderEndStateInstant(){
+      clearPending();
+      running = false;
+      agentEls.forEach(function(el){
+        el.classList.add('is-done');
+        setStatus(el, el.querySelector('.w3-agent-status').getAttribute('data-done'));
+        Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
+          sub.classList.add('is-in');
+        });
+      });
+      endLine.classList.add('is-visible');
+      panel.classList.add('is-finished');
+    }
+
+    if(reduceMotion){
+      renderEndStateInstant();
+      replayBtn.classList.add('is-hidden');
+      stopBtn.style.display = 'none';
+    } else {
+      resetVisualState();
+
+      if('IntersectionObserver' in window){
+        observer = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(entry.isIntersecting && !played){
+              played = true;
+              play();
+              observer.unobserve(panel);
+            }
+          });
+        }, { threshold: 0.4 });
+        observer.observe(panel);
+      } else {
+        played = true;
+        play();
+      }
+
+      stopBtn.addEventListener('click', function(){
+        if(!running && !paused) return;
+        if(paused){
+          paused = false;
+          stopBtn.classList.remove('is-paused');
+          stopLabel.textContent = 'Stop';
+          stopBtn.setAttribute('aria-label', 'Stop generating');
+          runNext();
+        } else {
+          paused = true;
+          clearPending();
+          stopBtn.classList.add('is-paused');
+          stopLabel.textContent = 'Resume';
+          stopBtn.setAttribute('aria-label', 'Resume generating');
+        }
+      });
+
+      replayBtn.addEventListener('click', function(){
+        played = true;
+        play();
+      });
+    }
+  })();
+  </script>
+</section>
+  </div>
+  <div class="gal-widget-wrap" id="move-3b">
+    <div class="gal-widget-eyebrow">Move 3b · sourced report &mdash; hover the citations</div>
+    <section class="sol-widget" id="sol-w4">
+  <style>
+    #sol-w4{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      max-width:none;
+      box-sizing:border-box;
+    }
+    #sol-w4 *{ box-sizing:border-box; }
+
+    #sol-w4 .sol-w4-card{
+      position:relative;
+      max-width:600px;
+      margin:0 auto;
+      background:var(--d-white);
+      border-radius:var(--d-r-md);
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:24px;
+    }
+
+    /* Header row: title + echoed query left, status cluster right */
+    #sol-w4 .sol-w4-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+    }
+    #sol-w4 .sol-w4-head-main{
+      min-width:0;
+      flex:1;
+    }
+    #sol-w4 .sol-w4-title{
+      margin:0;
+      font-size:20px;
+      font-weight:600;
+      line-height:1.25;
+      letter-spacing:-0.005em;
+      color:var(--d-text);
+      text-align:left;
+    }
+    #sol-w4 .sol-w4-query{
+      margin:5px 0 0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-style:italic;
+      font-size:13px;
+      font-weight:400;
+      line-height:1.4;
+      color:var(--d-sub);
+      max-width:100%;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+    #sol-w4 .sol-w4-head-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+      padding-top:2px;
+    }
+    #sol-w4 .sol-w4-status{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--d-text);
+      color:var(--d-white);
+      border-radius:var(--d-r-pill);
+      padding:4px 10px;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      white-space:nowrap;
+    }
+    #sol-w4 .sol-w4-status-dot{
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:var(--d-white);
+      flex-shrink:0;
+    }
+    #sol-w4 .sol-w4-regen{
+      appearance:none;
+      -webkit-appearance:none;
+      border:none;
+      background:var(--d-surface-high);
+      color:var(--d-text);
+      border-radius:var(--d-r-sm);
+      padding:5px 12px;
+      font-family:var(--d-font);
+      font-size:12px;
+      font-weight:500;
+      line-height:1.3;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w4 .sol-w4-regen:hover{
+      background:var(--d-surface-low);
+    }
+    #sol-w4 .sol-w4-regen:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Metadata row + hairline */
+    #sol-w4 .sol-w4-meta{
+      margin:10px 0 0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+    #sol-w4 .sol-w4-hairline{
+      margin:14px 0 0;
+      border-top:1px solid var(--d-ghost);
+    }
+
+    /* Section label */
+    #sol-w4 .sol-w4-sec-label{
+      margin:18px 0 0;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.04em;
+      line-height:1.3;
+      text-transform:uppercase;
+      color:var(--d-sub);
+    }
+
+    #sol-w4 .sol-w4-body{
+      margin:8px 0 0;
+      max-width:65ch;
+      font-size:13px;
+      font-weight:400;
+      line-height:1.5;
+      color:var(--d-text);
+    }
+
+    /* Citation superscripts */
+    #sol-w4 .sol-w4-cite{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      padding:0 1px;
+      margin:0 1px;
+      font:inherit;
+      font-size:11px;
+      font-weight:500;
+      line-height:1;
+      vertical-align:super;
+      color:var(--d-primary);
+      cursor:pointer;
+      border-radius:2px;
+      transition:color var(--d-fast) var(--d-ease), background-color var(--d-fast) var(--d-ease);
+    }
+    #sol-w4 .sol-w4-cite:hover{
+      color:var(--d-primary-container);
+      background:var(--d-surface-low);
+    }
+    #sol-w4 .sol-w4-cite:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Drill-down entity term */
+    #sol-w4 .sol-w4-term{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      border-bottom:1px solid var(--d-ghost);
+      padding:0;
+      margin:0;
+      font:inherit;
+      font-style:italic;
+      color:inherit;
+      cursor:pointer;
+      border-radius:2px 2px 0 0;
+      transition:color var(--d-fast) var(--d-ease), background-color var(--d-fast) var(--d-ease), border-color var(--d-fast) var(--d-ease);
+    }
+    #sol-w4 .sol-w4-term:hover,
+    #sol-w4 .sol-w4-term[aria-expanded="true"]{
+      color:var(--d-primary);
+      border-bottom-color:var(--d-primary);
+      background:var(--d-surface-low);
+    }
+    #sol-w4 .sol-w4-term:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Eval strip */
+    #sol-w4 .sol-w4-eval{
+      margin:22px 0 0;
+      padding-top:18px;
+      border-top:1px solid var(--d-ghost);
+    }
+    #sol-w4 .sol-w4-eval-heading{
+      display:block;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      color:var(--d-sub);
+      margin-bottom:10px;
+      text-transform:uppercase;
+    }
+    #sol-w4 .sol-w4-eval-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+    #sol-w4 .sol-w4-eval-item{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:6px;
+    }
+    #sol-w4 .sol-w4-bar{
+      width:60px;
+      height:4px;
+      border-radius:2px;
+      background:var(--d-surface-high);
+      overflow:hidden;
+    }
+    #sol-w4 .sol-w4-bar span{
+      display:block;
+      height:100%;
+      border-radius:2px;
+      background:var(--d-primary);
+    }
+    #sol-w4 .sol-w4-eval-name{
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    /* Caption */
+    #sol-w4 .sol-w4-caption{
+      margin:16px auto 0;
+      max-width:600px;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    /* Shared popover base (citations) */
+    #sol-w4 .sol-w4-pop{
+      position:absolute;
+      top:0;
+      left:0;
+      width:max-content;
+      max-width:250px;
+      background:var(--d-white);
+      border-radius:var(--d-r-md);
+      box-shadow:0 20px 25px -5px rgba(25,28,29,0.04), 0 8px 10px -6px rgba(25,28,29,0.04);
+      padding:12px 14px;
+      z-index:5;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateY(4px) scale(0.98);
+      transform-origin:center bottom;
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), visibility var(--d-fast);
+    }
+    #sol-w4 .sol-w4-pop[data-placement="bottom"]{
+      transform-origin:center top;
+    }
+    #sol-w4 .sol-w4-pop.is-open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+    #sol-w4 .sol-w4-pop::after{
+      content:"";
+      position:absolute;
+      left:var(--arrow-left, 20px);
+      width:9px;
+      height:9px;
+      background:var(--d-white);
+      transform:translateX(-50%) rotate(45deg);
+    }
+    #sol-w4 .sol-w4-pop[data-placement="top"]::after{
+      bottom:-4px;
+      box-shadow:2px 2px 2px rgba(25,28,29,0.03);
+    }
+    #sol-w4 .sol-w4-pop[data-placement="bottom"]::after{
+      top:-4px;
+    }
+
+    #sol-w4 .sol-w4-pop-chip{
+      display:inline-block;
+      background:var(--d-surface-low);
+      color:var(--d-text);
+      border-radius:var(--d-r-pill);
+      padding:3px 10px;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      margin-bottom:8px;
+    }
+    #sol-w4 .sol-w4-pop-title{
+      margin:0 0 4px;
+      font-size:13px;
+      font-weight:600;
+      line-height:1.4;
+      color:var(--d-text);
+    }
+    #sol-w4 .sol-w4-pop-sub{
+      margin:0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    /* Drill-down popover */
+    #sol-w4 .sol-w4-drill{
+      position:absolute;
+      top:0;
+      left:0;
+      width:300px;
+      max-width:calc(100% - 16px);
+      background:var(--d-white);
+      border-radius:10px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07), 0 20px 25px -5px rgba(25,28,29,0.04), 0 8px 10px -6px rgba(25,28,29,0.04);
+      padding:6px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      z-index:6;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateY(4px) scale(0.98);
+      transform-origin:center bottom;
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), visibility var(--d-fast);
+    }
+    #sol-w4 .sol-w4-drill[data-placement="bottom"]{
+      transform-origin:center top;
+    }
+    #sol-w4 .sol-w4-drill.is-open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+    #sol-w4 .sol-w4-drill-head{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 8px 8px;
+      border-bottom:1px solid var(--d-ghost);
+      margin-bottom:2px;
+    }
+    #sol-w4 .sol-w4-drill-kind{
+      font-size:10px;
+      font-weight:500;
+      line-height:1;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--d-sub);
+      padding:4px 6px;
+      border-radius:var(--d-r-pill);
+      background:var(--d-surface-low);
+      flex-shrink:0;
+    }
+    #sol-w4 .sol-w4-drill-name{
+      font-size:13px;
+      font-weight:600;
+      line-height:1.2;
+      color:var(--d-text);
+      flex:1;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    #sol-w4 .sol-w4-drill-close{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      width:22px;
+      height:22px;
+      border-radius:5px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--d-sub);
+      flex-shrink:0;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #sol-w4 .sol-w4-drill-close:hover{
+      background:var(--d-surface-low);
+      color:var(--d-text);
+    }
+    #sol-w4 .sol-w4-drill-close:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+    #sol-w4 .sol-w4-drill-action{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      padding:10px;
+      border-radius:var(--d-r-sm);
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      cursor:pointer;
+      text-align:left;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #sol-w4 .sol-w4-drill-action:hover{
+      background:var(--d-surface-low);
+    }
+    #sol-w4 .sol-w4-drill-action:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:-1px;
+    }
+    #sol-w4 .sol-w4-drill-glyph{
+      width:26px;
+      height:26px;
+      border-radius:var(--d-r-sm);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--d-surface-low);
+      color:var(--d-sub);
+      flex-shrink:0;
+      margin-top:1px;
+    }
+    #sol-w4 .sol-w4-drill-text{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width:0;
+      flex:1;
+    }
+    #sol-w4 .sol-w4-drill-title{
+      font-size:13px;
+      font-weight:500;
+      line-height:1.35;
+      color:var(--d-text);
+    }
+    #sol-w4 .sol-w4-drill-title .sol-w4-drill-strong{
+      font-weight:600;
+    }
+    #sol-w4 .sol-w4-drill-sub{
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #sol-w4 .sol-w4-cite,
+      #sol-w4 .sol-w4-term,
+      #sol-w4 .sol-w4-regen,
+      #sol-w4 .sol-w4-drill-close,
+      #sol-w4 .sol-w4-drill-action,
+      #sol-w4 .sol-w4-pop,
+      #sol-w4 .sol-w4-drill{
+        transition:none !important;
+        animation:none !important;
+      }
+      #sol-w4 .sol-w4-pop.is-open,
+      #sol-w4 .sol-w4-drill.is-open{
+        transform:none;
+      }
+    }
+  </style>
+
+  <div class="sol-w4-card">
+    <div class="sol-w4-head">
+      <div class="sol-w4-head-main">
+        <h2 class="sol-w4-title">TSMC Super Power Rail vs Intel PowerVia</h2>
+        <p class="sol-w4-query">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
+      </div>
+      <div class="sol-w4-head-actions">
+        <span class="sol-w4-status"><span class="sol-w4-status-dot" aria-hidden="true"></span>Completed</span>
+        <button type="button" class="sol-w4-regen" aria-label="Regenerate report">Regenerate</button>
+      </div>
+    </div>
+
+    <p class="sol-w4-meta">Generated Jul 2026 &middot; 32 sources &middot; ~12 min read &middot; Confidence: High</p>
+    <div class="sol-w4-hairline" role="presentation"></div>
+
+    <p class="sol-w4-sec-label">Power Delivery Architecture</p>
+    <p class="sol-w4-body">
+      Both approaches move <button type="button" class="sol-w4-term" id="sol-w4-term-bpd" aria-expanded="false" aria-controls="sol-w4-drill" aria-label="Drill down on backside power delivery">power delivery to the wafer backside</button>, but they diverge on where the transition happens. Intel's PowerVia routes power through nano-TSVs beneath the transistor layer<button type="button" class="sol-w4-cite" data-cite="1" aria-expanded="false" aria-controls="sol-w4-pop-1" aria-label="Citation 1, view source">1</button>, while TSMC's Super Power Rail connects the backside network directly to source/drain contacts<button type="button" class="sol-w4-cite" data-cite="2" aria-expanded="false" aria-controls="sol-w4-pop-2" aria-label="Citation 2, view source">2</button> &mdash; a denser scheme that trades manufacturing complexity for IR-drop headroom<button type="button" class="sol-w4-cite" data-cite="3" aria-expanded="false" aria-controls="sol-w4-pop-3" aria-label="Citation 3, view source">3</button>.
+    </p>
+
+    <div id="sol-w4-pop-1" class="sol-w4-pop" data-pop="1" role="tooltip" aria-hidden="true">
+      <span class="sol-w4-pop-chip">USPTO</span>
+      <p class="sol-w4-pop-title">US-2024-0113742-A1 &mdash; Backside power delivery with through-silicon vias</p>
+      <p class="sol-w4-pop-sub">Filed by Intel Corp &middot; cited in &sect;2</p>
+    </div>
+    <div id="sol-w4-pop-2" class="sol-w4-pop" data-pop="2" role="tooltip" aria-hidden="true">
+      <span class="sol-w4-pop-chip">arXiv</span>
+      <p class="sol-w4-pop-title">2406.08871 &mdash; Super Power Rail integration for N2 nodes</p>
+      <p class="sol-w4-pop-sub">TSMC symposium paper &middot; cited in &sect;2</p>
+    </div>
+    <div id="sol-w4-pop-3" class="sol-w4-pop" data-pop="3" role="tooltip" aria-hidden="true">
+      <span class="sol-w4-pop-chip">Market data</span>
+      <p class="sol-w4-pop-title">TechInsights power-delivery brief, Q2 2026</p>
+      <p class="sol-w4-pop-sub">cited in &sect;2, &sect;4</p>
+    </div>
+
+    <div id="sol-w4-drill" class="sol-w4-drill" role="dialog" aria-label="Drill down on backside power delivery" aria-hidden="true">
+      <div class="sol-w4-drill-head">
+        <span class="sol-w4-drill-kind">Technology</span>
+        <span class="sol-w4-drill-name">backside power delivery</span>
+        <button type="button" class="sol-w4-drill-close" aria-label="Close">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <button type="button" class="sol-w4-drill-action" data-drill-action="standalone">
+        <span class="sol-w4-drill-glyph" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+            <path d="m10.5 10.5 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="sol-w4-drill-text">
+          <span class="sol-w4-drill-title">Research <span class="sol-w4-drill-strong">backside power delivery</span></span>
+          <span class="sol-w4-drill-sub">Open a fresh report on this technology &mdash; no prior context.</span>
+        </span>
+      </button>
+      <button type="button" class="sol-w4-drill-action" data-drill-action="context">
+        <span class="sol-w4-drill-glyph" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </span>
+        <span class="sol-w4-drill-text">
+          <span class="sol-w4-drill-title"><span class="sol-w4-drill-strong">backside power delivery</span> in context of <span class="sol-w4-drill-strong">Super Power Rail vs PowerVia</span></span>
+          <span class="sol-w4-drill-sub">Drill down using the current report as scope.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <p class="sol-w4-caption">Interactive recreation &mdash; hover a citation, click the underlined term.</p>
+
+  <script>
+  (function(){
+    var root = document.getElementById('sol-w4');
+    if(!root) return;
+
+    var card = root.querySelector('.sol-w4-card');
+    var buttons = Array.prototype.slice.call(root.querySelectorAll('.sol-w4-cite'));
+    var term = root.querySelector('.sol-w4-term');
+    var drill = root.querySelector('.sol-w4-drill');
+    var popovers = {};
+
+    buttons.forEach(function(btn){
+      var id = btn.getAttribute('data-cite');
+      popovers[id] = root.querySelector('.sol-w4-pop[data-pop="' + id + '"]');
+    });
+
+    var lockedId = null;   // click-locked citation
+    var openId = null;     // currently visible citation
+    var drillOpen = false;
+
+    function position(anchor, pop){
+      var cardRect = card.getBoundingClientRect();
+      var aRect = anchor.getBoundingClientRect();
+
+      var pw = pop.offsetWidth;
+      var ph = pop.offsetHeight;
+
+      var left = (aRect.left - cardRect.left) + (aRect.width / 2) - (pw / 2);
+      var minLeft = 8;
+      var maxLeft = cardRect.width - pw - 8;
+      if (maxLeft < minLeft) { maxLeft = minLeft; }
+      left = Math.max(minLeft, Math.min(left, maxLeft));
+
+      var placeAbove = true;
+      var top = (aRect.top - cardRect.top) - ph - 10;
+      if (top < 8) {
+        placeAbove = false;
+        top = (aRect.bottom - cardRect.top) + 10;
+      }
+
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      pop.setAttribute('data-placement', placeAbove ? 'top' : 'bottom');
+
+      var arrowLeft = (aRect.left - cardRect.left) + (aRect.width / 2) - left;
+      arrowLeft = Math.max(12, Math.min(arrowLeft, pw - 12));
+      pop.style.setProperty('--arrow-left', arrowLeft + 'px');
+    }
+
+    /* ---- Citation popovers ---- */
+    function show(id, btn){
+      if (drillOpen) { closeDrill(); }
+      if (openId && openId !== id) { hide(openId); }
+      var pop = popovers[id];
+      if (!pop) return;
+      position(btn, pop);
+      pop.classList.add('is-open');
+      pop.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+      openId = id;
+    }
+
+    function hide(id){
+      var pop = popovers[id];
+      var btn = root.querySelector('.sol-w4-cite[data-cite="' + id + '"]');
+      if (pop) {
+        pop.classList.remove('is-open');
+        pop.setAttribute('aria-hidden', 'true');
+      }
+      if (btn) { btn.setAttribute('aria-expanded', 'false'); }
+      if (openId === id) { openId = null; }
+    }
+
+    /* ---- Drill-down popover ---- */
+    function openDrill(){
+      Object.keys(popovers).forEach(hide);
+      lockedId = null;
+      position(term, drill);
+      drill.classList.add('is-open');
+      drill.setAttribute('aria-hidden', 'false');
+      term.setAttribute('aria-expanded', 'true');
+      drillOpen = true;
+    }
+
+    function closeDrill(){
+      drill.classList.remove('is-open');
+      drill.setAttribute('aria-hidden', 'true');
+      term.setAttribute('aria-expanded', 'false');
+      drillOpen = false;
+    }
+
+    function hideAll(){
+      Object.keys(popovers).forEach(hide);
+      lockedId = null;
+      if (drillOpen) { closeDrill(); }
+    }
+
+    buttons.forEach(function(btn){
+      var id = btn.getAttribute('data-cite');
+
+      btn.addEventListener('mouseenter', function(){
+        show(id, btn);
+      });
+      btn.addEventListener('mouseleave', function(){
+        if (lockedId !== id) { hide(id); }
+      });
+      btn.addEventListener('focus', function(){
+        show(id, btn);
+      });
+      btn.addEventListener('blur', function(){
+        if (lockedId !== id) { hide(id); }
+      });
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (lockedId === id) {
+          lockedId = null;
+          hide(id);
+        } else {
+          if (lockedId) { hide(lockedId); }
+          lockedId = id;
+          show(id, btn);
+        }
+      });
+    });
+
+    if (term && drill) {
+      term.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (drillOpen) { closeDrill(); } else { openDrill(); }
+      });
+
+      drill.querySelector('.sol-w4-drill-close').addEventListener('click', function(e){
+        e.stopPropagation();
+        closeDrill();
+        term.focus();
+      });
+
+      Array.prototype.forEach.call(drill.querySelectorAll('.sol-w4-drill-action'), function(action){
+        action.addEventListener('click', function(e){
+          e.stopPropagation();
+          closeDrill();
+          term.focus();
+        });
+      });
+    }
+
+    document.addEventListener('click', function(e){
+      if (!root.contains(e.target)) {
+        hideAll();
+        return;
+      }
+      if (!e.target.closest('.sol-w4-cite') &&
+          !e.target.closest('.sol-w4-pop') &&
+          !e.target.closest('.sol-w4-term') &&
+          !e.target.closest('.sol-w4-drill')) {
+        hideAll();
+      }
+    });
+
+    root.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        var wasDrill = drillOpen;
+        hideAll();
+        if (wasDrill && term) { term.focus(); }
+      }
+    });
+
+    window.addEventListener('resize', function(){
+      if (openId) {
+        var btn = root.querySelector('.sol-w4-cite[data-cite="' + openId + '"]');
+        var pop = popovers[openId];
+        if (btn && pop) { position(btn, pop); }
+      }
+      if (drillOpen) { position(term, drill); }
+    });
+  })();
+  </script>
+</section>
+  </div>
+</div>
+
+<div class="cs-onrecord" id="on-record">
+  <div class="cs-onrecord-inner">
+    <p class="cs-onrecord-title">One call, on the record — the citation legend</p>
+    <p class="cs-onrecord-goal">Readers needed citation provenance — external, customer-internal, or Deeli-generated — at a glance, without hovering every superscript.</p>
+    <div class="cs-onrecord-opts">
+      <div class="cs-opt">
+        <p class="cs-opt-name">Option 1 · persistent legend</p>
+        <div class="cs-opt-mock"><span class="cs-mock-legend"><i class="cs-swatch cs-sw-a"></i><i class="cs-swatch cs-sw-b"></i><i class="cs-swatch cs-sw-c"></i></span><span class="cs-mock-lines"></span></div>
+        <p class="cs-opt-note">Instantly discoverable; permanent chrome in the report header.</p>
+      </div>
+      <div class="cs-opt">
+        <p class="cs-opt-name">Option 2 · sources tooltip</p>
+        <div class="cs-opt-mock cs-opt-mock-b"><span class="cs-mock-lines"></span><span class="cs-mock-tip">Sources ▾</span></div>
+        <p class="cs-opt-note">Lighter report, scales better; invisible until you go looking.</p>
+      </div>
+    </div>
+    <p class="cs-onrecord-verdict"><span class="cs-verdict-dot" aria-hidden="true"></span><b>Shipped Option 1.</b> Half the reviewers personally preferred Option 2's lighter hierarchy — and still voted 1. The customer hires continuously: there is always a first-time user in the room, and a legend you have to discover isn't a legend. Their onboarding reality beat our aesthetics.</p>
+    <p class="cs-onrecord-src">From the design-review thread, July 2026 — options, vote, and reasoning on the record.</p>
+  </div>
+</div>
+
+<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>04</b> · Impact</span></div>
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h3 class="gal-headline">A foundry team made it a habit.</h3>
+    <p>Adoption isn't a line going up &mdash; it's people changing how they work. Every figure below is pulled from the query logs.</p>
+    <p><b>The way they ask changed &mdash; and it read them right.</b> The broader search history skews 87% keyword &mdash; the habit of a box that only took terms. In the post-redesign window that flips to 70% natural-language: full questions and multi-clause asks, median 8 words, up to 35 &mdash; the input space the old keyword box couldn't touch. <span style="color:var(--muted)">(Directional &mdash; the older corpus lacks timestamps.)</span></p>
+    <p>And it held up to the harder asks: a typo'd bilingual query naming 聯電 came back titled &ldquo;&hellip;for UMC&rdquo;; a 28-word TSMC-vs-Intel paragraph distilled to &ldquo;Super Power Rail vs PowerVia&rdquo;; OCS expanded to Optical Circuit Switching. Mid-window, median query length grew 48.5 &rarr; 60 characters &mdash; they kept handing it more. <span style="color:var(--muted)">(Titles prove it parsed and scoped intent; report-body quality is the separate eval axis.)</span></p>
+  </div></div>
+  <!-- ===== ANCHOR 5: FLIP ===== -->
+<section class="anchor" id="anchor-flip">
+<style>
+  #anchor-flip{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
+  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start;}
+  #anchor-flip .fl-option{flex:0 1 680px;max-width:680px;min-width:0;}
+  #anchor-flip .fl-eyebrow{font:500 11px var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  #anchor-flip .fl-figure{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px 22px;}
+  #anchor-flip .fl-caption{font:italic 13.5px/1.55 var(--font-serif);color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
+  #anchor-flip .fl-bar-row + .fl-bar-row{margin-top:26px;}
+  #anchor-flip .fl-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  #anchor-flip .fl-row-title{font:600 13px var(--font-body);color:var(--ink);}
+  #anchor-flip .fl-row-sub{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11px;color:var(--muted);}
+  #anchor-flip .fl-track{display:flex;height:32px;width:100%;border-radius:var(--radius);overflow:hidden;box-shadow:0 0 0 1px var(--hairline-faint);background:var(--surface-subtle);}
+  #anchor-flip .fl-seg{height:100%;transform:scaleX(1);transform-origin:left center;}
+  #anchor-flip .fl-seg-kw{background:var(--muted-strong);}
+  #anchor-flip .fl-seg-nl{background:var(--accent);}
+  #anchor-flip .fl-legend{display:flex;justify-content:space-between;margin-top:9px;}
+  #anchor-flip .fl-legend-item{display:flex;align-items:baseline;gap:7px;}
+  #anchor-flip .fl-dot{width:7px;height:7px;border-radius:50%;display:inline-block;transform:translateY(-1px);}
+  #anchor-flip .fl-dot-kw{background:var(--muted-strong);}
+  #anchor-flip .fl-dot-nl{background:var(--accent);}
+  #anchor-flip .fl-legend-name{font:400 11px var(--font-body);letter-spacing:.03em;text-transform:uppercase;color:var(--muted);}
+  #anchor-flip .fl-legend-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;color:var(--ink);}
+  @keyframes fl-grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+  #anchor-flip .fl-seg{animation:fl-grow 640ms var(--ease-out-strong) both;}
+  #anchor-flip .fl-row-1 .fl-seg-kw{animation-delay:0ms;}
+  #anchor-flip .fl-row-1 .fl-seg-nl{animation-delay:90ms;}
+  #anchor-flip .fl-row-2 .fl-seg-kw{animation-delay:160ms;}
+  #anchor-flip .fl-row-2 .fl-seg-nl{animation-delay:250ms;}
+  #anchor-flip .fl-figure-b svg{display:block;width:100%;height:auto;}
+  #anchor-flip .fl-baseline{stroke:var(--hairline-faint);stroke-width:1;}
+  #anchor-flip .fl-line{fill:none;stroke-width:2.25;stroke-dasharray:1;stroke-dashoffset:1;animation:fl-draw 760ms var(--ease-out-strong) forwards;}
+  #anchor-flip .fl-line-kw{stroke:var(--muted-strong);}
+  #anchor-flip .fl-line-nl{stroke:var(--accent);animation-delay:110ms;}
+  @keyframes fl-draw{from{stroke-dashoffset:1;}to{stroke-dashoffset:0;}}
+  #anchor-flip .fl-node{opacity:0;animation:fl-fade 420ms var(--ease) forwards;animation-delay:680ms;}
+  @keyframes fl-fade{from{opacity:0;}to{opacity:1;}}
+  #anchor-flip .fl-dot-el{stroke:var(--canvas);stroke-width:1;}
+  #anchor-flip .fl-dot-kw-el{fill:var(--muted-strong);}
+  #anchor-flip .fl-dot-nl-el{fill:var(--accent);}
+  #anchor-flip .fl-name{font:400 10.5px var(--font-body);letter-spacing:.03em;text-transform:uppercase;fill:var(--muted);}
+  #anchor-flip .fl-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:700;fill:var(--ink);}
+  #anchor-flip .fl-axis{font:500 11px var(--font-body);letter-spacing:.05em;text-transform:uppercase;fill:var(--muted);}
+  @media (prefers-reduced-motion: reduce){#anchor-flip .fl-seg,#anchor-flip .fl-line,#anchor-flip .fl-node{animation:none !important;transform:none !important;stroke-dashoffset:0 !important;opacity:1 !important;}}
+</style>
+<div class="fl-wrap">
+  <article class="fl-option" id="fl-optA">
+    <p class="fl-eyebrow">The visual — before / after mix</p>
+    <div class="fl-figure fl-figure-a">
+      <div class="fl-bar-row fl-row-1">
+        <div class="fl-row-head"><span class="fl-row-title">Broad search history</span><span class="fl-row-sub">n=282 · no timestamps</span></div>
+        <div class="fl-track" role="img" aria-label="Broad search history: 87 percent keyword, 13 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:87%"></div><div class="fl-seg fl-seg-nl" style="width:13%"></div></div>
+        <div class="fl-legend"><span class="fl-legend-item"><span class="fl-dot fl-dot-kw"></span><span class="fl-legend-name">Keyword</span><span class="fl-legend-val">87%</span></span><span class="fl-legend-item"><span class="fl-dot fl-dot-nl"></span><span class="fl-legend-name">Natural-language</span><span class="fl-legend-val">13%</span></span></div>
+      </div>
+      <div class="fl-bar-row fl-row-2">
+        <div class="fl-row-head"><span class="fl-row-title">Post-redesign window</span><span class="fl-row-sub">n=92 · timestamped</span></div>
+        <div class="fl-track" role="img" aria-label="Post-redesign window: 30 percent keyword, 70 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:30%"></div><div class="fl-seg fl-seg-nl" style="width:70%"></div></div>
+        <div class="fl-legend"><span class="fl-legend-item"><span class="fl-dot fl-dot-kw"></span><span class="fl-legend-name">Keyword</span><span class="fl-legend-val">30%</span></span><span class="fl-legend-item"><span class="fl-dot fl-dot-nl"></span><span class="fl-legend-name">Natural-language</span><span class="fl-legend-val">70%</span></span></div>
+      </div>
+    </div>
+    <p class="fl-caption">The broad search-history corpus (282 queries) carries no timestamps, so this "before" is directional — a proxy, not a dated baseline — set against the timestamped 92-query post-redesign window.</p>
+  </article>
+</div>
+</section>
+  <!-- ===== ANCHOR 3: QUERY-TITLE ===== -->
+<section class="anchor" id="anchor-qt">
+<style>
+#anchor-qt{max-width:1120px;margin:0 auto;font-family:var(--font-body);color:var(--ink);}
+#anchor-qt .qt-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0;}
+#anchor-qt .qt-options{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;}
+#anchor-qt .qt-option{flex:1 1 100%;min-width:0;max-width:none;display:flex;flex-direction:column;}
+#anchor-qt .qt-option-eyebrow{margin-bottom:14px;}
+#anchor-qt .qt-figure{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:22px;}
+#anchor-qt .qt-pairs{display:flex;flex-direction:row;gap:18px;align-items:stretch;}
+#anchor-qt .qt-pair{flex:1 1 0;min-width:0;display:flex;flex-direction:column;}
+#anchor-qt .qt-pair-title{flex:0 0 auto;}
+#anchor-qt .qt-pair-tag{margin-top:auto;align-self:flex-start;}
+@media (max-width:760px){#anchor-qt .qt-pairs{flex-direction:column;}}
+#anchor-qt .qt-pair{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 18px 14px;transition:transform 200ms var(--ease),box-shadow 200ms var(--ease);}
+#anchor-qt .qt-pair:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--hairline);}
+#anchor-qt .qt-pair-raw{font-family:var(--font-mono);font-size:12.5px;line-height:1.55;color:var(--body);overflow-wrap:break-word;word-break:break-word;white-space:normal;margin:0;}
+#anchor-qt .qt-pair-arrow{text-align:center;color:var(--hairline);font-size:13px;line-height:1;margin:10px 0;font-family:var(--font-mono);}
+#anchor-qt .qt-pair-title{font-family:var(--font-body);font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink);margin:0 0 10px;}
+#anchor-qt .qt-pair-title .qt-accent{color:var(--accent);}
+#anchor-qt .qt-pair-tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-strong);background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:999px;padding:3px 10px;}
+#anchor-qt .qt-hero-figure{padding:36px 32px;}
+#anchor-qt .qt-hero-annot{display:flex;align-items:center;gap:8px;}
+#anchor-qt .qt-hero-annot-term{justify-content:flex-end;margin-bottom:8px;}
+#anchor-qt .qt-hero-annot-term .qt-line{width:34px;height:1px;background:var(--muted);transform:rotate(-16deg);display:inline-block;flex:none;}
+#anchor-qt .qt-hero-annot-text{font-family:var(--font-hand);font-size:19px;line-height:1;color:var(--muted-strong);transform:rotate(-2deg);display:inline-block;white-space:nowrap;}
+#anchor-qt .qt-hero-query{font-family:var(--font-mono);font-size:17px;line-height:1.75;color:var(--body);margin:0;overflow-wrap:break-word;word-break:break-word;}
+#anchor-qt .qt-term{color:var(--ink);font-weight:600;border-bottom:1px dashed var(--muted);padding-bottom:1px;}
+#anchor-qt .qt-hero-annot-whole{margin-top:12px;}
+#anchor-qt .qt-hero-annot-whole .qt-line{flex:1;height:1px;background:var(--muted);}
+#anchor-qt .qt-hero-arrow{text-align:center;color:var(--hairline);font-size:15px;margin:22px 0 16px;font-family:var(--font-mono);}
+#anchor-qt .qt-hero-title{font-family:var(--font-body);font-weight:600;font-size:22px;line-height:1.35;color:var(--ink);text-align:center;margin:0;}
+#anchor-qt .qt-hero-title .qt-accent{color:var(--accent);}
+#anchor-qt .qt-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
+@media (max-width:520px){#anchor-qt .qt-hero-figure{padding:24px 18px;}#anchor-qt .qt-hero-query{font-size:15px;}#anchor-qt .qt-hero-title{font-size:19px;}}
+</style>
+<div class="qt-options">
+  <div class="qt-option qt-option-a">
+    <p class="qt-eyebrow qt-option-eyebrow">The visual — three pairs, raw → scoped</p>
+    <div class="qt-figure">
+      <div class="qt-pairs">
+        <div class="qt-pair">
+          <p class="qt-pair-raw">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展? 請summary 優缺點比較</p>
+          <p class="qt-pair-arrow">↓</p>
+          <p class="qt-pair-title">Silicon Interposer vs Silicon Bridge <span class="qt-accent">for UMC</span></p>
+          <span class="qt-pair-tag">entity inference</span>
+        </div>
+        <div class="qt-pair">
+          <p class="qt-pair-raw">BSPDN includes Super Power Rail of TSMC, and Power Via of Intel, what are…</p>
+          <p class="qt-pair-arrow">↓</p>
+          <p class="qt-pair-title">TSMC Super Power Rail <span class="qt-accent">vs</span> Intel PowerVia</p>
+          <span class="qt-pair-tag">comparison extracted</span>
+        </div>
+        <div class="qt-pair">
+          <p class="qt-pair-raw">OCS</p>
+          <p class="qt-pair-arrow">↓</p>
+          <p class="qt-pair-title"><span class="qt-accent">Optical Circuit Switching</span> Technology Overview</p>
+          <span class="qt-pair-tag">in-domain expansion</span>
+        </div>
+      </div>
+    </div>
+    <p class="qt-caption">Three words or three sentences — the system doesn't need much to know exactly what report you meant.</p>
+  </div>
+</div>
+</section>
+</div>
+
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <p><b>It ran on real work, weekdays only.</b> Zero weekend queries; all inside Taiwan business hours, twin peaks at 8am and 3pm. A working tool, not a curiosity &mdash; no claim about how they plan a week, just when the queries land. Top line: <b>~0.5 &rarr; ~5.1 queries/day</b> (internal &rarr; live), ~8.4 per active day, a ~10&times; step held for three weeks.</p>
+  </div></div>
+  <!-- ===== ANCHOR 4: HEATMAP ===== -->
+<section class="anchor" id="anchor-heatmap">
+<style>
+#anchor-heatmap{font-family:var(--font-body);color:var(--body);background:var(--canvas);}
+#anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:center;align-items:flex-start;}
+#anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:320px;}
+#anchor-heatmap .hm-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
+#anchor-heatmap .hm-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;line-height:1.55;margin:22px 0 0;}
+#anchor-heatmap .hm-strip-block + .hm-strip-block{margin-top:30px;}
+#anchor-heatmap .hm-striplabel{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;}
+#anchor-heatmap .hm-axis-row{display:grid;gap:1px;margin-bottom:5px;}
+#anchor-heatmap .hm-axis-row span{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;color:var(--muted);text-align:center;}
+#anchor-heatmap .hm-weekday-axis,#anchor-heatmap .hm-weekday-grid{grid-template-columns:repeat(7,1fr);}
+#anchor-heatmap .hm-hour-axis,#anchor-heatmap .hm-hour-grid{grid-template-columns:repeat(12,1fr);}
+#anchor-heatmap .hm-weekday-grid,#anchor-heatmap .hm-hour-grid{display:grid;gap:1px;background:var(--canvas);}
+#anchor-heatmap .hm-cell{height:52px;border-radius:2px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--accent) var(--alpha,10%), var(--canvas));animation:hm-cellIn .42s var(--ease-out-strong) both;animation-delay:var(--d,0ms);}
+#anchor-heatmap .hm-cell span{font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink);}
+#anchor-heatmap .hm-cell.hm-cell-dark span{color:var(--canvas);}
+#anchor-heatmap .hm-cell.hm-empty{background:var(--surface-subtle);}
+#anchor-heatmap .hm-cell.hm-empty span{color:var(--muted);}
+@keyframes hm-cellIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+#anchor-heatmap .hm-figure-b{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;}
+#anchor-heatmap .hm-bars-block,#anchor-heatmap .hm-ridge-block{flex:1 1 190px;min-width:170px;}
+#anchor-heatmap .hm-block-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+#anchor-heatmap .hm-bars{display:flex;align-items:flex-end;gap:6px;box-shadow:0 1px 0 var(--hairline-faint);}
+#anchor-heatmap .hm-bar-col{display:flex;flex-direction:column;align-items:center;width:100%;height:172px;}
+#anchor-heatmap .hm-bar-spacer{flex:1 1 auto;}
+#anchor-heatmap .hm-bar-val{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;color:var(--ink);margin-bottom:3px;}
+#anchor-heatmap .hm-bar-zero .hm-bar-val{color:var(--muted);}
+#anchor-heatmap .hm-bar-fill{width:70%;border-radius:2px 2px 0 0;background:var(--muted-strong);transform-origin:bottom;animation:hm-barGrow .5s var(--ease-out-strong) both;animation-delay:var(--d,0ms);}
+#anchor-heatmap .hm-bar-fill.hm-bar-peak{background:var(--accent);}
+#anchor-heatmap .hm-bar-fill.hm-bar-nub{background:var(--hairline);}
+#anchor-heatmap .hm-bar-day{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:7px;}
+@keyframes hm-barGrow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+#anchor-heatmap .hm-ridge svg{width:100%;height:auto;display:block;}
+#anchor-heatmap .hm-ridge-area{fill:var(--surface-subtle);opacity:0;animation:hm-fadeIn .5s var(--ease) both;animation-delay:.55s;}
+#anchor-heatmap .hm-ridge-line{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:hm-drawOn .85s var(--ease-out-strong) both;}
+#anchor-heatmap .hm-dot-peak{fill:var(--accent);stroke:var(--canvas);stroke-width:1.5;opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:.9s;}
+#anchor-heatmap .hm-dot-end{fill:var(--ink);stroke:var(--canvas);stroke-width:1.5;opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:.9s;}
+#anchor-heatmap .hm-ridge-val{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;fill:var(--ink);opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:1s;}
+#anchor-heatmap .hm-ridge-axis{display:flex;justify-content:space-between;margin-top:6px;}
+#anchor-heatmap .hm-ridge-axis span{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+@keyframes hm-fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes hm-drawOn{from{stroke-dashoffset:100;}to{stroke-dashoffset:0;}}
+@media (prefers-reduced-motion: reduce){#anchor-heatmap .hm-cell,#anchor-heatmap .hm-bar-fill,#anchor-heatmap .hm-ridge-area,#anchor-heatmap .hm-ridge-line,#anchor-heatmap .hm-dot-peak,#anchor-heatmap .hm-dot-end,#anchor-heatmap .hm-ridge-val{animation:none !important;opacity:1 !important;stroke-dashoffset:0 !important;transform:none !important;}}
+</style>
+<div class="hm-wrap">
+  <div class="hm-option">
+    <p class="hm-eyebrow">The visual — weekday + hour strips</p>
+    <div class="hm-figure">
+      <div class="hm-strip-block">
+        <p class="hm-striplabel">Weekday · Mon–Sun</p>
+        <div class="hm-axis-row hm-weekday-axis"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        <div class="hm-weekday-grid">
+          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:0ms"><span>29</span></div>
+          <div class="hm-cell" style="--alpha:48.1%;--d:40ms"><span>13</span></div>
+          <div class="hm-cell" style="--alpha:51.3%;--d:80ms"><span>14</span></div>
+          <div class="hm-cell" style="--alpha:41.7%;--d:120ms"><span>11</span></div>
+          <div class="hm-cell hm-cell-dark" style="--alpha:87.0%;--d:160ms"><span>25</span></div>
+          <div class="hm-cell hm-empty" style="--d:200ms"><span>0</span></div>
+          <div class="hm-cell hm-empty" style="--d:240ms"><span>0</span></div>
+        </div>
+      </div>
+      <div class="hm-strip-block">
+        <p class="hm-striplabel">Hour · 07:00–18:00</p>
+        <div class="hm-axis-row hm-hour-axis"><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span></div>
+        <div class="hm-hour-grid">
+          <div class="hm-cell" style="--alpha:32.9%;--d:0ms"><span>4</span></div>
+          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:30ms"><span>14</span></div>
+          <div class="hm-cell" style="--alpha:59.7%;--d:60ms"><span>8</span></div>
+          <div class="hm-cell" style="--alpha:53.0%;--d:90ms"><span>7</span></div>
+          <div class="hm-cell" style="--alpha:53.0%;--d:120ms"><span>7</span></div>
+          <div class="hm-cell" style="--alpha:26.1%;--d:150ms"><span>3</span></div>
+          <div class="hm-cell" style="--alpha:46.3%;--d:180ms"><span>6</span></div>
+          <div class="hm-cell" style="--alpha:59.7%;--d:210ms"><span>8</span></div>
+          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:240ms"><span>14</span></div>
+          <div class="hm-cell hm-cell-dark" style="--alpha:79.9%;--d:270ms"><span>11</span></div>
+          <div class="hm-cell" style="--alpha:59.7%;--d:300ms"><span>8</span></div>
+          <div class="hm-cell" style="--alpha:19.4%;--d:330ms"><span>2</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="hm-caption">Weekday and hour are each real marginal totals from timestamped queries (n=92) — shown as two 1‑D strips, not a measured joint weekday×hour matrix.</p>
+  </div>
+</div>
+</section>
+</div>
+
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <p><b>The business this design carries.</b> The foundry account that runs its research through this redesign is <b>82% of booked revenue</b> &mdash; a six-figure, multi-year enterprise seat. Behind it sits an open pipeline of roughly 2.4&times; booked, led by a deal with another top-5 foundry &mdash; and every one of those demos runs on the redesigned product. Three weeks after launch, the anchor account moved to org-wide LDAP access with departmental token budgets &mdash; the expansion motion that turns concentration from risk into leverage.</p>
+    <p class="gal-pm">Shown as ratios by design &mdash; contract values are confidential, and ARR isn't derivable from the CRM anyway (no billing-frequency or renewal fields). Share-of-booked and the pipeline multiple are the honest, publishable forms. Usage signals remain team aggregates; the final acceptance milestone is still ahead &mdash; booked, not banked.</p>
+  </div></div>
+  <!-- ===== ANCHOR 7: EXPANSION ===== -->
+<section class="anchor" id="anchor-expand">
+<style>
+  #anchor-expand{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
+  #anchor-expand .ex-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start;}
+  #anchor-expand .ex-option{flex:0 1 680px;max-width:680px;min-width:0;}
+  #anchor-expand .ex-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  #anchor-expand .ex-figure{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px;}
+  #anchor-expand .ex-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
+
+  /* ---- Option A: concentration bar ---- */
+  #anchor-expand .ex-a-headline{text-align:left;}
+  #anchor-expand .ex-a-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:48px;font-weight:700;color:var(--ink);line-height:1;display:inline-block;opacity:0;transform:translateY(6px);animation:ex-fade-up 500ms var(--ease-out-strong) forwards;}
+  #anchor-expand .ex-a-sub{font-size:13px;line-height:1.5;color:var(--muted-strong);max-width:38ch;margin:8px 0 20px;}
+  #anchor-expand .ex-a-track{display:flex;height:44px;width:100%;border-radius:4px;overflow:hidden;box-shadow:0 0 0 1px var(--hairline-faint);background:var(--canvas);}
+  #anchor-expand .ex-seg{height:100%;transform-origin:left center;transform:scaleX(0);animation:ex-grow 420ms var(--ease-out-strong) forwards;display:flex;align-items:center;overflow:hidden;white-space:nowrap;}
+  #anchor-expand .ex-seg-umc{background:var(--accent);animation-delay:0ms;padding-left:12px;}
+  #anchor-expand .ex-seg-cm{background:var(--muted-strong);animation-delay:80ms;}
+  #anchor-expand .ex-seg-mic{background:var(--ghost);animation-delay:160ms;}
+  #anchor-expand .ex-seg-label{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;color:var(--canvas);letter-spacing:.01em;}
+  #anchor-expand .ex-a-legend{display:flex;flex-wrap:wrap;align-items:baseline;gap:16px 20px;margin-top:14px;opacity:0;animation:ex-fade 420ms var(--ease) forwards;animation-delay:600ms;}
+  #anchor-expand .ex-legend-item{display:flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-size:11.5px;color:var(--muted-strong);}
+  #anchor-expand .ex-dot{width:7px;height:7px;border-radius:50%;display:inline-block;transform:translateY(-1px);flex:none;}
+  #anchor-expand .ex-dot-umc{background:var(--accent);}
+  #anchor-expand .ex-dot-cm{background:var(--muted-strong);}
+  #anchor-expand .ex-dot-mic{background:var(--ghost);box-shadow:0 0 0 1px var(--hairline-faint);}
+  #anchor-expand .ex-legend-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
+  #anchor-expand .ex-legend-total{margin-left:auto;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);}
+
+  /* ---- Option B: booked vs pipeline ---- */
+  #anchor-expand .ex-b-row + .ex-b-row{margin-top:22px;}
+  #anchor-expand .ex-b-row-2 .ex-b-track{margin-top:20px;}
+  #anchor-expand .ex-b-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  #anchor-expand .ex-b-row-title{font:600 13px var(--font-body);color:var(--ink);}
+  #anchor-expand .ex-b-unweighted{font-family:var(--font-mono);font-size:9.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-left:7px;}
+  #anchor-expand .ex-b-row-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink);}
+  #anchor-expand .ex-b-track{position:relative;height:30px;width:100%;border-radius:4px;background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);overflow:visible;}
+  #anchor-expand .ex-b-fill{position:absolute;top:0;left:0;height:100%;display:flex;overflow:hidden;border-radius:4px;transform-origin:left center;}
+  #anchor-expand .ex-b-fill-booked{}
+  #anchor-expand .ex-b-fill-booked .ex-seg-umc{animation-delay:0ms;}
+  #anchor-expand .ex-b-fill-booked .ex-seg-cm{animation-delay:80ms;}
+  #anchor-expand .ex-b-fill-booked .ex-seg-mic{animation-delay:160ms;}
+  #anchor-expand .ex-b-fill-pipeline{background-color:var(--surface-warm);background-image:repeating-linear-gradient(-45deg,var(--hairline-faint) 0,var(--hairline-faint) 1px,transparent 1px,transparent 7px);box-shadow:0 0 0 1px var(--hairline-faint);opacity:0;overflow:visible;animation:ex-fade 420ms var(--ease) forwards;animation-delay:620ms;}
+  #anchor-expand .ex-b-pipeline-top{position:absolute;top:0;left:0;height:100%;box-shadow:inset 0 0 0 1px var(--hairline);border-radius:3px;}
+  #anchor-expand .ex-b-pipeline-top-label{position:absolute;bottom:calc(100% + 6px);left:0;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:10.5px;font-weight:600;color:var(--muted-strong);white-space:nowrap;opacity:0;animation:ex-fade 380ms var(--ease) forwards;animation-delay:820ms;}
+  #anchor-expand .ex-b-pipeline-top-label::after{content:"";position:absolute;top:100%;left:2px;width:1px;height:5px;background:var(--muted);}
+  #anchor-expand .ex-b-axis{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;color:var(--muted);}
+  #anchor-expand .ex-b-footnote{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin:14px 0 0;}
+
+  @keyframes ex-grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+  @keyframes ex-fade{from{opacity:0;}to{opacity:1;}}
+  @keyframes ex-fade-up{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  @media (max-width:520px){
+    #anchor-expand .ex-figure{padding:20px 16px;}
+    #anchor-expand .ex-a-num{font-size:40px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #anchor-expand .ex-seg,#anchor-expand .ex-a-num,#anchor-expand .ex-a-legend,#anchor-expand .ex-b-fill-pipeline,#anchor-expand .ex-b-pipeline-top-label{
+      animation:none !important;transform:none !important;opacity:1 !important;
+    }
+  }
+</style>
+<div class="ex-wrap">
+
+  <article class="ex-option" id="ex-optA">
+    <p class="ex-eyebrow">The visual — revenue concentration</p>
+    <div class="ex-figure ex-figure-a">
+      <div class="ex-a-headline"><span class="ex-a-num">82%</span></div>
+      <p class="ex-a-sub">of booked revenue runs its research through this redesign</p>
+      <div class="ex-a-track" role="img" aria-label="Booked revenue split: anchor foundry 82 percent, customer B 16 percent, customer C 1 percent">
+        <div class="ex-seg ex-seg-umc" style="width:82.21%"><span class="ex-seg-label">Anchor foundry · 82%</span></div>
+        <div class="ex-seg ex-seg-cm" style="width:16.42%"></div>
+        <div class="ex-seg ex-seg-mic" style="width:1.37%"></div>
+      </div>
+      <div class="ex-a-legend">
+        <span class="ex-legend-item"><span class="ex-dot ex-dot-umc"></span>Anchor foundry&nbsp;<span class="ex-legend-val">82%</span></span>
+        <span class="ex-legend-item"><span class="ex-dot ex-dot-cm"></span>Customer B&nbsp;<span class="ex-legend-val">16%</span></span>
+        <span class="ex-legend-item"><span class="ex-dot ex-dot-mic"></span>Customer C&nbsp;<span class="ex-legend-val">1%</span></span>
+        <span class="ex-legend-total">shares of booked revenue</span>
+      </div>
+    </div>
+    <p class="ex-caption">One account &mdash; the one this redesign serves &mdash; is 82% of booked revenue. At that concentration, the research experience isn&rsquo;t a feature; it&rsquo;s the business.</p>
+  </article>
+
+</div>
+</section>
+</div>
+
+<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>05</b> · Learnings</span></div>
+<div class="gal-block">
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h3 class="gal-headline">The 28% that still bugs me.</h3>
+    <p>26 of 92 queries were re-asks &mdash; the same intent, reworded, run again; only 66 of the 92 were distinct questions. Some is healthy exploration. But the logs show a sharper cause: <b>near-identical queries came back with different reports.</b> When the same question doesn't reliably return the same answer, re-asking isn't curiosity &mdash; it's the user fishing for the output they knew was possible.</p>
+    <p><b>The next bet:</b> surface the interpretation <i>before</i> the answer &mdash; show the user how the assistant parsed the question, let them steer it, and anchor the same intent to a consistent report. Turn a silent re-ask into a visible, one-step correction.</p>
+  </div></div>
+  <!-- ===== ANCHOR 6: RE-ASK ===== -->
+<section class="anchor" id="anchor-reask">
+<style>
+  #anchor-reask{font-family:var(--font-body);color:var(--body);}
+  #anchor-reask .ra-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:center;}
+  #anchor-reask .ra-figure{flex:0 1 680px;max-width:680px;min-width:0;margin:0;display:flex;flex-direction:column;}
+  #anchor-reask .ra-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  #anchor-reask .ra-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:26px 24px;}
+  #anchor-reask .ra-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
+  #anchor-reask .ra-panel-a svg{display:block;width:100%;height:auto;overflow:visible;}
+  #anchor-reask .ra-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);}
+  #anchor-reask .ra-lbl-accent{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;fill:var(--accent-deep);}
+  #anchor-reask .ra-node-rect{fill:var(--canvas);stroke:var(--hairline-faint);stroke-width:1;}
+  #anchor-reask .ra-node-text{font-family:var(--font-mono);font-size:12px;fill:var(--ink);}
+  #anchor-reask .ra-title-rect{fill:var(--canvas);stroke:var(--hairline-faint);stroke-width:1;}
+  #anchor-reask .ra-title-text{font-family:var(--font-body);font-size:12.5px;fill:var(--ink);}
+  #anchor-reask .ra-start-dot{fill:var(--muted-strong);stroke:var(--canvas);stroke-width:1;}
+  #anchor-reask .ra-fork-line{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-dasharray:1;stroke-dashoffset:1;animation:ra-draw .5s var(--ease-out-strong) forwards;}
+  #anchor-reask .ra-fork-line.ra-l2{animation-delay:.08s;}
+  #anchor-reask .ra-fork-dot{fill:var(--accent);stroke:var(--canvas);stroke-width:1.2;opacity:0;animation:ra-fade .3s var(--ease) forwards;animation-delay:.5s;}
+  #anchor-reask .ra-fork-dot.ra-l2{animation-delay:.58s;}
+  #anchor-reask .ra-tag-dot{fill:var(--accent);opacity:0;animation:ra-fade .3s var(--ease) forwards;animation-delay:.75s;}
+  #anchor-reask .ra-tag-accent{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;fill:var(--accent);opacity:0;animation:ra-fade .3s var(--ease) forwards;animation-delay:.75s;}
+  @keyframes ra-draw{to{stroke-dashoffset:0;}}
+  @keyframes ra-fade{to{opacity:1;}}
+  #anchor-reask .ra-stats{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;}
+  #anchor-reask .ra-stat{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  #anchor-reask .ra-stat-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:27px;font-weight:700;line-height:1;color:var(--ink);}
+  #anchor-reask .ra-stat-pct{font-size:14px;font-weight:600;color:var(--muted-strong);}
+  #anchor-reask .ra-stat-label{font-family:var(--font-body);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;text-align:center;}
+  #anchor-reask .ra-stat-sep{font-family:var(--font-mono);font-size:18px;color:var(--hairline);}
+  #anchor-reask .ra-bars-row{display:flex;gap:12px;justify-content:center;border-bottom:1px solid var(--hairline);}
+  #anchor-reask .ra-bar-col{width:72px;flex-shrink:0;}
+  #anchor-reask .ra-bar-zone{height:150px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;}
+  #anchor-reask .ra-bar-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:600;color:var(--ink);}
+  #anchor-reask .ra-bar{width:38px;border-radius:var(--radius) var(--radius) 0 0;background:var(--muted-strong);transform-origin:bottom center;animation:ra-grow .5s var(--ease-out-strong) forwards;}
+  #anchor-reask .ra-bar--accent{background:var(--accent);}
+  #anchor-reask .ra-bar-col:nth-child(1) .ra-bar{animation-delay:0ms;}
+  #anchor-reask .ra-bar-col:nth-child(2) .ra-bar{animation-delay:60ms;}
+  #anchor-reask .ra-bar-col:nth-child(3) .ra-bar{animation-delay:120ms;}
+  #anchor-reask .ra-bar-col:nth-child(4) .ra-bar{animation-delay:180ms;}
+  #anchor-reask .ra-bar-col:nth-child(5) .ra-bar{animation-delay:240ms;}
+  #anchor-reask .ra-labels-row{display:flex;gap:12px;justify-content:center;margin-top:8px;}
+  #anchor-reask .ra-bar-label{width:72px;flex-shrink:0;text-align:center;font-family:var(--font-body);font-size:9.5px;color:var(--muted);line-height:1.3;}
+  @keyframes ra-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+  @media (prefers-reduced-motion: reduce){#anchor-reask .ra-fork-line,#anchor-reask .ra-fork-dot,#anchor-reask .ra-tag-dot,#anchor-reask .ra-tag-accent,#anchor-reask .ra-bar{animation:none !important;stroke-dashoffset:0 !important;opacity:1 !important;transform:none !important;}}
+</style>
+<div class="ra-wrap">
+  <figure class="ra-figure">
+    <div class="ra-eyebrow">The visual — same question, different reports</div>
+    <div class="ra-panel ra-panel-a">
+      <svg viewBox="0 0 480 300" role="img" aria-label="The same MRAM-aerospace query, asked five times, fans out to two different report titles">
+        <text class="ra-lbl" x="16" y="102">Query &middot; asked &times;5</text>
+        <rect class="ra-node-rect" x="16" y="110" width="168" height="56" rx="4"></rect>
+        <text class="ra-node-text" x="30" y="134">MRAM suitable</text>
+        <text class="ra-node-text" x="30" y="152">for aerospace?</text>
+        <circle class="ra-start-dot" cx="184" cy="138" r="3"></circle>
+        <path class="ra-fork-line ra-l1" pathLength="1" d="M184,138 C240,138 260,52 300,52"></path>
+        <path class="ra-fork-line ra-l2" pathLength="1" d="M184,138 C240,138 260,228 300,228"></path>
+        <circle class="ra-fork-dot ra-l1" cx="300" cy="52" r="3"></circle>
+        <circle class="ra-fork-dot ra-l2" cx="300" cy="228" r="3"></circle>
+        <text class="ra-lbl-accent" x="300" y="12">Report A</text>
+        <rect class="ra-title-rect" x="300" y="20" width="168" height="64" rx="4"></rect>
+        <text class="ra-title-text" x="314" y="44">MRAM for Aerospace-</text>
+        <text class="ra-title-text" x="314" y="62">Grade Memory</text>
+        <text class="ra-lbl-accent" x="300" y="188">Report B</text>
+        <rect class="ra-title-rect" x="300" y="196" width="168" height="64" rx="4"></rect>
+        <text class="ra-title-text" x="314" y="220">MRAM Reliability in</text>
+        <text class="ra-title-text" x="314" y="238">Extreme Environments</text>
+        <circle class="ra-tag-dot" cx="132" cy="284" r="3"></circle>
+        <text class="ra-tag-accent" x="144" y="288">Same question &middot; different reports</text>
+      </svg>
+    </div>
+    <figcaption class="ra-caption">The same MRAM-aerospace question, asked five times, came back as two different reports &mdash; proof the old pipeline had no memory of what it had already told you.</figcaption>
+  </figure>
+</div>
+</section>
+</div>
+
+
+<footer class="cs-foot">
+  <span><a href="/">&larr; Joanna Yen</a></span>
+  <span>Deeli case study · shipped Jun 2026 · every figure verified from live query logs</span>
+</footer>
+
+</body>
+</html>

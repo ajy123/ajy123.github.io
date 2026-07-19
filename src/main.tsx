@@ -79,6 +79,8 @@ type WorkItem = {
   status?: string;
   summary?: string;
   liveHref?: string;
+  /** Label for the liveHref link; defaults to "See it live". */
+  linkLabel?: string;
   askHint: string;
   askKind: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
@@ -113,7 +115,8 @@ const workItems: WorkItem[] = [
     title: "From keyword search to a research chat",
     role: "Led design + part PM, team of 5",
     year: "2026",
-    status: "Coming soon",
+    liveHref: "/deeli-case-study.html",
+    linkLabel: "Read the case study",
     askHint: "Ask how this became a chat",
     askKind: "project",
     askAnchorPreference: "cursor",
@@ -1157,6 +1160,11 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
 function WorkCardMedia({ item }: { item: WorkItem }) {
   if (!item.liveHref) return <WorkMedia item={item} />;
 
+  // Internal links (e.g. the case-study page) navigate in the same tab;
+  // external product sites keep opening in a new one.
+  const isExternal = /^https?:\/\//.test(item.liveHref);
+  const linkLabel = item.linkLabel ?? "See it live";
+
   // Action zone: the media of a live project navigates to it. The cursor hint
   // becomes an accent "See it live" pill (kind="action") instead of a chat ask
   // — media pill = go somewhere, text pill = ask something. The link is an
@@ -1166,7 +1174,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
   return (
     <div
       className="work-media-frame"
-      data-ask-hint="See it live"
+      data-ask-hint={linkLabel}
       data-ask-kind="action"
       data-ask-anchor="cursor"
     >
@@ -1174,9 +1182,9 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
       <a
         className="work-media-link"
         href={item.liveHref}
-        target="_blank"
-        rel="noreferrer"
-        aria-label={`Open ${item.title} live site (video preview)`}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noreferrer" : undefined}
+        aria-label={`Open ${item.title} (video preview)`}
         onClick={(event) => event.stopPropagation()}
       />
     </div>
@@ -1218,11 +1226,11 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
             <a
               className="card-eyebrow-flag"
               href={item.liveHref}
-              target="_blank"
-              rel="noreferrer"
+              target={/^https?:\/\//.test(item.liveHref) ? "_blank" : undefined}
+              rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
               onClick={(event) => event.stopPropagation()}
             >
-              See it live ↗
+              {item.linkLabel ?? "See it live"} ↗
             </a>
           ) : item.status ? (
             <p className="card-eyebrow-flag">{item.status}</p>

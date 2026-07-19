@@ -115,7 +115,7 @@ const workItems: WorkItem[] = [
     title: "From keyword search to a research chat",
     role: "Led design + part PM, team of 5",
     year: "2026",
-    liveHref: "/deeli-case-study.html",
+    liveHref: "/deeli/",
     linkLabel: "Read the case study",
     askHint: "Ask how this became a chat",
     askKind: "project",

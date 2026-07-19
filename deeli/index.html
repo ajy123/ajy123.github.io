@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>From search box to research partner — Joanna Yen</title>
-<meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry — from keyword search to an agentic research partner.">
+<title>From search box to research partner · Joanna Yen</title>
+<meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry, from keyword search to an agentic research partner.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,14 +35,14 @@
   color-scheme: light;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:auto;}
 body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
 ::selection{color:var(--accent-deep);background:var(--accent-wash);}
 
 .gal-head{max-width:1120px;margin:0 auto;padding:56px 40px 8px;}
 .gal-kicker{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
 .gal-h1{font-size:clamp(28px,4vw,38px);font-weight:700;letter-spacing:-0.02em;line-height:1.05;margin:12px 0 0;text-wrap:balance;}
-.gal-lede{font-size:17px;line-height:1.55;color:var(--muted-strong);max-width:60ch;margin:14px 0 0;}
+.gal-lede{font-size:17px;line-height:1.55;color:var(--muted-strong);max-width:62ch;margin:14px 0 0;}
 .gal-legend{display:flex;flex-wrap:wrap;gap:18px;margin:22px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--muted);}
 .gal-legend b{color:var(--ink);font-weight:600;}
 
@@ -52,7 +52,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
 .gal-sec b{color:var(--accent-deep);}
 .gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
-.gal-block-note{font-size:14px;line-height:1.55;color:var(--muted-strong);max-width:64ch;margin:8px 0 0;}
+.gal-block-note{font-size:14px;line-height:1.55;color:var(--muted-strong);max-width:62ch;margin:8px 0 0;}
 
 /* product embed framing (SOLUTION) — Emil hairline figure */
 .gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
@@ -65,7 +65,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-foot{max-width:1120px;margin:0 auto;padding:24px 40px 80px;color:var(--muted);font-family:var(--font-mono);font-size:11px;}
 
 /* ---- case-study prose (portfolio .essay-dialog vocabulary) ---- */
-.gal-copy{max-width:1120px;margin:0 auto;padding:4px 40px 4px;}
+.gal-copy{max-width:1120px;margin:0 auto;padding:4px 0;}
 .gal-copy-inner{max-width:68ch;}
 .gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 16px;text-wrap:balance;color:var(--ink);}
 .gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;}
@@ -82,7 +82,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 
 /* ---- interactive product-widget hosting (SOLUTION) ---- */
-.gal-widget-wrap{max-width:1120px;margin:0 auto;padding:6px 40px 30px;}
+.gal-widget-wrap{max-width:1120px;margin:0 auto;padding:6px 0 30px;}
 .gal-widget-wrap > .sol-widget{max-width:680px;}
 .gal-widget-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;max-width:680px;}
 .gal-move p{margin-bottom:6px;}
@@ -123,10 +123,27 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
 .cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
 @media(max-width:560px){.cs-rail-sec{display:none;}}
-#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:64px;}
+
+/* ---- FIX 5: persistent left section rail (wide viewports) ---- */
+.cs-side{display:none;position:fixed;top:76px;left:max(24px, calc(50vw - 560px - 174px));width:150px;max-height:calc(100vh - 100px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;opacity:.6;transition:opacity .3s ease;}
+.cs-side::-webkit-scrollbar{display:none;}
+@media(min-width:1420px){.cs-side{display:block;}}
+.cs-side:hover,.cs-side:focus-within{opacity:1;}
+@media(prefers-reduced-motion:reduce){.cs-side{transition:none;}}
+.cs-side ol{list-style:none;margin:0;padding:0;}
+.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
+.cs-side ol a:hover{color:var(--ink);}
+.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+.cs-side-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);}
+
+/* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
+.cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:72px;}
+
+/* ---- FIX 7: larger skim-rail tap targets on small screens ---- */
+@media(max-width:720px){.cs-rail a{padding:12px 2px;}}
 
 /* ---- FIX 2: design-principles strip ---- */
-.cs-principles{max-width:1120px;margin:6px auto 26px;padding:0 40px;}
+.cs-principles{max-width:1120px;margin:6px auto 26px;padding:0;}
 .cs-principles-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .cs-principles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--hairline-faint);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);overflow:hidden;max-width:760px;}
 .cs-principles-grid>div{background:var(--surface-warm);padding:14px 16px;}
@@ -135,7 +152,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:640px){.cs-principles-grid{grid-template-columns:1fr;}}
 
 /* ---- FIX 1: considered/chose/because decision rows ---- */
-.cs-decision{max-width:1120px;margin:14px auto 4px;padding:0 40px;}
+.cs-decision{max-width:1120px;margin:14px auto 4px;padding:0;}
 .cs-decision dl{max-width:68ch;margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
 .cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
 .cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
@@ -166,19 +183,29 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:600px){.cs-onrecord-opts{grid-template-columns:1fr;}}
 </style>
 </head>
-<body>
+<body id="top">
 
 <nav class="cs-top"><div class="cs-top-inner">
   <a href="/">Joanna Yen</a>
   <span class="cs-top-label">Case study · Deeli</span>
 </div></nav>
 
+<nav class="cs-side" aria-label="Sections">
+  <ol>
+    <li><a href="#sec-problem"><span class="cs-side-num">01</span> Problem</a></li>
+    <li><a href="#sec-process"><span class="cs-side-num">02</span> Process</a></li>
+    <li><a href="#sec-solution"><span class="cs-side-num">03</span> Solution</a></li>
+    <li><a href="#sec-impact"><span class="cs-side-num">04</span> Impact</a></li>
+    <li><a href="#sec-learnings"><span class="cs-side-num">05</span> Learnings</a></li>
+  </ol>
+</nav>
+
 <header class="cs-hero">
   <p class="cs-hero-eyebrow">Case study · Deeli · 2026</p>
   <h1 class="cs-hero-title">From search box to research partner.</h1>
-  <p class="cs-hero-lede">A top-5 semiconductor foundry makes billion-dollar capacity bets &mdash; and ran its deep-tech research through a keyword box. I redesigned Deeli&rsquo;s core product around one bet: <b>stop returning documents, return the synthesis.</b> Three weeks after launch, the account behind 82% of booked revenue had made it a daily habit.</p>
+  <p class="cs-hero-lede">A top-5 semiconductor foundry makes billion-dollar capacity bets. It ran its deep-tech research through a keyword box. I redesigned Deeli&rsquo;s core product around one bet: <b>stop returning documents, return the synthesis.</b> Three weeks after launch, the account behind 82% of booked revenue had made it a daily habit.</p>
   <div class="cs-hero-meta">
-    <div><b>Role</b>Product design &mdash; problem scoping, interaction, output</div>
+    <div><b>Role</b>Product design: problem scoping, interaction, output</div>
     <div><b>Team</b>Solo design · 10-engineer build</div>
     <div><b>Shipped</b>June 2026</div>
     <div><b>Measured</b>First 3 weeks live, real customer logs</div>
@@ -188,27 +215,27 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <nav class="cs-rail" aria-label="Five design decisions">
   <p class="cs-rail-title">The five calls, in fifteen seconds</p>
   <ol>
-    <li><a href="#the-fork"><span class="cs-rail-num">01</span> Stop optimizing search — return the synthesis <span class="cs-rail-sec">Process</span></a></li>
+    <li><a href="#the-fork"><span class="cs-rail-num">01</span> Stop optimizing search: return the synthesis <span class="cs-rail-sec">Process</span></a></li>
     <li><a href="#move-1"><span class="cs-rail-num">02</span> Take the question; show the interpretation as footnotes, never rewrites <span class="cs-rail-sec">Solution</span></a></li>
     <li><a href="#move-2"><span class="cs-rail-num">03</span> Aim the report with chips, not a form <span class="cs-rail-sec">Solution</span></a></li>
     <li><a href="#move-3a"><span class="cs-rail-num">04</span> Replace the spinner with agents narrating their sources <span class="cs-rail-sec">Solution</span></a></li>
-    <li><a href="#move-3b"><span class="cs-rail-num">05</span> Make every claim inspectable — citations, legend, drill-down <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-3b"><span class="cs-rail-num">05</span> Make every claim inspectable: citations, legend, drill-down <span class="cs-rail-sec">Solution</span></a></li>
   </ol>
 </nav>
 
-<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>01</b> · Problem</span></div>
+<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow"><b>01</b> · Problem</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">It answered the topic, not the question.</h3>
-    <p class="gal-lede-p">The old product took a keyword, matched a topic, and printed that topic's template &mdash; the same report for everyone, with no sign of how it got there.</p>
+    <p class="gal-lede-p">The old product took a keyword, matched a topic, and printed that topic's template. The same report for everyone, with no sign of how it got there.</p>
     <ul>
-      <li><b>No intent.</b> The input took keywords, not questions. Users couldn't say <i>why</i> they were asking &mdash; so it couldn't answer what they meant.</li>
+      <li><b>No intent.</b> The input took keywords, not questions. Users couldn't say <i>why</i> they were asking, so it couldn't answer what they meant.</li>
       <li><b>No personalization.</b> A capacity planner and a partnerships lead typed the same topic, got the same report. One shape, wrong for most jobs.</li>
-      <li><b>No transparency.</b> Reports arrived with no sources and no reasoning &mdash; trust an answer you couldn't check.</li>
+      <li><b>No transparency.</b> Reports arrived with no sources and no reasoning: trust an answer you couldn't check.</li>
       <li><b>Dated feel.</b> Users raised on conversational AI expected to be understood. A keyword box read as broken on sight.</li>
     </ul>
-    <p class="gal-kick">Retrieval wasn't the problem &mdash; it worked. The design was: no way to express intent, adapt the output, or show the work.</p>
+    <p class="gal-kick">Retrieval wasn't the problem. It worked. The design was: no way to express intent, adapt the output, or show the work.</p>
   </div></div>
   <!-- ===== ANCHOR 1: PROBLEM ===== -->
 <section class="anchor" id="anchor-problem">
@@ -263,7 +290,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <circle cx="454" cy="106" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
       </svg>
     </div>
-    <figcaption class="pr-caption">Capacity planning, partnerships, and competitive research &mdash; three different jobs &mdash; all typed &ldquo;HBM&rdquo; into the same keyword box and got the same templated report back.</figcaption>
+    <figcaption class="pr-caption">Capacity planning, partnerships, and competitive research (three different jobs) all typed &ldquo;HBM&rdquo; into the same keyword box and got the same templated report back.</figcaption>
   </figure>
 
   <figure class="pr-fig">
@@ -301,13 +328,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>02</b> · Process</span></div>
+<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow"><b>02</b> · Process</span></div>
 <div class="gal-block" id="the-fork">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">Interviews told me the goal. An LLM found the pattern.</h3>
     <p class="gal-lede-p"><i>A top-5 foundry making billion-dollar capacity bets was running its deep-tech research through a keyword box.</i></p>
-    <p>Discovery ran on three inputs, and every one narrowed to the same decision: <b>92 real queries</b> read as a behavior transcript, <b>263 tagged issues</b> clustered by frequency &times; scale of impact, and <b>21 benchmark runs</b> that put a price on retrieval. The phase-by-phase detail is in the rail below &mdash; but the three inputs all pointed one way.</p>
+    <p>Discovery ran on three inputs, and every one narrowed to the same decision: <b>92 real queries</b> read as a behavior transcript, <b>263 tagged issues</b> clustered by frequency &times; scale of impact, and <b>21 benchmark runs</b> that put a price on retrieval. The phase-by-phase detail is in the rail below, but the three inputs all pointed one way.</p>
     <p class="gal-fork">Stop optimizing search. Stop returning documents. Return the synthesis.</p>
   </div></div>
   <!-- ===== ANCHOR 2: PROCESS ===== -->
@@ -385,7 +412,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="pc-num">02</div>
         <div class="pc-content">
           <div class="pc-label">Understand</div>
-          <p class="pc-line">263 tagged issues clustered by frequency &times; impact &mdash; Report Content led, Citations never got fixed.</p>
+          <p class="pc-line">263 tagged issues clustered by frequency &times; impact: Report Content led, Citations never got fixed.</p>
           <div class="pc-chips">
             <span class="pc-chip pc-chip--lg">Report Content &middot; 48</span>
             <span class="pc-chip pc-chip--md">Agent Logic &middot; 43 &middot; 2.3% fixed</span>
@@ -397,7 +424,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="pc-num">03</div>
         <div class="pc-content">
           <div class="pc-label">Constrain</div>
-          <p class="pc-line">Benchmarked fast vs. path-grounded retrieval with an ML engineer across 21 runs &mdash; 10 sub-agents already in place.</p>
+          <p class="pc-line">Benchmarked fast vs. path-grounded retrieval with an ML engineer across 21 runs. 10 sub-agents already in place.</p>
           <div class="pc-bars">
             <div class="pc-bar-row">
               <span class="pc-bar-label">fast retrieval</span>
@@ -423,12 +450,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>03</b> · Solution</span></div>
+<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow"><b>03</b> · Solution</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">Three moves turned a search box into a research partner.</h3>
-    <p class="gal-lede-p">The fork from Process &mdash; <i>stop returning documents, return the synthesis</i> &mdash; only holds if three things become true: the system reads intent, shapes the output to the asker, and shows its work. Each move below took the next-ranked pain from the frequency&nbsp;&times;&nbsp;impact list. The embeds are live recreations of the shipped UI &mdash; try them.</p>
+    <p class="gal-lede-p">The fork from Process (<i>stop returning documents, return the synthesis</i>) only holds if three things become true: the system reads intent, shapes the output to the asker, and shows its work. Each move below took the next-ranked pain from the frequency&nbsp;&times;&nbsp;impact list. The embeds are live recreations of the shipped UI. Try them.</p>
   </div></div>
 
   <div class="cs-principles" role="list" aria-label="Design principles">
@@ -436,23 +463,23 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <div class="cs-principles-grid">
       <div role="listitem"><b>Forest green = commitment, only.</b><span>It appears only when the system is ready to act. Watch the submit button below.</span></div>
       <div role="listitem"><b>Amber = AI-touched, only.</b><span>One color reserved for AI-influenced regions, so provenance reads at a glance.</span></div>
-      <div role="listitem"><b>Not a chatbot.</b><span>No bubbles, no typewriter streaming, no thread &mdash; a research instrument, not a conversation.</span></div>
+      <div role="listitem"><b>Not a chatbot.</b><span>No bubbles, no typewriter streaming, no thread: a research instrument, not a conversation.</span></div>
       <div role="listitem"><b>Calm at entry, dense at the report.</b><span>The landing asks one question; density is earned where the analyst is paying for it.</span></div>
     </div>
   </div>
 
   <div class="gal-copy" id="move-1"><div class="gal-copy-inner gal-move">
-    <p><b>Move 1 &mdash; take the question, not the keyword.</b> The intent gap topped the ranking, so it got the first move. I replaced the keyword field with an input that accepts whatever a researcher actually has &mdash; a full question, a terse fragment, a bilingual ask &mdash; and let ten sub-agents route it, instead of making the user translate themselves into search syntax. The submit control stays quiet until there&rsquo;s a real ask: forest green is the product&rsquo;s commitment color, and it appears only when there&rsquo;s something to commit to. First three weeks live: 70% of queries were shapes the old box couldn&rsquo;t parse; only 8 of 92 passed through unchanged.</p>
+    <p><b>Move 1: take the question, not the keyword.</b> The intent gap topped the ranking, so it got the first move. I replaced the keyword field with an input that accepts whatever a researcher actually has (a full question, a terse fragment, a bilingual ask) and let ten sub-agents route it, instead of making the user translate themselves into search syntax. The submit control stays quiet until there&rsquo;s a real ask: forest green is the product&rsquo;s commitment color, and it appears only when there&rsquo;s something to commit to. First three weeks live: 70% of queries were shapes the old box couldn&rsquo;t parse; only 8 of 92 passed through unchanged.</p>
   </div></div>
   <div class="cs-decision">
     <dl>
-      <div><dt>Considered</dt><dd>A chat thread — messages, history, back-and-forth.</dd></div>
+      <div><dt>Considered</dt><dd>A chat thread: messages, history, back-and-forth.</dd></div>
       <div><dt>Chose</dt><dd>One box, with the interpretation shown as footnotes: arm¹ resolves to a numbered chip naming what the system understood.</dd></div>
-      <div><dt>Because</dt><dd>Silently rewriting a researcher's query breaks trust — the reading had to be visible without touching their words.</dd></div>
+      <div><dt>Because</dt><dd>Silently rewriting a researcher's query breaks trust: the reading had to be visible without touching their words.</dd></div>
     </dl>
   </div>
   <div class="gal-widget-wrap">
-    <div class="gal-widget-eyebrow">Move 1 · the shipped input &mdash; interactive</div>
+    <div class="gal-widget-eyebrow">Move 1 · the shipped input (interactive)</div>
     <section class="sol-widget" id="sol-w1">
   <style>
     #sol-w1{
@@ -733,7 +760,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       <button type="button" class="sol-w1-chip" data-query="silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?</button>
     </div>
 
-    <p class="sol-w1-caption">Interactive recreation — type or tap a real customer query.</p>
+    <p class="sol-w1-caption">Interactive recreation: type or tap a real customer query.</p>
   </div>
 
   <script>
@@ -873,17 +900,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </div>
 
   <div class="gal-copy" id="move-2"><div class="gal-copy-inner gal-move">
-    <p><b>Move 2 &mdash; chips, not a form.</b> Same keyword, different intent was the next-ranked pain: a capacity planner and a partnerships lead don&rsquo;t want the same report. Instead of guessing, the system asks one question back &mdash; which area, how deep &mdash; as tappable chips. One tap aims the whole report. The template stopped being the shape of the answer; the question did.</p>
+    <p><b>Move 2: chips, not a form.</b> Same keyword, different intent was the next-ranked pain: a capacity planner and a partnerships lead don&rsquo;t want the same report. Instead of guessing, the system asks one question back (which area, how deep) as tappable chips. One tap aims the whole report. The template stopped being the shape of the answer; the question did.</p>
   </div></div>
   <div class="cs-decision">
     <dl>
       <div><dt>Considered</dt><dd>A free-text follow-up question from the assistant.</dd></div>
       <div><dt>Chose</dt><dd>Three tappable focus chips, plus a dashed 'I'll rewrite' escape hatch.</dd></div>
-      <div><dt>Because</dt><dd>Mid-task engineers won't type a paragraph about scope — chips make aiming a one-tap act, and the escape keeps control with the user.</dd></div>
+      <div><dt>Because</dt><dd>Mid-task engineers won't type a paragraph about scope: chips make aiming a one-tap act, and the escape keeps control with the user.</dd></div>
     </dl>
   </div>
   <div class="gal-widget-wrap">
-    <div class="gal-widget-eyebrow">Move 2 · clarification state &mdash; interactive</div>
+    <div class="gal-widget-eyebrow">Move 2 · clarification state (interactive)</div>
     <section class="sol-widget" id="sol-w2">
   <style>
     #sol-w2{
@@ -1168,7 +1195,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
     </div>
 
-    <p class="sol-w2-caption">Interactive recreation — same topic, three different reports.</p>
+    <p class="sol-w2-caption">Interactive recreation: same topic, three different reports.</p>
   </div>
 
   <script>
@@ -1283,17 +1310,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </div>
 
   <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
-    <p><b>Move 3 &mdash; narration, not a spinner.</b> Unsourced numbers were rare but fatal &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn. So the pipeline became visible in both directions. While generating, each named agent reports what it&rsquo;s touching &mdash; 145 patents in a cluster, 312 papers matched &mdash; never a spinner. After, every claim carries a citation you can open, scored against a seven-dimension eval, and any term drills down into its own scoped report. 91 of 92 live queries produced a report a researcher could audit before staking a decision on it.</p>
+    <p><b>Move 3: narration, not a spinner.</b> Unsourced numbers were rare but fatal: one bad citation in a capacity-bet memo costs more than a hundred clean reports earn. So the pipeline became visible in both directions. While generating, each named agent reports what it&rsquo;s touching (145 patents in a cluster, 312 papers matched), never a spinner. After, every claim carries a citation you can open, scored against a seven-dimension eval, and any term drills down into its own scoped report. 91 of 92 live queries produced a report a researcher could audit before staking a decision on it.</p>
   </div></div>
   <div class="cs-decision">
     <dl>
       <div><dt>Considered</dt><dd>A progress bar.</dd></div>
-      <div><dt>Chose</dt><dd>Named agents narrating what they touch — 'USPTO · 145 patents in cluster A.'</dd></div>
+      <div><dt>Chose</dt><dd>Named agents narrating what they touch: 'USPTO · 145 patents in cluster A.'</dd></div>
       <div><dt>Because</dt><dd>A percentage is theater you can't verify. Naming the sources turns the wait itself into evidence.</dd></div>
     </dl>
   </div>
   <div class="gal-widget-wrap">
-    <div class="gal-widget-eyebrow">Move 3a · generating panel &mdash; plays on scroll, replayable</div>
+    <div class="gal-widget-eyebrow">Move 3a · generating panel (plays on scroll, replayable)</div>
     <section class="sol-widget" id="sol-w3">
   <style>
     #sol-w3{
@@ -1653,10 +1680,10 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
     </div>
 
-    <p class="w3-end">Report assembled &mdash; 91 of 92 queries this month produced one.</p>
+    <p class="w3-end">Report assembled. 91 of 92 queries this month produced one.</p>
   </div>
 
-  <p class="w3-caption">Interactive recreation &mdash; the loading state names what it touches.</p>
+  <p class="w3-caption">Interactive recreation: the loading state names what it touches.</p>
 
   <script>
   (function(){
@@ -1833,7 +1860,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
   </div>
   <div class="gal-widget-wrap" id="move-3b">
-    <div class="gal-widget-eyebrow">Move 3b · sourced report &mdash; hover the citations</div>
+    <div class="gal-widget-eyebrow">Move 3b · sourced report (hover the citations)</div>
     <section class="sol-widget" id="sol-w4">
   <style>
     #sol-w4{
@@ -2404,7 +2431,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     </div>
   </div>
 
-  <p class="sol-w4-caption">Interactive recreation &mdash; hover a citation, click the underlined term.</p>
+  <p class="sol-w4-caption">Interactive recreation: hover a citation, click the underlined term.</p>
 
   <script>
   (function(){
@@ -2589,8 +2616,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 <div class="cs-onrecord" id="on-record">
   <div class="cs-onrecord-inner">
-    <p class="cs-onrecord-title">One call, on the record — the citation legend</p>
-    <p class="cs-onrecord-goal">Readers needed citation provenance — external, customer-internal, or Deeli-generated — at a glance, without hovering every superscript.</p>
+    <p class="cs-onrecord-title">One call, on the record: the citation legend</p>
+    <p class="cs-onrecord-goal">Readers needed citation provenance (external, customer-internal, or Deeli-generated) at a glance, without hovering every superscript.</p>
     <div class="cs-onrecord-opts">
       <div class="cs-opt">
         <p class="cs-opt-name">Option 1 · persistent legend</p>
@@ -2603,25 +2630,25 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <p class="cs-opt-note">Lighter report, scales better; invisible until you go looking.</p>
       </div>
     </div>
-    <p class="cs-onrecord-verdict"><span class="cs-verdict-dot" aria-hidden="true"></span><b>Shipped Option 1.</b> Half the reviewers personally preferred Option 2's lighter hierarchy — and still voted 1. The customer hires continuously: there is always a first-time user in the room, and a legend you have to discover isn't a legend. Their onboarding reality beat our aesthetics.</p>
-    <p class="cs-onrecord-src">From the design-review thread, July 2026 — options, vote, and reasoning on the record.</p>
+    <p class="cs-onrecord-verdict"><span class="cs-verdict-dot" aria-hidden="true"></span><b>Shipped Option 1.</b> Half the reviewers personally preferred Option 2's lighter hierarchy, and still voted 1. The customer hires continuously: there is always a first-time user in the room, and a legend you have to discover isn't a legend. Their onboarding reality beat our aesthetics.</p>
+    <p class="cs-onrecord-src">From the design-review thread, July 2026: options, vote, and reasoning on the record.</p>
   </div>
 </div>
 
-<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>04</b> · Impact</span></div>
+<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow"><b>04</b> · Impact</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">A foundry team made it a habit.</h3>
-    <p>Adoption isn't a line going up &mdash; it's people changing how they work. Every figure below is pulled from the query logs.</p>
-    <p><b>The way they ask changed &mdash; and it read them right.</b> The broader search history skews 87% keyword &mdash; the habit of a box that only took terms. In the post-redesign window that flips to 70% natural-language: full questions and multi-clause asks, median 8 words, up to 35 &mdash; the input space the old keyword box couldn't touch. <span style="color:var(--muted)">(Directional &mdash; the older corpus lacks timestamps.)</span></p>
-    <p>And it held up to the harder asks: a typo'd bilingual query naming 聯電 came back titled &ldquo;&hellip;for UMC&rdquo;; a 28-word TSMC-vs-Intel paragraph distilled to &ldquo;Super Power Rail vs PowerVia&rdquo;; OCS expanded to Optical Circuit Switching. Mid-window, median query length grew 48.5 &rarr; 60 characters &mdash; they kept handing it more. <span style="color:var(--muted)">(Titles prove it parsed and scoped intent; report-body quality is the separate eval axis.)</span></p>
+    <p>Adoption isn't a line going up. It's people changing how they work. Every figure below is pulled from the query logs.</p>
+    <p><b>The way they ask changed, and it read them right.</b> The broader search history skews 87% keyword: the habit of a box that only took terms. In the post-redesign window that flips to 70% natural-language: full questions and multi-clause asks, median 8 words, up to 35. That's the input space the old keyword box couldn't touch. <span style="color:var(--muted)">(Directional: the older corpus lacks timestamps.)</span></p>
+    <p>And it held up to the harder asks: a typo'd bilingual query naming 聯電 came back titled &ldquo;&hellip;for UMC&rdquo;; a 28-word TSMC-vs-Intel paragraph distilled to &ldquo;Super Power Rail vs PowerVia&rdquo;; OCS expanded to Optical Circuit Switching. Mid-window, median query length grew 48.5 &rarr; 60 characters, and they kept handing it more. <span style="color:var(--muted)">(Titles prove it parsed and scoped intent; report-body quality is the separate eval axis.)</span></p>
   </div></div>
   <!-- ===== ANCHOR 5: FLIP ===== -->
 <section class="anchor" id="anchor-flip">
 <style>
   #anchor-flip{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
-  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start;}
+  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:36px;justify-content:flex-start;align-items:flex-start;}
   #anchor-flip .fl-option{flex:0 1 680px;max-width:680px;min-width:0;}
   #anchor-flip .fl-eyebrow{font:500 11px var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-flip .fl-figure{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px 22px;}
@@ -2665,7 +2692,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="fl-wrap">
   <article class="fl-option" id="fl-optA">
-    <p class="fl-eyebrow">The visual — before / after mix</p>
+    <p class="fl-eyebrow">The visual: before / after mix</p>
     <div class="fl-figure fl-figure-a">
       <div class="fl-bar-row fl-row-1">
         <div class="fl-row-head"><span class="fl-row-title">Broad search history</span><span class="fl-row-sub">n=282 · no timestamps</span></div>
@@ -2678,7 +2705,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="fl-legend"><span class="fl-legend-item"><span class="fl-dot fl-dot-kw"></span><span class="fl-legend-name">Keyword</span><span class="fl-legend-val">30%</span></span><span class="fl-legend-item"><span class="fl-dot fl-dot-nl"></span><span class="fl-legend-name">Natural-language</span><span class="fl-legend-val">70%</span></span></div>
       </div>
     </div>
-    <p class="fl-caption">The broad search-history corpus (282 queries) carries no timestamps, so this "before" is directional — a proxy, not a dated baseline — set against the timestamped 92-query post-redesign window.</p>
+    <p class="fl-caption">The broad search-history corpus (282 queries) carries no timestamps, so this "before" is directional (a proxy, not a dated baseline) set against the timestamped 92-query post-redesign window.</p>
   </article>
 </div>
 </section>
@@ -2720,7 +2747,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="qt-options">
   <div class="qt-option qt-option-a">
-    <p class="qt-eyebrow qt-option-eyebrow">The visual — three pairs, raw → scoped</p>
+    <p class="qt-eyebrow qt-option-eyebrow">The visual: three pairs, raw → scoped</p>
     <div class="qt-figure">
       <div class="qt-pairs">
         <div class="qt-pair">
@@ -2743,7 +2770,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </div>
       </div>
     </div>
-    <p class="qt-caption">Three words or three sentences — the system doesn't need much to know exactly what report you meant.</p>
+    <p class="qt-caption">Three words or three sentences: the system doesn't need much to know exactly what report you meant.</p>
   </div>
 </div>
 </section>
@@ -2752,13 +2779,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <p><b>It ran on real work, weekdays only.</b> Zero weekend queries; all inside Taiwan business hours, twin peaks at 8am and 3pm. A working tool, not a curiosity &mdash; no claim about how they plan a week, just when the queries land. Top line: <b>~0.5 &rarr; ~5.1 queries/day</b> (internal &rarr; live), ~8.4 per active day, a ~10&times; step held for three weeks.</p>
+    <p><b>It ran on real work, weekdays only.</b> Zero weekend queries; all inside Taiwan business hours, twin peaks at 8am and 3pm. A working tool, not a curiosity: no claim about how they plan a week, just when the queries land. Top line: <b>~0.5 &rarr; ~5.1 queries/day</b> (internal &rarr; live), ~8.4 per active day, a ~10&times; step held for three weeks.</p>
   </div></div>
   <!-- ===== ANCHOR 4: HEATMAP ===== -->
 <section class="anchor" id="anchor-heatmap">
 <style>
 #anchor-heatmap{font-family:var(--font-body);color:var(--body);background:var(--canvas);}
-#anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:center;align-items:flex-start;}
+#anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:flex-start;align-items:flex-start;}
 #anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:320px;}
 #anchor-heatmap .hm-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
 #anchor-heatmap .hm-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;line-height:1.55;margin:22px 0 0;}
@@ -2802,7 +2829,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="hm-wrap">
   <div class="hm-option">
-    <p class="hm-eyebrow">The visual — weekday + hour strips</p>
+    <p class="hm-eyebrow">The visual: weekday + hour strips</p>
     <div class="hm-figure">
       <div class="hm-strip-block">
         <p class="hm-striplabel">Weekday · Mon–Sun</p>
@@ -2836,7 +2863,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </div>
       </div>
     </div>
-    <p class="hm-caption">Weekday and hour are each real marginal totals from timestamped queries (n=92) — shown as two 1‑D strips, not a measured joint weekday×hour matrix.</p>
+    <p class="hm-caption">Weekday and hour are each real marginal totals from timestamped queries (n=92), shown as two 1‑D strips, not a measured joint weekday×hour matrix.</p>
   </div>
 </div>
 </section>
@@ -2845,14 +2872,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <p><b>The business this design carries.</b> The foundry account that runs its research through this redesign is <b>82% of booked revenue</b> &mdash; a six-figure, multi-year enterprise seat. Behind it sits an open pipeline of roughly 2.4&times; booked, led by a deal with another top-5 foundry &mdash; and every one of those demos runs on the redesigned product. Three weeks after launch, the anchor account moved to org-wide LDAP access with departmental token budgets &mdash; the expansion motion that turns concentration from risk into leverage.</p>
-    <p class="gal-pm">Shown as ratios by design &mdash; contract values are confidential, and ARR isn't derivable from the CRM anyway (no billing-frequency or renewal fields). Share-of-booked and the pipeline multiple are the honest, publishable forms. Usage signals remain team aggregates; the final acceptance milestone is still ahead &mdash; booked, not banked.</p>
+    <p><b>The business this design carries.</b> The foundry account that runs its research through this redesign is <b>82% of booked revenue</b> (a six-figure, multi-year enterprise seat). Behind it sits an open pipeline of roughly 2.4&times; booked, led by a deal with another top-5 foundry. Every one of those demos runs on the redesigned product. Three weeks after launch, the anchor account moved to org-wide LDAP access with departmental token budgets: the expansion motion that turns concentration from risk into leverage.</p>
+    <p class="gal-pm">Shown as ratios by design: contract values are confidential, and ARR isn't derivable from the CRM anyway (no billing-frequency or renewal fields). Share-of-booked and the pipeline multiple are the honest, publishable forms. Usage signals remain team aggregates; the final acceptance milestone is still ahead: booked, not banked.</p>
   </div></div>
   <!-- ===== ANCHOR 7: EXPANSION ===== -->
 <section class="anchor" id="anchor-expand">
 <style>
   #anchor-expand{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
-  #anchor-expand .ex-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start;}
+  #anchor-expand .ex-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:flex-start;align-items:flex-start;}
   #anchor-expand .ex-option{flex:0 1 680px;max-width:680px;min-width:0;}
   #anchor-expand .ex-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-expand .ex-figure{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px;}
@@ -2915,7 +2942,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="ex-wrap">
 
   <article class="ex-option" id="ex-optA">
-    <p class="ex-eyebrow">The visual — revenue concentration</p>
+    <p class="ex-eyebrow">The visual: revenue concentration</p>
     <div class="ex-figure ex-figure-a">
       <div class="ex-a-headline"><span class="ex-a-num">82%</span></div>
       <p class="ex-a-sub">of booked revenue runs its research through this redesign</p>
@@ -2931,26 +2958,26 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <span class="ex-legend-total">shares of booked revenue</span>
       </div>
     </div>
-    <p class="ex-caption">One account &mdash; the one this redesign serves &mdash; is 82% of booked revenue. At that concentration, the research experience isn&rsquo;t a feature; it&rsquo;s the business.</p>
+    <p class="ex-caption">One account (the one this redesign serves) is 82% of booked revenue. At that concentration, the research experience isn&rsquo;t a feature; it&rsquo;s the business.</p>
   </article>
 
 </div>
 </section>
 </div>
 
-<div class="cs-sechead"><span class="cs-sec-eyebrow"><b>05</b> · Learnings</span></div>
+<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow"><b>05</b> · Learnings</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">The 28% that still bugs me.</h3>
-    <p>26 of 92 queries were re-asks &mdash; the same intent, reworded, run again; only 66 of the 92 were distinct questions. Some is healthy exploration. But the logs show a sharper cause: <b>near-identical queries came back with different reports.</b> When the same question doesn't reliably return the same answer, re-asking isn't curiosity &mdash; it's the user fishing for the output they knew was possible.</p>
-    <p><b>The next bet:</b> surface the interpretation <i>before</i> the answer &mdash; show the user how the assistant parsed the question, let them steer it, and anchor the same intent to a consistent report. Turn a silent re-ask into a visible, one-step correction.</p>
+    <p>26 of 92 queries were re-asks: the same intent, reworded, run again; only 66 of the 92 were distinct questions. Some is healthy exploration. But the logs show a sharper cause: <b>near-identical queries came back with different reports.</b> When the same question doesn't reliably return the same answer, re-asking isn't curiosity: it's the user fishing for the output they knew was possible.</p>
+    <p><b>The next bet:</b> surface the interpretation <i>before</i> the answer, show the user how the assistant parsed the question, let them steer it, and anchor the same intent to a consistent report. Turn a silent re-ask into a visible, one-step correction.</p>
   </div></div>
   <!-- ===== ANCHOR 6: RE-ASK ===== -->
 <section class="anchor" id="anchor-reask">
 <style>
   #anchor-reask{font-family:var(--font-body);color:var(--body);}
-  #anchor-reask .ra-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:center;}
+  #anchor-reask .ra-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:flex-start;}
   #anchor-reask .ra-figure{flex:0 1 680px;max-width:680px;min-width:0;margin:0;display:flex;flex-direction:column;}
   #anchor-reask .ra-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-reask .ra-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:26px 24px;}
@@ -2995,7 +3022,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="ra-wrap">
   <figure class="ra-figure">
-    <div class="ra-eyebrow">The visual — same question, different reports</div>
+    <div class="ra-eyebrow">The visual: same question, different reports</div>
     <div class="ra-panel ra-panel-a">
       <svg viewBox="0 0 480 300" role="img" aria-label="The same MRAM-aerospace query, asked five times, fans out to two different report titles">
         <text class="ra-lbl" x="16" y="102">Query &middot; asked &times;5</text>
@@ -3019,7 +3046,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <text class="ra-tag-accent" x="144" y="288">Same question &middot; different reports</text>
       </svg>
     </div>
-    <figcaption class="ra-caption">The same MRAM-aerospace question, asked five times, came back as two different reports &mdash; proof the old pipeline had no memory of what it had already told you.</figcaption>
+    <figcaption class="ra-caption">The same MRAM-aerospace question, asked five times, came back as two different reports: proof the old pipeline had no memory of what it had already told you.</figcaption>
   </figure>
 </div>
 </section>
@@ -3029,6 +3056,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <footer class="cs-foot">
   <span><a href="/">&larr; Joanna Yen</a></span>
   <span>Deeli case study · shipped Jun 2026 · every figure verified from live query logs</span>
+  <span><a href="#top">Back to top &uarr;</a></span>
 </footer>
 
 </body>

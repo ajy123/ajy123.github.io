@@ -110,6 +110,60 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-foot a{color:var(--ink);text-decoration:none;}
 .cs-foot a:hover{color:var(--accent-deep);}
 .gal-block + .gal-block{border-top:none;}
+
+/* ---- FIX 4: five-decisions skim rail ---- */
+.cs-rail{max-width:1120px;margin:0 auto;padding:34px 40px 6px;}
+.cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-rail ol{list-style:none;margin:0;padding:0;max-width:68ch;}
+.cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
+.cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
+.cs-rail a{display:flex;align-items:baseline;gap:14px;padding:10px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
+.cs-rail a:hover{color:var(--accent-deep);}
+.cs-rail a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+.cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
+@media(max-width:560px){.cs-rail-sec{display:none;}}
+#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:64px;}
+
+/* ---- FIX 2: design-principles strip ---- */
+.cs-principles{max-width:1120px;margin:6px auto 26px;padding:0 40px;}
+.cs-principles-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+.cs-principles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--hairline-faint);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);overflow:hidden;max-width:760px;}
+.cs-principles-grid>div{background:var(--surface-warm);padding:14px 16px;}
+.cs-principles-grid b{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.cs-principles-grid span{font-size:13px;line-height:1.5;color:var(--muted-strong);}
+@media(max-width:640px){.cs-principles-grid{grid-template-columns:1fr;}}
+
+/* ---- FIX 1: considered/chose/because decision rows ---- */
+.cs-decision{max-width:1120px;margin:14px auto 4px;padding:0 40px;}
+.cs-decision dl{max-width:68ch;margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
+.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
+.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
+.cs-decision dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--body);}
+.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
+@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
+
+/* ---- FIX 3: one call, on the record (citation legend) ---- */
+.cs-onrecord{max-width:1120px;margin:8px auto 0;padding:0 40px 8px;}
+.cs-onrecord-inner{max-width:68ch;}
+.cs-onrecord-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-onrecord-goal{font-size:14.5px;line-height:1.55;color:var(--body);margin:0 0 14px;}
+.cs-onrecord-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 14px;}
+.cs-opt{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 14px;}
+.cs-opt-name{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-strong);margin:0 0 10px;}
+.cs-opt-mock{position:relative;height:56px;background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:8px;margin-bottom:10px;}
+.cs-mock-legend{display:flex;gap:4px;margin-bottom:6px;}
+.cs-swatch{width:22px;height:6px;border-radius:2px;display:inline-block;}
+.cs-sw-a{background:var(--muted-strong);} .cs-sw-b{background:var(--accent);} .cs-sw-c{background:var(--ghost);}
+.cs-mock-lines{display:block;height:22px;background:repeating-linear-gradient(to bottom,var(--hairline-faint) 0 1px,transparent 1px 8px);margin-top:4px;}
+.cs-opt-mock-b .cs-mock-lines{margin-top:2px;height:30px;}
+.cs-mock-tip{position:absolute;right:8px;bottom:6px;font-family:var(--font-mono);font-size:9px;color:var(--muted);background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:2px 6px;}
+.cs-opt-note{font-size:12.5px;line-height:1.5;color:var(--muted-strong);margin:0;}
+.cs-onrecord-verdict{font-size:14.5px;line-height:1.6;color:var(--body);margin:0 0 8px;}
+.cs-onrecord-verdict b{color:var(--ink);}
+.cs-verdict-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;transform:translateY(-1px);}
+.cs-onrecord-src{font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--muted);margin:0;}
+@media(max-width:600px){.cs-onrecord-opts{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -130,6 +184,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <div><b>Measured</b>First 3 weeks live, real customer logs</div>
   </div>
 </header>
+
+<nav class="cs-rail" aria-label="Five design decisions">
+  <p class="cs-rail-title">The five calls, in fifteen seconds</p>
+  <ol>
+    <li><a href="#the-fork"><span class="cs-rail-num">01</span> Stop optimizing search — return the synthesis <span class="cs-rail-sec">Process</span></a></li>
+    <li><a href="#move-1"><span class="cs-rail-num">02</span> Take the question; show the interpretation as footnotes, never rewrites <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-2"><span class="cs-rail-num">03</span> Aim the report with chips, not a form <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-3a"><span class="cs-rail-num">04</span> Replace the spinner with agents narrating their sources <span class="cs-rail-sec">Solution</span></a></li>
+    <li><a href="#move-3b"><span class="cs-rail-num">05</span> Make every claim inspectable — citations, legend, drill-down <span class="cs-rail-sec">Solution</span></a></li>
+  </ol>
+</nav>
 
 <div class="cs-sechead"><span class="cs-sec-eyebrow"><b>01</b> · Problem</span></div>
 <div class="gal-block">
@@ -237,7 +302,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 
 <div class="cs-sechead"><span class="cs-sec-eyebrow"><b>02</b> · Process</span></div>
-<div class="gal-block">
+<div class="gal-block" id="the-fork">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h3 class="gal-headline">Interviews told me the goal. An LLM found the pattern.</h3>
@@ -366,9 +431,26 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-lede-p">The fork from Process &mdash; <i>stop returning documents, return the synthesis</i> &mdash; only holds if three things become true: the system reads intent, shapes the output to the asker, and shows its work. Each move below took the next-ranked pain from the frequency&nbsp;&times;&nbsp;impact list. The embeds are live recreations of the shipped UI &mdash; try them.</p>
   </div></div>
 
-  <div class="gal-copy"><div class="gal-copy-inner gal-move">
+  <div class="cs-principles" role="list" aria-label="Design principles">
+    <p class="cs-principles-title">The rules every screen followed</p>
+    <div class="cs-principles-grid">
+      <div role="listitem"><b>Forest green = commitment, only.</b><span>It appears only when the system is ready to act. Watch the submit button below.</span></div>
+      <div role="listitem"><b>Amber = AI-touched, only.</b><span>One color reserved for AI-influenced regions, so provenance reads at a glance.</span></div>
+      <div role="listitem"><b>Not a chatbot.</b><span>No bubbles, no typewriter streaming, no thread &mdash; a research instrument, not a conversation.</span></div>
+      <div role="listitem"><b>Calm at entry, dense at the report.</b><span>The landing asks one question; density is earned where the analyst is paying for it.</span></div>
+    </div>
+  </div>
+
+  <div class="gal-copy" id="move-1"><div class="gal-copy-inner gal-move">
     <p><b>Move 1 &mdash; take the question, not the keyword.</b> The intent gap topped the ranking, so it got the first move. I replaced the keyword field with an input that accepts whatever a researcher actually has &mdash; a full question, a terse fragment, a bilingual ask &mdash; and let ten sub-agents route it, instead of making the user translate themselves into search syntax. The submit control stays quiet until there&rsquo;s a real ask: forest green is the product&rsquo;s commitment color, and it appears only when there&rsquo;s something to commit to. First three weeks live: 70% of queries were shapes the old box couldn&rsquo;t parse; only 8 of 92 passed through unchanged.</p>
   </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A chat thread — messages, history, back-and-forth.</dd></div>
+      <div><dt>Chose</dt><dd>One box, with the interpretation shown as footnotes: arm¹ resolves to a numbered chip naming what the system understood.</dd></div>
+      <div><dt>Because</dt><dd>Silently rewriting a researcher's query breaks trust — the reading had to be visible without touching their words.</dd></div>
+    </dl>
+  </div>
   <div class="gal-widget-wrap">
     <div class="gal-widget-eyebrow">Move 1 · the shipped input &mdash; interactive</div>
     <section class="sol-widget" id="sol-w1">
@@ -790,9 +872,16 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
   </div>
 
-  <div class="gal-copy"><div class="gal-copy-inner gal-move">
-    <p><b>Move 2 &mdash; ask back before answering.</b> Same keyword, different intent was the next-ranked pain: a capacity planner and a partnerships lead don&rsquo;t want the same report. Instead of guessing, the system asks one question back &mdash; which area, how deep &mdash; as tappable chips, not a form. One tap aims the whole report. The template stopped being the shape of the answer; the question did.</p>
+  <div class="gal-copy" id="move-2"><div class="gal-copy-inner gal-move">
+    <p><b>Move 2 &mdash; chips, not a form.</b> Same keyword, different intent was the next-ranked pain: a capacity planner and a partnerships lead don&rsquo;t want the same report. Instead of guessing, the system asks one question back &mdash; which area, how deep &mdash; as tappable chips. One tap aims the whole report. The template stopped being the shape of the answer; the question did.</p>
   </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A free-text follow-up question from the assistant.</dd></div>
+      <div><dt>Chose</dt><dd>Three tappable focus chips, plus a dashed 'I'll rewrite' escape hatch.</dd></div>
+      <div><dt>Because</dt><dd>Mid-task engineers won't type a paragraph about scope — chips make aiming a one-tap act, and the escape keeps control with the user.</dd></div>
+    </dl>
+  </div>
   <div class="gal-widget-wrap">
     <div class="gal-widget-eyebrow">Move 2 · clarification state &mdash; interactive</div>
     <section class="sol-widget" id="sol-w2">
@@ -1193,9 +1282,16 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
   </div>
 
-  <div class="gal-copy"><div class="gal-copy-inner gal-move">
-    <p><b>Move 3 &mdash; show the work.</b> Unsourced numbers were rare but fatal &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn. So the pipeline became visible in both directions. While generating, each named agent reports what it&rsquo;s touching &mdash; 145 patents in a cluster, 312 papers matched &mdash; never a spinner. After, every claim carries a citation you can open, scored against a seven-dimension eval, and any term drills down into its own scoped report. 91 of 92 live queries produced a report a researcher could audit before staking a decision on it.</p>
+  <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
+    <p><b>Move 3 &mdash; narration, not a spinner.</b> Unsourced numbers were rare but fatal &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn. So the pipeline became visible in both directions. While generating, each named agent reports what it&rsquo;s touching &mdash; 145 patents in a cluster, 312 papers matched &mdash; never a spinner. After, every claim carries a citation you can open, scored against a seven-dimension eval, and any term drills down into its own scoped report. 91 of 92 live queries produced a report a researcher could audit before staking a decision on it.</p>
   </div></div>
+  <div class="cs-decision">
+    <dl>
+      <div><dt>Considered</dt><dd>A progress bar.</dd></div>
+      <div><dt>Chose</dt><dd>Named agents narrating what they touch — 'USPTO · 145 patents in cluster A.'</dd></div>
+      <div><dt>Because</dt><dd>A percentage is theater you can't verify. Naming the sources turns the wait itself into evidence.</dd></div>
+    </dl>
+  </div>
   <div class="gal-widget-wrap">
     <div class="gal-widget-eyebrow">Move 3a · generating panel &mdash; plays on scroll, replayable</div>
     <section class="sol-widget" id="sol-w3">
@@ -1736,7 +1832,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </script>
 </section>
   </div>
-  <div class="gal-widget-wrap">
+  <div class="gal-widget-wrap" id="move-3b">
     <div class="gal-widget-eyebrow">Move 3b · sourced report &mdash; hover the citations</div>
     <section class="sol-widget" id="sol-w4">
   <style>
@@ -2488,6 +2584,27 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   })();
   </script>
 </section>
+  </div>
+</div>
+
+<div class="cs-onrecord" id="on-record">
+  <div class="cs-onrecord-inner">
+    <p class="cs-onrecord-title">One call, on the record — the citation legend</p>
+    <p class="cs-onrecord-goal">Readers needed citation provenance — external, customer-internal, or Deeli-generated — at a glance, without hovering every superscript.</p>
+    <div class="cs-onrecord-opts">
+      <div class="cs-opt">
+        <p class="cs-opt-name">Option 1 · persistent legend</p>
+        <div class="cs-opt-mock"><span class="cs-mock-legend"><i class="cs-swatch cs-sw-a"></i><i class="cs-swatch cs-sw-b"></i><i class="cs-swatch cs-sw-c"></i></span><span class="cs-mock-lines"></span></div>
+        <p class="cs-opt-note">Instantly discoverable; permanent chrome in the report header.</p>
+      </div>
+      <div class="cs-opt">
+        <p class="cs-opt-name">Option 2 · sources tooltip</p>
+        <div class="cs-opt-mock cs-opt-mock-b"><span class="cs-mock-lines"></span><span class="cs-mock-tip">Sources ▾</span></div>
+        <p class="cs-opt-note">Lighter report, scales better; invisible until you go looking.</p>
+      </div>
+    </div>
+    <p class="cs-onrecord-verdict"><span class="cs-verdict-dot" aria-hidden="true"></span><b>Shipped Option 1.</b> Half the reviewers personally preferred Option 2's lighter hierarchy — and still voted 1. The customer hires continuously: there is always a first-time user in the room, and a legend you have to discover isn't a legend. Their onboarding reality beat our aesthetics.</p>
+    <p class="cs-onrecord-src">From the design-review thread, July 2026 — options, vote, and reasoning on the record.</p>
   </div>
 </div>
 

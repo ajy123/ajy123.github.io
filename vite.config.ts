@@ -8,7 +8,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        "deeli-case-study": resolve(__dirname, "deeli-case-study.html"),
+        deeli: resolve(__dirname, "deeli/index.html"),
       },
     },
   },

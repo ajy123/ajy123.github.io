@@ -207,27 +207,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
 @media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
 
-/* ---- FIX 3: one call, on the record (citation legend) ---- */
-.cs-onrecord{margin:8px 0 0;padding:0 40px 8px;}
-.cs-onrecord-inner{max-width:68ch;}
-.cs-onrecord-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-onrecord-goal{font-size:14.5px;line-height:1.55;color:var(--body);margin:0 0 14px;}
-.cs-onrecord-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 14px;}
-.cs-opt{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 14px;}
-.cs-opt-name{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-strong);margin:0 0 10px;}
-.cs-opt-mock{position:relative;height:56px;background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:8px;margin-bottom:10px;}
-.cs-mock-legend{display:flex;gap:4px;margin-bottom:6px;}
-.cs-swatch{width:22px;height:6px;border-radius:2px;display:inline-block;}
-.cs-sw-a{background:var(--muted-strong);} .cs-sw-b{background:var(--accent);} .cs-sw-c{background:var(--ghost);}
-.cs-mock-lines{display:block;height:22px;background:repeating-linear-gradient(to bottom,var(--hairline-faint) 0 1px,transparent 1px 8px);margin-top:4px;}
-.cs-opt-mock-b .cs-mock-lines{margin-top:2px;height:30px;}
-.cs-mock-tip{position:absolute;right:8px;bottom:6px;font-family:var(--font-mono);font-size:9px;color:var(--muted);background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:2px;padding:2px 6px;}
-.cs-opt-note{font-size:12.5px;line-height:1.5;color:var(--muted-strong);margin:0;}
-.cs-onrecord-verdict{font-size:14.5px;line-height:1.6;color:var(--body);margin:0 0 8px;}
-.cs-onrecord-verdict b{color:var(--ink);}
-.cs-verdict-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;transform:translateY(-1px);}
-.cs-onrecord-src{font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--muted);margin:0;}
-@media(max-width:600px){.cs-onrecord-opts{grid-template-columns:1fr;}}
 </style>
 </head>
 <body id="top">
@@ -2025,7 +2004,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <details class="cs-prototype">
     <summary>Sourced report</summary>
   <div class="gal-widget-wrap">
-    <div class="gal-widget-eyebrow">Sourced report · hover the citations</div>
+    <div class="gal-widget-eyebrow">Sourced report · open a citation or drill into a term</div>
     <section class="sol-widget" id="sol-w4">
   <style>
     #sol-w4{
@@ -2783,26 +2762,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
   </div>
   </details>
-</div>
-
-<div class="cs-onrecord" id="on-record">
-  <div class="cs-onrecord-inner">
-    <p class="cs-onrecord-title">Discoverability beat aesthetic preference</p>
-    <p class="cs-onrecord-goal">Citation provenance had to be visible on first use, without requiring researchers to hover every superscript.</p>
-    <div class="cs-onrecord-opts">
-      <div class="cs-opt">
-        <p class="cs-opt-name">Option 1 · persistent legend</p>
-        <div class="cs-opt-mock"><span class="cs-mock-legend"><i class="cs-swatch cs-sw-a"></i><i class="cs-swatch cs-sw-b"></i><i class="cs-swatch cs-sw-c"></i></span><span class="cs-mock-lines"></span></div>
-        <p class="cs-opt-note">Instantly discoverable; permanent chrome in the report header.</p>
-      </div>
-      <div class="cs-opt">
-        <p class="cs-opt-name">Option 2 · sources tooltip</p>
-        <div class="cs-opt-mock cs-opt-mock-b"><span class="cs-mock-lines"></span><span class="cs-mock-tip">Sources ▾</span></div>
-        <p class="cs-opt-note">Lighter report, scales better; invisible until you go looking.</p>
-      </div>
-    </div>
-    <p class="cs-onrecord-verdict"><b>Shipped Option 1.</b> Reviewers preferred the lighter tooltip, but a continuously growing customer team would have to discover it. Onboarding reality won.</p>
-  </div>
 </div>
 
 <div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>

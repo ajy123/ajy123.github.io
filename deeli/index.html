@@ -113,15 +113,27 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:560px){.cs-rail-sec{display:none;}}
 
 /* ---- FIX 5: page shell matching the landing .portfolio-shell geometry ---- */
-/* Same numbers as src/index.css: 1200px shell, 40px page padding, 280px rail,
-   64px gap. .cs-rail-col is an in-flow flex spacer the same size as the
-   visible rail; .cs-side is position:fixed with no left/right set, so its
-   used left value is its static position — i.e. exactly where .cs-rail-col
-   sits in the flex row. That's the same trick .profile-sticky relies on. */
-.cs-shell{display:flex;max-width:1200px;margin:0 auto;padding:0 40px;gap:64px;}
+/* Same numbers as src/index.css: 40px page padding, 280px rail, 64px gap.
+   .cs-rail-col is an in-flow flex spacer the same size as the visible rail;
+   .cs-side is position:fixed with no left/right set, so its used left value
+   is its static position — i.e. exactly where .cs-rail-col sits in the flex
+   row. That's the same trick .profile-sticky relies on.
+   No max-width/centering on the shell itself — same fix as .portfolio-shell:
+   that used to slide the rail inward as the viewport widened past 1280px.
+   The rail sits at a constant 40px gutter (fixed-width flex item, no auto
+   margins); only .cs-content gets a max-width + auto margins so it's the one
+   that centers in the space right of the rail, matching .work-canvas. */
+.cs-shell{display:flex;padding:0 40px;gap:64px;}
 .cs-rail-col{position:relative;width:280px;flex-shrink:0;}
 .cs-content{flex:1 1 auto;min-width:0;}
 @media(max-width:999px){.cs-rail-col{display:none;}}
+/* Rail/content geometry only needs to cap+center once the rail is visible
+   (≥1000px) — mirrors .work-canvas's max-width/margin and, in the narrower
+   band, the src/index.css 861–1100px rail-narrowing step (240px rail/40px
+   gap), restricted to the range where this page actually shows a rail, so
+   the two pages sit at identical x at every shared width. */
+@media(min-width:1000px){.cs-content{max-width:776px;margin:0 auto;}}
+@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}
 
 .cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;box-shadow:inset -1px 0 var(--hairline-faint);}
 .cs-side ol{margin-top:4px;}

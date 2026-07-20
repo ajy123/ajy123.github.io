@@ -523,14 +523,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
       background:var(--d-surface);
       border-radius:8px;
-      padding:28px;
+      padding:60px 42px;
       font-family:var(--d-font);
       color:var(--d-text);
       box-sizing:border-box;
     }
     #sol-w1 *{ box-sizing:border-box; font-family:var(--d-font); }
 
-    #sol-w1 .sol-w1-inner{ max-width:600px; margin:0 auto; }
+    #sol-w1 .sol-w1-inner{ max-width:560px; margin:0 auto; }
 
     #sol-w1 .sol-w1-sr-only{
       position:absolute; width:1px; height:1px; padding:0; margin:-1px;
@@ -540,11 +540,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     /* Sanctioned center-aligned entry surface */
     #sol-w1 .sol-w1-heading{
       font-size:24px; font-weight:600; line-height:1.2; letter-spacing:-0.01em;
-      color:var(--d-text); text-align:center; margin:0 0 8px;
-    }
-    #sol-w1 .sol-w1-sub{
-      font-size:13px; font-weight:400; line-height:1.5; color:var(--d-sub);
-      text-align:center; margin:0 0 24px;
+      color:var(--d-text); text-align:center; margin:0 0 46px;
     }
 
     /* Search card */
@@ -564,12 +560,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w1 .sol-w1-form{
       display:flex;
       flex-direction:column;
+      justify-content:space-between;
       min-height:96px;
+      cursor:text;
     }
     #sol-w1 .sol-w1-card.is-resolved .sol-w1-form{ display:none; }
 
     #sol-w1 .sol-w1-input{
-      flex:1 1 auto;
+      flex:0 0 auto;
       width:100%;
       border:none;
       outline:none;
@@ -578,7 +576,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       font-weight:400;
       line-height:1.4;
       color:var(--d-text);
-      padding:2px 2px 8px;
+      padding:4px 2px 0;
     }
     #sol-w1 .sol-w1-input::placeholder{ color:var(--d-sub); }
 
@@ -698,7 +696,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       flex-wrap:wrap;
       justify-content:center;
       gap:8px;
-      margin:16px 0 0;
+      margin:28px 0 0;
       padding:0;
       list-style:none;
     }
@@ -716,12 +714,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     }
     #sol-w1 .sol-w1-chip:hover{ background:var(--d-surface-low); }
 
-    /* caption */
-    #sol-w1 .sol-w1-caption{
-      font-size:12px; font-weight:400; line-height:1.45; color:var(--d-sub);
-      text-align:center; margin:20px 0 0;
-    }
-
     /* focus-visible */
     #sol-w1 button:focus-visible{
       outline:1px solid var(--d-primary);
@@ -730,6 +722,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     }
     #sol-w1 .sol-w1-submit:focus-visible{
       outline-offset:-2px;
+    }
+
+    @media (max-width:560px){
+      #sol-w1{ padding:40px 20px; }
+      #sol-w1 .sol-w1-heading{ margin:0 0 32px; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -746,7 +743,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="sol-w1-inner">
     <h2 class="sol-w1-heading">What would you like to research?</h2>
-    <p class="sol-w1-sub">Ask about any technology, market, or company.</p>
 
     <div class="sol-w1-card" id="sol-w1-card">
       <form class="sol-w1-form" id="sol-w1-form" novalidate>
@@ -755,7 +751,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           type="text"
           id="sol-w1-input"
           class="sol-w1-input"
-          placeholder="Ask about a technology, patent, or market..."
+          placeholder="Start with a specific technology, patent, or company"
           autocomplete="off"
         />
         <div class="sol-w1-actions">
@@ -787,7 +783,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       <button type="button" class="sol-w1-chip" data-query="silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?</button>
     </div>
 
-    <p class="sol-w1-caption">Interactive recreation: type or tap a real customer query.</p>
   </div>
 
   <script>
@@ -892,6 +887,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
     input.addEventListener('input', updateSubmitState);
 
+    // The input no longer stretches over the card's empty area, so clicks on
+    // that dead space should still land in the field.
+    form.addEventListener('click', function(e){
+      if(e.target === form) input.focus();
+    });
+
     card.addEventListener('focusin', function(){
       if(!card.classList.contains('is-resolved')){
         card.classList.add('is-focused');
@@ -982,20 +983,32 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       text-decoration:underline;
       text-decoration-thickness:1px;
       text-underline-offset:3px;
-      text-decoration-color:var(--d-sub);
+      text-decoration-color:rgba(25,28,29,.45);
+      transition:text-decoration-color var(--d-fast) var(--d-ease);
     }
+    #sol-w2 .sol-w2-entity.is-off{ text-decoration-color:transparent; }
     #sol-w2 .sol-w2-query sup{
       font-size:9px;
       font-weight:600;
       line-height:0;
       vertical-align:super;
       color:var(--d-text);
+      transition:opacity var(--d-fast) var(--d-ease);
     }
+    #sol-w2 .sol-w2-query sup.is-off{ opacity:0; }
     #sol-w2 .sol-w2-query sup.sol-w2-fn2{
       opacity:0;
       transition:opacity var(--d-fast) var(--d-ease);
     }
     #sol-w2 .sol-w2-query sup.sol-w2-fn2.is-on{ opacity:1; }
+    #sol-w2 .sol-w2-market{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+      text-decoration-color:transparent;
+      transition:text-decoration-color var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-market.is-on{ text-decoration-color:rgba(25,28,29,.45); }
 
     /* Footnote chips (resolved entities) */
     #sol-w2 .sol-w2-footnotes{
@@ -1007,7 +1020,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w2 .sol-w2-fnchip{
       display:inline-flex;
       align-items:center;
-      gap:6px;
       background:var(--d-surface-low);
       border-radius:var(--d-r-sm);
       padding:4px 9px;
@@ -1016,10 +1028,56 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       letter-spacing:0.02em;
       line-height:1.3;
       color:var(--d-text);
+      transition:opacity var(--d-fast) var(--d-ease);
     }
     #sol-w2 .sol-w2-fnchip .sol-w2-fnnum{
       font-weight:600;
-      color:var(--d-sub);
+      color:#66666f;
+      margin-right:6px;
+    }
+    #sol-w2 .sol-w2-fnchip.is-leaving{ opacity:0; pointer-events:none; }
+    /* Close button: trails the label, grows in on hover. Full-height hit
+       target extends into the chip padding so it stays easy to click. */
+    #sol-w2 .sol-w2-fnx{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      align-self:stretch;
+      border:0;
+      background:none;
+      cursor:pointer;
+      color:#66666f;
+      width:0;
+      padding:0;
+      margin:-5px 0;
+      overflow:hidden;
+      opacity:0;
+      transform:scale(.6);
+      transition:width var(--d-fast) var(--d-ease), margin var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-fnx svg{ flex-shrink:0; }
+    #sol-w2 .sol-w2-fnchip:hover .sol-w2-fnx,
+    #sol-w2 .sol-w2-fnchip:focus-within .sol-w2-fnx{
+      width:24px;
+      margin-left:3px;
+      margin-right:-7px;
+      opacity:1;
+      transform:none;
+    }
+    #sol-w2 .sol-w2-fnx:hover{ color:var(--d-text); }
+    @media (hover: none){
+      #sol-w2 .sol-w2-fnx{
+        width:24px;
+        margin-left:2px;
+        margin-right:-7px;
+        opacity:.55;
+        transform:none;
+      }
+    }
+    #sol-w2 .sol-w2-fnx:focus-visible{
+      outline:1.5px solid var(--d-text);
+      outline-offset:-2px;
+      border-radius:4px;
     }
     #sol-w2 .sol-w2-fnchip[hidden]{ display:none; }
 
@@ -1178,6 +1236,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       color:var(--d-sub);
     }
 
+    #sol-w2 .sol-w2-sr-status{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+
     @media (prefers-reduced-motion: reduce){
       #sol-w2 *{
         transition:none !important;
@@ -1193,11 +1256,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="sol-w2-inner">
     <div class="sol-w2-card">
       <div class="sol-w2-panel" id="sol-w2-clarify">
-        <p class="sol-w2-query"><span class="sol-w2-entity">arm</span><sup>1</sup> robotics market<sup class="sol-w2-fn2" id="sol-w2-fn2" aria-hidden="true">2</sup></p>
-        <div class="sol-w2-footnotes">
-          <span class="sol-w2-fnchip"><span class="sol-w2-fnnum">1</span> Arm Holdings</span>
-          <span class="sol-w2-fnchip" id="sol-w2-fnchip2" hidden><span class="sol-w2-fnnum">2</span> <span id="sol-w2-fnchip2-label"></span></span>
+        <p class="sol-w2-query"><span class="sol-w2-entity" id="sol-w2-entity">arm</span><sup id="sol-w2-fn1" aria-hidden="true">1</sup> robotics <span class="sol-w2-market" id="sol-w2-market">market</span><sup class="sol-w2-fn2" id="sol-w2-fn2" aria-hidden="true">2</sup></p>
+        <div class="sol-w2-footnotes" aria-live="polite">
+          <span class="sol-w2-fnchip" id="sol-w2-fnchip1"><span class="sol-w2-fnnum">1</span> Arm Holdings<button type="button" class="sol-w2-fnx" id="sol-w2-fnx1" aria-label="Remove Arm Holdings clarification"><svg viewBox="0 0 8 8" width="8" height="8" fill="none" aria-hidden="true"><path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></span>
+          <span class="sol-w2-fnchip" id="sol-w2-fnchip2" hidden><span class="sol-w2-fnnum">2</span> <span id="sol-w2-fnchip2-label"></span><button type="button" class="sol-w2-fnx" id="sol-w2-fnx2" aria-label="Remove focus clarification"><svg viewBox="0 0 8 8" width="8" height="8" fill="none" aria-hidden="true"><path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></span>
         </div>
+        <span class="sol-w2-sr-status" id="sol-w2-status" role="status"></span>
 
         <p class="sol-w2-question" id="sol-w2-question">Focus the report on…?</p>
 
@@ -1234,11 +1298,20 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var clarifyPanel = root.querySelector('#sol-w2-clarify');
     var queuedPanel = root.querySelector('#sol-w2-queued');
     var fn2 = root.querySelector('#sol-w2-fn2');
+    var fn1 = root.querySelector('#sol-w2-fn1');
+    var entity = root.querySelector('#sol-w2-entity');
+    var fnchip1 = root.querySelector('#sol-w2-fnchip1');
+    var fnx1 = root.querySelector('#sol-w2-fnx1');
+    var fnx2 = root.querySelector('#sol-w2-fnx2');
+    var marketWord = root.querySelector('#sol-w2-market');
     var fnchip2 = root.querySelector('#sol-w2-fnchip2');
     var fnchip2Label = root.querySelector('#sol-w2-fnchip2-label');
     var adjustBtn = root.querySelector('#sol-w2-adjust');
+    var statusNode = root.querySelector('#sol-w2-status');
+    var FAST = parseFloat(getComputedStyle(root).getPropertyValue('--d-fast')) || 160;
 
     var selected = null;
+    var chip2HideTimer = null;
 
     function selectChip(chip, moveFocus){
       selected = chip;
@@ -1249,9 +1322,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       });
       if (moveFocus) chip.focus();
       // Second footnote: query gains superscript 2 + "2 <focus>" chip
+      window.clearTimeout(chip2HideTimer);
+      fnchip2.classList.remove('is-leaving');
       fn2.classList.add('is-on');
       fnchip2Label.textContent = chip.getAttribute('data-focus');
       fnchip2.hidden = false;
+      marketWord.classList.add('is-on');
       armSubmit(true);
     }
 
@@ -1262,8 +1338,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         c.tabIndex = i === 0 ? 0 : -1;
       });
       fn2.classList.remove('is-on');
-      fnchip2.hidden = true;
-      fnchip2Label.textContent = '';
+      marketWord.classList.remove('is-on');
+      // Fade the focus chip out the same way chip 1 leaves, then hide it
+      fnchip2.classList.add('is-leaving');
+      window.clearTimeout(chip2HideTimer);
+      chip2HideTimer = window.setTimeout(function(){
+        fnchip2.hidden = true;
+        fnchip2.classList.remove('is-leaving');
+        fnchip2Label.textContent = '';
+      }, FAST);
       armSubmit(false);
     }
 
@@ -1303,6 +1386,23 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     });
 
     rewriteBtn.addEventListener('click', clearSelection);
+
+    // Remove the entity clarification: chip, superscript, and underline fade together
+    fnx1.addEventListener('click', function(){
+      fnchip1.classList.add('is-leaving');
+      fn1.classList.add('is-off');
+      entity.classList.add('is-off');
+      window.setTimeout(function(){ fnchip1.hidden = true; fnchip1.classList.remove('is-leaving'); fn1.style.display = 'none'; }, FAST);
+      statusNode.textContent = 'Arm Holdings clarification removed';
+      if (!fnchip2.hidden && !fnchip2.classList.contains('is-leaving')) { fnx2.focus(); } else { chips[0].focus(); }
+    });
+
+    // Remove the focus clarification: same reset as "I'll rewrite"
+    fnx2.addEventListener('click', function(){
+      clearSelection();
+      statusNode.textContent = 'Focus clarification removed';
+      if (!fnchip1.hidden) { fnx1.focus(); } else { chips[0].focus(); }
+    });
 
     function swapPanels(fromEl, toEl, afterShow){
       fromEl.classList.add('sol-w2-enter');

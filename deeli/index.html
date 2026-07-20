@@ -1557,7 +1557,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       font-weight:500;
       letter-spacing:.02em;
       padding:5px 8px;
-      margin:6px 0 4px -8px;
+      margin:14px 0 0 -8px;
       border-radius:var(--d-r-sm);
       cursor:pointer;
       display:inline-flex;
@@ -1689,29 +1689,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       white-space:nowrap;
     }
 
-    /* ---------- End line ---------- */
-    #sol-w3 .w3-end{
-      font-size:13px;
-      line-height:1.5;
-      color:var(--d-text);
-      font-variant-numeric:tabular-nums;
-      margin:14px 0 0;
-      padding-top:13px;
-      border-top:1px solid var(--d-ghost);
-      opacity:0;
-      transform:translateY(4px);
-      transition:opacity var(--d-slow) var(--d-ease), transform var(--d-slow) var(--d-ease);
-    }
-    #sol-w3 .w3-end.is-visible{ opacity:1; transform:translateY(0); }
-
-    #sol-w3 .w3-caption{
-      max-width:600px;
-      margin:16px auto 0;
-      font-size:12px;
-      line-height:1.45;
-      color:var(--d-sub);
-    }
-
     @media (prefers-reduced-motion: reduce){
       #sol-w3 *{
         transition:none !important;
@@ -1732,14 +1709,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <span class="w3-stop-label">Stop</span>
       </button>
     </div>
-
-    <button type="button" class="w3-replay" aria-label="Replay the generating sequence">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M13.5 8a5.5 5.5 0 1 1-1.66-3.93" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        <path d="M13.5 2.5v3.3h-3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Replay
-    </button>
 
     <div class="w3-agents">
       <div class="w3-agent">
@@ -1817,10 +1786,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
     </div>
 
-    <p class="w3-end">Report assembled. 91 of 92 queries this month produced one.</p>
   </div>
 
-  <p class="w3-caption">Interactive recreation: the loading state names what it touches.</p>
+  <button type="button" class="w3-replay" aria-label="Replay the generating sequence prototype">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M13.5 8a5.5 5.5 0 1 1-1.66-3.93" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M13.5 2.5v3.3h-3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Replay
+  </button>
 
   <script>
   (function(){
@@ -1834,7 +1808,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var stopLabel = root.querySelector('.w3-stop-label');
     var replayBtn = root.querySelector('.w3-replay');
     var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
-    var endLine = root.querySelector('.w3-end');
 
     var INIT_MS = 450;      /* Initializing… before Scanning… */
     var SCAN_MS = 400;      /* Scanning… before first sub-row */
@@ -1903,7 +1876,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         }});
       });
       seq.push({ d: END_MS, fn: function(){
-        endLine.classList.add('is-visible');
         panel.classList.add('is-finished');
       }});
     }
@@ -1916,7 +1888,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           sub.classList.remove('is-in');
         });
       });
-      endLine.classList.remove('is-visible');
       panel.classList.remove('is-finished');
       stopBtn.classList.remove('is-paused');
       stopLabel.textContent = 'Stop';
@@ -1943,7 +1914,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           sub.classList.add('is-in');
         });
       });
-      endLine.classList.add('is-visible');
       panel.classList.add('is-finished');
     }
 
@@ -2079,27 +2049,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       gap:8px;
       flex-shrink:0;
       padding-top:2px;
-    }
-    #sol-w4 .sol-w4-status{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      background:var(--d-text);
-      color:var(--d-white);
-      border-radius:var(--d-r-pill);
-      padding:4px 10px;
-      font-size:11px;
-      font-weight:500;
-      letter-spacing:0.02em;
-      line-height:1.3;
-      white-space:nowrap;
-    }
-    #sol-w4 .sol-w4-status-dot{
-      width:5px;
-      height:5px;
-      border-radius:50%;
-      background:var(--d-white);
-      flex-shrink:0;
     }
     #sol-w4 .sol-w4-regen{
       appearance:none;
@@ -2510,7 +2459,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <p class="sol-w4-query">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
       </div>
       <div class="sol-w4-head-actions">
-        <span class="sol-w4-status"><span class="sol-w4-status-dot" aria-hidden="true"></span>Completed</span>
         <button type="button" class="sol-w4-regen" aria-label="Regenerate report">Regenerate</button>
       </div>
     </div>

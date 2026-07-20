@@ -42,7 +42,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 /* .gal-block owns the 40px page gutter; children (gal-copy, gal-widget-wrap,
    cs-principles, cs-decision) must NOT add their own horizontal padding. */
-.gal-block{max-width:1120px;margin:0 auto;padding:44px 40px;}
+.gal-block{padding:44px 40px;}
 .gal-block + .gal-block{border-top:1px solid var(--hairline-faint);}
 .gal-block-head{margin:0 0 30px;}
 .gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
@@ -80,24 +80,26 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 
 /* ---- final-page shell ---- */
-.cs-hero{max-width:1120px;margin:0 auto;padding:72px 40px 20px;}
+.cs-hero{padding:72px 40px 20px;}
 .cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
 .cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
 .cs-hero-lede{font-size:19px;line-height:1.6;color:var(--body);max-width:62ch;margin:22px 0 0;}
 .cs-hero-lede b{color:var(--ink);}
-.cs-hero-meta{display:flex;flex-wrap:wrap;gap:14px 28px;margin:30px 0 0;padding-top:18px;box-shadow:0 -1px 0 0 var(--hairline-faint);}
-.cs-hero-meta div{font-size:13px;color:var(--muted-strong);}
-.cs-hero-meta b{display:block;font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
-.cs-sechead{max-width:1120px;margin:0 auto;padding:54px 40px 0;}
+.cs-hero-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 32px;margin:44px 0 0;}
+.cs-hero-meta-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-hero-meta-val{font-size:14px;line-height:1.55;color:var(--muted-strong);margin:0;}
+@media(max-width:720px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;}}
+@media(max-width:420px){.cs-hero-meta{grid-template-columns:1fr;gap:18px;}}
+.cs-sechead{padding:54px 40px 0;}
 .cs-sechead + .gal-block{border-top:none !important;padding-top:18px;}
 .cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
-.cs-foot{max-width:1120px;margin:0 auto;padding:40px 40px 90px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--muted);box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
+.cs-foot{padding:40px 40px 90px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--muted);box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
 .cs-foot a{color:var(--ink);text-decoration:none;}
 .cs-foot a:hover{color:var(--accent-deep);}
 .gal-block + .gal-block{border-top:none;}
 
 /* ---- FIX 4: five-decisions skim rail ---- */
-.cs-rail{max-width:1120px;margin:0 auto;padding:34px 40px 6px;}
+.cs-rail{padding:34px 40px 6px;}
 .cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
 .cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
 .cs-rail ol{max-width:68ch;}
@@ -110,20 +112,22 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
 @media(max-width:560px){.cs-rail-sec{display:none;}}
 
-/* ---- FIX 5: persistent left section rail (wide viewports) ---- */
-/* left formula: 560 = half the 1120px container; 174 = rail width 150 + 24 gap.
-   Clamps to 24px until ~1516px viewport. The clamped rail (right edge 174)
-   clears the prose edge ((vw-1120)/2 + 40) from vw=1388; the 1420px breakpoint
-   below adds a 16px safety margin on top of that.
-   The 5-item list never overflows; if sections grow, re-add
-   max-height:calc(100vh - 100px) and overflow-y:auto here. */
-.cs-side{display:none;position:fixed;top:40px;left:max(24px, calc(50vw - 560px - 174px));width:150px;opacity:.6;transition:opacity .3s ease;}
-@media(min-width:1420px){.cs-side{display:block;}}
-.cs-side:hover,.cs-side:focus-within{opacity:1;}
-@media(prefers-reduced-motion:reduce){.cs-side{transition:none;}}
+/* ---- FIX 5: page shell matching the landing .portfolio-shell geometry ---- */
+/* Same numbers as src/index.css: 1200px shell, 40px page padding, 280px rail,
+   64px gap. .cs-rail-col is an in-flow flex spacer the same size as the
+   visible rail; .cs-side is position:fixed with no left/right set, so its
+   used left value is its static position — i.e. exactly where .cs-rail-col
+   sits in the flex row. That's the same trick .profile-sticky relies on. */
+.cs-shell{display:flex;max-width:1200px;margin:0 auto;padding:0 40px;gap:64px;}
+.cs-rail-col{position:relative;width:280px;flex-shrink:0;}
+.cs-content{flex:1 1 auto;min-width:0;}
+@media(max-width:999px){.cs-rail-col{display:none;}}
+
+.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;box-shadow:inset -1px 0 var(--hairline-faint);}
+.cs-side ol{margin-top:4px;}
 .cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
 .cs-side ol a:hover{color:var(--ink);}
-.cs-side-home{display:block;font-size:13px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:10px;}
+.cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
 .cs-side-home:hover{color:var(--accent-deep);}
 
 /* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
@@ -149,7 +153,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
 
 /* ---- FIX 3: one call, on the record (citation legend) ---- */
-.cs-onrecord{max-width:1120px;margin:8px auto 0;padding:0 40px 8px;}
+.cs-onrecord{margin:8px 0 0;padding:0 40px 8px;}
 .cs-onrecord-inner{max-width:68ch;}
 .cs-onrecord-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
 .cs-onrecord-goal{font-size:14.5px;line-height:1.55;color:var(--body);margin:0 0 14px;}
@@ -173,6 +177,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </head>
 <body id="top">
 
+<div class="cs-shell">
+<div class="cs-rail-col">
 <nav class="cs-side" aria-label="Sections">
   <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
   <ol>
@@ -183,16 +189,18 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <li><a href="#sec-learnings">Learnings</a></li>
   </ol>
 </nav>
+</div>
+<div class="cs-content">
 
 <header class="cs-hero">
   <p class="cs-hero-eyebrow">Case study · Deeli · 2026</p>
   <h1 class="cs-hero-title">From search box to research partner.</h1>
   <p class="cs-hero-lede">A top-5 semiconductor foundry makes billion-dollar capacity bets. It ran its deep-tech research through a keyword box. I redesigned Deeli&rsquo;s core product around one bet: <b>stop returning documents, return the synthesis.</b> Three weeks after launch, the account behind 82% of booked revenue had made it a daily habit.</p>
   <div class="cs-hero-meta">
-    <div><b>Role</b>Product design: problem scoping, interaction, output</div>
-    <div><b>Team</b>Solo design · 10-engineer build</div>
-    <div><b>Shipped</b>June 2026</div>
-    <div><b>Measured</b>First 3 weeks live, real customer logs</div>
+    <div><p class="cs-hero-meta-label">Role</p><p class="cs-hero-meta-val">Product design</p><p class="cs-hero-meta-val">Problem scoping, interaction, output</p></div>
+    <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">2026</p><p class="cs-hero-meta-val">Shipped June</p></div>
+    <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Solo designer</p><p class="cs-hero-meta-val">10-engineer build</p></div>
+    <div><p class="cs-hero-meta-label">Measured</p><p class="cs-hero-meta-val">First 3 weeks live</p><p class="cs-hero-meta-val">Real customer logs</p></div>
   </div>
 </header>
 
@@ -3042,6 +3050,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <span>Deeli case study · shipped Jun 2026 · every figure verified from live query logs</span>
   <span><a href="#top">Back to top &uarr;</a></span>
 </footer>
+
+</div>
+</div>
 
 </body>
 </html>

@@ -39,20 +39,19 @@ html{scroll-behavior:auto;}
 body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
 ::selection{color:var(--accent-deep);background:var(--accent-wash);}
 
-.gal-head{max-width:1120px;margin:0 auto;padding:56px 40px 8px;}
 .gal-kicker{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
 .gal-h1{font-size:clamp(28px,4vw,38px);font-weight:700;letter-spacing:-0.02em;line-height:1.05;margin:12px 0 0;text-wrap:balance;}
-.gal-lede{font-size:17px;line-height:1.55;color:var(--muted-strong);max-width:62ch;margin:14px 0 0;}
 .gal-legend{display:flex;flex-wrap:wrap;gap:18px;margin:22px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--muted);}
 .gal-legend b{color:var(--ink);font-weight:600;}
 
+/* .gal-block owns the 40px page gutter; children (gal-copy, gal-widget-wrap,
+   cs-principles, cs-decision) must NOT add their own horizontal padding. */
 .gal-block{max-width:1120px;margin:0 auto;padding:44px 40px;}
 .gal-block + .gal-block{border-top:1px solid var(--hairline-faint);}
 .gal-block-head{margin:0 0 30px;}
 .gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
 .gal-sec b{color:var(--accent-deep);}
 .gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
-.gal-block-note{font-size:14px;line-height:1.55;color:var(--muted-strong);max-width:62ch;margin:8px 0 0;}
 
 /* product embed framing (SOLUTION) — Emil hairline figure */
 .gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
@@ -62,10 +61,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-embed-frame img{display:block;width:100%;height:auto;border-radius:2px;box-shadow:0 0 0 1px var(--hairline-faint);}
 .gal-embed-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px 0 0;}
 @media(max-width:720px){.gal-embeds{grid-template-columns:1fr;}}
-.gal-foot{max-width:1120px;margin:0 auto;padding:24px 40px 80px;color:var(--muted);font-family:var(--font-mono);font-size:11px;}
 
 /* ---- case-study prose (portfolio .essay-dialog vocabulary) ---- */
-.gal-copy{max-width:1120px;margin:0 auto;padding:4px 0;}
+.gal-copy{padding:4px 0;}
 .gal-copy-inner{max-width:68ch;}
 .gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 16px;text-wrap:balance;color:var(--ink);}
 .gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;}
@@ -76,7 +74,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-copy .gal-kick{font-size:16px;font-weight:600;color:var(--ink);margin-top:2px;}
 .gal-copy .gal-fork{font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--accent);margin:6px 0 2px;line-height:1.45;}
 .gal-copy .gal-pm{font-size:13.5px;line-height:1.55;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:14px;margin:16px 0 0;font-style:italic;}
-.gal-optlabel{max-width:1120px;margin:22px auto 0;padding:0 40px;}
 .gal-optlabel span{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:10px;}
 .gal-optlabel span::before,.gal-optlabel span::after{content:"";height:1px;width:38px;background:var(--hairline-faint);}
 
@@ -114,36 +111,36 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 /* ---- FIX 4: five-decisions skim rail ---- */
 .cs-rail{max-width:1120px;margin:0 auto;padding:34px 40px 6px;}
 .cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-rail ol{list-style:none;margin:0;padding:0;max-width:68ch;}
+.cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
+.cs-rail ol{max-width:68ch;}
 .cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
 .cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
 .cs-rail a{display:flex;align-items:baseline;gap:14px;padding:10px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
 .cs-rail a:hover{color:var(--accent-deep);}
-.cs-rail a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
-.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+.cs-rail a:focus-visible,.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+.cs-rail-num,.cs-side-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
 .cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
 @media(max-width:560px){.cs-rail-sec{display:none;}}
 
 /* ---- FIX 5: persistent left section rail (wide viewports) ---- */
-.cs-side{display:none;position:fixed;top:76px;left:max(24px, calc(50vw - 560px - 174px));width:150px;max-height:calc(100vh - 100px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;opacity:.6;transition:opacity .3s ease;}
-.cs-side::-webkit-scrollbar{display:none;}
+/* left formula: 560 = half the 1120px container; 174 = rail width 150 + 24 gap.
+   Clamps to 24px until ~1516px viewport; the 1420px breakpoint below is where
+   the clamped rail (right edge 174) clears the prose edge ((vw-1120)/2 + 40). */
+.cs-side{display:none;position:fixed;top:76px;left:max(24px, calc(50vw - 560px - 174px));width:150px;opacity:.6;transition:opacity .3s ease;}
 @media(min-width:1420px){.cs-side{display:block;}}
 .cs-side:hover,.cs-side:focus-within{opacity:1;}
 @media(prefers-reduced-motion:reduce){.cs-side{transition:none;}}
-.cs-side ol{list-style:none;margin:0;padding:0;}
 .cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
 .cs-side ol a:hover{color:var(--ink);}
-.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
-.cs-side-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);}
 
 /* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
 .cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:72px;}
 
-/* ---- FIX 7: larger skim-rail tap targets on small screens ---- */
-@media(max-width:720px){.cs-rail a{padding:12px 2px;}}
+/* ---- FIX 7: larger skim-rail tap targets on touch devices ---- */
+@media(pointer:coarse){.cs-rail a{padding:12px 2px;}}
 
 /* ---- FIX 2: design-principles strip ---- */
-.cs-principles{max-width:1120px;margin:6px auto 26px;padding:0;}
+.cs-principles{margin:6px 0 26px;}
 .cs-principles-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .cs-principles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--hairline-faint);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);overflow:hidden;max-width:760px;}
 .cs-principles-grid>div{background:var(--surface-warm);padding:14px 16px;}
@@ -152,7 +149,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:640px){.cs-principles-grid{grid-template-columns:1fr;}}
 
 /* ---- FIX 1: considered/chose/because decision rows ---- */
-.cs-decision{max-width:1120px;margin:14px auto 4px;padding:0;}
+.cs-decision{margin:14px 0 4px;}
 .cs-decision dl{max-width:68ch;margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
 .cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
 .cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}

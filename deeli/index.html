@@ -564,12 +564,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w1 .sol-w1-form{
       display:flex;
       flex-direction:column;
+      justify-content:space-between;
       min-height:96px;
+      cursor:text;
     }
     #sol-w1 .sol-w1-card.is-resolved .sol-w1-form{ display:none; }
 
     #sol-w1 .sol-w1-input{
-      flex:1 1 auto;
+      flex:0 0 auto;
       width:100%;
       border:none;
       outline:none;
@@ -578,7 +580,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       font-weight:400;
       line-height:1.4;
       color:var(--d-text);
-      padding:2px 2px 8px;
+      padding:4px 2px 0;
     }
     #sol-w1 .sol-w1-input::placeholder{ color:var(--d-sub); }
 
@@ -891,6 +893,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     }
 
     input.addEventListener('input', updateSubmitState);
+
+    // The input no longer stretches over the card's empty area, so clicks on
+    // that dead space should still land in the field.
+    form.addEventListener('click', function(e){
+      if(e.target === form) input.focus();
+    });
 
     card.addEventListener('focusin', function(){
       if(!card.classList.contains('is-resolved')){

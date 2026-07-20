@@ -1234,7 +1234,8 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
               rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
               onClick={(event) => event.stopPropagation()}
             >
-              {item.flagLabel ?? "Live site"} ↗
+              <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
+              <span className="flag-verb">{item.linkLabel ?? "See it live"}</span> ↗
             </a>
           ) : item.status ? (
             <p className="card-eyebrow-flag">{item.status}</p>

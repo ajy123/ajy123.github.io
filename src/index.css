@@ -728,14 +728,28 @@ a.card-eyebrow-flag:focus-visible {
   text-decoration-color: currentColor;
 }
 
+/* Desktop scans the noun ("Case study"); touch gets the verb below. */
+a.card-eyebrow-flag .flag-verb {
+  display: none;
+}
+
 /* Touch: no cursor pill exists, so the flag is the card's only visible way
- * into the live site / case study — promote it and give it a ~44px target. */
+ * into the live site / case study — promote it, speak in the verb register,
+ * and give it a ~44px target. */
 @media (hover: none) {
   a.card-eyebrow-flag {
     color: var(--ink-strong);
     font-size: 13px;
     padding: 14px;
     margin: -14px;
+  }
+
+  a.card-eyebrow-flag .flag-noun {
+    display: none;
+  }
+
+  a.card-eyebrow-flag .flag-verb {
+    display: inline;
   }
 }
 

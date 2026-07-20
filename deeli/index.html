@@ -258,7 +258,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </div>
   <div class="cs-proof-strip" aria-label="Launch evidence">
     <div class="cs-proof-item"><span class="cs-proof-tag">Behavior change</span><span class="cs-proof-value">70%</span><span class="cs-proof-label">of live queries used natural language, not keywords</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">System reliability</span><span class="cs-proof-value">91/92</span><span class="cs-proof-label">live queries returned an inspectable report; quality was evaluated separately</span></div>
+    <div class="cs-proof-item"><span class="cs-proof-tag">Evidence base</span><span class="cs-proof-value">263</span><span class="cs-proof-label">tagged issues ranked before design, alongside 92 real queries</span></div>
   </div>
 </header>
 
@@ -396,6 +396,10 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-process .pc-rail-row:nth-of-type(1){animation-delay:.02s;}
   #anchor-process .pc-rail-row:nth-of-type(2){animation-delay:.14s;}
   #anchor-process .pc-rail-row:nth-of-type(3){animation-delay:.26s;}
+  /* The eval step reads as the conclusion of the three inputs above it, so it
+     spans the full panel instead of stranding itself in one column. */
+  #anchor-process .pc-rail-row:nth-of-type(4){grid-column:1 / -1;padding:22px 26px 0;margin-top:26px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);animation-delay:.38s;}
+  #anchor-process .pc-rail-row:nth-of-type(4) .pc-line{max-width:62ch;}
   #anchor-process .pc-num{font-family:var(--font-mono);font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ghost);margin-bottom:2px;}
   #anchor-process .pc-content{display:flex;flex-direction:column;gap:9px;padding-top:4px;}
   #anchor-process .pc-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);}
@@ -435,8 +439,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #anchor-process .pc-panel{grid-template-columns:1fr;}
     #anchor-process .pc-rail-row{padding:0 0 20px;box-shadow:none;}
     #anchor-process .pc-rail-row:first-of-type{padding-left:0;}
+    #anchor-process .pc-rail-row:nth-of-type(4){padding:0 0 20px;margin-top:0;box-shadow:none;}
     #anchor-process .pc-fork{margin-top:6px;}
   }
+  #anchor-process .pc-essay-link{color:var(--accent-deep);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;white-space:nowrap;}
+  #anchor-process .pc-essay-link:hover{color:var(--accent);}
   @media (prefers-reduced-motion: reduce){
     #anchor-process .pc-rail-row,#anchor-process .pc-bar-fill,#anchor-process .pc-fork,#anchor-process .pc-node,#anchor-process .pc-fork-line,#anchor-process .pc-fork-endpoint,#anchor-process .pc-fork-label,#anchor-process .pc-converge-line{animation:none !important;opacity:1 !important;transform:none !important;stroke-dashoffset:0 !important;}
   }
@@ -477,6 +484,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
               <span class="pc-bar-value">$0.11</span>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="pc-rail-row">
+        <div class="pc-num">04</div>
+        <div class="pc-content">
+          <div class="pc-label">Design from the eval</div>
+          <p class="pc-line">I built an eval suite for the intent parser: deterministic scorers for the unambiguous fields, an LLM judge for the one field that needed judgment. It surfaced a class of queries where two readings were both defensible, and that class is why the product asks instead of guessing. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
         </div>
       </div>
       <div class="pc-fork">
@@ -934,9 +948,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-move-note"><b>Why chips:</b> mid-task engineers needed a one-tap choice, with a rewrite escape hatch when the options were wrong.</p>
   </div></div>
   <details class="cs-prototype">
-    <summary>Clarification state</summary>
+    <summary>Shipped clarification</summary>
   <div class="gal-widget-wrap">
-    <div class="gal-widget-eyebrow">Clarification state · interactive</div>
+    <div class="gal-widget-eyebrow">Shipped clarification · interactive</div>
     <section class="sol-widget" id="sol-w2">
   <style>
     #sol-w2{
@@ -3009,11 +3023,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Twenty-eight percent of queries were re-asks.</h2>
     <p>Twenty-six of 92 queries repeated an existing intent. Some reflected healthy exploration, but near-identical questions also produced inconsistent reports. Users were sometimes fishing for an answer they had already seen.</p>
-    <p><b>Next:</b> show the system&rsquo;s interpretation before generation, let researchers correct it, and anchor the same intent to a more consistent report.</p>
-    <div class="cs-next-flow" role="img" aria-label="Next iteration flow: original question, interpretation checkpoint, consistent report">
+    <p>The shipped clarification helped researchers aim one report, but it did not preserve their corrected interpretation across repeated asks.</p>
+    <p><b>Next:</b> turn one-time clarification into a persistent interpretation checkpoint. Let researchers confirm or correct entities and scope, then reuse that corrected intent on every re-ask.</p>
+    <div class="cs-next-flow" role="img" aria-label="Next iteration flow: original question, persistent interpretation, consistent report">
       <div class="cs-next-step"><b>Original question</b><span>Preserve the researcher&rsquo;s words.</span></div>
       <span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
-      <div class="cs-next-step"><b>Interpretation checkpoint</b><span>Show entities and scope before generation.</span></div>
+      <div class="cs-next-step"><b>Persistent interpretation</b><span>Confirm or correct entities and scope.</span></div>
       <span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
       <div class="cs-next-step"><b>Consistent report</b><span>Reuse the corrected intent on every re-ask.</span></div>
     </div>

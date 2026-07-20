@@ -1268,7 +1268,7 @@ function WorkCanvas() {
       </div>
 
       <Reveal as="div" className="work-heading">
-        <span className="section-heading" aria-hidden="true">
+        <span className="section-heading" id="ai-practice" aria-hidden="true">
           AI Practice
         </span>
       </Reveal>

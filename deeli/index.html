@@ -126,7 +126,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-proof-value{display:block;font-family:var(--font-mono);font-size:clamp(25px,3.4vw,36px);font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
 .cs-proof-label{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
 .cs-hero-visual{margin:0;padding:4px 40px 30px;}
-.cs-hero-visual img{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
+.cs-hero-visual img,.cs-hero-visual video{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
 .cs-hero-visual figcaption{margin:12px 0 0;font-family:var(--font-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--muted);text-align:center;}
 @media(max-width:640px){
   .cs-proof-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px 0;}
@@ -243,8 +243,20 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </header>
 
 <figure class="cs-hero-visual">
-  <img src="/images/deeli-product-report.png" width="696" height="391" alt="Shipped Deeli research report with visible sources, confidence, citations, and drill-down terms">
-  <figcaption>The shipped report makes its evidence visible: source count, citations, and scoped drill-down.</figcaption>
+  <video id="hero-demo" width="696" height="391" autoplay muted loop playsinline preload="metadata" poster="/images/deeli-hero-demo-poster.jpg" aria-label="Recording of the shipped flow: research agents index and select sources, then the finished report opens a citation showing its source">
+    <source src="/images/deeli-hero-demo.webm" type="video/webm">
+    <source src="/images/deeli-hero-demo.mp4" type="video/mp4">
+  </video>
+  <figcaption>The shipped flow, recorded: agents disclose the work, then every claim carries its citation.</figcaption>
+  <script>
+    // Respect reduced-motion: leave the poster frame instead of autoplaying.
+    (function(){
+      var v = document.getElementById('hero-demo');
+      if (v && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        v.removeAttribute('autoplay'); v.pause();
+      }
+    })();
+  </script>
 </figure>
 
 <nav class="cs-rail" aria-label="Case study summary">

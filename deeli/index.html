@@ -1476,7 +1476,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Show what the agents are doing.</h3>
-    <p class="gal-move-summary">While generating, each named agent reports the sources it is touching, and the panel ends by showing how many of them the report actually uses. The wait is legible instead of an unverifiable percentage.</p>
+    <p class="gal-move-summary">While generating, each named agent reports the sources it is touching. The panel closes on how many of them the report uses, so the wait shows its work instead of an unverifiable percentage.</p>
     <p class="gal-move-note"><b>Decision:</b> narrate concrete source activity, such as 145 USPTO patents or 312 matched papers, instead of showing a progress bar.</p>
   </div></div>
   <details class="cs-prototype">
@@ -1582,7 +1582,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       font-weight:500;
       letter-spacing:.02em;
       padding:5px 8px;
-      margin:14px 0 0 -8px;
+      /* +4 rather than -8 so the icon's left edge lands on the panel card's
+         left edge (measured: icon was 12px adrift of the card it controls). */
+      margin:14px 0 0 4px;
       border-radius:var(--d-r-sm);
       cursor:pointer;
       display:inline-flex;
@@ -2313,11 +2315,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       bottom:-5px;
       border-right:1px solid var(--d-ghost);
       border-bottom:1px solid var(--d-ghost);
+      box-shadow:3px 3px 6px -2px rgba(25,28,29,0.10);
     }
     #sol-w4 .sol-w4-pop[data-placement="bottom"]::after{
       top:-5px;
       border-left:1px solid var(--d-ghost);
       border-top:1px solid var(--d-ghost);
+      box-shadow:-3px -3px 6px -2px rgba(25,28,29,0.10);
     }
 
     #sol-w4 .sol-w4-pop-chip{
@@ -2495,12 +2499,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     }
 
     @media (max-width:560px){
+      /* 32px was leaking ~6px into the lines above and below, so taps on
+         ordinary prose opened the popover. 24px still meets the 24x24 minimum. */
+      #sol-w4 .sol-w4-cite::before{ width:24px; height:24px; }
       /* Relative to the card, not a flat value — at 320 the card is only 184px
-         and a fixed 200px cap overhangs its edge. */
-      #sol-w4 .sol-w4-pop{ max-width:min(200px, calc(100% - 16px)); }
+         and a fixed 200px cap overhangs its edge.
+         calc(100% - 16px) exactly consumed the 8px clamp margins in position(),
+         which pinned every popover to the same left edge. Leave headroom so it
+         can still track the citation it belongs to. */
+      #sol-w4 .sol-w4-pop{ max-width:min(200px, calc(100% - 32px)); }
       #sol-w4 .sol-w4-drill{ max-width:min(200px, calc(100% - 16px)); }
       #sol-w4 .sol-w4-regen{ min-height:44px; }
-      #sol-w4 .sol-w4-cite::before{ width:32px; height:32px; }
     }
 
     @media (prefers-reduced-motion: reduce){

@@ -713,7 +713,7 @@ h1 span {
 }
 
 a.card-eyebrow-flag {
-  color: var(--ink);
+  color: var(--muted);
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: 3px;
@@ -726,6 +726,17 @@ a.card-eyebrow-flag:hover,
 a.card-eyebrow-flag:focus-visible {
   color: var(--ink-strong);
   text-decoration-color: currentColor;
+}
+
+/* Touch: no cursor pill exists, so the flag is the card's only visible way
+ * into the live site / case study — promote it and give it a ~44px target. */
+@media (hover: none) {
+  a.card-eyebrow-flag {
+    color: var(--ink-strong);
+    font-size: 13px;
+    padding: 14px;
+    margin: -14px;
+  }
 }
 
 /* Live-project media: the link is an invisible overlay above the video and

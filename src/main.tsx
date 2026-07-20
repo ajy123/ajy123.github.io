@@ -79,8 +79,10 @@ type WorkItem = {
   status?: string;
   summary?: string;
   liveHref?: string;
-  /** Label for the liveHref link; defaults to "See it live". */
+  /** Verb label for the cursor pill over media; defaults to "See it live". */
   linkLabel?: string;
+  /** Noun label for the card's flag link; defaults to "Live site". */
+  flagLabel?: string;
   askHint: string;
   askKind: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
@@ -111,12 +113,13 @@ type EssayItem = WorkItem & {
 
 const workItems: WorkItem[] = [
   {
-    eyebrow: "Case study",
+    eyebrow: "Product design",
     title: "From keyword search to a research chat",
     role: "Led design + part PM, team of 5",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read the case study",
+    flagLabel: "Case study",
     askHint: "Ask how this became a chat",
     askKind: "project",
     askAnchorPreference: "cursor",
@@ -140,7 +143,7 @@ const workItems: WorkItem[] = [
     },
   },
   {
-    eyebrow: "Case study",
+    eyebrow: "Brand",
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
@@ -160,6 +163,7 @@ const workItems: WorkItem[] = [
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     liveHref: "https://deeli.ai",
+    flagLabel: "deeli.ai",
     media: {
       type: "video",
       src: caseStudyVideoUrl,
@@ -1230,7 +1234,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
               rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
               onClick={(event) => event.stopPropagation()}
             >
-              {item.linkLabel ?? "See it live"} ↗
+              {item.flagLabel ?? "Live site"} ↗
             </a>
           ) : item.status ? (
             <p className="card-eyebrow-flag">{item.status}</p>

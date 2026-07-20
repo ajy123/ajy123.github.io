@@ -2810,7 +2810,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="gal-block" hidden>
+<div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <p><b>It ran on real work, weekdays only.</b> Zero weekend queries; all inside Taiwan business hours, twin peaks at 8am and 3pm. A working tool, not a curiosity: no claim about how they plan a week, just when the queries land. Top line: <b>~0.5 &rarr; ~5.1 queries/day</b> (internal &rarr; live), ~8.4 per active day, a ~10&times; step held for three weeks.</p>
@@ -2899,103 +2899,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     </div>
     <p class="hm-caption">Weekday and hour are each real marginal totals from timestamped queries (n=92), shown as two 1‑D strips, not a measured joint weekday×hour matrix.</p>
   </div>
-</div>
-</section>
-</div>
-
-<div class="gal-block" hidden>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">The workflow carries the business.</h2>
-    <p class="gal-lede-p">The anchor foundry using this redesign represents 82% of booked revenue. At that concentration, the research experience is not a peripheral feature. It is the product carrying the account.</p>
-    <p class="cs-footnote">Contract values are confidential, so business significance is shown as share of booked revenue rather than attributed revenue impact.</p>
-  </div></div>
-  <!-- ===== ANCHOR 7: EXPANSION ===== -->
-<section class="anchor" id="anchor-expand">
-<style>
-  #anchor-expand{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
-  #anchor-expand .ex-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:flex-start;align-items:flex-start;}
-  #anchor-expand .ex-option{flex:0 1 680px;max-width:680px;min-width:0;}
-  #anchor-expand .ex-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
-  #anchor-expand .ex-figure{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px;}
-  #anchor-expand .ex-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
-
-  /* ---- Option A: concentration bar ---- */
-  #anchor-expand .ex-a-headline{text-align:left;}
-  #anchor-expand .ex-a-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:48px;font-weight:700;color:var(--ink);line-height:1;display:inline-block;opacity:0;transform:translateY(6px);animation:ex-fade-up 500ms var(--ease-out-strong) forwards;}
-  #anchor-expand .ex-a-sub{font-size:13px;line-height:1.5;color:var(--muted-strong);max-width:38ch;margin:8px 0 20px;}
-  #anchor-expand .ex-a-track{display:flex;height:44px;width:100%;border-radius:4px;overflow:hidden;box-shadow:0 0 0 1px var(--hairline-faint);background:var(--canvas);}
-  #anchor-expand .ex-seg{height:100%;transform-origin:left center;transform:scaleX(0);animation:ex-grow 420ms var(--ease-out-strong) forwards;display:flex;align-items:center;overflow:hidden;white-space:nowrap;}
-  #anchor-expand .ex-seg-umc{background:var(--accent);animation-delay:0ms;padding-left:12px;}
-  #anchor-expand .ex-seg-cm{background:var(--muted-strong);animation-delay:80ms;}
-  #anchor-expand .ex-seg-mic{background:var(--ghost);animation-delay:160ms;}
-  #anchor-expand .ex-seg-label{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;color:var(--canvas);letter-spacing:.01em;}
-  #anchor-expand .ex-a-legend{display:flex;flex-wrap:wrap;align-items:baseline;gap:16px 20px;margin-top:14px;opacity:0;animation:ex-fade 420ms var(--ease) forwards;animation-delay:600ms;}
-  #anchor-expand .ex-legend-item{display:flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-size:11.5px;color:var(--muted-strong);}
-  #anchor-expand .ex-dot{width:7px;height:7px;border-radius:50%;display:inline-block;transform:translateY(-1px);flex:none;}
-  #anchor-expand .ex-dot-umc{background:var(--accent);}
-  #anchor-expand .ex-dot-cm{background:var(--muted-strong);}
-  #anchor-expand .ex-dot-mic{background:var(--ghost);box-shadow:0 0 0 1px var(--hairline-faint);}
-  #anchor-expand .ex-legend-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
-  #anchor-expand .ex-legend-total{margin-left:auto;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);}
-
-  /* ---- Option B: booked vs pipeline ---- */
-  #anchor-expand .ex-b-row + .ex-b-row{margin-top:22px;}
-  #anchor-expand .ex-b-row-2 .ex-b-track{margin-top:20px;}
-  #anchor-expand .ex-b-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
-  #anchor-expand .ex-b-row-title{font:600 13px var(--font-body);color:var(--ink);}
-  #anchor-expand .ex-b-unweighted{font-family:var(--font-mono);font-size:9.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-left:7px;}
-  #anchor-expand .ex-b-row-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink);}
-  #anchor-expand .ex-b-track{position:relative;height:30px;width:100%;border-radius:4px;background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);overflow:visible;}
-  #anchor-expand .ex-b-fill{position:absolute;top:0;left:0;height:100%;display:flex;overflow:hidden;border-radius:4px;transform-origin:left center;}
-  #anchor-expand .ex-b-fill-booked{}
-  #anchor-expand .ex-b-fill-booked .ex-seg-umc{animation-delay:0ms;}
-  #anchor-expand .ex-b-fill-booked .ex-seg-cm{animation-delay:80ms;}
-  #anchor-expand .ex-b-fill-booked .ex-seg-mic{animation-delay:160ms;}
-  #anchor-expand .ex-b-fill-pipeline{background-color:var(--surface-warm);background-image:repeating-linear-gradient(-45deg,var(--hairline-faint) 0,var(--hairline-faint) 1px,transparent 1px,transparent 7px);box-shadow:0 0 0 1px var(--hairline-faint);opacity:0;overflow:visible;animation:ex-fade 420ms var(--ease) forwards;animation-delay:620ms;}
-  #anchor-expand .ex-b-pipeline-top{position:absolute;top:0;left:0;height:100%;box-shadow:inset 0 0 0 1px var(--hairline);border-radius:3px;}
-  #anchor-expand .ex-b-pipeline-top-label{position:absolute;bottom:calc(100% + 6px);left:0;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:10.5px;font-weight:600;color:var(--muted-strong);white-space:nowrap;opacity:0;animation:ex-fade 380ms var(--ease) forwards;animation-delay:820ms;}
-  #anchor-expand .ex-b-pipeline-top-label::after{content:"";position:absolute;top:100%;left:2px;width:1px;height:5px;background:var(--muted);}
-  #anchor-expand .ex-b-axis{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;color:var(--muted);}
-  #anchor-expand .ex-b-footnote{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin:14px 0 0;}
-
-  @keyframes ex-grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
-  @keyframes ex-fade{from{opacity:0;}to{opacity:1;}}
-  @keyframes ex-fade-up{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-  @media (max-width:520px){
-    #anchor-expand .ex-figure{padding:20px 16px;}
-    #anchor-expand .ex-a-num{font-size:40px;}
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    #anchor-expand .ex-seg,#anchor-expand .ex-a-num,#anchor-expand .ex-a-legend,#anchor-expand .ex-b-fill-pipeline,#anchor-expand .ex-b-pipeline-top-label{
-      animation:none !important;transform:none !important;opacity:1 !important;
-    }
-  }
-</style>
-<div class="ex-wrap">
-
-  <article class="ex-option" id="ex-optA">
-    <p class="ex-eyebrow">Business significance</p>
-    <div class="ex-figure ex-figure-a">
-      <div class="ex-a-headline"><span class="ex-a-num">82%</span></div>
-      <p class="ex-a-sub">of booked revenue runs its research through this redesign</p>
-      <div class="ex-a-track" role="img" aria-label="Booked revenue split: anchor foundry 82 percent, customer B 16 percent, customer C 1 percent">
-        <div class="ex-seg ex-seg-umc" style="width:82.21%"><span class="ex-seg-label">Anchor foundry · 82%</span></div>
-        <div class="ex-seg ex-seg-cm" style="width:16.42%"></div>
-        <div class="ex-seg ex-seg-mic" style="width:1.37%"></div>
-      </div>
-      <div class="ex-a-legend">
-        <span class="ex-legend-item"><span class="ex-dot ex-dot-umc"></span>Anchor foundry&nbsp;<span class="ex-legend-val">82%</span></span>
-        <span class="ex-legend-item"><span class="ex-dot ex-dot-cm"></span>Customer B&nbsp;<span class="ex-legend-val">16%</span></span>
-        <span class="ex-legend-item"><span class="ex-dot ex-dot-mic"></span>Customer C&nbsp;<span class="ex-legend-val">1%</span></span>
-        <span class="ex-legend-total">shares of booked revenue</span>
-      </div>
-    </div>
-    <p class="ex-caption">Business significance, not attributed impact: this workflow serves the account behind 82% of booked revenue.</p>
-  </article>
-
 </div>
 </section>
 </div>

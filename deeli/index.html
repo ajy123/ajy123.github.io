@@ -88,6 +88,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-prototype[open] summary::after{content:"Close prototype -";}
 .cs-prototype .gal-widget-wrap{padding-top:10px;}
 .cs-prototype .gal-widget-eyebrow{display:none;}
+.impact-signals-label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .impact-findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
 .impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
 .impact-finding:first-child{padding-left:0;box-shadow:none;}
@@ -450,17 +451,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="pc-num">03</div>
         <div class="pc-content">
           <div class="pc-label">Test feasibility</div>
-          <p class="pc-line">Across 21 benchmark runs, an ML engineer and I compared fast retrieval with path-grounded retrieval. Grounding added $0.09 per run.</p>
+          <p class="pc-line">Across 21 benchmark runs, an ML engineer and I compared fast retrieval with path-grounded retrieval. Grounding cost roughly six times more per run.</p>
           <div class="pc-bars">
             <div class="pc-bar-row">
               <span class="pc-bar-label">fast retrieval</span>
               <span class="pc-bar-track"><span class="pc-bar-fill" style="width:18%"></span></span>
-              <span class="pc-bar-value">$0.02</span>
+              <span class="pc-bar-value">1x</span>
             </div>
             <div class="pc-bar-row">
               <span class="pc-bar-label">path-grounded</span>
               <span class="pc-bar-track"><span class="pc-bar-fill" style="width:100%"></span></span>
-              <span class="pc-bar-value">$0.11</span>
+              <span class="pc-bar-value">~6x</span>
             </div>
           </div>
         </div>
@@ -560,16 +561,22 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w1 .sol-w1-card.is-resolved .sol-w1-form{ display:none; }
 
     #sol-w1 .sol-w1-input{
+      display:block;
       flex:0 0 auto;
       width:100%;
       border:none;
       outline:none;
+      resize:none;
       background:transparent;
       font-size:14.5px;
       font-weight:400;
       line-height:1.4;
       color:var(--d-text);
       padding:4px 2px 0;
+      /* overflow starts hidden so there's no scrollbar flash before the
+         auto-grow script runs on first input; JS flips this to auto once
+         content passes the 5-line cap. */
+      overflow-y:hidden;
     }
     #sol-w1 .sol-w1-input::placeholder{ color:var(--d-sub); }
 
@@ -743,13 +750,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <div class="sol-w1-card" id="sol-w1-card">
       <form class="sol-w1-form" id="sol-w1-form" novalidate>
         <label class="sol-w1-sr-only" for="sol-w1-input">Research question</label>
-        <input
-          type="text"
+        <textarea
           id="sol-w1-input"
           class="sol-w1-input"
           placeholder="Start with a specific technology, patent, or company"
           autocomplete="off"
-        />
+          rows="1"
+        ></textarea>
         <div class="sol-w1-actions">
           <button type="submit" class="sol-w1-submit" id="sol-w1-submit" aria-disabled="true" aria-label="Submit research question">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -800,6 +807,21 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       var hasText = input.value.trim().length > 0;
       submitBtn.classList.toggle('is-active', hasText);
       submitBtn.setAttribute('aria-disabled', hasText ? 'false' : 'true');
+    }
+
+    // Auto-grow the composer textarea 1→5 lines. The cap is derived from the
+    // textarea's own computed line-height + vertical padding rather than a
+    // hardcoded px total, so it can't drift from the CSS above. Past the cap
+    // the textarea scrolls internally instead of growing further.
+    function autoGrowInput(){
+      var cs = window.getComputedStyle(input);
+      var lineHeight = parseFloat(cs.lineHeight) || 20;
+      var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      var maxHeight = Math.round(lineHeight * 5 + padY);
+      input.style.height = 'auto';
+      var next = Math.min(input.scrollHeight, maxHeight);
+      input.style.height = next + 'px';
+      input.style.overflowY = input.scrollHeight > maxHeight ? 'auto' : 'hidden';
     }
 
     // Resolution map: report title + entity footnote (segment to underline + chip name)
@@ -872,16 +894,34 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       card.classList.add('is-resolved');
       card.classList.remove('is-focused');
       askAnotherBtn.focus();
+      // Composer is hidden behind .is-resolved now, but collapse it back to
+      // one line so it doesn't reopen mid-height on "Ask another".
+      input.style.height = '';
+      autoGrowInput();
     }
 
     function resetToEmpty(){
       card.classList.remove('is-resolved');
       input.value = '';
       updateSubmitState();
+      autoGrowInput();
       input.focus();
     }
 
-    input.addEventListener('input', updateSubmitState);
+    input.addEventListener('input', function(){
+      updateSubmitState();
+      autoGrowInput();
+    });
+
+    // Enter submits (same path as the submit button); Shift+Enter inserts a
+    // newline (textarea default). Guard IME composition (e.g. 注音/拼音)
+    // so an Enter that confirms a candidate doesn't also submit.
+    input.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter' || e.shiftKey) return;
+      if(e.isComposing || e.keyCode === 229) return;
+      e.preventDefault();
+      submitQuery();
+    });
 
     // The input no longer stretches over the card's empty area, so clicks on
     // that dead space should still land in the field.
@@ -911,6 +951,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       chip.addEventListener('click', function(){
         input.value = chip.getAttribute('data-query');
         updateSubmitState();
+        autoGrowInput();
         input.focus();
       });
     });
@@ -918,6 +959,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     askAnotherBtn.addEventListener('click', resetToEmpty);
 
     updateSubmitState();
+    autoGrowInput();
   })();
   </script>
 </section>
@@ -2770,7 +2812,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Natural-language research became the default.</h2>
     <p class="gal-lede-p">The first three weeks show a clear behavior change and reliable report generation.</p>
-    <div class="impact-findings" role="list" aria-label="Launch outcomes">
+    <p class="impact-signals-label">Early launch signals</p>
+    <div class="impact-findings" role="list" aria-label="Early launch signals">
       <div class="impact-finding" role="listitem"><span class="impact-tag">Behavior change</span><b>13% to 70%</b><span>natural-language share, comparing historical search with the post-launch window</span></div>
       <div class="impact-finding" role="listitem"><span class="impact-tag">System reliability</span><b>91 of 92</b><span>live queries returned an inspectable report; research quality was evaluated separately</span></div>
     </div>
@@ -2879,7 +2922,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="qt-options">
   <div class="qt-option qt-option-a">
-    <p class="qt-eyebrow qt-option-eyebrow">Messy questions became correctly scoped reports</p>
+    <p class="qt-eyebrow qt-option-eyebrow">Qualitative launch evidence</p>
     <div class="qt-figure">
       <div class="qt-pairs">
         <div class="qt-pair">
@@ -2902,7 +2945,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </div>
       </div>
     </div>
-    <p class="qt-caption">Three words or three sentences: the system doesn't need much to know exactly what report you meant.</p>
+    <p class="qt-caption">Messy questions became correctly scoped reports &mdash; three words or three sentences, the system knew which report you meant.</p>
   </div>
 </div>
 </section>
@@ -2918,7 +2961,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <style>
 #anchor-heatmap{font-family:var(--font-body);color:var(--body);background:var(--canvas);}
 #anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:flex-start;align-items:flex-start;}
-#anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:320px;}
+#anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:min(320px, 100%);}
 #anchor-heatmap .hm-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
 #anchor-heatmap .hm-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;line-height:1.55;margin:22px 0 0;}
 #anchor-heatmap .hm-strip-block + .hm-strip-block{margin-top:30px;}

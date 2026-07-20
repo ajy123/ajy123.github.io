@@ -96,6 +96,10 @@ type WorkItem = {
   };
 };
 
+/* Shared verb-register default: the cursor pill and the touch flag must never
+ * drift apart, so both fall back to this. */
+const DEFAULT_LINK_LABEL = "See it live";
+
 type EssaySection = {
   heading: string;
   body: string[];
@@ -1167,7 +1171,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
   // Internal links (e.g. the case-study page) navigate in the same tab;
   // external product sites keep opening in a new one.
   const isExternal = /^https?:\/\//.test(item.liveHref);
-  const linkLabel = item.linkLabel ?? "See it live";
+  const linkLabel = item.linkLabel ?? DEFAULT_LINK_LABEL;
 
   // Action zone: the media of a live project navigates to it. The cursor hint
   // becomes an accent "See it live" pill (kind="action") instead of a chat ask
@@ -1235,7 +1239,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
               onClick={(event) => event.stopPropagation()}
             >
               <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
-              <span className="flag-verb">{item.linkLabel ?? "See it live"}</span> ↗
+              <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
             </a>
           ) : item.status ? (
             <p className="card-eyebrow-flag">{item.status}</p>

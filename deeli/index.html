@@ -80,11 +80,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 
 /* ---- final-page shell ---- */
-.cs-top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 1px 0 0 var(--hairline-faint);}
-.cs-top-inner{max-width:1120px;margin:0 auto;padding:14px 40px;display:flex;align-items:baseline;justify-content:space-between;}
-.cs-top a{font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;}
-.cs-top a:hover{color:var(--accent-deep);}
-.cs-top-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
 .cs-hero{max-width:1120px;margin:0 auto;padding:72px 40px 20px;}
 .cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
 .cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
@@ -96,7 +91,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-sechead{max-width:1120px;margin:0 auto;padding:54px 40px 0;}
 .cs-sechead + .gal-block{border-top:none !important;padding-top:18px;}
 .cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
-.cs-sec-eyebrow b{color:var(--accent-deep);}
 .cs-foot{max-width:1120px;margin:0 auto;padding:40px 40px 90px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--muted);box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
 .cs-foot a{color:var(--ink);text-decoration:none;}
 .cs-foot a:hover{color:var(--accent-deep);}
@@ -112,7 +106,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-rail a{display:flex;align-items:baseline;gap:14px;padding:12px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
 .cs-rail a:hover{color:var(--accent-deep);}
 .cs-rail a:focus-visible,.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
-.cs-rail-num,.cs-side-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
 .cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
 @media(max-width:560px){.cs-rail-sec{display:none;}}
 
@@ -123,15 +117,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
    below adds a 16px safety margin on top of that.
    The 5-item list never overflows; if sections grow, re-add
    max-height:calc(100vh - 100px) and overflow-y:auto here. */
-.cs-side{display:none;position:fixed;top:76px;left:max(24px, calc(50vw - 560px - 174px));width:150px;opacity:.6;transition:opacity .3s ease;}
+.cs-side{display:none;position:fixed;top:40px;left:max(24px, calc(50vw - 560px - 174px));width:150px;opacity:.6;transition:opacity .3s ease;}
 @media(min-width:1420px){.cs-side{display:block;}}
 .cs-side:hover,.cs-side:focus-within{opacity:1;}
 @media(prefers-reduced-motion:reduce){.cs-side{transition:none;}}
 .cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
 .cs-side ol a:hover{color:var(--ink);}
+.cs-side-home{display:block;font-size:13px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:10px;}
+.cs-side-home:hover{color:var(--accent-deep);}
 
 /* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
-.cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:72px;}
+.cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:24px;}
 
 
 /* ---- FIX 2: design-principles strip ---- */
@@ -177,18 +173,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </head>
 <body id="top">
 
-<nav class="cs-top"><div class="cs-top-inner">
-  <a href="/">Joanna Yen</a>
-  <span class="cs-top-label">Case study · Deeli</span>
-</div></nav>
-
 <nav class="cs-side" aria-label="Sections">
+  <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
   <ol>
-    <li><a href="#sec-problem"><span class="cs-side-num">01</span> Problem</a></li>
-    <li><a href="#sec-process"><span class="cs-side-num">02</span> Process</a></li>
-    <li><a href="#sec-solution"><span class="cs-side-num">03</span> Solution</a></li>
-    <li><a href="#sec-impact"><span class="cs-side-num">04</span> Impact</a></li>
-    <li><a href="#sec-learnings"><span class="cs-side-num">05</span> Learnings</a></li>
+    <li><a href="#sec-problem">Problem</a></li>
+    <li><a href="#sec-process">Process</a></li>
+    <li><a href="#sec-solution">Solution</a></li>
+    <li><a href="#sec-impact">Impact</a></li>
+    <li><a href="#sec-learnings">Learnings</a></li>
   </ol>
 </nav>
 
@@ -215,7 +207,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </ol>
 </nav>
 
-<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow"><b>01</b> · Problem</span></div>
+<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
@@ -320,7 +312,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow"><b>02</b> · Process</span></div>
+<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
 <div class="gal-block" id="the-fork">
 
   <div class="gal-copy"><div class="gal-copy-inner">
@@ -442,7 +434,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow"><b>03</b> · Solution</span></div>
+<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow">Solution</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
@@ -2627,7 +2619,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </div>
 </div>
 
-<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow"><b>04</b> · Impact</span></div>
+<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
@@ -2957,7 +2949,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow"><b>05</b> · Learnings</span></div>
+<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow">Learnings</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">

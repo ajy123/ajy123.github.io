@@ -264,7 +264,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 <figure class="cs-hero-visual">
   <img src="/images/deeli-product-report.png" width="696" height="391" alt="Shipped Deeli research report with visible sources, confidence, citations, and drill-down terms">
-  <figcaption>The shipped report makes its evidence visible: source count, confidence, citations, and scoped drill-down.</figcaption>
+  <figcaption>The shipped report makes its evidence visible: source count, citations, and scoped drill-down.</figcaption>
 </figure>
 
 <nav class="cs-rail" aria-label="Case study summary">
@@ -741,6 +741,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     @media (max-width:560px){
       #sol-w1{ padding:40px 20px; }
       #sol-w1 .sol-w1-heading{ margin:0 0 32px; }
+      #sol-w1 .sol-w1-submit{ width:44px; height:44px; }
+      #sol-w1 .sol-w1-chip{ min-height:44px; display:inline-flex; align-items:center; padding:8px 14px; }
+      #sol-w1 .sol-w1-ask-another{ min-height:44px; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -1086,6 +1089,20 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         margin-right:-7px;
         opacity:.55;
         transform:none;
+        position:relative;
+      }
+      /* Only on touch, where the button is actually visible. Forcing 44px on
+         the button itself would be shrunk by the chip's flex row and would
+         blow out the chip, so expand the hit area instead. Gated to
+         hover:none so the invisible resting state never becomes tappable. */
+      #sol-w2 .sol-w2-fnx::before{
+        content:"";
+        position:absolute;
+        left:50%;
+        top:50%;
+        width:44px;
+        height:44px;
+        transform:translate(-50%,-50%);
       }
     }
     #sol-w2 .sol-w2-fnx:focus-visible{
@@ -1253,6 +1270,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w2 .sol-w2-sr-status{
       position:absolute; width:1px; height:1px; padding:0; margin:-1px;
       overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+
+    /* Must stay after the base control rules above — same specificity, so
+       source order decides. */
+    @media (max-width:560px){
+      #sol-w2 .sol-w2-chip{ min-height:44px; display:inline-flex; align-items:center; }
+      #sol-w2 .sol-w2-rewrite{ min-height:44px; }
+      #sol-w2 .sol-w2-submit{ width:44px; height:44px; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -1451,7 +1476,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Show what the agents are doing.</h3>
-    <p class="gal-move-summary">While generating, each named agent reports the sources it is touching. The wait becomes evidence instead of an unverifiable percentage.</p>
+    <p class="gal-move-summary">While generating, each named agent reports the sources it is touching, and the panel ends by showing how many of them the report actually uses. The wait is legible instead of an unverifiable percentage.</p>
     <p class="gal-move-note"><b>Decision:</b> narrate concrete source activity, such as 145 USPTO patents or 312 matched papers, instead of showing a progress bar.</p>
   </div></div>
   <details class="cs-prototype">
@@ -1689,6 +1714,16 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       white-space:nowrap;
     }
 
+    #sol-w3 .w3-sr-status{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+
+    @media (max-width:560px){
+      #sol-w3 .w3-replay{ min-height:44px; padding:10px 8px; }
+      #sol-w3 .w3-stop{ min-height:44px; }
+    }
+
     @media (prefers-reduced-motion: reduce){
       #sol-w3 *{
         transition:none !important;
@@ -1719,7 +1754,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           </span>
           <span class="w3-agent-name">Source Discovery Agent</span>
           <span class="w3-agent-sep">&middot;</span>
-          <span class="w3-agent-status" data-done="Indexed 581 sources"></span>
+          <span class="w3-agent-status" data-done="Indexed 824 sources"></span>
         </div>
         <div class="w3-subs">
           <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>supaboard.ai</strong> &nbsp;found 4 supported claims</span></div>
@@ -1780,13 +1815,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           </span>
           <span class="w3-agent-name">Synthesis &amp; Review</span>
           <span class="w3-agent-sep">&middot;</span>
-          <span class="w3-agent-status" data-done="Complete"></span>
+          <span class="w3-agent-status" data-done="32 sources selected from 824"></span>
         </div>
         <div class="w3-subs"></div>
       </div>
     </div>
 
   </div>
+
+  <p class="w3-sr-status" id="sol-w3-status" role="status" aria-live="polite"></p>
 
   <button type="button" class="w3-replay" aria-label="Replay the generating sequence prototype">
     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -1807,6 +1844,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var stopBtn = root.querySelector('.w3-stop');
     var stopLabel = root.querySelector('.w3-stop-label');
     var replayBtn = root.querySelector('.w3-replay');
+    var srStatus = root.querySelector('#sol-w3-status');
     var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
 
     var INIT_MS = 450;      /* Initializing… before Scanning… */
@@ -1851,6 +1889,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       el.querySelector('.w3-agent-status').textContent = text;
     }
 
+    // The panel's progress is otherwise conveyed only by class changes and
+    // silently-injected text, so announce each agent as it finishes.
+    function announce(el, text){
+      if (!srStatus || !text) return;
+      var name = el.querySelector('.w3-agent-name');
+      srStatus.textContent = (name ? name.textContent + ' — ' : '') + text;
+    }
+
     function buildSequence(){
       seq = [];
       agentEls.forEach(function(el, i){
@@ -1873,6 +1919,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           el.classList.remove('is-active');
           el.classList.add('is-done');
           setStatus(el, doneText);
+          announce(el, doneText);
         }});
       });
       seq.push({ d: END_MS, fn: function(){
@@ -1910,6 +1957,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       agentEls.forEach(function(el){
         el.classList.add('is-done');
         setStatus(el, el.querySelector('.w3-agent-status').getAttribute('data-done'));
+        announce(el, el.querySelector('.w3-agent-status').getAttribute('data-done'));
         Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
           sub.classList.add('is-in');
         });
@@ -1969,7 +2017,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </details>
   <div class="gal-copy" id="move-3b"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Make every claim inspectable.</h3>
-    <p class="gal-move-summary">The final report exposes its source count, confidence, citations, and drill-down paths so researchers can check a claim before using it.</p>
+    <p class="gal-move-summary">The final report exposes its source count, citations, and drill-down paths so researchers can check a claim before using it.</p>
     <p class="gal-move-proof">Observed: 91 of 92 live queries returned an inspectable report. This measures generation reliability, not research outcome quality.</p>
   </div></div>
   <details class="cs-prototype">
@@ -2111,6 +2159,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w4 .sol-w4-cite{
       appearance:none;
       -webkit-appearance:none;
+      position:relative;
       background:none;
       border:none;
       padding:0 1px;
@@ -2124,6 +2173,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       cursor:pointer;
       border-radius:2px;
       transition:color var(--d-fast) var(--d-ease), background-color var(--d-fast) var(--d-ease);
+    }
+    /* The superscript itself stays 6x11px; this gives the finger a 24px target
+       without changing the mark or the line height around it. */
+    #sol-w4 .sol-w4-cite::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:24px;
+      height:24px;
+      transform:translate(-50%,-50%);
     }
     #sol-w4 .sol-w4-cite:hover{
       color:var(--d-primary-container);
@@ -2295,8 +2355,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       width:300px;
       max-width:calc(100% - 16px);
       background:var(--d-white);
+      border:1px solid var(--d-ghost);
       border-radius:10px;
-      box-shadow:0 8px 28px rgba(0,0,0,0.07), 0 20px 25px -5px rgba(25,28,29,0.04), 0 8px 10px -6px rgba(25,28,29,0.04);
+      /* Sits above the citation popover in stacking order and can extend past
+         the panel onto the white page, so it needs at least as much lift. */
+      box-shadow:0 16px 40px -10px rgba(25,28,29,0.22), 0 6px 14px -5px rgba(25,28,29,0.12);
       padding:6px;
       display:flex;
       flex-direction:column;
@@ -2431,6 +2494,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       color:var(--d-sub);
     }
 
+    @media (max-width:560px){
+      /* Relative to the card, not a flat value — at 320 the card is only 184px
+         and a fixed 200px cap overhangs its edge. */
+      #sol-w4 .sol-w4-pop{ max-width:min(200px, calc(100% - 16px)); }
+      #sol-w4 .sol-w4-drill{ max-width:min(200px, calc(100% - 16px)); }
+      #sol-w4 .sol-w4-regen{ min-height:44px; }
+      #sol-w4 .sol-w4-cite::before{ width:32px; height:32px; }
+    }
+
     @media (prefers-reduced-motion: reduce){
       #sol-w4 .sol-w4-cite,
       #sol-w4 .sol-w4-term,
@@ -2460,7 +2532,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
     </div>
 
-    <p class="sol-w4-meta">Generated Jul 2026 &middot; 32 sources &middot; ~12 min read &middot; Confidence: High</p>
+    <p class="sol-w4-meta">Generated Jul 2026 &middot; 32 sources &middot; ~12 min read</p>
     <div class="sol-w4-hairline" role="presentation"></div>
 
     <p class="sol-w4-sec-label">Power Delivery Architecture</p>

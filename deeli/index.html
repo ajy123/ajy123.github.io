@@ -3119,6 +3119,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   }
   window.addEventListener('scroll', onScrollOrResize, {passive:true});
   window.addEventListener('resize', onScrollOrResize, {passive:true});
+  // A backgrounded tab suspends rAF, which can strand `ticking` true and drop
+  // every later scroll event. Reset and recompute directly on refocus.
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
 
   sections.forEach(function(s){
     s.link.addEventListener('click', function(){

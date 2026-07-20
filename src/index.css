@@ -713,7 +713,7 @@ h1 span {
 }
 
 a.card-eyebrow-flag {
-  color: var(--ink);
+  color: var(--muted);
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: 3px;
@@ -726,6 +726,32 @@ a.card-eyebrow-flag:hover,
 a.card-eyebrow-flag:focus-visible {
   color: var(--ink-strong);
   text-decoration-color: currentColor;
+}
+
+/* Desktop scans the noun ("Case study"); touch gets the verb below. */
+a.card-eyebrow-flag .flag-verb {
+  display: none;
+}
+
+/* Wherever the cursor pill can't render (touch, or hover windows ≤ 860px —
+ * see canShowHoverHints in ContextualAskHint.tsx) the flag is the card's only
+ * visible way into the live site / case study — promote it, speak in the verb
+ * register, and give it a ~44px target. */
+@media (hover: none), (max-width: 860px) {
+  a.card-eyebrow-flag {
+    color: var(--ink-strong);
+    font-size: 13px;
+    padding: 14px;
+    margin: -14px;
+  }
+
+  a.card-eyebrow-flag .flag-noun {
+    display: none;
+  }
+
+  a.card-eyebrow-flag .flag-verb {
+    display: inline;
+  }
 }
 
 /* Live-project media: the link is an invisible overlay above the video and

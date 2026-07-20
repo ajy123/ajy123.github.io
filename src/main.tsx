@@ -79,8 +79,10 @@ type WorkItem = {
   status?: string;
   summary?: string;
   liveHref?: string;
-  /** Label for the liveHref link; defaults to "See it live". */
+  /** Verb label for the cursor pill over media; defaults to "See it live". */
   linkLabel?: string;
+  /** Noun label for the card's flag link; defaults to "Live site". */
+  flagLabel?: string;
   askHint: string;
   askKind: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
@@ -93,6 +95,10 @@ type WorkItem = {
     poster?: string;
   };
 };
+
+/* Shared verb-register default: the cursor pill and the touch flag must never
+ * drift apart, so both fall back to this. */
+const DEFAULT_LINK_LABEL = "See it live";
 
 type EssaySection = {
   heading: string;
@@ -111,12 +117,13 @@ type EssayItem = WorkItem & {
 
 const workItems: WorkItem[] = [
   {
-    eyebrow: "Case study",
+    eyebrow: "Product design",
     title: "From keyword search to a research chat",
     role: "Led design + part PM, team of 5",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read the case study",
+    flagLabel: "Case study",
     askHint: "Ask how this became a chat",
     askKind: "project",
     askAnchorPreference: "cursor",
@@ -140,7 +147,7 @@ const workItems: WorkItem[] = [
     },
   },
   {
-    eyebrow: "Case study",
+    eyebrow: "Brand",
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
@@ -160,6 +167,7 @@ const workItems: WorkItem[] = [
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     liveHref: "https://deeli.ai",
+    flagLabel: "deeli.ai",
     media: {
       type: "video",
       src: caseStudyVideoUrl,
@@ -1163,7 +1171,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
   // Internal links (e.g. the case-study page) navigate in the same tab;
   // external product sites keep opening in a new one.
   const isExternal = /^https?:\/\//.test(item.liveHref);
-  const linkLabel = item.linkLabel ?? "See it live";
+  const linkLabel = item.linkLabel ?? DEFAULT_LINK_LABEL;
 
   // Action zone: the media of a live project navigates to it. The cursor hint
   // becomes an accent "See it live" pill (kind="action") instead of a chat ask
@@ -1230,7 +1238,8 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
               rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
               onClick={(event) => event.stopPropagation()}
             >
-              {item.linkLabel ?? "See it live"} ↗
+              <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
+              <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
             </a>
           ) : item.status ? (
             <p className="card-eyebrow-flag">{item.status}</p>

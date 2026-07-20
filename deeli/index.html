@@ -125,8 +125,10 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 .cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;box-shadow:inset -1px 0 var(--hairline-faint);}
 .cs-side ol{margin-top:4px;}
-.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
+.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .15s var(--ease);}
 .cs-side ol a:hover{color:var(--ink);}
+.cs-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
+@media(prefers-reduced-motion:reduce){.cs-side ol a{transition:none;}}
 .cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
 .cs-side-home:hover{color:var(--accent-deep);}
 
@@ -3053,6 +3055,95 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 </div>
 </div>
+
+<script>
+(function(){
+  var railCol = document.querySelector('.cs-rail-col');
+  var nav = document.querySelector('.cs-side');
+  if(!railCol || !nav) return;
+
+  var links = Array.prototype.slice.call(nav.querySelectorAll('ol a[href^="#sec-"]'));
+  var sections = links.map(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    return el ? {id:id, el:el, link:a} : null;
+  }).filter(Boolean);
+  if(!sections.length) return;
+
+  var activeId = null;
+
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id){ s.link.setAttribute('aria-current','location'); }
+      else { s.link.removeAttribute('aria-current'); }
+    });
+  }
+
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; // rail hidden <1000px: skip cheaply
+
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+
+    // bottom-of-page fallback: last section wins even if too short to reach the reading line
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+
+    var readingLine = scrollY + viewportH * 0.375; // ~37.5% down viewport, matches scroll-margin-top offset
+    var current = null;
+    for(var i = 0; i < sections.length; i++){
+      var top = sections[i].el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine){
+        current = sections[i].id;
+      } else {
+        break;
+      }
+    }
+    setActive(current); // null above the first section: nothing active
+  }
+
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){
+      setActive(s.id); // settle instantly on click, before the (instant) jump lands
+    });
+  });
+
+  // deep-link load (e.g. #sec-impact): seed from the hash immediately so the
+  // correct item is highlighted before any scroll event has a chance to fire.
+  var hash = window.location.hash.slice(1);
+  if(hash && sections.some(function(s){ return s.id === hash; })){
+    setActive(hash);
+  }
+  // Reconcile once layout/scroll has truly settled. Deliberately NOT run on the
+  // very next animation frame: at that point web fonts may not have swapped in
+  // yet and the browser's native hash-scroll may not have landed, so
+  // scrollHeight/scrollY can be transiently wrong (e.g. spuriously tripping the
+  // bottom-of-page fallback and clobbering a correct hash-seeded section with
+  // nothing left to correct it afterward). 'load' and fonts.ready cover the
+  // normal cases; the timeout is a safety net that fires regardless.
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(computeActive); }
+  setTimeout(computeActive, 400);
+})();
+</script>
 
 </body>
 </html>

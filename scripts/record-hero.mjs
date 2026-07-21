@@ -326,12 +326,17 @@ function encode(timeline, posterMs) {
   const scene1 = timeline.find((s) => s.scene === 'type');
   const scene4 = timeline.find((s) => s.scene === 'cite');
 
-  // Cross-dissolves between scenes instead of hard cuts. The loading→report
-  // dissolve carries meaning (the wait becomes the artifact), so it gets the
-  // system's slow duration; the others get a soft standard dissolve.
+  // Cross-dissolves between scenes instead of hard cuts, with one exception:
+  // the type→clarify cut dips through Canvas instead of dissolving (see step
+  // 1b) — the two layouts share no geometry, so overlapping them under a
+  // straight xfade double-exposes two unrelated screens. The loading→report
+  // dissolve carries meaning (the wait becomes the artifact), so it keeps
+  // the system's slow 0.42s duration and match-dissolves on the shared
+  // title; the remaining transition (clarify→generate) gets a soft standard
+  // dissolve.
   // NOTE: playwright's webm is VFR — each segment must be CFR-ized before
   // xfade or the offsets drift (see memory: VFR webm breaks xfade directly).
-  const FADES = [0.3, 0.3, 0.42];
+  const FADES = [0.3, 0.42]; // segA->seg_2 (dissolve), seg_2->seg_3 (match-dissolve)
 
   // Playwright's video starts recording before the page is ready, so its
   // head offset is unknown. Anchor from the tail: the raw file ends roughly
@@ -360,15 +365,56 @@ function encode(timeline, posterMs) {
     return { path: segPath, dur: probeDuration(segPath) };
   });
 
-  // 2. Chain xfades. offset_k = sum(dur_0..k) - sum(fade_0..k).
-  const inputs = segs.flatMap((s) => ['-i', s.path]);
+  // 1b. type -> clarify dips through Canvas instead of dissolving: seg0
+  // fades out to Canvas, seg1 fades in from it, then the two are concatenated
+  // back-to-back (no overlap). 0xF8F9FA is the design system's Canvas token
+  // — the dip passes through it because the two layouts share no geometry.
+  const seg0DipPath = path.join(REC_DIR, 'seg_0_dip.mp4');
+  const seg0OutSt = (segs[0].dur - 0.25).toFixed(3);
+  runFfmpeg(
+    [
+      '-y', '-i', segs[0].path,
+      '-vf', `fade=t=out:st=${seg0OutSt}:d=0.25:color=0xF8F9FA`,
+      '-c:v', 'libx264', '-crf', '18', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-an',
+      seg0DipPath,
+    ],
+    'seg0 dip-out to Canvas'
+  );
+
+  const seg1DipPath = path.join(REC_DIR, 'seg_1_dip.mp4');
+  runFfmpeg(
+    [
+      '-y', '-i', segs[1].path,
+      '-vf', 'fade=t=in:st=0:d=0.25:color=0xF8F9FA',
+      '-c:v', 'libx264', '-crf', '18', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-an',
+      seg1DipPath,
+    ],
+    'seg1 dip-in from Canvas'
+  );
+
+  const segAPath = path.join(REC_DIR, 'seg_A.mp4');
+  runFfmpeg(
+    [
+      '-y', '-i', seg0DipPath, '-i', seg1DipPath,
+      '-filter_complex', '[0:v][1:v]concat=n=2:v=1:a=0[v]', '-map', '[v]',
+      '-c:v', 'libx264', '-crf', '18', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-an',
+      segAPath,
+    ],
+    'concat seg0+seg1 dip'
+  );
+
+  // 2. Chain xfades over [segA, seg_2, seg_3] (segA replaces the raw
+  //    seg_0/seg_1 pair with the dipped-and-concatenated clip from step 1b).
+  //    offset_k = sum(dur_0..k) - sum(fade_0..k).
+  const chainSegs = [{ path: segAPath, dur: probeDuration(segAPath) }, segs[2], segs[3]];
+  const inputs = chainSegs.flatMap((s) => ['-i', s.path]);
   let filter = '';
   let prevLabel = '0:v';
   let offset = 0;
-  for (let i = 1; i < segs.length; i++) {
+  for (let i = 1; i < chainSegs.length; i++) {
     const fade = FADES[i - 1];
-    offset += segs[i - 1].dur - fade;
-    const outLabel = i === segs.length - 1 ? 'vout' : `v${i}`;
+    offset += chainSegs[i - 1].dur - fade;
+    const outLabel = i === chainSegs.length - 1 ? 'vout' : `v${i}`;
     filter += `[${prevLabel}][${i}:v]xfade=transition=fade:duration=${fade}:offset=${offset.toFixed(3)}[${outLabel}];`;
     prevLabel = outLabel;
   }

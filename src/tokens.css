@@ -1,0 +1,78 @@
+/* Shared layout tokens — the single source of truth for spacing and measure.
+ *
+ * Loaded by both pages of this multi-page Vite build:
+ *   - the React app, via `@import` at the top of src/index.css
+ *   - the case study, via <link> in deeli/index.html
+ * Both are rollupOptions.input entries in vite.config.ts, so Vite bundles and
+ * hashes this file for each of them. Do not inline a copy into either page.
+ *
+ * Spacing sits on an 8px grid. Larger step = weaker relationship, so the scale
+ * itself encodes the hierarchy: things separated by --space-section read as
+ * further apart than things separated by --space-copy.
+ *
+ * Three tiers of number exist in these stylesheets, and only the first belongs
+ * here:
+ *   1. LAYOUT   gaps BETWEEN things — sections, blocks, copy, figures, sibling
+ *               components. Tokenized; this is the page's rhythm.
+ *   2. CHROME   padding INSIDE a component, tuned optically against its own
+ *               content (.pr-canvas 14/12, .hm-panel 30/28/26). Left free;
+ *               forcing it onto the grid flattens type-driven fine-tuning.
+ *   3. GEOMETRY numbers that are part of a drawing rather than of spacing
+ *               (.hm-cols gap sets chart proportions together with bar and
+ *               column width). Must NOT be tokenized — changing it redraws the
+ *               figure.
+ * If you are adding a gap BETWEEN things, it is tier 1: use a token.
+ */
+:root {
+  --space-tight: 8px; /* inside a tight cluster */
+  --space-copy: 16px; /* headline -> lede, within one voice */
+  --space-figure: 24px; /* copy -> the figure that illustrates it */
+  --space-block: 48px; /* between units inside a section */
+  --space-section: 56px; /* between major sections */
+  --space-major: 64px; /* the landing's widest separation: shell + work rows */
+  --gutter: 40px; /* page gutter, owned by the structural blocks */
+
+  /* Line length. Measure is a readability metric in CHARACTERS, so these are
+     ch not px — the ch unit scales with font-size, holding the character count
+     steady across type sizes. Four roles, not seven ad hoc values. */
+  --measure-prose: 68ch; /* body copy, the reading measure */
+  --measure-lede: 54ch; /* hero lede: larger type, fewer chars per line */
+  --measure-caption: 44ch; /* figure captions */
+  --measure-label: 24ch; /* micro label beside a stat */
+}
+
+/* Responsive rhythm. The scale is redefined at the breakpoints rather than
+   each rule carrying its own mobile override — change a value here and every
+   section, block and gutter follows.
+
+   Stepped, not clamp(): fluid vw math lands on fractional values (38.4px)
+   which would break the 8px grid everywhere except the endpoints.
+
+   The BREAKPOINTS are deliberately page-specific and live with their pages,
+   not here: the landing collapses at 860 because a 280px sticky rail has to
+   fit, the case study reflows at 760 because it has no rail. What is shared is
+   the SCALE, not the thresholds. The steps below are the ones both pages agree
+   on; each page narrows the gutter further at its own smallest breakpoint. */
+@media (max-width: 860px) {
+  :root {
+    --gutter: 24px;
+    --space-major: 48px;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --space-block: 32px;
+    --space-section: 40px;
+  }
+}
+
+/* Only the gutter tightens again on the narrowest phones. The vertical steps
+   hold: compressing them further collapsed --space-figure into --space-copy,
+   which flattened the copy/figure distinction the scale exists to express.
+   Horizontal room is scarce at 375px; vertical room is not. */
+@media (max-width: 560px) {
+  :root {
+    --gutter: 16px;
+  }
+}

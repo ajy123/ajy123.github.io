@@ -6,6 +6,9 @@
 <title>From search box to research partner · Joanna Yen</title>
 <meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry, from keyword search to an agentic research partner.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
+     see vite.config.ts rollupOptions.input. -->
+<link rel="stylesheet" href="/src/tokens.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -30,60 +33,9 @@
   --accent-deep:#d63e00;
   --accent-wash:rgba(244,72,0,0.08);
   --radius:4px;
-  /* Vertical rhythm. Spacing was the one dimension with no tokens -- 39 ad hoc
-     values across the page -- so gaps drifted per component. These five steps
-     sit on an 8px grid. Larger step = weaker relationship, so the scale itself
-     encodes the hierarchy.
-
-     Three tiers of number live in this file, and only the first is tokenized:
-       1. LAYOUT   how sections, blocks, copy, figures and sibling components
-                   relate. Tokenized -- this is the page's rhythm.
-       2. CHROME   padding inside a component, tuned optically against its own
-                   content (.pr-canvas 14/12, .hm-panel 30/28/26). Left free;
-                   forcing it onto the grid flattens type-driven fine-tuning.
-       3. GEOMETRY values that are part of a drawing rather than of spacing
-                   (.hm-cols gap sets chart proportions together with bar and
-                   column width). Must NOT be tokenized -- changing it redraws
-                   the figure.
-     If you are adding a gap BETWEEN things, it belongs in tier 1: use a token. */
-  --space-tight:8px;    /* inside a tight cluster */
-  --space-copy:16px;    /* headline -> lede, within one voice */
-  --space-figure:24px;  /* copy -> the figure that illustrates it */
-  --space-block:48px;   /* between units inside a section */
-  --space-section:56px; /* between major sections */
-  /* Line length. Measure is a readability metric in CHARACTERS, so these are
-     ch not px -- the ch unit scales with font-size, holding the character
-     count steady across type sizes. Four roles, not seven ad hoc values. */
-  --measure-prose:68ch;   /* body copy, the reading measure */
-  --measure-lede:54ch;    /* hero lede: larger type, fewer chars per line */
-  --measure-caption:44ch; /* figure captions */
-  --measure-label:24ch;   /* micro label beside a stat */
-  --gutter:40px;          /* page gutter, owned by the structural blocks */
   --ease:cubic-bezier(0.25,0.46,0.45,0.94);
   --ease-out-strong:cubic-bezier(0.23,1,0.32,1);
   color-scheme: light;
-}
-/* Responsive rhythm. The scale is redefined at the breakpoints rather than
-   each rule carrying its own mobile override -- change these five values and
-   every section, block, and gutter follows. Stepped, not clamp(): fluid vw
-   math lands on fractional values (38.4px) which would break the 8px grid the
-   whole system rests on. Breakpoints reuse the two the page already had. */
-@media (max-width:760px){
-  :root{
-    --space-block:32px;
-    --space-section:40px;
-    --gutter:24px;
-  }
-}
-/* Only the gutter tightens again below 420. The vertical steps stay at their
-   760 values on purpose: compressing them further collapsed --space-figure
-   into --space-copy, which flattened the copy/figure distinction the scale
-   exists to express. Horizontal room is scarce on a 375px screen; vertical
-   room is not. */
-@media (max-width:420px){
-  :root{
-    --gutter:16px;
-  }
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:auto;}

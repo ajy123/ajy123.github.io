@@ -1,0 +1,339 @@
+/* Essay dialog — backdrop, stage, panel, and the essay prose vocabulary
+ * inside it. Split out of index.css so the deeli case study can load this
+ * file directly (via EssayDialog.tsx) without pulling in the rest of the
+ * landing page's stylesheet (and its own :root).
+ *
+ * Left in index.css (landing-only): .essay-carousel*, .essay-dialog-trigger*,
+ * .essay-dialog-visual*, .card-* — the card grid/trigger has no equivalent on
+ * deeli, which only ever opens the dialog standalone.
+ *
+ * Token bridge: deeli/index.html ships its own inline :root and does not
+ * define every token these rules reference. Rather than adding to :root here
+ * (deeli's inline :root must stay authoritative for page tokens), the
+ * missing ones are scoped to the dialog roots below, with a comment naming
+ * index.css as the source of truth. Every other var(--…) in this file is
+ * already defined by deeli's inline :root or by tokens.css (loaded by both
+ * pages).
+ *
+ * --surface-elevated is only consumed by .essay-scenario-card, a descendant
+ * of .essay-dialog-panel — defined here too so it inherits down rather than
+ * duplicating the bridge on a fourth selector.
+ */
+.essay-dialog-backdrop,
+.essay-dialog-stage,
+.essay-dialog-panel {
+  /* source of truth: index.css :root */
+  --overlay: rgba(255, 255, 255, 0.85);
+  --shadow-soft: rgba(22, 21, 19, 0.12);
+  --surface-elevated: #ffffff;
+}
+
+/* Scoped copy of index.css's .card-eyebrow — the dialog header reuses this
+ * class for its "2026 · Essay" line (EssayDialog.tsx). .card-eyebrow itself
+ * stays landing-only in index.css (it also styles the work/essay card
+ * triggers there), but the dialog header's own copy needs it wherever
+ * EssayDialog renders, deeli included. */
+.card-eyebrow {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Scoped copy of index.css's .work-media — EssayEvalThumbnail (the eval
+ * essay's hero) renders className="work-media" and depends on its position/
+ * aspect-ratio/overflow. The landing page still has its own copy in
+ * index.css for the work-card carousel; this one lets the dialog render
+ * correctly on deeli, which has no work cards. */
+.work-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  border-radius: 0;
+  transition: transform 0.35s var(--ease);
+}
+
+.work-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.essay-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: var(--overlay);
+}
+
+.essay-dialog-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 48px);
+  overflow-y: auto;
+}
+
+.essay-dialog-panel {
+  position: relative;
+  width: min(820px, 100%);
+  max-height: min(820px, calc(100dvh - 48px));
+  padding: clamp(28px, 4vw, 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 0;
+  border-radius: 4px;
+  outline: none;
+  box-shadow: 0 18px 48px var(--shadow-soft);
+}
+
+.essay-dialog-panel[data-scroll-ready="false"] {
+  overflow: hidden;
+}
+
+.essay-dialog-close {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  margin: 0 0 -40px auto;
+  place-items: center;
+  color: var(--muted);
+  background: var(--canvas);
+  border: 1px solid var(--hairline-faint);
+  border-radius: 12px;
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease-out-strong),
+    color 180ms var(--ease),
+    border-color 180ms var(--ease),
+    background-color 180ms var(--ease);
+}
+
+.essay-dialog-close:hover {
+  color: var(--ink-strong);
+  background: var(--surface-warm);
+  border-color: var(--hairline);
+}
+
+.essay-dialog-close:active {
+  transform: scale(0.97);
+}
+
+.essay-dialog-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.essay-dialog-close path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.essay-dialog-header {
+  max-width: 680px;
+  padding-right: 56px;
+  margin-bottom: 28px;
+}
+
+.essay-dialog-title {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.essay-dialog-meta {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.essay-dialog-dek {
+  /* Deliberately not --measure-lede (54ch). This dek sits inside the essay
+     modal at 20px, not in a page hero at 19px, and 58ch is what it shipped
+     with. Kept literal rather than widened to match a token, because the
+     modal could not be opened to verify the change. */
+  max-width: 58ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.essay-dialog-hero {
+  margin-bottom: 34px;
+}
+
+.essay-dialog-hero .work-media {
+  aspect-ratio: 16 / 9;
+}
+
+.essay-dialog-body {
+  max-width: var(--measure-prose);
+  margin: 0;
+}
+
+.essay-dialog-section {
+  margin: 0;
+}
+
+.essay-dialog-section + .essay-dialog-section {
+  margin-top: 34px;
+}
+
+.essay-dialog-section h3 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.essay-dialog-section p {
+  margin: 0;
+  color: var(--body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.essay-dialog-section p + p {
+  margin-top: 14px;
+}
+
+.essay-dialog-figure {
+  margin: 18px 0 0;
+  padding: clamp(16px, 3vw, 26px) clamp(12px, 2.5vw, 20px) clamp(12px, 2.5vw, 18px);
+  background: var(--surface-subtle);
+  overflow-x: auto;
+}
+
+/* min-width keeps the figures' 8.5px mono labels legible on phones —
+   narrow screens scroll the figure instead of shrinking it to ~50%. */
+.essay-dialog-figure > svg {
+  display: block;
+  width: 100%;
+  min-width: 540px;
+  height: auto;
+}
+
+.essay-dialog-section .essay-figure-caption {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.essay-scenario-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.essay-scenario-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 12px;
+  background: var(--surface-elevated);
+}
+
+.essay-scenario-card svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.essay-dialog-section .essay-scenario-title {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.essay-dialog-section .essay-scenario-desc {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.essay-dialog-takeaway {
+  margin: 34px 0 0;
+  padding-top: 20px;
+  color: var(--ink);
+  border-top: 1px solid var(--hairline-faint);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+@media (max-width: 860px) {
+  .essay-dialog-stage {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .essay-dialog-panel {
+    max-height: calc(100dvh - 20px);
+    padding: 24px 18px 30px;
+    border-radius: 0;
+  }
+
+  .essay-dialog-close {
+    top: 0;
+  }
+
+  .essay-dialog-header {
+    /* Keeps ~10px clearance past the 44px touch-size close button. */
+    padding-right: 54px;
+    margin-bottom: 22px;
+  }
+
+  .essay-dialog-hero {
+    margin-bottom: 28px;
+  }
+}
+
+/* 44px meets the touch-target minimum (was 40px, mouse-era sizing). Same
+   compound gate as the chat controls: coarse pointers need it at any width —
+   tablets open this dialog well above 860px. Desktop header padding (56px)
+   already clears 44px, so only the button grows here. */
+@media (pointer: coarse), (max-width: 860px) {
+  .essay-dialog-close {
+    width: 44px;
+    height: 44px;
+    margin-bottom: -44px;
+  }
+}

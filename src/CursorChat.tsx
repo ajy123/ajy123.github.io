@@ -530,6 +530,7 @@ function buildMessages(
   context: CapturedContext,
   history: ChatTurn[] = [],
   zoneContext?: CursorChatZoneContext,
+  extraContext?: string,
 ): ChatMessage[] {
   const audienceGuidance =
     context.audienceRole === "recruiter"
@@ -565,6 +566,7 @@ function buildMessages(
     (audienceGuidance ? `${audienceGuidance} ` : "") +
     "Keep replies direct, plain, and helpful.\n\n" +
     SITE_CONTEXT +
+    (extraContext ? "\n" + extraContext : "") +
     "\n\nPage context:\n" +
     contextLines;
 
@@ -667,8 +669,10 @@ function StreamedResponseText({ text }: { text: string }) {
 
 export function CursorChat({
   suspended = false,
+  extraContext,
 }: {
   suspended?: boolean;
+  extraContext?: string;
 }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
@@ -1074,6 +1078,7 @@ export function CursorChat({
     context: CapturedContext,
     history: ChatTurn[],
     zoneContext: CursorChatZoneContext | undefined,
+    extraContext: string | undefined,
   ) => {
     const patch = (updater: (thread: Thread) => Thread) =>
       setThreads((current) =>
@@ -1086,7 +1091,13 @@ export function CursorChat({
     const startedAt = performance.now();
 
     try {
-      const messages = buildMessages(message, context, history, zoneContext);
+      const messages = buildMessages(
+        message,
+        context,
+        history,
+        zoneContext,
+        extraContext,
+      );
       const response = await streamChat(
         messages,
         (full) => {
@@ -1203,7 +1214,7 @@ export function CursorChat({
       showRoleAsk: false,
     }));
 
-    await runGeneration(id, message, context, history, zoneContext);
+    await runGeneration(id, message, context, history, zoneContext, extraContext);
   };
 
   const collapseActive = () => {

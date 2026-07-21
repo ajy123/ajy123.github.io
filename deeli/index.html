@@ -483,12 +483,33 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-spec .ps-legend li{display:flex;align-items:baseline;gap:9px;font-family:var(--font-mono);font-size:10.5px;line-height:1.5;color:var(--muted-strong);}
   #anchor-spec .ps-legend .ps-pin{transform:translateY(2px);}
   #anchor-spec .ps-legend .ps-leg-sec{color:var(--muted);}
+  /* Exploration strip: the marker decision, three directions */
+  #anchor-spec .ps-explore{grid-column:1 / -1;margin-top:4px;padding-top:20px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
+  #anchor-spec .ps-explore-label{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  #anchor-spec .ps-exp-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  #anchor-spec .ps-exp-frame{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:13px 14px;display:flex;flex-direction:column;gap:9px;min-width:0;}
+  #anchor-spec .ps-exp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  #anchor-spec .ps-exp-dir{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);}
+  #anchor-spec .ps-exp-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  #anchor-spec .ps-exp-tag--sel{color:var(--accent-deep);}
+  #anchor-spec .ps-exp-surface{font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#FAF9F5;border:1px solid rgba(19,43,36,.08);border-radius:8px;padding:11px 12px;font-size:12px;line-height:1.65;color:#191c1d;}
+  #anchor-spec .ps-exp-note{font-family:var(--font-mono);font-size:10px;line-height:1.55;color:var(--muted-strong);margin:0;display:flex;gap:7px;align-items:baseline;}
+  #anchor-spec .ps-exp-note .ps-pin{transform:translateY(2px);}
+  /* B: favicon tiles */
+  #anchor-spec .ps-fav{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:4px;font:700 7.5px/1 Inter,sans-serif;color:#fff;box-shadow:0 0 0 1.5px #FAF9F5;vertical-align:-2px;}
+  #anchor-spec .ps-fav+.ps-fav{margin-left:-5px;}
+  #anchor-spec .ps-fav--lock{background:#dbe5e1;color:#132B24;}
+  #anchor-spec .ps-plusn{font:600 9px/1 Inter,sans-serif;color:#717182;margin-left:3px;}
+  /* C: label chip */
+  #anchor-spec .ps-chiplabel{display:inline-block;font-family:var(--font-mono);font-size:.7em;font-weight:500;color:#717182;background:rgba(19,43,36,.05);border-radius:4px;padding:1px 5px;vertical-align:1px;margin:0 1px;}
   #anchor-spec .ps-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
   @media (max-width:760px){
     #anchor-spec .ps-panes{grid-template-columns:1fr;padding:18px;gap:16px;}
     #anchor-spec .ps-doc{order:2;}
     #anchor-spec .ps-stage{order:1;}
     #anchor-spec .ps-doc-scroll{height:300px;}
+    #anchor-spec .ps-explore{order:3;}
+    #anchor-spec .ps-exp-row{grid-template-columns:1fr;}
   }
 
   /* --- Eval figure: the scorer table, one row loud --- */
@@ -618,7 +639,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </div>
         <div class="ps-sec" id="ps-sec-22">
           <p class="ps-sec-h"><span class="ps-secno">2.2</span>Typography</p>
-          <p>One typeface: Inter. Base body 13px&thinsp;/&thinsp;1.5. Hierarchy is made with weight and size, never a second display face. Inline UI elements size in em so they scale with the prose they sit in.</p>
+          <p>One typeface: Inter. Base body 13px&thinsp;/&thinsp;1.5. Hierarchy is made with weight and size, never a second display face. Inline UI elements size in em so they scale with the prose they sit in. Avoid monospace for inline product UI: it reads &ldquo;techy&rdquo; and breaks the editorial calm.</p>
         </div>
         <h4>3 &middot; The citation system</h4>
         <div class="ps-sec" id="ps-sec-32">
@@ -653,6 +674,26 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <li><button class="ps-pin" type="button" data-sec="ps-sec-43">3</button><span>Trust carried by one muted sentence, flags in clay <span class="ps-leg-sec">&rarr; &sect;4.3 trust line</span></span></li>
         <li><button class="ps-pin" type="button" data-sec="ps-sec-21">4</button><span>Warm paper, Inter 13/1.5, color spent nowhere else <span class="ps-leg-sec">&rarr; &sect;2.1&ndash;2.2 foundations</span></span></li>
       </ul>
+    </div>
+    <div class="ps-explore">
+      <div class="ps-explore-label">The marker decision &middot; three directions explored</div>
+      <div class="ps-exp-row">
+        <div class="ps-exp-frame">
+          <div class="ps-exp-head"><span class="ps-exp-dir">A &middot; Number</span><span class="ps-exp-tag ps-exp-tag--sel">Selected</span></div>
+          <div class="ps-exp-surface">Capacity utilization recovered to 87% in Q4 <span class="ps-cite">4</span> <span class="ps-cite">7</span>.</div>
+          <p class="ps-exp-note"><button class="ps-pin" type="button" data-sec="ps-sec-41">A</button><span>Calmest. Even texture at rest; the tick carries exceptions. &rarr; &sect;4.1</span></p>
+        </div>
+        <div class="ps-exp-frame">
+          <div class="ps-exp-head"><span class="ps-exp-dir">B &middot; Icon</span><span class="ps-exp-tag">Rejected</span></div>
+          <div class="ps-exp-surface">Capacity utilization recovered to 87% in Q4 <span style="white-space:nowrap"><span class="ps-fav" style="background:#b0432e">R</span><span class="ps-fav" style="background:#3a5f8a">B</span><span class="ps-fav ps-fav--lock">&#9679;</span><span class="ps-plusn">+2</span></span>.</div>
+          <p class="ps-exp-note"><button class="ps-pin" type="button" data-sec="ps-sec-33">B</button><span>Source identity inline breaks the even texture; domains are card material. &rarr; &sect;3.3</span></p>
+        </div>
+        <div class="ps-exp-frame">
+          <div class="ps-exp-head"><span class="ps-exp-dir">C &middot; Label</span><span class="ps-exp-tag">Rejected</span></div>
+          <div class="ps-exp-surface">Capacity utilization recovered to 87% in Q4 <span class="ps-chiplabel">reuters</span><span class="ps-chiplabel">+2</span>.</div>
+          <p class="ps-exp-note"><button class="ps-pin" type="button" data-sec="ps-sec-22">C</button><span>Monospace chips read techy and break the editorial calm. &rarr; &sect;2.2</span></p>
+        </div>
+      </div>
     </div>
   </div>
   <p class="ps-caption">Every annotated choice traces back to the rule that produced it. AI drafted variants; the doc decided.</p>

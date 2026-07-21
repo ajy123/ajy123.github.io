@@ -26,8 +26,8 @@
   --overlay: rgba(255, 255, 255, 0.85);
   --shadow-soft: rgba(22, 21, 19, 0.12);
   /* Paper-plate material — a typewriter keycap over the intro's halftone
-   * field. Shared by .intro-key--paper, the coarse CTA, and .intro-skip so
-   * the look stays in one place. */
+   * field. Shared by .intro-key--paper and the coarse CTA so the look stays
+   * in one place. */
   --plate-fill: rgba(250, 249, 245, 0.92);
   --plate-border: rgba(31, 30, 29, 0.18);
   --plate-shadow:
@@ -1563,45 +1563,6 @@ a.card-eyebrow-flag .flag-verb {
     border: 1px solid var(--plate-border);
     border-radius: 5px;
     box-shadow: var(--plate-shadow);
-  }
-}
-
-.intro-skip {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* 44x44 meets the touch-target minimum (was ~32px); the plate grows
-     around the label instead of the glyph ballooning. */
-  min-width: 44px;
-  min-height: 44px;
-  padding: 10px 14px;
-  color: var(--muted-strong);
-  /* Same paper-plate material as .intro-key--paper — bare text in the
-     densest corner of the halftone field was low-contrast and easy to
-     lose against the shader. */
-  background: var(--plate-fill);
-  border: 1px solid var(--plate-border);
-  border-radius: 5px;
-  box-shadow: var(--plate-shadow);
-  cursor: pointer;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  transition: transform 140ms var(--ease);
-}
-
-.intro-skip:active {
-  transform: scale(0.95);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .intro-skip:hover {
-    color: var(--ink);
   }
 }
 

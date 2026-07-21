@@ -105,17 +105,19 @@ svg {
   background: var(--selection-bg);
 }
 
-/* No max-width/centering on the shell itself — that used to slide the rail
-   inward as the viewport widened past 1200+80px. The rail instead sits at a
-   constant 40px gutter (flex item, fixed width, no auto margins); only the
-   content column below gets a max-width + auto margins, so it's the one that
-   centers in the space right of the rail (see .work-canvas). */
 .portfolio-shell {
   display: flex;
   min-height: 100vh;
   min-height: 100dvh;
   gap: 64px;
   padding: 0 40px;
+  /* The cap is what holds the rail-to-content gap at the declared 64px:
+     uncapped, .work-canvas's auto margins centre it in the whole flex
+     remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
+     ~390px on a wide display. 1200 = 40 gutter + 280 rail + 64 gap
+     + 776 measure + 40 gutter. */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .profile-rail {
@@ -135,8 +137,9 @@ svg {
   justify-content: space-between;
   padding: 72px 48px 72px 0;
   background: var(--canvas);
-  /* Hairline divider, not a shadow — separation by line/whitespace only. */
-  box-shadow: inset -1px 0 var(--hairline-faint);
+  /* No divider: the 64px gap does the separating. A full-height hairline
+     needs a page edge to belong to, and the shell is centred, so the line
+     would float with white on both sides. */
 }
 
 .profile-content {

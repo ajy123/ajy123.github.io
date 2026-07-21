@@ -160,12 +160,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
    .cs-side is position:fixed with no left/right set, so its used left value
    is its static position, exactly where .cs-rail-col sits in the flex
    row. That's the same trick .profile-sticky relies on.
-   No max-width/centering on the shell itself, same fix as .portfolio-shell:
-   that used to slide the rail inward as the viewport widened past 1280px.
-   The rail sits at a constant 40px gutter (fixed-width flex item, no auto
-   margins); only .cs-content gets a max-width + auto margins so it's the one
-   that centers in the space right of the rail, matching .work-canvas. */
-.cs-shell{display:flex;padding:0 40px;gap:64px;}
+   The shell is capped and centred, same as .portfolio-shell. The cap is what
+   holds the rail-to-content gap at the declared 64px: uncapped, .cs-content's
+   auto margins centre it in the whole flex remainder, so the gap grew as
+   64 + (viewport - 1200)/2 and reached ~390px on a wide display. The rail
+   moves with the shell rather than sitting in the viewport gutter, which is
+   why the rail carries no divider — a full-height hairline needs a page edge
+   to belong to, and a centred shell has none. 1200 = 40 + 280 + 64 + 776
+   + 40, matching .work-canvas. */
+.cs-shell{display:flex;padding:0 40px;gap:64px;max-width:1200px;margin:0 auto;}
 .cs-rail-col{position:relative;width:280px;flex-shrink:0;}
 .cs-content{flex:1 1 auto;min-width:0;}
 @media(max-width:999px){.cs-shell{padding:0;}.cs-rail-col{display:none;}}
@@ -175,9 +178,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
    gap), restricted to the range where this page actually shows a rail, so
    the two pages sit at identical x at every shared width. */
 @media(min-width:1000px){.cs-content{max-width:776px;margin:0 auto;}}
-@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}
 
-.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;box-shadow:inset -1px 0 var(--hairline-faint);}
+/* No divider: the 64px gap does the separating. See .profile-sticky. */
+.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
 .cs-side ol{margin-top:4px;}
 .cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .15s var(--ease);}
 .cs-side ol a:hover{color:var(--ink);}
@@ -185,6 +188,10 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(prefers-reduced-motion:reduce){.cs-side ol a{transition:none;}}
 .cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
 .cs-side-home:hover{color:var(--accent-deep);}
+/* Must stay after the base .cs-side rule: same specificity, so source order
+   decides. When it sat above, .cs-side's unconditional width:280px won and the
+   visible rail overhung its 240px spacer, closing the gap to 0 in this band. */
+@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}
 
 /* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
 .cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:24px;}

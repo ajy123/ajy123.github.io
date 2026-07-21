@@ -48,6 +48,13 @@ export function EssayDialog({
   // the trigger is the landing card (a motion.div) or the deeli case-study's
   // plain <a> link — whatever had focus when the dialog opened gets it back.
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  // Read through a ref so the effect below can depend on `open` alone. The
+  // landing card re-renders while the dialog is open (it tracks its own hover
+  // state), which hands us a fresh onClose identity; if that re-ran the
+  // effect, it would recapture previouslyFocusedRef as the dialog panel and
+  // drop focus to <body> on close.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const prefersReducedMotion = useReducedMotion();
   const dialogId = `essay-dialog-${item.id}`;
   const dialogTitleId = `essay-dialog-title-${item.id}`;
@@ -70,7 +77,7 @@ export function EssayDialog({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -105,7 +112,7 @@ export function EssayDialog({
         previouslyFocusedRef.current?.focus();
       }, 0);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   useEffect(() => {
     if (!open) {

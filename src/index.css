@@ -751,15 +751,23 @@ a.card-eyebrow-flag .flag-verb {
 
 /* The essay card's flag skips the noun/verb split: its noun is already spent
  * in the eyebrow ("2026 · Essay"), so repeating it desktop-side would be dead
- * copy. Arrow is "→" not "↗" — the essay opens in place, it doesn't leave. */
+ * copy. Arrow is "→" not "↗" — the essay opens in place, it doesn't leave.
+ * Everything else matches a.card-eyebrow-flag, underline included: the rule
+ * reads "this is the way in", and the flag is the only one touch users get. */
 .essay-flag {
-  transition: color 180ms var(--ease);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color 180ms var(--ease),
+    text-decoration-color 180ms var(--ease);
 }
 
 /* The card is the button, so the card's own hover/focus drives the flag. */
 .essay-dialog-trigger:hover .essay-flag,
 .essay-dialog-trigger:focus-visible .essay-flag {
   color: var(--ink-strong);
+  text-decoration-color: currentColor;
 }
 
 /* Wherever the cursor pill can't render (touch, or hover windows ≤ 860px —
@@ -909,66 +917,6 @@ a.card-eyebrow-flag .flag-verb {
 
 .essay-dialog-visual .work-media {
   aspect-ratio: 16 / 9;
-}
-
-.essay-coverage-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.essay-coverage-table th {
-  padding: 4px 8px 6px;
-  color: var(--muted);
-  border-bottom: 1px solid var(--hairline);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.essay-coverage-table th:first-child {
-  text-align: left;
-}
-
-.essay-coverage-table td {
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--hairline-faint);
-  text-align: center;
-  line-height: 0;
-}
-
-.essay-coverage-table td.scenario {
-  color: var(--ink);
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.4;
-  text-align: left;
-}
-
-.essay-coverage-table svg {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.essay-coverage-legend {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 10px;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.essay-coverage-legend span {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
 }
 
 @media (hover: none) {

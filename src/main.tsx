@@ -662,9 +662,9 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
                 already the button, so a second control would split the target.
                 A span keeps the affordance visible — the only one touch users
                 get, since the cursor pill can't render there. */}
-            <p className="card-eyebrow-flag essay-flag" aria-hidden="true">
+            <span className="card-eyebrow-flag essay-flag" aria-hidden="true">
               Read essay →
-            </p>
+            </span>
           </div>
           <motion.div
             className="essay-dialog-visual"

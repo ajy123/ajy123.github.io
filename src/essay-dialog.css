@@ -288,6 +288,70 @@
   line-height: 1.5;
 }
 
+/* Coverage table + legend, from the same EssayPersonaVisuals.tsx that owns
+ * the scenario cards above. Moved with them: both render inside the dialog
+ * body, so splitting them would leave a raw <table> on any page that loads
+ * only this file. */
+.essay-coverage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.essay-coverage-table th {
+  padding: 4px 8px 6px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.essay-coverage-table th:first-child {
+  text-align: left;
+}
+
+.essay-coverage-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--hairline-faint);
+  text-align: center;
+  line-height: 0;
+}
+
+.essay-coverage-table td.scenario {
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.essay-coverage-table svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.essay-coverage-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.essay-coverage-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .essay-dialog-takeaway {
   margin: 34px 0 0;
   padding-top: 20px;

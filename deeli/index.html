@@ -1264,11 +1264,33 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       font-weight:600;
       color:var(--d-text);
     }
-    #sol-w2 .sol-w2-adjust{
+    #sol-w2 .sol-w2-queued-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #sol-w2 .sol-w2-notify{
+      appearance:none;
+      background:transparent;
+      border:1px solid var(--d-primary);
+      color:var(--d-primary);
+      font-family:inherit;
+      font-size:12px;
+      font-weight:500;
+      padding:6px 10px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease);
+    }
+    #sol-w2 .sol-w2-notify:hover{ background:var(--d-surface-low); }
+    #sol-w2 .sol-w2-notify[disabled]{ opacity:.55; cursor:default; }
+    #sol-w2 .sol-w2-view{
       appearance:none;
       border:none;
-      background:transparent;
-      color:var(--d-primary);
+      background:var(--d-primary);
+      color:var(--d-white);
+      font-family:inherit;
       font-size:12px;
       font-weight:500;
       padding:6px 10px;
@@ -1277,8 +1299,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       white-space:nowrap;
       transition:background var(--d-fast) var(--d-ease);
     }
-    #sol-w2 .sol-w2-adjust:hover{ background:var(--d-surface-low); }
-    #sol-w2 .sol-w2-adjust:focus-visible{
+    #sol-w2 .sol-w2-view:hover{ background:var(--d-primary-container); }
+    #sol-w2 .sol-w2-notify:focus-visible,
+    #sol-w2 .sol-w2-view:focus-visible{
       outline:1px solid var(--d-primary);
       outline-offset:2px;
     }
@@ -1353,8 +1376,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
 
       <div class="sol-w2-panel sol-w2-queued" id="sol-w2-queued" hidden>
-        <p class="sol-w2-queued-text" role="status"><strong>Queued</strong>: Arm robotics market, Arm Holdings · Generating</p>
-        <button type="button" class="sol-w2-adjust" id="sol-w2-adjust" aria-label="Adjust focus and choose again">Adjust focus</button>
+        <p class="sol-w2-queued-text" role="status" id="sol-w2-queued-text">Your report is queued &mdash; notify me when ready?</p>
+        <div class="sol-w2-queued-actions">
+          <button type="button" class="sol-w2-notify" id="sol-w2-notify">Notify me</button>
+          <button type="button" class="sol-w2-view" id="sol-w2-view" aria-label="View generation progress; resets this prototype">View progress</button>
+        </div>
       </div>
     </div>
 
@@ -1380,7 +1406,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var marketWord = root.querySelector('#sol-w2-market');
     var fnchip2 = root.querySelector('#sol-w2-fnchip2');
     var fnchip2Label = root.querySelector('#sol-w2-fnchip2-label');
-    var adjustBtn = root.querySelector('#sol-w2-adjust');
+    var notifyBtn = root.querySelector('#sol-w2-notify');
+    var viewBtn = root.querySelector('#sol-w2-view');
+    var queuedText = root.querySelector('#sol-w2-queued-text');
     var statusNode = root.querySelector('#sol-w2-status');
     var FAST = parseFloat(getComputedStyle(root).getPropertyValue('--d-fast')) || 160;
 
@@ -1494,14 +1522,30 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     submit.addEventListener('click', function(){
       if (!selected) return;
       swapPanels(clarifyPanel, queuedPanel, function(){
-        adjustBtn.focus();
+        notifyBtn.focus();
       });
     });
 
-    adjustBtn.addEventListener('click', function(){
-      swapPanels(queuedPanel, clarifyPanel, function(){
-        if (selected) selected.focus();
-      });
+    notifyBtn.addEventListener('click', function(){
+      queuedText.textContent = "We'll notify you when it's ready.";
+      notifyBtn.disabled = true;
+    });
+
+    // "View progress" walks the reader to the generating panel below — the
+    // real next step in the shipped flow — and quietly resets this prototype
+    // so it can be replayed on the way back up.
+    viewBtn.addEventListener('click', function(){
+      var gen = document.getElementById('sol-w3');
+      if (gen){
+        var det = gen.closest('details');
+        if (det) det.open = true;
+        gen.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
+      window.setTimeout(function(){
+        queuedText.textContent = 'Your report is queued — notify me when ready?';
+        notifyBtn.disabled = false;
+        swapPanels(queuedPanel, clarifyPanel);
+      }, 600);
     });
   })();
   </script>

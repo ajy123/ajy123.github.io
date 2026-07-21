@@ -199,12 +199,15 @@ async function sceneType(page, t0) {
   const submitBox = await boxOf(page, '#sol-w1-submit');
   const sc = center(submitBox);
   await cur(page, sc.x, sc.y, 500);
-  await click(page, sc.x, sc.y);
-  // Cut almost immediately after the press: the clarify scene is the
-  // system's response; w1's own resolved state would contradict it.
+  // Press animation only — NO real click. w1's resolved state would paint on
+  // the very next frame and ghost through the dissolve into the clarify
+  // scene (which stages independently and reads as the system's response).
+  await page.evaluate(() => window.__cur.press());
   await page.waitForTimeout(150);
+  const endMs = Date.now() - t0;
+  await page.evaluate(() => window.__cur.release());
 
-  return { scene: 'type', startMs, endMs: Date.now() - t0 };
+  return { scene: 'type', startMs, endMs };
 }
 
 async function sceneClarify(page, t0) {
@@ -231,30 +234,42 @@ async function sceneClarify(page, t0) {
 }
 
 async function sceneGenerate(page, t0) {
-  // Widen the panel for this scene only so the title + Completed chip share
-  // one line (in-page panel caps at 600px and would wrap the title).
-  await stage(page, '#sol-w3', '#sol-w3 .w3-panel { max-width: 680px !important; }');
+  // Widen the panel for this scene only so the title never wraps, and hide
+  // the Completed chip: in the film the loading panel dissolves straight
+  // into the finished report — the chip is the widget's own terminal state,
+  // not this cut's. Wait on the sequencer's is-finished class instead.
+  await stage(
+    page,
+    '#sol-w3',
+    '#sol-w3 .w3-panel { max-width: 680px !important; } #sol-w3 .w3-complete { display: none !important; }'
+  );
   await page.waitForTimeout(350);
   const startMs = Date.now() - t0;
 
   await page.evaluate(() => window.__cur.move(-100, -100)); // park offscreen
   await page.evaluate(() => document.querySelector('.w3-replay')?.click());
 
-  await waitFor(
-    page,
-    '#sol-w3 .w3-complete:not([hidden])',
-    { timeout: 30000 },
-    'w3 completion chip'
-  );
-  await page.waitForTimeout(1300);
+  try {
+    await page.waitForSelector('#sol-w3 .w3-panel.is-finished', { state: 'attached', timeout: 30000 });
+  } catch (err) {
+    throw new Error(`Timed out waiting for w3 sequence to finish: ${err.message}`);
+  }
+  await page.waitForTimeout(500);
 
   return { scene: 'generate', startMs, endMs: Date.now() - t0 };
 }
 
 async function sceneCite(page, t0) {
-  await stage(page, '#sol-w4');
+  // Top-align the report so its title lands where the generating panel's
+  // title sits — the 3→4 dissolve becomes a match-dissolve on the shared
+  // title instead of a double-title ghost.
+  await stage(page, '#sol-w4', '#sol-w4 { inset: 48px auto auto 45px !important; margin: 0 !important; }');
   await page.waitForTimeout(350);
   const startMs = Date.now() - t0;
+
+  // Let the dissolve from the loading panel land on a readable report beat
+  // before the cursor starts moving.
+  await page.waitForTimeout(500);
 
   const citeBox = await boxOf(page, '.sol-w4-cite[data-cite="2"]');
   const cc = center(citeBox);
@@ -311,21 +326,69 @@ function encode(timeline, posterMs) {
   const scene1 = timeline.find((s) => s.scene === 'type');
   const scene4 = timeline.find((s) => s.scene === 'cite');
 
+  // Cross-dissolves between scenes instead of hard cuts. The loading→report
+  // dissolve carries meaning (the wait becomes the artifact), so it gets the
+  // system's slow duration; the others get a soft standard dissolve.
+  // NOTE: playwright's webm is VFR — each segment must be CFR-ized before
+  // xfade or the offsets drift (see memory: VFR webm breaks xfade directly).
+  const FADES = [0.3, 0.3, 0.42];
+
   // Playwright's video starts recording before the page is ready, so its
-  // head offset is unknown. We anchor from the tail instead: the raw file
-  // ends roughly when scene 4 ends, so trimStart = rawDuration - onscreenSpan.
+  // head offset is unknown. Anchor from the tail: the raw file ends roughly
+  // when scene 4 ends.
   const D = probeDuration(rawPath);
-  const trimDurationSec = (scene4.endMs - scene1.startMs) / 1000;
-  const trimStartSec = Math.max(0, D - trimDurationSec);
-  const posterTimeSec = trimStartSec + (posterMs - scene1.startMs) / 1000;
+  const rawStartSec = Math.max(0, D - (scene4.endMs - scene1.startMs) / 1000);
 
   mkdirSync(path.dirname(OUT_MP4), { recursive: true });
 
+  // 1. Cut each scene into a CFR intermediate (inter-scene restage gaps are
+  //    dropped here — they never reach the final cut).
+  const segs = timeline.map((s, i) => {
+    const segPath = path.join(REC_DIR, `seg_${i}.mp4`);
+    const start = rawStartSec + (s.startMs - scene1.startMs) / 1000;
+    const dur = (s.endMs - s.startMs) / 1000;
+    runFfmpeg(
+      [
+        '-y', '-i', rawPath,
+        '-ss', String(start), '-t', String(dur),
+        '-vf', 'fps=30,scale=1070:602',
+        '-c:v', 'libx264', '-crf', '18', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-an',
+        segPath,
+      ],
+      `segment ${i} (${s.scene})`
+    );
+    return { path: segPath, dur: probeDuration(segPath) };
+  });
+
+  // 2. Chain xfades. offset_k = sum(dur_0..k) - sum(fade_0..k).
+  const inputs = segs.flatMap((s) => ['-i', s.path]);
+  let filter = '';
+  let prevLabel = '0:v';
+  let offset = 0;
+  for (let i = 1; i < segs.length; i++) {
+    const fade = FADES[i - 1];
+    offset += segs[i - 1].dur - fade;
+    const outLabel = i === segs.length - 1 ? 'vout' : `v${i}`;
+    filter += `[${prevLabel}][${i}:v]xfade=transition=fade:duration=${fade}:offset=${offset.toFixed(3)}[${outLabel}];`;
+    prevLabel = outLabel;
+  }
+  filter = filter.replace(/;$/, '');
+
+  const masterPath = path.join(REC_DIR, 'master.mp4');
   runFfmpeg(
     [
-      '-y', '-i', rawPath,
-      '-ss', String(trimStartSec), '-t', String(trimDurationSec),
-      '-vf', 'fps=30,scale=1070:602',
+      '-y', ...inputs,
+      '-filter_complex', filter, '-map', '[vout]',
+      '-c:v', 'libx264', '-crf', '18', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-an',
+      masterPath,
+    ],
+    'xfade master'
+  );
+
+  // 3. Final encodes from the master.
+  runFfmpeg(
+    [
+      '-y', '-i', masterPath,
       '-c:v', 'libx264', '-crf', '26', '-preset', 'slow',
       '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an',
       OUT_MP4,
@@ -335,17 +398,18 @@ function encode(timeline, posterMs) {
 
   runFfmpeg(
     [
-      '-y', '-i', rawPath,
-      '-ss', String(trimStartSec), '-t', String(trimDurationSec),
-      '-vf', 'fps=30,scale=1070:602',
+      '-y', '-i', masterPath,
       '-c:v', 'libvpx-vp9', '-crf', '42', '-b:v', '0', '-an',
       OUT_WEBM,
     ],
     'webm'
   );
 
+  // Poster lives inside scene 4: its master-timeline position is the last
+  // xfade offset plus the poster's offset within the scene.
+  const posterTimeSec = offset + (posterMs - timeline[timeline.length - 1].startMs) / 1000;
   runFfmpeg(
-    ['-y', '-i', rawPath, '-ss', String(posterTimeSec), '-frames:v', '1', '-q:v', '3', OUT_POSTER],
+    ['-y', '-i', masterPath, '-ss', String(posterTimeSec), '-frames:v', '1', '-q:v', '3', OUT_POSTER],
     'poster'
   );
 
@@ -354,7 +418,7 @@ function encode(timeline, posterMs) {
 
   return {
     scenes: timeline,
-    durations: { rawSec: D, trimStartSec, trimDurationSec },
+    durations: { rawSec: D, masterSec: probeDuration(masterPath), segments: segs.map((s) => s.dur) },
     outputs: { mp4: OUT_MP4, webm: OUT_WEBM, poster: OUT_POSTER },
     sizes: { ...sizes, combinedBytes: sizes.mp4 + sizes.webm + sizes.poster },
   };

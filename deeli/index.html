@@ -371,8 +371,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="gal-block" id="the-fork">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Three inputs changed the product direction.</h2>
-    <p class="gal-lede-p">Customer behavior, product issues, and technical constraints pointed to the same gap: retrieval worked, but Deeli could not interpret intent or return an answer researchers could confidently use. Acting on that took two control surfaces: a design spec the interface had to obey, and an eval suite that told me when the system&rsquo;s judgment could be trusted.</p>
+    <h2 class="gal-headline">Three findings changed the product direction.</h2>
+    <p class="gal-lede-p">Customer behavior, product issues, and technical constraints pointed to the same gap: retrieval worked, but Deeli could not interpret intent or return an answer researchers could confidently use. Closing it took two control surfaces: a design spec the interface had to obey, and an eval suite that told me when the system&rsquo;s judgment could be trusted.</p>
   </div></div>
   <!-- ===== ANCHOR 2: PROCESS ===== -->
 <section class="anchor" id="anchor-process">
@@ -502,6 +502,16 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-spec .ps-plusn{font:600 9px/1 Inter,sans-serif;color:#717182;margin-left:3px;}
   /* C: label chip */
   #anchor-spec .ps-chiplabel{display:inline-block;font-family:var(--font-mono);font-size:.7em;font-weight:500;color:#717182;background:rgba(19,43,36,.05);border-radius:4px;padding:1px 5px;vertical-align:1px;margin:0 1px;}
+  /* The machine twin + the rule it lost */
+  #anchor-spec .ps-json{margin-top:14px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start;}
+  #anchor-spec .ps-json-card{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:13px 15px;font-family:var(--font-mono);min-width:0;}
+  #anchor-spec .ps-json-head{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 9px;}
+  #anchor-spec .ps-json-rule{font-size:10.5px;line-height:1.65;color:var(--muted-strong);margin:0 0 10px;}
+  #anchor-spec .ps-json-rule:last-child{margin-bottom:0;}
+  #anchor-spec .ps-json-name{color:var(--ink);font-weight:600;}
+  #anchor-spec .ps-json-over{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-deep);margin-left:6px;}
+  #anchor-spec .ps-json-note{font-size:12.5px;line-height:1.65;color:var(--muted-strong);margin:0;padding-top:2px;}
+  #anchor-spec .ps-json-note b{color:var(--ink);font-weight:600;}
   #anchor-spec .ps-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
   @media (max-width:760px){
     #anchor-spec .ps-panes{grid-template-columns:1fr;padding:18px;gap:16px;}
@@ -510,6 +520,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #anchor-spec .ps-doc-scroll{height:300px;}
     #anchor-spec .ps-explore{order:3;}
     #anchor-spec .ps-exp-row{grid-template-columns:1fr;}
+    #anchor-spec .ps-json{grid-template-columns:1fr;gap:10px;}
   }
 
   /* --- Eval figure: the scorer table, one row loud --- */
@@ -548,7 +559,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="pc-num">02</div>
         <div class="pc-content">
           <div class="pc-label">Rank problems</div>
-          <p class="pc-line">I ranked 263 tagged issues by frequency and user impact. Report content and citation failures consistently rose to the top.</p>
+          <p class="pc-line">I ranked 263 tagged issues by frequency and user impact. Report content led on frequency; citation failures led on impact.</p>
           <div class="pc-bars">
             <div class="pc-bar-row">
               <span class="pc-bar-label">report content</span>
@@ -571,14 +582,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
               <span class="pc-bar-value">10</span>
             </div>
           </div>
-          <p class="pc-footnote">Low frequency, highest impact: every citation miss landed in front of a skeptical expert.</p>
+          <p class="pc-footnote">Lowest frequency, highest stakes: every citation miss surfaced in an expert review.</p>
         </div>
       </div>
       <div class="pc-rail-row">
         <div class="pc-num">03</div>
         <div class="pc-content">
           <div class="pc-label">Test feasibility</div>
-          <p class="pc-line">Across 21 benchmark runs, an ML engineer and I compared fast retrieval with path-grounded retrieval. Grounding cost roughly six times more per run.</p>
+          <p class="pc-line">Across 21 benchmark runs, an ML engineer and I compared fast retrieval with path-grounded retrieval, where every claim keeps its trail back to a source. Grounding cost roughly six times more per run.</p>
           <div class="pc-bars">
             <div class="pc-bar-row">
               <span class="pc-bar-label">fast retrieval · 1x</span>
@@ -599,13 +610,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="pb-bet">
   <div class="pb-eyebrow">The bet</div>
   <p class="pb-statement">Stop returning documents. <em>Return the synthesis.</em></p>
-  <p class="pb-support">Grounding added $0.09 to every run and the team paid it. An unsourced number in front of a skeptical expert was the one failure the product could not afford twice.</p>
+  <p class="pb-support">Nine cents a run bought grounded synthesis. I made the case to pay it: an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
 </div>
 </section>
 
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Control the interface with a spec.</h3>
-    <p class="gal-move-summary">Before any screens, I wrote DESIGN.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
+    <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
     <p class="gal-move-note"><b>Decision:</b> keep a machine-readable twin, design.json, so every generated variant gets checked against the spec, not against taste.</p>
   </div></div>
 <section class="anchor" id="anchor-spec">
@@ -662,7 +673,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
     </div>
     <div class="ps-stage">
-      <div class="ps-stage-label">The shipped surface &middot; tap a number to trace the rule</div>
+      <div class="ps-stage-label">The shipped surface &middot; select a marker to trace the rule</div>
       <div class="ps-report">
         <div class="ps-report-title">Maturity signals <button class="ps-pin" type="button" data-sec="ps-sec-21" aria-label="Trace to design.md section 2.1, color">4</button></div>
         <div class="ps-trust">12 sources &middot; mostly high-credibility &middot; <span class="ps-flagged">1 stale &middot; 1 conflict</span> <button class="ps-pin" type="button" data-sec="ps-sec-43" aria-label="Trace to design.md section 4.3, section trust line">3</button></div>
@@ -676,7 +687,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </ul>
     </div>
     <div class="ps-explore">
-      <div class="ps-explore-label">The marker decision &middot; three directions explored</div>
+      <div class="ps-explore-label">The marker decision &middot; 56 boards distilled to three marker vocabularies</div>
       <div class="ps-exp-row">
         <div class="ps-exp-frame">
           <div class="ps-exp-head"><span class="ps-exp-dir">A &middot; Number</span><span class="ps-exp-tag ps-exp-tag--sel">Selected</span></div>
@@ -694,9 +705,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           <p class="ps-exp-note"><button class="ps-pin" type="button" data-sec="ps-sec-22">C</button><span>Monospace chips read techy and break the editorial calm. &rarr; &sect;2.2</span></p>
         </div>
       </div>
+      <div class="ps-json">
+        <div class="ps-json-card">
+          <div class="ps-json-head">.impeccable/design.json &middot; the doc&rsquo;s machine twin</div>
+          <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The One Voice Rule&rdquo;</span> &mdash; &ldquo;The forest-green primary appears on less than 10% of any given screen. Its rarity is the signal.&rdquo;</p>
+          <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The Collaboration Color Rule&rdquo;</span><span class="ps-json-over">Overturned &middot; Jun 02</span><br>&ldquo;The amber tertiary is reserved for AI-influenced regions only. Never a brand accent, never decorative.&rdquo;</p>
+        </div>
+        <p class="ps-json-note">Generated variants are checked against this file, not against taste. <b>And the doc is versioned, not sacred:</b> the amber rule lost in June. Citation caution needed the color more, and &sect;2.1 now reads &ldquo;caution is on-brand, not a new hue.&rdquo;</p>
+      </div>
     </div>
   </div>
-  <p class="ps-caption">Every annotated choice traces back to the rule that produced it. AI drafted variants; the doc decided.</p>
+  <p class="ps-caption">Every annotation traces to the rule that produced it. AI drafted the 56 boards; the doc decided.</p>
 </figure>
 <script>
 (function(){
@@ -757,9 +776,9 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Control the behavior with an eval.</h3>
-    <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the one field that needed judgment.</p>
+    <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
     <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
-    <p class="gal-move-proof">9-case suite: 11 of 12 dimensions at 100%. The single miss sat on the one advisory field left to the model. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
+    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
   </div></div>
 <section class="anchor" id="anchor-eval">
 <figure class="pe-figure">
@@ -770,14 +789,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       <div class="pe-row"><span class="pe-dim">routing</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
       <div class="pe-row"><span class="pe-dim">analysis_type</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
       <div class="pe-row"><span class="pe-dim">evidence_policy</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
-      <div class="pe-row pe-row--rest"><span class="pe-dim">+ 7 more deterministic checks</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row pe-row--rest"><span class="pe-dim">+ 6 more exact-match checks</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
       <div class="pe-row pe-row--miss">
         <span class="pe-dim">persona_hint</span><span class="pe-dots"></span><span class="pe-val">85.7%</span>
-        <span class="pe-miss-note">The miss: a query where two personas were both defensible readings. That class now routes to a clarification round instead of a guess.</span>
+        <span class="pe-miss-note">The miss: a plan-seats billing question the parser refused to persona-type, routing it to clarification instead. 6 of the 7 persona-scored cases passed.</span>
       </div>
     </div>
   </div>
-  <p class="pe-caption">The one miss became the clarification flow.</p>
+  <p class="pe-caption">Shipped as the clarification flow in the Solution below.</p>
 </figure>
 </section>
 </div>

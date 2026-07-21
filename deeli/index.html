@@ -372,7 +372,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Three inputs changed the product direction.</h2>
-    <p class="gal-lede-p">Customer behavior, product issues, and technical constraints pointed to the same gap: retrieval worked, but Deeli could not interpret intent or return an answer researchers could confidently use.</p>
+    <p class="gal-lede-p">Customer behavior, product issues, and technical constraints pointed to the same gap: retrieval worked, but Deeli could not interpret intent or return an answer researchers could confidently use. Acting on that took two control surfaces: a design spec the interface had to obey, and an eval suite that told me when the system&rsquo;s judgment could be trusted.</p>
   </div></div>
   <!-- ===== ANCHOR 2: PROCESS ===== -->
 <section class="anchor" id="anchor-process">
@@ -388,10 +388,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-process .pc-rail-row:nth-of-type(1){animation-delay:.02s;}
   #anchor-process .pc-rail-row:nth-of-type(2){animation-delay:.14s;}
   #anchor-process .pc-rail-row:nth-of-type(3){animation-delay:.26s;}
-  /* The eval step reads as the conclusion of the three inputs above it, so it
-     spans the full panel instead of stranding itself in one column. */
-  #anchor-process .pc-rail-row:nth-of-type(4){grid-column:1 / -1;padding:22px 26px 0;margin-top:26px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);animation-delay:.38s;}
-  #anchor-process .pc-rail-row:nth-of-type(4) .pc-line{max-width:62ch;}
   #anchor-process .pc-num{font-family:var(--font-mono);font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ghost);margin-bottom:2px;}
   #anchor-process .pc-content{display:flex;flex-direction:column;gap:9px;padding-top:4px;}
   #anchor-process .pc-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);}
@@ -411,35 +407,81 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-process .pc-bar-track{order:3;flex:1 1 100%;height:8px;background:var(--surface-warm);border-radius:2px;box-shadow:0 0 0 1px var(--hairline-faint);overflow:hidden;}
   #anchor-process .pc-bar-fill{display:block;height:100%;background:var(--muted-strong);border-radius:2px;transform:scaleX(0);transform-origin:left;animation:pc-grow .42s var(--ease-out-strong) forwards;animation-delay:.3s;}
   #anchor-process .pc-bar-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:10.5px;color:var(--ink);order:2;margin-left:auto;text-align:right;}
-  #anchor-process .pc-fork{grid-column:1 / -1;display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:22px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);opacity:0;animation:pc-fade .3s var(--ease) forwards;animation-delay:.5s;}
-  #anchor-process .pc-fork-dot{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--canvas);}
-  #anchor-process .pc-fork-text{font-family:var(--font-mono);font-size:12.5px;font-weight:600;letter-spacing:.01em;color:var(--accent);line-height:1.4;}
-  #anchor-process .pc-funnel svg{display:block;width:100%;height:auto;}
-  #anchor-process .pc-chip-rect{fill:var(--canvas);stroke:var(--hairline-faint);stroke-width:1;}
-  #anchor-process .pc-chip-main{font-family:var(--font-mono);font-size:13px;font-weight:700;fill:var(--ink);font-variant-numeric:tabular-nums;}
-  #anchor-process .pc-chip-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;fill:var(--muted);}
-  #anchor-process .pc-converge-line{fill:none;stroke:var(--hairline);stroke-width:1;stroke-dasharray:260;stroke-dashoffset:260;animation:pc-draw .5s var(--ease-out-strong) forwards;}
-  #anchor-process .pc-converge-line.pc-l2{animation-delay:.05s;}
-  #anchor-process .pc-converge-line.pc-l3{animation-delay:.1s;}
-  #anchor-process .pc-node{fill:var(--muted-strong);opacity:0;animation:pc-fade .25s var(--ease) forwards;animation-delay:.55s;}
-  #anchor-process .pc-fork-line{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:140;stroke-dashoffset:140;animation:pc-draw .4s var(--ease-out-strong) forwards;animation-delay:.6s;}
-  #anchor-process .pc-fork-endpoint{fill:var(--accent);stroke:var(--canvas);stroke-width:1;opacity:0;animation:pc-fade .25s var(--ease) forwards;animation-delay:.95s;}
-  #anchor-process .pc-fork-label{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;fill:var(--accent);opacity:0;animation:pc-fade .3s var(--ease) forwards;animation-delay:1.05s;}
+  #anchor-process .pc-bar-fill--accent{background:var(--accent-deep);}
+  #anchor-process .pc-footnote{font-family:var(--font-mono);font-size:10px;line-height:1.55;color:var(--muted);margin:8px 0 0;}
+
+  /* --- The bet: the panel's conclusion, promoted to a statement --- */
+  #anchor-process .pb-bet{margin:44px 0 6px;padding:26px 0 28px;box-shadow:inset 0 1px 0 0 var(--hairline-faint),inset 0 -1px 0 0 var(--hairline-faint);}
+  #anchor-process .pb-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;}
+  #anchor-process .pb-statement{font-size:clamp(22px,2.6vw,27px);font-weight:700;letter-spacing:-.02em;line-height:1.18;color:var(--ink);margin:0 0 12px;text-wrap:balance;}
+  #anchor-process .pb-statement em{font-style:normal;color:var(--accent-deep);}
+  #anchor-process .pb-support{font-size:14px;line-height:1.6;color:var(--muted-strong);max-width:58ch;margin:0;}
+
   @keyframes pc-rise{to{opacity:1;transform:translateY(0);}}
   @keyframes pc-fade{to{opacity:1;}}
   @keyframes pc-grow{to{transform:scaleX(1);}}
-  @keyframes pc-draw{to{stroke-dashoffset:0;}}
   @media (max-width:760px){
     #anchor-process .pc-panel{grid-template-columns:1fr;}
     #anchor-process .pc-rail-row{padding:0 0 20px;box-shadow:none;}
     #anchor-process .pc-rail-row:first-of-type{padding-left:0;}
-    #anchor-process .pc-rail-row:nth-of-type(4){padding:0 0 20px;margin-top:0;box-shadow:none;}
-    #anchor-process .pc-fork{margin-top:6px;}
   }
   #anchor-process .pc-essay-link{color:var(--accent-deep);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;white-space:nowrap;}
   #anchor-process .pc-essay-link:hover{color:var(--accent);}
   @media (prefers-reduced-motion: reduce){
-    #anchor-process .pc-rail-row,#anchor-process .pc-bar-fill,#anchor-process .pc-fork,#anchor-process .pc-node,#anchor-process .pc-fork-line,#anchor-process .pc-fork-endpoint,#anchor-process .pc-fork-label,#anchor-process .pc-converge-line{animation:none !important;opacity:1 !important;transform:none !important;stroke-dashoffset:0 !important;}
+    #anchor-process .pc-rail-row,#anchor-process .pc-bar-fill{animation:none !important;opacity:1 !important;transform:none !important;}
+  }
+
+  /* The essay link and eyebrow patterns recur outside #anchor-process, in the two beats below. */
+  #the-fork .gal-move .pc-essay-link{color:var(--accent-deep);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;white-space:nowrap;}
+  #the-fork .gal-move .pc-essay-link:hover{color:var(--accent);}
+  /* Beat rhythm: each move title gets air after the figure above it. */
+  #the-fork .gal-copy:has(.gal-move){margin-top:40px;}
+  #anchor-spec,#anchor-eval{display:block;margin-top:18px;}
+  #anchor-spec .ps-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+
+  /* --- Spec figure: DESIGN.md rule beside the surface obeying it --- */
+  #anchor-spec{font-family:var(--font-body);color:var(--body);}
+  #anchor-spec .ps-figure{margin:0;display:flex;flex-direction:column;}
+  #anchor-spec .ps-panes{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);align-items:stretch;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:26px;}
+  #anchor-spec .ps-card{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;}
+  #anchor-spec .ps-card-head{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  #anchor-spec .ps-rule{font-size:13px;line-height:1.6;color:var(--muted-strong);margin:0;}
+  #anchor-spec .ps-rule b{color:var(--ink);}
+  #anchor-spec .ps-tokens{display:flex;flex-direction:column;gap:7px;padding-top:10px;box-shadow:inset 0 1px 0 0 var(--hairline-faint);}
+  #anchor-spec .ps-token{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:10.5px;color:var(--muted-strong);}
+  #anchor-spec .ps-swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
+  #anchor-spec .ps-token-name{color:var(--ink);font-weight:600;}
+  #anchor-spec .ps-join{display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;color:var(--muted);}
+  /* Right pane renders with the product's own tokens, like the solution widgets do. */
+  #anchor-spec .ps-report{font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#f8f9fa;border-radius:6px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;}
+  #anchor-spec .ps-report-title{font-size:13px;font-weight:600;color:#191c1d;letter-spacing:-.005em;}
+  #anchor-spec .ps-report p{font-size:12px;line-height:1.6;color:#191c1d;margin:0;}
+  #anchor-spec .ps-cite{display:inline-block;font-size:9.5px;font-weight:500;color:#717182;background:#ffffff;box-shadow:0 0 0 1px #e1e3e4;border-radius:4px;padding:0 4px;margin:0 1px;vertical-align:baseline;font-variant-numeric:tabular-nums;}
+  #anchor-spec .ps-cite--flag{color:#ffeadd;background:#c76b36;box-shadow:none;white-space:nowrap;}
+  #anchor-spec .ps-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
+  @media (max-width:760px){
+    #anchor-spec .ps-panes{grid-template-columns:1fr;row-gap:10px;padding:18px;}
+    #anchor-spec .ps-join{transform:rotate(90deg);padding:2px 0;}
+  }
+
+  /* --- Eval figure: the scorer table, one row loud --- */
+  #anchor-eval{font-family:var(--font-body);color:var(--body);}
+  #anchor-eval .pe-figure{margin:0;display:flex;flex-direction:column;}
+  #anchor-eval .pe-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:26px;}
+  #anchor-eval .pe-card{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 20px;max-width:520px;margin:0 auto;font-family:var(--font-mono);}
+  #anchor-eval .pe-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:10px;margin-bottom:4px;box-shadow:inset 0 -1px 0 0 var(--hairline-faint);}
+  #anchor-eval .pe-row{display:flex;align-items:baseline;gap:10px;font-size:11px;color:var(--muted-strong);padding:5px 0;}
+  #anchor-eval .pe-dim{flex-shrink:0;}
+  #anchor-eval .pe-dots{flex:1;border-bottom:1px dotted var(--hairline);transform:translateY(-3px);}
+  #anchor-eval .pe-val{font-variant-numeric:tabular-nums;color:var(--ink);}
+  #anchor-eval .pe-row--rest{color:var(--muted);font-size:10.5px;}
+  #anchor-eval .pe-row--miss{background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:8px 10px;margin-top:8px;flex-wrap:wrap;row-gap:2px;}
+  #anchor-eval .pe-row--miss .pe-dim{color:var(--ink);font-weight:600;}
+  #anchor-eval .pe-row--miss .pe-val{color:var(--accent-deep);font-weight:700;}
+  #anchor-eval .pe-miss-note{width:100%;font-size:10px;line-height:1.5;color:var(--muted-strong);}
+  #anchor-eval .pe-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
+  @media (max-width:760px){
+    #anchor-eval .pe-panel{padding:18px;}
   }
 </style>
 <div class="pc-wrap">
@@ -459,6 +501,29 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <div class="pc-content">
           <div class="pc-label">Rank problems</div>
           <p class="pc-line">I ranked 263 tagged issues by frequency and user impact. Report content and citation failures consistently rose to the top.</p>
+          <div class="pc-bars">
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">report content</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill" style="width:100%"></span></span>
+              <span class="pc-bar-value">46</span>
+            </div>
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">agent logic</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill" style="width:93%"></span></span>
+              <span class="pc-bar-value">43</span>
+            </div>
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">search</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill" style="width:80%"></span></span>
+              <span class="pc-bar-value">37</span>
+            </div>
+            <div class="pc-bar-row">
+              <span class="pc-bar-label">citations</span>
+              <span class="pc-bar-track"><span class="pc-bar-fill pc-bar-fill--accent" style="width:22%"></span></span>
+              <span class="pc-bar-value">10</span>
+            </div>
+          </div>
+          <p class="pc-footnote">Low frequency, highest impact: every citation miss landed in front of a skeptical expert.</p>
         </div>
       </div>
       <div class="pc-rail-row">
@@ -480,20 +545,71 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           </div>
         </div>
       </div>
-      <div class="pc-rail-row">
-        <div class="pc-num">04</div>
-        <div class="pc-content">
-          <div class="pc-label">Design from the eval</div>
-          <p class="pc-line">I built an eval suite for the intent parser: deterministic scorers for the unambiguous fields, an LLM judge for the one field that needed judgment. It surfaced a class of queries where two readings were both defensible, and that class is why the product asks instead of guessing. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
-        </div>
-      </div>
-      <div class="pc-fork">
-        <span class="pc-fork-dot"></span>
-        <span class="pc-fork-text">Product vision: stop returning documents. Return the synthesis.</span>
-      </div>
     </div>
   </figure>
 </div>
+<div class="pb-bet">
+  <div class="pb-eyebrow">The bet</div>
+  <p class="pb-statement">Stop returning documents. <em>Return the synthesis.</em></p>
+  <p class="pb-support">Grounding added $0.09 to every run and the team paid it. An unsourced number in front of a skeptical expert was the one failure the product could not afford twice.</p>
+</div>
+</section>
+
+  <div class="gal-copy"><div class="gal-copy-inner gal-move">
+    <h3 class="gal-move-title">Control the interface with a spec.</h3>
+    <p class="gal-move-summary">Before any screens, I wrote DESIGN.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
+    <p class="gal-move-note"><b>Decision:</b> keep a machine-readable twin, design.json, so every generated variant gets checked against the spec, not against taste.</p>
+  </div></div>
+<section class="anchor" id="anchor-spec">
+<figure class="ps-figure">
+  <div class="ps-eyebrow">Spec to surface</div>
+  <div class="ps-panes">
+    <div class="ps-card">
+      <div class="ps-card-head">DESIGN.md &middot; principle 1.3</div>
+      <p class="ps-rule"><b>Encode by exception.</b> The common case shows nothing extra. A page of good citations stays whisper-quiet; the eye lands on the one or two that matter.</p>
+      <div class="ps-tokens">
+        <div class="ps-token"><span class="ps-swatch" style="background:#132B24"></span><span class="ps-token-name">primary</span> #132B24</div>
+        <div class="ps-token"><span class="ps-swatch" style="background:#c5642d"></span><span class="ps-token-name">tertiary</span> #c5642d &middot; caution</div>
+        <div class="ps-token"><span class="ps-swatch" style="background:#f8f9fa;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)"></span><span class="ps-token-name">surface</span> #f8f9fa &middot; body 13/1.5 Inter</div>
+      </div>
+    </div>
+    <div class="ps-join">&rarr;</div>
+    <div class="ps-card">
+      <div class="ps-card-head">The report, obeying it</div>
+      <div class="ps-report">
+        <div class="ps-report-title">Maturity signals</div>
+        <p>Pilot-stage deployments are concentrated in advanced packaging, with partnership validation underway at two fabs <span class="ps-cite">12</span><span class="ps-cite">31</span>. Reported cost efficiency leads all other dimensions <span class="ps-cite">7</span>, though market-timing estimates diverge <span class="ps-cite ps-cite--flag">2 sources conflict</span>.</p>
+      </div>
+    </div>
+  </div>
+  <p class="ps-caption">The rule on the left, the report obeying it on the right: quiet citations, one exception loud.</p>
+</figure>
+</section>
+
+  <div class="gal-copy"><div class="gal-copy-inner gal-move">
+    <h3 class="gal-move-title">Control the behavior with an eval.</h3>
+    <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the one field that needed judgment.</p>
+    <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
+    <p class="gal-move-proof">9-case suite: 11 of 12 dimensions at 100%. The single miss sat on the one advisory field left to the model. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
+  </div></div>
+<section class="anchor" id="anchor-eval">
+<figure class="pe-figure">
+  <div class="pe-panel">
+    <div class="pe-card">
+      <div class="pe-head">Intent parser &middot; eval suite &middot; 9 cases</div>
+      <div class="pe-row"><span class="pe-dim">schema</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row"><span class="pe-dim">routing</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row"><span class="pe-dim">analysis_type</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row"><span class="pe-dim">evidence_policy</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row pe-row--rest"><span class="pe-dim">+ 7 more deterministic checks</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
+      <div class="pe-row pe-row--miss">
+        <span class="pe-dim">persona_hint</span><span class="pe-dots"></span><span class="pe-val">85.7%</span>
+        <span class="pe-miss-note">The miss: a query where two personas were both defensible readings. That class now routes to a clarification round instead of a guess.</span>
+      </div>
+    </div>
+  </div>
+  <p class="pe-caption">The one miss became the clarification flow.</p>
+</figure>
 </section>
 </div>
 

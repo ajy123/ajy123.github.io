@@ -4,6 +4,29 @@
     BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
+  /* Vertical rhythm and layout, on an 8px grid. These values are duplicated
+     verbatim in deeli/index.html, which is a standalone document and cannot
+     import this file — if you change a value here, change it there too.
+
+     Three tiers of number live in this file, and only the first is tokenized:
+       1. LAYOUT   gaps between things: shell, sections, blocks, copy, figures.
+       2. CHROME   padding inside a component, tuned against its own content.
+       3. GEOMETRY numbers that are part of a drawing or animation rig.
+     If you are adding a gap BETWEEN things, use a token.
+
+     The BREAKPOINTS deliberately differ between the two pages: this one has a
+     280px sticky rail that has to collapse at 860, deeli has none and reflows
+     at 760. Shared scale, page-specific thresholds. */
+  --space-tight: 8px;
+  --space-copy: 16px;
+  --space-figure: 24px;
+  --space-block: 48px;
+  --space-section: 56px;
+  --space-major: 64px; /* the landing's widest separation: shell + work rows */
+  --gutter: 40px;
+  --measure-prose: 68ch;
+  --measure-lede: 58ch;
+
   /* Palette from design.md — ink / grey / white, no brand accent. */
   --canvas: #ffffff; /* default page floor */
   --white: #ffffff; /* on-accent foreground text for keycap/pin labels */
@@ -109,8 +132,8 @@ svg {
   display: flex;
   min-height: 100vh;
   min-height: 100dvh;
-  gap: 64px;
-  padding: 0 40px;
+  gap: var(--space-major);
+  padding: 0 var(--gutter);
   /* The cap is what holds the rail-to-content gap at the declared 64px:
      uncapped, .work-canvas's auto margins centre it in the whole flex
      remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
@@ -632,8 +655,8 @@ h1 span {
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 16px;
-  row-gap: 64px;
+  column-gap: var(--space-copy);
+  row-gap: var(--space-major);
 }
 
 /* AI Practice is a carousel: two essays in view, the rest scroll in.
@@ -2795,10 +2818,15 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 @media (max-width: 860px) {
+  :root {
+    --gutter: 24px;
+    --space-major: 48px;
+  }
+
   .portfolio-shell {
     display: block;
     max-width: none;
-    padding: 0 20px;
+    padding: 0 var(--gutter);
   }
 
   .profile-rail {
@@ -2846,7 +2874,7 @@ a.card-eyebrow-flag .flag-verb {
 
   .work-grid {
     grid-template-columns: 1fr;
-    row-gap: 42px;
+    row-gap: var(--space-block);
   }
 
   /* 80% keeps the next card's peek above Reveal's 0.16 intersection
@@ -2948,8 +2976,12 @@ a.card-eyebrow-flag .flag-verb {
     font-size: 32px;
   }
 
+  :root {
+    --gutter: 16px;
+  }
+
   .portfolio-shell {
-    padding: 0 16px;
+    padding: 0 var(--gutter);
   }
 
   /* Slimmer next-card peek than the 80% used at ≤860 — leaves more of the
@@ -2965,7 +2997,7 @@ a.card-eyebrow-flag .flag-verb {
    card gutter) so two work columns stay readable further down. */
 @media (min-width: 861px) and (max-width: 1100px) {
   .portfolio-shell {
-    gap: 40px;
+    gap: var(--space-section);
   }
 
   .profile-rail,
@@ -2980,7 +3012,7 @@ a.card-eyebrow-flag .flag-verb {
 @media (min-width: 861px) and (max-width: 990px) {
   .work-grid {
     grid-template-columns: 1fr;
-    row-gap: 42px;
+    row-gap: var(--space-block);
   }
 }
 

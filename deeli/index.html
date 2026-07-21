@@ -746,7 +746,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   // Drive the scroll by hand: CSS smooth scrolling gets cancelled by the
   // focus/layout work the click triggers, and dies a few px in.
   var snapTimer = null;
+  var glideGen = 0;
   function glideTo(top){
+    // Each glide gets a generation token; stale listeners from an earlier,
+    // never-cancelled glide bail out instead of killing the current one.
+    var gen = ++glideGen;
     if(raf) cancelAnimationFrame(raf);
     if(snapTimer) clearTimeout(snapTimer);
     // Re-read reduced-motion per call so an OS toggle applies without reload.
@@ -759,7 +763,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var dur = 420;
     var cancelled = false;
     function cancel(){
-      if(cancelled) return;
+      if(cancelled || gen !== glideGen) return;
       cancelled = true;
       if(raf) cancelAnimationFrame(raf);
       if(snapTimer) clearTimeout(snapTimer);

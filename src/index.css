@@ -1,8 +1,11 @@
+@import "./tokens.css";
+
 
 :root {
   --font-body: Figtree, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
 
   /* Palette from design.md — ink / grey / white, no brand accent. */
   --canvas: #ffffff; /* default page floor */
@@ -26,8 +29,8 @@
   --overlay: rgba(255, 255, 255, 0.85);
   --shadow-soft: rgba(22, 21, 19, 0.12);
   /* Paper-plate material — a typewriter keycap over the intro's halftone
-   * field. Shared by .intro-key--paper, the coarse CTA, and .intro-skip so
-   * the look stays in one place. */
+   * field. Shared by .intro-key--paper and the coarse CTA so the look stays
+   * in one place. */
   --plate-fill: rgba(250, 249, 245, 0.92);
   --plate-border: rgba(31, 30, 29, 0.18);
   --plate-shadow:
@@ -109,8 +112,8 @@ svg {
   display: flex;
   min-height: 100vh;
   min-height: 100dvh;
-  gap: 64px;
-  padding: 0 40px;
+  gap: var(--space-major);
+  padding: 0 var(--gutter);
   /* The cap is what holds the rail-to-content gap at the declared 64px:
      uncapped, .work-canvas's auto margins centre it in the whole flex
      remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
@@ -632,8 +635,8 @@ h1 span {
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 16px;
-  row-gap: 64px;
+  column-gap: var(--space-copy);
+  row-gap: var(--space-major);
 }
 
 /* AI Practice is a carousel: two essays in view, the rest scroll in.
@@ -993,6 +996,10 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 .essay-dialog-dek {
+  /* Deliberately not --measure-lede (54ch). This dek sits inside the essay
+     modal at 20px, not in a page hero at 19px, and 58ch is what it shipped
+     with. Kept literal rather than widened to match a token, because the
+     modal could not be opened to verify the change. */
   max-width: 58ch;
   margin: 0;
   color: var(--ink);
@@ -1011,7 +1018,7 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 .essay-dialog-body {
-  max-width: 68ch;
+  max-width: var(--measure-prose);
   margin: 0;
 }
 
@@ -1563,45 +1570,6 @@ a.card-eyebrow-flag .flag-verb {
     border: 1px solid var(--plate-border);
     border-radius: 5px;
     box-shadow: var(--plate-shadow);
-  }
-}
-
-.intro-skip {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* 44x44 meets the touch-target minimum (was ~32px); the plate grows
-     around the label instead of the glyph ballooning. */
-  min-width: 44px;
-  min-height: 44px;
-  padding: 10px 14px;
-  color: var(--muted-strong);
-  /* Same paper-plate material as .intro-key--paper — bare text in the
-     densest corner of the halftone field was low-contrast and easy to
-     lose against the shader. */
-  background: var(--plate-fill);
-  border: 1px solid var(--plate-border);
-  border-radius: 5px;
-  box-shadow: var(--plate-shadow);
-  cursor: pointer;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  transition: transform 140ms var(--ease);
-}
-
-.intro-skip:active {
-  transform: scale(0.95);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .intro-skip:hover {
-    color: var(--ink);
   }
 }
 
@@ -2837,7 +2805,7 @@ a.card-eyebrow-flag .flag-verb {
   .portfolio-shell {
     display: block;
     max-width: none;
-    padding: 0 20px;
+    padding: 0 var(--gutter);
   }
 
   .profile-rail {
@@ -2885,7 +2853,7 @@ a.card-eyebrow-flag .flag-verb {
 
   .work-grid {
     grid-template-columns: 1fr;
-    row-gap: 42px;
+    row-gap: var(--space-block);
   }
 
   /* 80% keeps the next card's peek above Reveal's 0.16 intersection
@@ -2988,7 +2956,7 @@ a.card-eyebrow-flag .flag-verb {
   }
 
   .portfolio-shell {
-    padding: 0 16px;
+    padding: 0 var(--gutter);
   }
 
   /* Slimmer next-card peek than the 80% used at ≤860 — leaves more of the
@@ -3004,6 +2972,11 @@ a.card-eyebrow-flag .flag-verb {
    card gutter) so two work columns stay readable further down. */
 @media (min-width: 861px) and (max-width: 1100px) {
   .portfolio-shell {
+    /* Not a token: this 40px is layout arithmetic, not rhythm. It is the
+       64px shell gap minus the 24px handed back to the content column, and
+       it has to stay in step with the 280 -> 240 rail above. Snapping it to
+       --space-section (56px) returns only 8px instead of 24 and re-crowds
+       the work grid this rule exists to widen. */
     gap: 40px;
   }
 
@@ -3019,7 +2992,7 @@ a.card-eyebrow-flag .flag-verb {
 @media (min-width: 861px) and (max-width: 990px) {
   .work-grid {
     grid-template-columns: 1fr;
-    row-gap: 42px;
+    row-gap: var(--space-block);
   }
 }
 

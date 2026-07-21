@@ -6,6 +6,9 @@
 <title>From search box to research partner · Joanna Yen</title>
 <meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry, from keyword search to an agentic research partner.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
+     see vite.config.ts rollupOptions.input. -->
+<link rel="stylesheet" href="/src/tokens.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -42,7 +45,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 /* .gal-block owns the 40px page gutter; children (gal-copy, gal-widget-wrap,
    cs-principles, cs-decision) must NOT add their own horizontal padding. */
-.gal-block{padding:44px 40px;}
+.gal-block{padding:var(--space-block) var(--gutter);}
 .gal-block + .gal-block{border-top:1px solid var(--hairline-faint);}
 .gal-block-head{margin:0 0 30px;}
 .gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
@@ -50,7 +53,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
 
 /* product embed framing (SOLUTION) - Emil hairline figure */
-.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
 .gal-embed{margin:0;display:flex;flex-direction:column;}
 .gal-embed-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .gal-embed-frame{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:14px;overflow:hidden;}
@@ -59,9 +62,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:720px){.gal-embeds{grid-template-columns:1fr;}}
 
 /* ---- case-study prose (portfolio .essay-dialog vocabulary) ---- */
-.gal-copy{padding:4px 0;}
-.gal-copy-inner{max-width:68ch;}
-.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 16px;text-wrap:balance;color:var(--ink);}
+.gal-copy{padding:0;}
+.gal-copy-inner{max-width:var(--measure-prose);}
+/* Copy blocks that end in a paragraph inherit its bottom margin; ones ending
+   in a component (.impact-findings, .cs-next-flow) had none, so the figure
+   below crowded them. Normalize the last child so every copy-to-figure gap
+   lands on the same rhythm. */
+.gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
+.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);text-wrap:balance;color:var(--ink);}
 .gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;}
 .gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
 .gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
@@ -77,8 +85,14 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-widget-wrap > .sol-widget{max-width:680px;}
 .gal-widget-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;max-width:680px;}
 .gal-move p{margin-bottom:6px;}
-.gal-move-title{font-size:21px;font-weight:700;letter-spacing:-.015em;line-height:1.2;color:var(--ink);margin:0 0 9px;}
-.gal-move-summary{font-size:15.5px !important;line-height:1.55 !important;max-width:62ch;}
+.gal-move-title{font-size:21px;font-weight:700;letter-spacing:-.015em;line-height:1.2;color:var(--ink);margin:0 0 9px;text-wrap:balance;}
+/* Prose wrapping: `balance` is for short display lines and browsers cap it at
+   a few lines, so it does nothing for body copy. `pretty` is the one that
+   fixes multi-line rag -- it prevents orphaned last words and stops the
+   lopsided line breaks in the longer paragraphs. */
+.gal-copy-inner p,
+#anchor-process .pb-support{text-wrap:pretty;}
+.gal-move-summary{font-size:15.5px !important;line-height:1.55 !important;max-width:var(--measure-prose);}
 .gal-move-note,.gal-move-proof{font-size:13.5px !important;line-height:1.5 !important;color:var(--muted-strong) !important;}
 .gal-move-proof{font-family:var(--font-mono);color:var(--accent-deep) !important;margin-top:10px !important;}
 .cs-prototype{max-width:680px;margin:14px 0 28px;border-top:1px solid var(--hairline-faint);border-bottom:1px solid var(--hairline-faint);}
@@ -88,31 +102,31 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-prototype[open] summary::after{content:"Close prototype -";}
 .cs-prototype .gal-widget-wrap{padding-top:10px;}
 .cs-prototype .gal-widget-eyebrow{display:none;}
-.impact-signals-label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .impact-findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
+/* The stat block is its own unit, not a caption on the lede. Give it a break
+   below roughly double the 24px gap above it so the figure that follows reads
+   as the next section rather than as part of the stats. */
+.gal-copy-inner > .impact-findings:last-child{margin-bottom:var(--space-block);}
 .impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
 .impact-finding:first-child{padding-left:0;box-shadow:none;}
 .impact-finding b{display:block;font-family:var(--font-mono);font-size:25px;line-height:1;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;}
 .impact-finding span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-.cs-footnote{font-size:12.5px !important;color:var(--muted) !important;margin-top:12px !important;}
-.cs-next-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:12px;margin-top:24px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
+.cs-next-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:12px;margin-top:24px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
 .cs-next-step b{display:block;font-size:13px;color:var(--ink);margin-bottom:4px;}
 .cs-next-step span{display:block;font-size:12px;line-height:1.45;color:var(--muted-strong);}
-.cs-next-arrow{font-family:var(--font-mono);font-size:16px;color:var(--accent-deep);}
 @media(max-width:680px){
   .impact-findings{grid-template-columns:1fr;}
   .impact-finding,.impact-finding:first-child{padding:16px 0;box-shadow:inset 0 1px 0 var(--hairline-faint);}
   .impact-finding:first-child{box-shadow:none;}
   .cs-next-flow{grid-template-columns:1fr;}
-  .cs-next-arrow{transform:rotate(90deg);justify-self:start;}
 }
 
 
 /* ---- final-page shell ---- */
-.cs-hero{padding:64px 40px 24px;}
+.cs-hero{padding:64px var(--gutter) 24px;}
 .cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
 .cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
-.cs-hero-lede{font-size:19px;line-height:1.55;color:var(--body);max-width:54ch;margin:18px 0 0;}
+.cs-hero-lede{font-size:19px;line-height:1.55;color:var(--body);max-width:var(--measure-lede);margin:18px 0 0;}
 .cs-hero-lede b{color:var(--ink);}
 .cs-hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 32px;margin:30px 0 0;}
 .cs-hero-meta-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
@@ -125,7 +139,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .cs-proof-tag,.impact-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
 .cs-proof-value{display:block;font-family:var(--font-mono);font-size:clamp(25px,3.4vw,36px);font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
 .cs-proof-label{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-.cs-hero-visual{margin:0;padding:4px 40px 30px;}
+.cs-hero-visual{margin:0;padding:4px var(--gutter) 30px;}
 .cs-hero-visual img,.cs-hero-visual video{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
 .cs-hero-visual figcaption{margin:12px 0 0;font-family:var(--font-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--muted);text-align:center;}
 @media(max-width:640px){
@@ -135,16 +149,18 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   .cs-proof-value{font-size:22px;}
   .cs-proof-label{font-size:10.5px;line-height:1.4;}
 }
-.cs-sechead{padding:54px 40px 0;}
-.cs-sechead + .gal-block{border-top:none !important;padding-top:18px;}
+.cs-sechead{padding:var(--space-section) var(--gutter) 0;}
+.cs-sechead + .gal-block{border-top:none !important;padding-top:var(--space-copy);}
 .cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
 .gal-block + .gal-block{border-top:none;}
 
 /* ---- FIX 4: five-decisions skim rail ---- */
-.cs-rail{padding:34px 40px 6px;}
+/* 30px bottom, not 34: .cs-hero-visual adds 4px of its own padding-top, so
+   this is what makes the gap above and below the rail read as equal (34/34). */
+.cs-rail{padding:32px var(--gutter) 28px;}
 .cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
 .cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
-.cs-rail ol{max-width:68ch;}
+.cs-rail ol{max-width:var(--measure-prose);}
 .cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
 .cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
 .cs-rail a{display:flex;align-items:baseline;gap:14px;padding:12px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
@@ -208,7 +224,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
 /* ---- FIX 1: considered/chose/because decision rows ---- */
 .cs-decision{margin:14px 0 4px;}
-.cs-decision dl{max-width:68ch;margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
+.cs-decision dl{max-width:var(--measure-prose);margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
 .cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
 .cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
 .cs-decision dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--body);}
@@ -241,13 +257,23 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="cs-hero-meta">
     <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Solo product designer</p><p class="cs-hero-meta-val">Led framing, strategy, interaction, and launch analysis</p></div>
     <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">5-engineer build</p><p class="cs-hero-meta-val">Engineering owned model and production implementation</p></div>
-    <div><p class="cs-hero-meta-label">Launch</p><p class="cs-hero-meta-val">June 2026</p><p class="cs-hero-meta-val">Measured first 3 weeks</p></div>
+    <div><p class="cs-hero-meta-label">Launch</p><p class="cs-hero-meta-val">June 2026</p><p class="cs-hero-meta-val">Measured first 2 weeks</p></div>
   </div>
   <div class="cs-proof-strip" aria-label="Launch evidence">
     <div class="cs-proof-item"><span class="cs-proof-tag">Behavior change</span><span class="cs-proof-value">70%</span><span class="cs-proof-label">of live queries used natural language, not keywords</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">Frequency change</span><span class="cs-proof-value">13% to 70%</span><span class="cs-proof-label">natural-language share, from historical search to the post-launch window</span></div>
+    <div class="cs-proof-item"><span class="cs-proof-tag">Frequency change</span><span class="cs-proof-value">+220%</span><span class="cs-proof-label">average queries per active day, internal pilot to launch week 2</span></div>
   </div>
 </header>
+
+<nav class="cs-rail" aria-label="Case study summary">
+  <p class="cs-rail-title">The case in fifteen seconds</p>
+  <ol>
+    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One keyword produced one generic, uncheckable report.</a></li>
+    <li><a href="#the-fork"><span class="cs-rail-num">Product vision</span> Stop returning documents. Return the synthesis.</a></li>
+    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> Interpret intent, aim the output, and show the work.</a></li>
+    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Researchers changed how they ask, and trusted what came back.</a></li>
+  </ol>
+</nav>
 
 <figure class="cs-hero-visual">
   <video id="hero-demo" width="696" height="391" autoplay muted loop playsinline preload="metadata" poster="/images/deeli-hero-demo-poster.jpg" aria-label="Recording of the shipped flow: a researcher types a question, answers one clarifying choice, watches agents index and select sources to completion, then opens a citation to its source">
@@ -266,16 +292,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   </script>
 </figure>
 
-<nav class="cs-rail" aria-label="Case study summary">
-  <p class="cs-rail-title">The case in fifteen seconds</p>
-  <ol>
-    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One keyword produced one generic, uncheckable report.</a></li>
-    <li><a href="#the-fork"><span class="cs-rail-num">Product vision</span> Stop returning documents. Return the synthesis.</a></li>
-    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> Interpret intent, aim the output, and show the work.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Natural-language research became the default.</a></li>
-  </ol>
-</nav>
-
 <div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
 <div class="gal-block">
 
@@ -287,18 +303,26 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <section class="anchor" id="anchor-problem">
 <style>
 #anchor-problem{font-family:var(--font-body);color:var(--body);}
-#anchor-problem .pr-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:stretch;}
-#anchor-problem .pr-fig{flex:1 1 460px;max-width:520px;min-width:0;display:flex;flex-direction:column;align-items:center;margin:0;}
+/* Two diagrams, one desktop row. The column is only ~696px, so each canvas
+   lands near 334px and the SVGs render at ~0.65 scale — every type size below
+   is set in viewBox units pre-scaled so the labels survive at that size. */
+#anchor-problem .pr-wrap{display:flex;gap:var(--space-figure);justify-content:center;align-items:stretch;}
+#anchor-problem .pr-fig{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;margin:0;}
 #anchor-problem .pr-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;text-align:center;}
-#anchor-problem .pr-canvas{width:100%;aspect-ratio:3/2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);padding:20px 18px;}
+#anchor-problem .pr-canvas{width:100%;aspect-ratio:3/2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);padding:14px 12px;}
 #anchor-problem .pr-canvas svg{width:100%;height:100%;display:block;overflow:visible;}
 #anchor-problem .pr-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;margin:14px 0 0;max-width:440px;}
-#anchor-problem .pr-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);}
-#anchor-problem .pr-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px;fill:var(--ink);}
-#anchor-problem .pr-node-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;fill:var(--muted-strong);}
-#anchor-problem .pr-tag-accent{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;fill:var(--accent);}
-#anchor-problem .pr-tag-muted{font-family:var(--font-mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;fill:var(--muted);}
-#anchor-problem .pr-q{font-family:var(--font-mono);font-size:34px;font-weight:600;fill:var(--ink-strong);}
+#anchor-problem .pr-lbl{font-family:var(--font-mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);}
+#anchor-problem .pr-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:20px;fill:var(--ink);}
+#anchor-problem .pr-node-lbl{font-family:var(--font-mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;fill:var(--muted-strong);}
+#anchor-problem .pr-tag-accent{font-family:var(--font-mono);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;fill:var(--accent);}
+#anchor-problem .pr-tag-muted{font-family:var(--font-mono);font-size:13px;letter-spacing:.05em;text-transform:uppercase;fill:var(--muted);}
+#anchor-problem .pr-q{font-family:var(--font-mono);font-size:48px;font-weight:600;fill:var(--ink-strong);}
+/* Below the two-up threshold the diagrams stack and go back to full size. */
+@media (max-width:760px){
+  #anchor-problem .pr-wrap{flex-direction:column;align-items:center;gap:var(--space-block);}
+  #anchor-problem .pr-fig{max-width:520px;width:100%;}
+}
 @media (prefers-reduced-motion:no-preference){
   #anchor-problem .pr-node,#anchor-problem .pr-sealed{transition:filter .2s var(--ease);}
 }
@@ -317,15 +341,15 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </defs>
         <text x="20" y="38" class="pr-lbl">Capacity planner</text>
         <rect x="20" y="46" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <text x="67" y="67" text-anchor="middle" class="pr-val">HBM</text>
+        <text x="67" y="63" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
         <path d="M114,63 Q250,63 320,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
         <text x="20" y="138" class="pr-lbl">Partnerships lead</text>
         <rect x="20" y="146" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <text x="67" y="167" text-anchor="middle" class="pr-val">HBM</text>
+        <text x="67" y="163" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
         <path d="M114,163 L318,163" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
         <text x="20" y="238" class="pr-lbl">Competitive analyst</text>
         <rect x="20" y="246" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <text x="67" y="267" text-anchor="middle" class="pr-val">HBM</text>
+        <text x="67" y="263" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
         <path d="M114,263 Q250,263 320,186" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
         <text x="390" y="90" text-anchor="middle" class="pr-tag-accent">Identical</text>
         <rect class="pr-node" x="320" y="100" width="140" height="120" rx="4" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"></rect>
@@ -354,7 +378,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         </defs>
         <text x="70" y="75" text-anchor="middle" class="pr-lbl">Query</text>
         <rect x="20" y="90" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <text x="70" y="120" text-anchor="middle" class="pr-val">HBM</text>
+        <text x="70" y="115" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
         <path d="M120,115 L178,115" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
         <rect class="pr-sealed" x="185" y="65" width="140" height="110" rx="4" fill="url(#pr-hatch-b)" stroke="var(--accent)" stroke-width="1.5"></rect>
         <text x="255" y="132" text-anchor="middle" class="pr-q">?</text>
@@ -417,12 +441,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-process .pc-bar-fill--accent{background:var(--accent-deep);}
   #anchor-process .pc-footnote{font-family:var(--font-mono);font-size:10px;line-height:1.55;color:var(--muted-strong);margin:8px 0 0;}
 
-  /* --- The bet: the panel's conclusion, promoted to a statement --- */
-  #anchor-process .pb-bet{margin:40px 0 6px;padding:26px 0;box-shadow:inset 0 1px 0 0 var(--hairline-faint),inset 0 -1px 0 0 var(--hairline-faint);}
-  #anchor-process .pb-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;}
+  /* --- The hypothesis: the panel's conclusion, promoted to a statement --- */
+  #anchor-process .pb-hypothesis{margin:40px 0 6px;padding:26px 0;box-shadow:inset 0 1px 0 0 var(--hairline-faint),inset 0 -1px 0 0 var(--hairline-faint);}
   #anchor-process .pb-statement{font-size:clamp(25px,2.8vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.18;color:var(--ink);margin:0 0 12px;text-wrap:balance;}
   #anchor-process .pb-statement em{font-style:normal;color:var(--accent-deep);}
-  #anchor-process .pb-support{font-size:14px;line-height:1.6;color:var(--muted-strong);max-width:58ch;margin:0;}
+  #anchor-process .pb-support{font-size:14px;line-height:1.6;color:var(--muted-strong);max-width:var(--measure-prose);margin:0;}
 
   @keyframes pc-rise{to{opacity:1;transform:translateY(0);}}
   @keyframes pc-fade{to{opacity:1;}}
@@ -445,7 +468,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #the-fork .gal-copy:has(.gal-move){margin-top:40px;}
   /* Process-scoped heading ladder + measure (do not touch the globals). */
   #the-fork .gal-move-title{font-size:18.5px;}
-  #the-fork .gal-move-summary{max-width:58ch;}
   #anchor-spec,#anchor-eval{display:block;margin-top:18px;}
   #anchor-spec .ps-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 
@@ -568,7 +590,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </style>
 <div class="pc-wrap">
   <figure class="pc-figure">
-    <div class="pc-eyebrow">Evidence to product bet</div>
+    <div class="pc-eyebrow">Evidence to hypothesis</div>
     <div class="pc-panel">
       <div class="pc-rail-row">
         <div class="pc-num">01</div>
@@ -581,7 +603,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       <div class="pc-rail-row">
         <div class="pc-num">02</div>
         <div class="pc-content">
-          <div class="pc-label">Rank problems</div>
+          <div class="pc-label">Prioritize</div>
           <p class="pc-line">I ranked 263 tagged issues by frequency and user impact. Report content led on frequency; citation failures led on impact.</p>
           <div class="pc-bars">
             <div class="pc-bar-row">
@@ -630,8 +652,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     </div>
   </figure>
 </div>
-<div class="pb-bet">
-  <div class="pb-eyebrow">The bet</div>
+<div class="pb-hypothesis">
   <p class="pb-statement">Stop returning documents. <em>Return the synthesis.</em></p>
   <p class="pb-support">Nine cents a run bought grounded synthesis. I made the case to pay it: an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
 </div>
@@ -640,7 +661,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Control the interface with a spec.</h3>
     <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
-    <p class="gal-move-note"><b>Decision:</b> keep a machine-readable twin, design.json, so every generated variant gets checked against the spec, not against taste.</p>
+    <p class="gal-move-note"><b>Decision:</b> keep design.md machine-readable, so every generated variant gets checked against the spec, not against taste.</p>
   </div></div>
 <section class="anchor" id="anchor-spec">
 <figure class="ps-figure">
@@ -731,11 +752,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       </div>
       <div class="ps-json">
         <div class="ps-json-card">
-          <div class="ps-json-head">.impeccable/design.json &middot; the doc&rsquo;s machine twin</div>
+          <div class="ps-json-head">design.md &middot; the named rules</div>
           <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The One Voice Rule&rdquo;</span> &mdash; &ldquo;The forest-green primary appears on less than 10% of any given screen. Its rarity is the signal.&rdquo;</p>
           <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The Collaboration Color Rule&rdquo;</span><span class="ps-json-over">Overturned &middot; Jun 02</span><br>&ldquo;The amber tertiary is reserved for AI-influenced regions only. Never a brand accent, never decorative.&rdquo;</p>
         </div>
-        <p class="ps-json-note">Generated variants are checked against this file, not against taste. <b>And the doc is versioned, not sacred:</b> the amber rule lost in June. Citation caution needed the color more, and &sect;2.1 now reads &ldquo;caution is on-brand, not a new hue.&rdquo;</p>
+        <p class="ps-json-note">Generated variants are checked against these rules, not against taste. <b>And the doc is versioned, not sacred:</b> the amber rule lost in June. Citation caution needed the color more, and &sect;2.1 now reads &ldquo;caution is on-brand, not a new hue.&rdquo;</p>
       </div>
     </div>
   </div>
@@ -866,7 +887,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
-    <h3 class="gal-move-title">Control the behavior with an eval.</h3>
+    <h3 class="gal-move-title">Run evaluation to find design edge cases.</h3>
     <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
     <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
     <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
@@ -2053,30 +2074,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w3 .w3-stop.is-paused .w3-ic-play{ display:block; }
     #sol-w3 .w3-panel.is-finished .w3-stop{ visibility:hidden; }
 
-    /* ---------- Completed chip ---------- */
-    #sol-w3 .w3-complete{
-      flex:0 0 auto;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      background:var(--d-tertiary-container);
-      color:var(--d-on-tertiary-container);
-      border-radius:var(--d-r-pill);
-      padding:5px 13px;
-      font-family:var(--d-font);
-      font-size:12px;
-      font-weight:500;
-      opacity:0;
-      transform:translateY(-2px);
-      transition:opacity var(--d-base) var(--d-ease), transform var(--d-base) var(--d-ease);
-    }
-    #sol-w3 .w3-complete[hidden]{ display:none; }
-    #sol-w3 .w3-complete.is-in{
-      opacity:1;
-      transform:translateY(0);
-    }
-    #sol-w3 .w3-complete svg{ display:block; }
-
     /* ---------- Replay ---------- */
     #sol-w3 .w3-replay{
       appearance:none;
@@ -2251,10 +2248,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <svg class="w3-ic-play" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1.2v7.6c0 .5.55.8.98.53l6.1-3.8a.62.62 0 0 0 0-1.06l-6.1-3.8A.62.62 0 0 0 2 1.2Z" fill="currentColor"/></svg>
         <span class="w3-stop-label">Stop</span>
       </button>
-      <span class="w3-complete" hidden>
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Completed
-      </span>
     </div>
 
     <div class="w3-agents">
@@ -2357,7 +2350,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var stopLabel = root.querySelector('.w3-stop-label');
     var replayBtn = root.querySelector('.w3-replay');
     var srStatus = root.querySelector('#sol-w3-status');
-    var completeChip = root.querySelector('.w3-complete');
     var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
 
     var INIT_MS = 450;      /* Initializing… before Scanning… */
@@ -2410,21 +2402,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       srStatus.textContent = (name ? name.textContent + ' — ' : '') + text;
     }
 
-    function showCompleteChip(){
-      if (!completeChip) return;
-      completeChip.hidden = false;
-      /* force a reflow so the opacity/transform change below is picked up
-         as a transition start rather than the element's initial paint */
-      void completeChip.offsetWidth;
-      completeChip.classList.add('is-in');
-    }
-
-    function hideCompleteChip(){
-      if (!completeChip) return;
-      completeChip.hidden = true;
-      completeChip.classList.remove('is-in');
-    }
-
     function buildSequence(){
       seq = [];
       agentEls.forEach(function(el, i){
@@ -2453,7 +2430,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       });
       seq.push({ d: END_MS, fn: function(){
         panel.classList.add('is-finished');
-        showCompleteChip();
       }});
     }
 
@@ -2466,7 +2442,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         });
       });
       panel.classList.remove('is-finished');
-      hideCompleteChip();
       stopBtn.classList.remove('is-paused');
       stopLabel.textContent = 'Stop';
       stopBtn.setAttribute('aria-label', 'Stop generating');
@@ -2495,7 +2470,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         });
       });
       panel.classList.add('is-finished');
-      showCompleteChip();
     }
 
     if(reduceMotion){
@@ -2681,7 +2655,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
     #sol-w4 .sol-w4-body{
       margin:8px 0 0;
-      max-width:65ch;
+      max-width:var(--measure-prose);
       font-size:13px;
       font-weight:400;
       line-height:1.5;
@@ -3367,28 +3341,24 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Natural-language research became the default.</h2>
-    <p class="gal-lede-p">The first three weeks show a clear behavior change and reliable report generation.</p>
-    <p class="impact-signals-label">Early launch signals</p>
+    <h2 class="gal-headline">Researchers changed how they ask, and trusted what came back.</h2>
+    <p class="gal-lede-p">The first couple of weeks show three things moving together: keyword habits gave way to real questions, reports returned reliably enough to act on, and daily use climbed week over week.</p>
     <div class="impact-findings" role="list" aria-label="Early launch signals">
       <div class="impact-finding" role="listitem"><span class="impact-tag">Behavior change</span><b>13% to 70%</b><span>natural-language share, comparing historical search with the post-launch window</span></div>
       <div class="impact-finding" role="listitem"><span class="impact-tag">System reliability</span><b>91 of 92</b><span>live queries returned an inspectable report; research quality was evaluated separately</span></div>
     </div>
-    <p class="cs-footnote">The historical corpus has no timestamps, so the before-and-after comparison is directional.</p>
   </div></div>
   <!-- ===== ANCHOR 5: FLIP ===== -->
 <section class="anchor" id="anchor-flip">
 <style>
   #anchor-flip{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
-  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:36px;justify-content:flex-start;align-items:flex-start;}
+  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:var(--space-block);justify-content:flex-start;align-items:flex-start;}
   #anchor-flip .fl-option{flex:0 1 680px;max-width:680px;min-width:0;}
   #anchor-flip .fl-eyebrow{font:500 11px var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-flip .fl-figure{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px 22px;}
-  #anchor-flip .fl-caption{font:italic 13.5px/1.55 var(--font-serif);color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
   #anchor-flip .fl-bar-row + .fl-bar-row{margin-top:26px;}
   #anchor-flip .fl-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
   #anchor-flip .fl-row-title{font:600 13px var(--font-body);color:var(--ink);}
-  #anchor-flip .fl-row-sub{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11px;color:var(--muted);}
   #anchor-flip .fl-track{display:flex;height:32px;width:100%;border-radius:var(--radius);overflow:hidden;box-shadow:0 0 0 1px var(--hairline-faint);background:var(--surface-subtle);}
   #anchor-flip .fl-seg{height:100%;transform:scaleX(1);transform-origin:left center;}
   #anchor-flip .fl-seg-kw{background:var(--muted-strong);}
@@ -3427,83 +3397,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="fl-eyebrow">Natural language became the default</p>
     <div class="fl-figure fl-figure-a">
       <div class="fl-bar-row fl-row-1">
-        <div class="fl-row-head"><span class="fl-row-title">Broad search history</span><span class="fl-row-sub">n=282 · no timestamps</span></div>
-        <div class="fl-track" role="img" aria-label="Broad search history: 87 percent keyword, 13 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:87%"></div><div class="fl-seg fl-seg-nl" style="width:13%"></div></div>
+        <div class="fl-row-head"><span class="fl-row-title">Before launch</span></div>
+        <div class="fl-track" role="img" aria-label="Before launch: 87 percent keyword, 13 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:87%"></div><div class="fl-seg fl-seg-nl" style="width:13%"></div></div>
         <div class="fl-legend"><span class="fl-legend-item"><span class="fl-dot fl-dot-kw"></span><span class="fl-legend-name">Keyword</span><span class="fl-legend-val">87%</span></span><span class="fl-legend-item"><span class="fl-dot fl-dot-nl"></span><span class="fl-legend-name">Natural-language</span><span class="fl-legend-val">13%</span></span></div>
       </div>
       <div class="fl-bar-row fl-row-2">
-        <div class="fl-row-head"><span class="fl-row-title">Post-redesign window</span><span class="fl-row-sub">n=92 · timestamped</span></div>
-        <div class="fl-track" role="img" aria-label="Post-redesign window: 30 percent keyword, 70 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:30%"></div><div class="fl-seg fl-seg-nl" style="width:70%"></div></div>
+        <div class="fl-row-head"><span class="fl-row-title">After launch</span></div>
+        <div class="fl-track" role="img" aria-label="After launch: 30 percent keyword, 70 percent natural-language"><div class="fl-seg fl-seg-kw" style="width:30%"></div><div class="fl-seg fl-seg-nl" style="width:70%"></div></div>
         <div class="fl-legend"><span class="fl-legend-item"><span class="fl-dot fl-dot-kw"></span><span class="fl-legend-name">Keyword</span><span class="fl-legend-val">30%</span></span><span class="fl-legend-item"><span class="fl-dot fl-dot-nl"></span><span class="fl-legend-name">Natural-language</span><span class="fl-legend-val">70%</span></span></div>
       </div>
     </div>
-    <p class="fl-caption">The broad search-history corpus (282 queries) carries no timestamps, so this "before" is directional (a proxy, not a dated baseline) set against the timestamped 92-query post-redesign window.</p>
   </article>
-</div>
-</section>
-  <!-- ===== ANCHOR 3: QUERY-TITLE ===== -->
-<section class="anchor" id="anchor-qt">
-<style>
-#anchor-qt{max-width:1120px;margin:0 auto;font-family:var(--font-body);color:var(--ink);}
-#anchor-qt .qt-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0;}
-#anchor-qt .qt-options{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;}
-#anchor-qt .qt-option{flex:1 1 100%;min-width:0;max-width:none;display:flex;flex-direction:column;}
-#anchor-qt .qt-option-eyebrow{margin-bottom:14px;}
-#anchor-qt .qt-figure{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:22px;}
-#anchor-qt .qt-pairs{display:flex;flex-direction:row;gap:18px;align-items:stretch;}
-#anchor-qt .qt-pair{flex:1 1 0;min-width:0;display:flex;flex-direction:column;}
-#anchor-qt .qt-pair-title{flex:0 0 auto;}
-#anchor-qt .qt-pair-tag{margin-top:auto;align-self:flex-start;}
-@media (max-width:760px){#anchor-qt .qt-pairs{flex-direction:column;}}
-#anchor-qt .qt-pair{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 18px 14px;transition:transform 200ms var(--ease),box-shadow 200ms var(--ease);}
-#anchor-qt .qt-pair:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--hairline);}
-#anchor-qt .qt-pair-raw{font-family:var(--font-mono);font-size:12.5px;line-height:1.55;color:var(--body);overflow-wrap:break-word;word-break:break-word;white-space:normal;margin:0;}
-#anchor-qt .qt-pair-arrow{text-align:center;color:var(--hairline);font-size:13px;line-height:1;margin:10px 0;font-family:var(--font-mono);}
-#anchor-qt .qt-pair-title{font-family:var(--font-body);font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink);margin:0 0 10px;}
-#anchor-qt .qt-pair-title .qt-accent{color:var(--accent);}
-#anchor-qt .qt-pair-tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-strong);background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:999px;padding:3px 10px;}
-#anchor-qt .qt-hero-figure{padding:36px 32px;}
-#anchor-qt .qt-hero-annot{display:flex;align-items:center;gap:8px;}
-#anchor-qt .qt-hero-annot-term{justify-content:flex-end;margin-bottom:8px;}
-#anchor-qt .qt-hero-annot-term .qt-line{width:34px;height:1px;background:var(--muted);transform:rotate(-16deg);display:inline-block;flex:none;}
-#anchor-qt .qt-hero-annot-text{font-family:var(--font-hand);font-size:19px;line-height:1;color:var(--muted-strong);transform:rotate(-2deg);display:inline-block;white-space:nowrap;}
-#anchor-qt .qt-hero-query{font-family:var(--font-mono);font-size:17px;line-height:1.75;color:var(--body);margin:0;overflow-wrap:break-word;word-break:break-word;}
-#anchor-qt .qt-term{color:var(--ink);font-weight:600;border-bottom:1px dashed var(--muted);padding-bottom:1px;}
-#anchor-qt .qt-hero-annot-whole{margin-top:12px;}
-#anchor-qt .qt-hero-annot-whole .qt-line{flex:1;height:1px;background:var(--muted);}
-#anchor-qt .qt-hero-arrow{text-align:center;color:var(--hairline);font-size:15px;margin:22px 0 16px;font-family:var(--font-mono);}
-#anchor-qt .qt-hero-title{font-family:var(--font-body);font-weight:600;font-size:22px;line-height:1.35;color:var(--ink);text-align:center;margin:0;}
-#anchor-qt .qt-hero-title .qt-accent{color:var(--accent);}
-#anchor-qt .qt-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
-@media (max-width:520px){#anchor-qt .qt-hero-figure{padding:24px 18px;}#anchor-qt .qt-hero-query{font-size:15px;}#anchor-qt .qt-hero-title{font-size:19px;}}
-</style>
-<div class="qt-options">
-  <div class="qt-option qt-option-a">
-    <p class="qt-eyebrow qt-option-eyebrow">Qualitative launch evidence</p>
-    <div class="qt-figure">
-      <div class="qt-pairs">
-        <div class="qt-pair">
-          <p class="qt-pair-raw">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展? 請summary 優缺點比較</p>
-          <p class="qt-pair-arrow">↓</p>
-          <p class="qt-pair-title">Silicon Interposer vs Silicon Bridge <span class="qt-accent">for UMC</span></p>
-          <span class="qt-pair-tag">entity inference</span>
-        </div>
-        <div class="qt-pair">
-          <p class="qt-pair-raw">BSPDN includes Super Power Rail of TSMC, and Power Via of Intel, what are…</p>
-          <p class="qt-pair-arrow">↓</p>
-          <p class="qt-pair-title">TSMC Super Power Rail <span class="qt-accent">vs</span> Intel PowerVia</p>
-          <span class="qt-pair-tag">comparison extracted</span>
-        </div>
-        <div class="qt-pair">
-          <p class="qt-pair-raw">OCS</p>
-          <p class="qt-pair-arrow">↓</p>
-          <p class="qt-pair-title"><span class="qt-accent">Optical Circuit Switching</span> Technology Overview</p>
-          <span class="qt-pair-tag">in-domain expansion</span>
-        </div>
-      </div>
-    </div>
-    <p class="qt-caption">Messy questions became correctly scoped reports &mdash; three words or three sentences, the system knew which report you meant.</p>
-  </div>
 </div>
 </section>
 </div>
@@ -3511,7 +3415,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <p><b>It ran on real work, weekdays only.</b> Zero weekend queries; all inside Taiwan business hours, twin peaks at 8am and 3pm. A working tool, not a curiosity: no claim about how they plan a week, just when the queries land. Top line: <b>~0.5 &rarr; ~5.1 queries/day</b> (internal &rarr; live), ~8.4 per active day, a ~10&times; step held for three weeks.</p>
+    <p><b>It ran on real work.</b> Average daily query volume rose about <b>220%</b> from the internal pilot to the second week of live use, climbing week over week. A working tool, not a curiosity.</p>
   </div></div>
   <!-- ===== ANCHOR 4: HEATMAP ===== -->
 <section class="anchor" id="anchor-heatmap">
@@ -3520,82 +3424,62 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 #anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:flex-start;align-items:flex-start;}
 #anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:min(320px, 100%);}
 #anchor-heatmap .hm-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
+#anchor-heatmap .hm-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:30px 28px 26px;display:flex;flex-wrap:wrap;gap:var(--space-figure);align-items:flex-end;justify-content:space-between;}
+/* The delta is the headline; the bars are the evidence under it. Size carries
+   the hierarchy, so only the final week takes the accent -- the two earlier
+   bars stay muted and read as the climb toward it. */
+#anchor-heatmap .hm-delta{flex:1 1 190px;min-width:0;}
+#anchor-heatmap .hm-delta-value{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:48px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);margin:0 0 10px;}
+#anchor-heatmap .hm-delta-label{font-size:13px;line-height:1.5;color:var(--muted-strong);margin:0;max-width:var(--measure-label);}
+#anchor-heatmap .hm-cols{flex:0 0 auto;display:flex;gap:26px;align-items:flex-end;box-shadow:0 1px 0 var(--hairline);}
+#anchor-heatmap .hm-col{display:flex;flex-direction:column;align-items:center;width:78px;}
+#anchor-heatmap .hm-col-zone{height:180px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;}
+#anchor-heatmap .hm-col-pct{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13.5px;font-weight:700;color:var(--ink);}
+#anchor-heatmap .hm-col-bar{width:48px;border-radius:3px 3px 0 0;background:var(--muted-strong);transform-origin:bottom;animation:hm-grow .55s var(--ease-out-strong) both;animation-delay:var(--d,0ms);}
+#anchor-heatmap .hm-col-bar--pilot{background:var(--hairline);}
+#anchor-heatmap .hm-col-bar--live{background:var(--accent);}
+#anchor-heatmap .hm-col-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:9px;text-align:center;line-height:1.35;}
 #anchor-heatmap .hm-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;line-height:1.55;margin:22px 0 0;}
-#anchor-heatmap .hm-strip-block + .hm-strip-block{margin-top:30px;}
-#anchor-heatmap .hm-striplabel{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;}
-#anchor-heatmap .hm-axis-row{display:grid;gap:1px;margin-bottom:5px;}
-#anchor-heatmap .hm-axis-row span{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;color:var(--muted);text-align:center;}
-#anchor-heatmap .hm-weekday-axis,#anchor-heatmap .hm-weekday-grid{grid-template-columns:repeat(7,1fr);}
-#anchor-heatmap .hm-hour-axis,#anchor-heatmap .hm-hour-grid{grid-template-columns:repeat(12,1fr);}
-#anchor-heatmap .hm-weekday-grid,#anchor-heatmap .hm-hour-grid{display:grid;gap:1px;background:var(--canvas);}
-#anchor-heatmap .hm-cell{height:52px;border-radius:2px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--accent) var(--alpha,10%), var(--canvas));animation:hm-cellIn .42s var(--ease-out-strong) both;animation-delay:var(--d,0ms);}
-#anchor-heatmap .hm-cell span{font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink);}
-#anchor-heatmap .hm-cell.hm-cell-dark span{color:var(--canvas);}
-#anchor-heatmap .hm-cell.hm-empty{background:var(--surface-subtle);}
-#anchor-heatmap .hm-cell.hm-empty span{color:var(--muted);}
-@keyframes hm-cellIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
-#anchor-heatmap .hm-figure-b{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;}
-#anchor-heatmap .hm-bars-block,#anchor-heatmap .hm-ridge-block{flex:1 1 190px;min-width:170px;}
-#anchor-heatmap .hm-block-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-#anchor-heatmap .hm-bars{display:flex;align-items:flex-end;gap:6px;box-shadow:0 1px 0 var(--hairline-faint);}
-#anchor-heatmap .hm-bar-col{display:flex;flex-direction:column;align-items:center;width:100%;height:172px;}
-#anchor-heatmap .hm-bar-spacer{flex:1 1 auto;}
-#anchor-heatmap .hm-bar-val{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;color:var(--ink);margin-bottom:3px;}
-#anchor-heatmap .hm-bar-zero .hm-bar-val{color:var(--muted);}
-#anchor-heatmap .hm-bar-fill{width:70%;border-radius:2px 2px 0 0;background:var(--muted-strong);transform-origin:bottom;animation:hm-barGrow .5s var(--ease-out-strong) both;animation-delay:var(--d,0ms);}
-#anchor-heatmap .hm-bar-fill.hm-bar-peak{background:var(--accent);}
-#anchor-heatmap .hm-bar-fill.hm-bar-nub{background:var(--hairline);}
-#anchor-heatmap .hm-bar-day{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:7px;}
-@keyframes hm-barGrow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
-#anchor-heatmap .hm-ridge svg{width:100%;height:auto;display:block;}
-#anchor-heatmap .hm-ridge-area{fill:var(--surface-subtle);opacity:0;animation:hm-fadeIn .5s var(--ease) both;animation-delay:.55s;}
-#anchor-heatmap .hm-ridge-line{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:hm-drawOn .85s var(--ease-out-strong) both;}
-#anchor-heatmap .hm-dot-peak{fill:var(--accent);stroke:var(--canvas);stroke-width:1.5;opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:.9s;}
-#anchor-heatmap .hm-dot-end{fill:var(--ink);stroke:var(--canvas);stroke-width:1.5;opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:.9s;}
-#anchor-heatmap .hm-ridge-val{font-family:var(--font-mono);font-size:10px;font-variant-numeric:tabular-nums;fill:var(--ink);opacity:0;animation:hm-fadeIn .3s var(--ease) both;animation-delay:1s;}
-#anchor-heatmap .hm-ridge-axis{display:flex;justify-content:space-between;margin-top:6px;}
-#anchor-heatmap .hm-ridge-axis span{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
-@keyframes hm-fadeIn{from{opacity:0;}to{opacity:1;}}
-@keyframes hm-drawOn{from{stroke-dashoffset:100;}to{stroke-dashoffset:0;}}
-@media (prefers-reduced-motion: reduce){#anchor-heatmap .hm-cell,#anchor-heatmap .hm-bar-fill,#anchor-heatmap .hm-ridge-area,#anchor-heatmap .hm-ridge-line,#anchor-heatmap .hm-dot-peak,#anchor-heatmap .hm-dot-end,#anchor-heatmap .hm-ridge-val{animation:none !important;opacity:1 !important;stroke-dashoffset:0 !important;transform:none !important;}}
+@keyframes hm-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+@media (max-width:560px){
+  #anchor-heatmap .hm-delta-value{font-size:40px;}
+  #anchor-heatmap .hm-cols{width:100%;justify-content:center;gap:18px;}
+}
+@media (prefers-reduced-motion: reduce){#anchor-heatmap .hm-col-bar{animation:none !important;transform:none !important;}}
 </style>
 <div class="hm-wrap">
   <div class="hm-option">
-    <p class="hm-eyebrow">Usage landed inside real working hours</p>
-    <div class="hm-figure">
-      <div class="hm-strip-block">
-        <p class="hm-striplabel">Weekday · Mon-Sun</p>
-        <div class="hm-axis-row hm-weekday-axis"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-        <div class="hm-weekday-grid">
-          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:0ms"><span>29</span></div>
-          <div class="hm-cell" style="--alpha:48.1%;--d:40ms"><span>13</span></div>
-          <div class="hm-cell" style="--alpha:51.3%;--d:80ms"><span>14</span></div>
-          <div class="hm-cell" style="--alpha:41.7%;--d:120ms"><span>11</span></div>
-          <div class="hm-cell hm-cell-dark" style="--alpha:87.0%;--d:160ms"><span>25</span></div>
-          <div class="hm-cell hm-empty" style="--d:200ms"><span>0</span></div>
-          <div class="hm-cell hm-empty" style="--d:240ms"><span>0</span></div>
-        </div>
+    <p class="hm-eyebrow">Average usage per active day, internal pilot to launch week 2</p>
+    <div class="hm-panel">
+      <div class="hm-delta">
+        <p class="hm-delta-value">+220%</p>
+        <p class="hm-delta-label">Average queries per active day, internal pilot to launch week&nbsp;2.</p>
       </div>
-      <div class="hm-strip-block">
-        <p class="hm-striplabel">Hour · 07:00-18:00</p>
-        <div class="hm-axis-row hm-hour-axis"><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span></div>
-        <div class="hm-hour-grid">
-          <div class="hm-cell" style="--alpha:32.9%;--d:0ms"><span>4</span></div>
-          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:30ms"><span>14</span></div>
-          <div class="hm-cell" style="--alpha:59.7%;--d:60ms"><span>8</span></div>
-          <div class="hm-cell" style="--alpha:53.0%;--d:90ms"><span>7</span></div>
-          <div class="hm-cell" style="--alpha:53.0%;--d:120ms"><span>7</span></div>
-          <div class="hm-cell" style="--alpha:26.1%;--d:150ms"><span>3</span></div>
-          <div class="hm-cell" style="--alpha:46.3%;--d:180ms"><span>6</span></div>
-          <div class="hm-cell" style="--alpha:59.7%;--d:210ms"><span>8</span></div>
-          <div class="hm-cell hm-cell-dark" style="--alpha:100%;--d:240ms"><span>14</span></div>
-          <div class="hm-cell hm-cell-dark" style="--alpha:79.9%;--d:270ms"><span>11</span></div>
-          <div class="hm-cell" style="--alpha:59.7%;--d:300ms"><span>8</span></div>
-          <div class="hm-cell" style="--alpha:19.4%;--d:330ms"><span>2</span></div>
+      <div class="hm-cols" role="img" aria-label="Average queries per active day indexed to launch week 2: internal pilot 31 percent, launch week 1 53 percent, launch week 2 100 percent">
+        <div class="hm-col">
+          <div class="hm-col-zone">
+            <span class="hm-col-pct">31%</span>
+            <div class="hm-col-bar hm-col-bar--pilot" style="height:56px;--d:0ms"></div>
+          </div>
+          <span class="hm-col-name">Internal<br>pilot</span>
+        </div>
+        <div class="hm-col">
+          <div class="hm-col-zone">
+            <span class="hm-col-pct">53%</span>
+            <div class="hm-col-bar" style="height:96px;--d:110ms"></div>
+          </div>
+          <span class="hm-col-name">Launch<br>wk 1</span>
+        </div>
+        <div class="hm-col">
+          <div class="hm-col-zone">
+            <span class="hm-col-pct">100%</span>
+            <div class="hm-col-bar hm-col-bar--live" style="height:180px;--d:220ms"></div>
+          </div>
+          <span class="hm-col-name">Launch<br>wk 2</span>
         </div>
       </div>
     </div>
-    <p class="hm-caption">Weekday and hour are each real marginal totals from timestamped queries (n=92), shown as two 1‑D strips, not a measured joint weekday×hour matrix.</p>
+    <p class="hm-caption">Average queries per active day (any day with at least one query), each period indexed to launch week&nbsp;2.</p>
   </div>
 </div>
 </section>
@@ -3606,15 +3490,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Twenty-eight percent of queries were re-asks.</h2>
-    <p>Twenty-six of 92 queries repeated an existing intent. Some reflected healthy exploration, but near-identical questions also produced inconsistent reports. Users were sometimes fishing for an answer they had already seen.</p>
-    <p>The shipped clarification helped researchers aim one report, but it did not preserve their corrected interpretation across repeated asks.</p>
-    <p><b>Next:</b> turn one-time clarification into a persistent interpretation checkpoint. Let researchers confirm or correct entities and scope, then reuse that corrected intent on every re-ask.</p>
-    <div class="cs-next-flow" role="img" aria-label="Next iteration flow: original question, persistent interpretation, consistent report">
-      <div class="cs-next-step"><b>Original question</b><span>Preserve the researcher&rsquo;s words.</span></div>
-      <span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
-      <div class="cs-next-step"><b>Persistent interpretation</b><span>Confirm or correct entities and scope.</span></div>
-      <span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
-      <div class="cs-next-step"><b>Consistent report</b><span>Reuse the corrected intent on every re-ask.</span></div>
+    <p>Some of that share reflected healthy exploration, but near-identical questions also produced inconsistent reports. Users were sometimes fishing for an answer they had already seen.</p>
+    <p><b>What the log cannot tell me:</b> it shows that researchers came back, not why. A re-ask could mean the first report missed, or that the topic genuinely had a second angle. Those want opposite fixes, so the next move is research, not a feature.</p>
+    <div class="cs-next-flow" role="img" aria-label="Three open research questions about why researchers re-ask">
+      <div class="cs-next-step"><b>Was the first answer rejected?</b><span>Or was the repeat a genuinely new angle on the same topic?</span></div>
+      <div class="cs-next-step"><b>What made it unusable?</b><span>Wrong scope, wrong entity, or sources they would not stand behind.</span></div>
+      <div class="cs-next-step"><b>What do they want on return?</b><span>The same report again, or a different cut of it.</span></div>
     </div>
   </div></div>
   <!-- ===== ANCHOR 6: RE-ASK ===== -->
@@ -3625,7 +3506,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-reask .ra-figure{flex:0 1 680px;max-width:680px;min-width:0;margin:0;display:flex;flex-direction:column;}
   #anchor-reask .ra-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-reask .ra-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:26px 24px;}
-  #anchor-reask .ra-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;max-width:44ch;margin:14px auto 0;}
+  #anchor-reask .ra-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.55;color:var(--muted);text-align:center;max-width:var(--measure-caption);margin:14px auto 0;}
   #anchor-reask .ra-panel-a svg{display:block;width:100%;height:auto;overflow:visible;}
   #anchor-reask .ra-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);}
   #anchor-reask .ra-lbl-accent{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;fill:var(--accent-deep);}

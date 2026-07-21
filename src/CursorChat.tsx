@@ -1710,8 +1710,8 @@ export function CursorChat({
           activeThread.status === "done" ||
           activeThread.status === "error" ? (
             <p className="cursor-chat-disclosure">
-              answers can be wrong — verify what matters · logged to improve
-              this site
+              this can hallucinate, so double-check anything important. chats
+              are logged to improve the site.
             </p>
           ) : null}
           <span

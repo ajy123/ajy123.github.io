@@ -252,9 +252,6 @@ export function ScrollIntroPrint({
           </motion.span>
         </button>
       </div>
-      <button className="intro-skip" type="button" onClick={onDismiss}>
-        skip
-      </button>
       <div
         className={`intro-scrollhint ${ctaVisible ? "is-hidden" : ""}`}
         aria-hidden="true"

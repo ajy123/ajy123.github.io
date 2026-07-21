@@ -32,11 +32,20 @@
   --radius:4px;
   /* Vertical rhythm. Spacing was the one dimension with no tokens -- 39 ad hoc
      values across the page -- so gaps drifted per component. These five steps
-     sit on an 8px grid and cover the structural layer only: how sections,
-     blocks, copy, and figures relate. Component-internal optical spacing
-     (6/9/10px inside cards) is deliberately NOT tokenized; forcing it onto the
-     grid would flatten type-driven fine-tuning. Larger step = weaker
-     relationship, so the scale itself encodes the hierarchy. */
+     sit on an 8px grid. Larger step = weaker relationship, so the scale itself
+     encodes the hierarchy.
+
+     Three tiers of number live in this file, and only the first is tokenized:
+       1. LAYOUT   how sections, blocks, copy, figures and sibling components
+                   relate. Tokenized -- this is the page's rhythm.
+       2. CHROME   padding inside a component, tuned optically against its own
+                   content (.pr-canvas 14/12, .hm-panel 30/28/26). Left free;
+                   forcing it onto the grid flattens type-driven fine-tuning.
+       3. GEOMETRY values that are part of a drawing rather than of spacing
+                   (.hm-cols gap sets chart proportions together with bar and
+                   column width). Must NOT be tokenized -- changing it redraws
+                   the figure.
+     If you are adding a gap BETWEEN things, it belongs in tier 1: use a token. */
   --space-tight:8px;    /* inside a tight cluster */
   --space-copy:16px;    /* headline -> lede, within one voice */
   --space-figure:24px;  /* copy -> the figure that illustrates it */
@@ -92,7 +101,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 .gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
 
 /* product embed framing (SOLUTION) - Emil hairline figure */
-.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
 .gal-embed{margin:0;display:flex;flex-direction:column;}
 .gal-embed-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
 .gal-embed-frame{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:14px;overflow:hidden;}
@@ -345,7 +354,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 /* Two diagrams, one desktop row. The column is only ~696px, so each canvas
    lands near 334px and the SVGs render at ~0.65 scale — every type size below
    is set in viewBox units pre-scaled so the labels survive at that size. */
-#anchor-problem .pr-wrap{display:flex;gap:28px;justify-content:center;align-items:stretch;}
+#anchor-problem .pr-wrap{display:flex;gap:var(--space-figure);justify-content:center;align-items:stretch;}
 #anchor-problem .pr-fig{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;margin:0;}
 #anchor-problem .pr-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;text-align:center;}
 #anchor-problem .pr-canvas{width:100%;aspect-ratio:3/2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);padding:14px 12px;}
@@ -359,7 +368,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 #anchor-problem .pr-q{font-family:var(--font-mono);font-size:48px;font-weight:600;fill:var(--ink-strong);}
 /* Below the two-up threshold the diagrams stack and go back to full size. */
 @media (max-width:760px){
-  #anchor-problem .pr-wrap{flex-direction:column;align-items:center;gap:36px;}
+  #anchor-problem .pr-wrap{flex-direction:column;align-items:center;gap:var(--space-block);}
   #anchor-problem .pr-fig{max-width:520px;width:100%;}
 }
 @media (prefers-reduced-motion:no-preference){
@@ -3391,7 +3400,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 <section class="anchor" id="anchor-flip">
 <style>
   #anchor-flip{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
-  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:36px;justify-content:flex-start;align-items:flex-start;}
+  #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:var(--space-block);justify-content:flex-start;align-items:flex-start;}
   #anchor-flip .fl-option{flex:0 1 680px;max-width:680px;min-width:0;}
   #anchor-flip .fl-eyebrow{font:500 11px var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
   #anchor-flip .fl-figure{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:24px 22px;}
@@ -3463,7 +3472,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 #anchor-heatmap .hm-wrap{display:flex;flex-wrap:wrap;gap:48px;justify-content:flex-start;align-items:flex-start;}
 #anchor-heatmap .hm-option{flex:0 1 680px;max-width:680px;min-width:min(320px, 100%);}
 #anchor-heatmap .hm-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
-#anchor-heatmap .hm-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:30px 28px 26px;display:flex;flex-wrap:wrap;gap:36px;align-items:flex-end;justify-content:space-between;}
+#anchor-heatmap .hm-panel{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:30px 28px 26px;display:flex;flex-wrap:wrap;gap:var(--space-figure);align-items:flex-end;justify-content:space-between;}
 /* The delta is the headline; the bars are the evidence under it. Size carries
    the hierarchy, so only the final week takes the accent -- the two earlier
    bars stay muted and read as the climb toward it. */
@@ -3481,7 +3490,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 #anchor-heatmap .hm-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;line-height:1.55;margin:22px 0 0;}
 @keyframes hm-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
 @media (max-width:560px){
-  #anchor-heatmap .hm-panel{gap:28px;}
   #anchor-heatmap .hm-delta-value{font-size:40px;}
   #anchor-heatmap .hm-cols{width:100%;justify-content:center;gap:18px;}
 }

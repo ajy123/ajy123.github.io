@@ -243,11 +243,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </header>
 
 <figure class="cs-hero-visual">
-  <video id="hero-demo" width="696" height="391" autoplay muted loop playsinline preload="metadata" poster="/images/deeli-hero-demo-poster.jpg" aria-label="Recording of the shipped flow: research agents index and select sources, then the finished report opens a citation showing its source">
+  <video id="hero-demo" width="696" height="391" autoplay muted loop playsinline preload="metadata" poster="/images/deeli-hero-demo-poster.jpg" aria-label="Recording of the shipped flow: a researcher types a question, answers one clarifying choice, watches agents index and select sources to completion, then opens a citation to its source">
     <source src="/images/deeli-hero-demo.webm" type="video/webm">
     <source src="/images/deeli-hero-demo.mp4" type="video/mp4">
   </video>
-  <figcaption>The shipped flow, recorded: agents disclose the work, then every claim carries its citation.</figcaption>
+  <figcaption>The shipped flow, recorded: ask, aim, watch the agents work, then check any claim at its source.</figcaption>
   <script>
     // Respect reduced-motion: leave the poster frame instead of autoplaying.
     (function(){
@@ -1606,6 +1606,30 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #sol-w3 .w3-stop.is-paused .w3-ic-play{ display:block; }
     #sol-w3 .w3-panel.is-finished .w3-stop{ visibility:hidden; }
 
+    /* ---------- Completed chip ---------- */
+    #sol-w3 .w3-complete{
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--d-tertiary-container);
+      color:var(--d-on-tertiary-container);
+      border-radius:var(--d-r-pill);
+      padding:5px 13px;
+      font-family:var(--d-font);
+      font-size:12px;
+      font-weight:500;
+      opacity:0;
+      transform:translateY(-2px);
+      transition:opacity var(--d-base) var(--d-ease), transform var(--d-base) var(--d-ease);
+    }
+    #sol-w3 .w3-complete[hidden]{ display:none; }
+    #sol-w3 .w3-complete.is-in{
+      opacity:1;
+      transform:translateY(0);
+    }
+    #sol-w3 .w3-complete svg{ display:block; }
+
     /* ---------- Replay ---------- */
     #sol-w3 .w3-replay{
       appearance:none;
@@ -1780,6 +1804,10 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         <svg class="w3-ic-play" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1.2v7.6c0 .5.55.8.98.53l6.1-3.8a.62.62 0 0 0 0-1.06l-6.1-3.8A.62.62 0 0 0 2 1.2Z" fill="currentColor"/></svg>
         <span class="w3-stop-label">Stop</span>
       </button>
+      <span class="w3-complete" hidden>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Completed
+      </span>
     </div>
 
     <div class="w3-agents">
@@ -1882,6 +1910,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var stopLabel = root.querySelector('.w3-stop-label');
     var replayBtn = root.querySelector('.w3-replay');
     var srStatus = root.querySelector('#sol-w3-status');
+    var completeChip = root.querySelector('.w3-complete');
     var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
 
     var INIT_MS = 450;      /* Initializing… before Scanning… */
@@ -1934,11 +1963,27 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       srStatus.textContent = (name ? name.textContent + ' — ' : '') + text;
     }
 
+    function showCompleteChip(){
+      if (!completeChip) return;
+      completeChip.hidden = false;
+      /* force a reflow so the opacity/transform change below is picked up
+         as a transition start rather than the element's initial paint */
+      void completeChip.offsetWidth;
+      completeChip.classList.add('is-in');
+    }
+
+    function hideCompleteChip(){
+      if (!completeChip) return;
+      completeChip.hidden = true;
+      completeChip.classList.remove('is-in');
+    }
+
     function buildSequence(){
       seq = [];
       agentEls.forEach(function(el, i){
         var subs = Array.prototype.slice.call(el.querySelectorAll('.w3-sub'));
         var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
+        var isLast = i === agentEls.length - 1;
 
         seq.push({ d: i === 0 ? 300 : GAP_MS, fn: function(){
           el.classList.add('is-active');
@@ -1956,11 +2001,12 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           el.classList.remove('is-active');
           el.classList.add('is-done');
           setStatus(el, doneText);
-          announce(el, doneText);
+          announce(el, isLast ? doneText + ' — Completed' : doneText);
         }});
       });
       seq.push({ d: END_MS, fn: function(){
         panel.classList.add('is-finished');
+        showCompleteChip();
       }});
     }
 
@@ -1973,6 +2019,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         });
       });
       panel.classList.remove('is-finished');
+      hideCompleteChip();
       stopBtn.classList.remove('is-paused');
       stopLabel.textContent = 'Stop';
       stopBtn.setAttribute('aria-label', 'Stop generating');
@@ -1991,15 +2038,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     function renderEndStateInstant(){
       clearPending();
       running = false;
-      agentEls.forEach(function(el){
+      agentEls.forEach(function(el, i){
+        var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
         el.classList.add('is-done');
-        setStatus(el, el.querySelector('.w3-agent-status').getAttribute('data-done'));
-        announce(el, el.querySelector('.w3-agent-status').getAttribute('data-done'));
+        setStatus(el, doneText);
+        announce(el, i === agentEls.length - 1 ? doneText + ' — Completed' : doneText);
         Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
           sub.classList.add('is-in');
         });
       });
       panel.classList.add('is-finished');
+      showCompleteChip();
     }
 
     if(reduceMotion){
@@ -2658,6 +2707,17 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     var openId = null;     // currently visible citation
     var drillOpen = false;
 
+    var hoverCapable = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    var hoverOpenTimer = null;
+    var hoverCloseTimer = null;
+
+    function clearHoverOpenTimer(){
+      if (hoverOpenTimer !== null) { clearTimeout(hoverOpenTimer); hoverOpenTimer = null; }
+    }
+    function clearHoverCloseTimer(){
+      if (hoverCloseTimer !== null) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
+    }
+
     function position(anchor, pop){
       var cardRect = card.getBoundingClientRect();
       var aRect = anchor.getBoundingClientRect();
@@ -2739,10 +2799,29 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       var id = btn.getAttribute('data-cite');
 
       btn.addEventListener('mouseenter', function(){
-        show(id, btn);
+        if (hoverCapable) {
+          clearHoverCloseTimer();
+          clearHoverOpenTimer();
+          hoverOpenTimer = setTimeout(function(){
+            hoverOpenTimer = null;
+            show(id, btn);
+          }, 120);
+        } else {
+          show(id, btn);
+        }
       });
       btn.addEventListener('mouseleave', function(){
-        if (lockedId !== id) { hide(id); }
+        if (hoverCapable) {
+          clearHoverOpenTimer();
+          if (lockedId === id) return;
+          clearHoverCloseTimer();
+          hoverCloseTimer = setTimeout(function(){
+            hoverCloseTimer = null;
+            if (lockedId !== id) { hide(id); }
+          }, 200);
+        } else {
+          if (lockedId !== id) { hide(id); }
+        }
       });
       btn.addEventListener('focus', function(){
         show(id, btn);
@@ -2752,6 +2831,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
       });
       btn.addEventListener('click', function(e){
         e.stopPropagation();
+        clearHoverOpenTimer();
+        clearHoverCloseTimer();
         if (lockedId === id) {
           lockedId = null;
           hide(id);
@@ -2762,6 +2843,21 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
         }
       });
     });
+
+    if (hoverCapable) {
+      Object.keys(popovers).forEach(function(id){
+        var pop = popovers[id];
+        if (!pop) return;
+        pop.addEventListener('mouseenter', function(){
+          clearHoverCloseTimer();
+        });
+        pop.addEventListener('mouseleave', function(){
+          clearHoverOpenTimer();
+          if (lockedId === id) return;
+          hide(id);
+        });
+      });
+    }
 
     if (term && drill) {
       term.addEventListener('click', function(e){

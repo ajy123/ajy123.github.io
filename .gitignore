@@ -6,3 +6,4 @@ dist/
 .agents/
 PRODUCT.md
 design.md
+.tmp/

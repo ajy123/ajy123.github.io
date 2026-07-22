@@ -112,6 +112,22 @@ function toSuggestedPromptId(value: string, index: number) {
   return `persona-${slug || "prompt"}-${index}`;
 }
 
+// The zone instructions a resolved section contributes to the system prompt.
+// Both the open path and the pointer-retarget path derive it from here, so the
+// tag, the chips and what the model is told can never describe different
+// sections.
+function zoneContextFor(
+  element: HTMLElement | undefined,
+  contextText: string,
+): CursorChatZoneContext | undefined {
+  if (!element) return undefined;
+  return {
+    hint: element.dataset.askHint ?? "",
+    kind: element.dataset.askKind ?? "",
+    contextText,
+  };
+}
+
 function toSuggestedPrompts(values: string[]): SuggestedPrompt[] {
   return values.map((prompt, index) => ({
     id: toSuggestedPromptId(prompt, index),
@@ -779,6 +795,12 @@ export function CursorChat({
       const nearbyTextOverride =
         zoneContext?.contextText ||
         getBoundedText(askContext.element ?? anchorElement);
+      // A "/" opened over a section resolves that section for the tag and the
+      // chips, so it must carry the same instructions an explicit hint would.
+      // Without this the model was only told which section to focus on after
+      // the reader moved the pointer.
+      const threadZoneContext =
+        zoneContext ?? zoneContextFor(askContext.element, nearbyTextOverride);
 
       // A text selection is about the selection, not the section, so it keeps
       // its own placeholder and offers no opening chips.
@@ -814,7 +836,7 @@ export function CursorChat({
           shownPromptIds: (threadSuggestedPrompts ?? []).map(
             (prompt) => prompt.id,
           ),
-          zoneContext,
+          zoneContext: threadZoneContext,
           docked: isDocked,
           draftPlaceholder: fromSelection
             ? "ask about what you selected"
@@ -920,13 +942,7 @@ export function CursorChat({
       // The zone instructions must move with the section too. Leaving the
       // opening zone in place would tell the model to focus on the section
       // the panel launched from while the tag named a different one.
-      const zoneContext: CursorChatZoneContext | undefined = next.element
-        ? {
-            hint: next.element.dataset.askHint ?? "",
-            kind: next.element.dataset.askKind ?? "",
-            contextText,
-          }
-        : undefined;
+      const zoneContext = zoneContextFor(next.element, contextText);
 
       setThreads((current) =>
         current.map((thread) => {
@@ -1084,6 +1100,14 @@ export function CursorChat({
         zoneContext,
         extraContext,
       );
+      if (import.meta.env.DEV) {
+        // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
+        // short-circuits inside streamChat, after these messages are built. Stash
+        // them so browser checks can assert what the model was actually told —
+        // the zone/section a thread claims and the context it sends must agree.
+        (window as unknown as { __cursorChatLastMessages?: unknown }).__cursorChatLastMessages =
+          messages;
+      }
       const response = await streamChat(
         messages,
         (full) => {

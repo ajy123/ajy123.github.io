@@ -552,6 +552,10 @@ export function CursorChat({
   };
   const suspendedRef = useRef(suspended);
   const panelRef = useRef<HTMLElement | null>(null);
+  // The section a draft thread is currently pointed at, so pointer moves that
+  // stay inside the same section don't churn state.
+  const resolvedElementRef = useRef<HTMLElement | null>(null);
+  const draftRef = useRef("");
   const previousPanelHeightRef = useRef<number | null>(null);
   const heightTimerRef = useRef<number | null>(null);
   const suggestionExitTimerRef = useRef<number | null>(null);
@@ -776,6 +780,7 @@ export function CursorChat({
       setDraft("");
       setAnnouncement("");
       setExitingSuggestions(null);
+      resolvedElementRef.current = askContext.element ?? null;
       activeIdRef.current = id;
       setThreads((current) => [
         ...current,
@@ -862,8 +867,86 @@ export function CursorChat({
   }, []);
 
   useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
+
+  useEffect(() => {
     if (!activeId) return;
     window.setTimeout(() => textareaRef.current?.focus(), 0);
+  }, [activeId]);
+
+  // A draft thread follows the pointer. Hovering a different section retargets
+  // its chips, its label, and the text the model will read — all three move
+  // together, so the tag never promises context the prompt won't carry. The
+  // moment a question is asked the thread freezes: from then on it is about
+  // what was asked, and offering questions the loaded context can't answer
+  // would be worse than offering none.
+  useEffect(() => {
+    if (!activeId) return;
+
+    let frame = 0;
+    const retarget = (x: number, y: number) => {
+      const panel = panelRef.current;
+      const element = document.elementFromPoint(x, y);
+      // Reaching for the textarea must never count as choosing a new section.
+      if (panel && element && panel.contains(element)) return;
+
+      const next = resolveAskContext({
+        anchorElement: element,
+        anchorPoint: { x, y },
+      });
+      if ((next.element ?? null) === resolvedElementRef.current) return;
+
+      setThreads((current) =>
+        current.map((thread) => {
+          if (thread.id !== activeId) return thread;
+          // Frozen once asked, and a selection thread is about its selection.
+          if (thread.status !== "draft") return thread;
+          if (thread.history.length || thread.selectedTextOverride) return thread;
+
+          resolvedElementRef.current = next.element ?? null;
+          const chips = toSuggestedPrompts(next.chips);
+          return {
+            ...thread,
+            contextLabel: next.label,
+            nearbyTextOverride: getBoundedText(next.element ?? element),
+            suggestedPrompts: chips,
+            promptPool: buildPromptPool(
+              chips,
+              undefined,
+              toSuggestedPrompts(next.followUps),
+            ),
+            shownPromptIds: chips.map((chip) => chip.id),
+            // Retargeting must not yank the placeholder out from under someone
+            // who has already started typing.
+            draftPlaceholder: draftRef.current
+              ? thread.draftPlaceholder
+              : next.placeholder,
+          };
+        }),
+      );
+    };
+
+    const handleMove = (event: PointerEvent) => {
+      if (frame) return;
+      const { clientX, clientY } = event;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        retarget(clientX, clientY);
+      });
+    };
+
+    if (import.meta.env.DEV) {
+      // requestAnimationFrame is paused in a hidden tab, so browser-driven
+      // verification can't reach retarget through handleMove. Same escape
+      // hatch as __cursorChatTestResponse in chatApi.
+      (window as unknown as { __retargetNow?: unknown }).__retargetNow = retarget;
+    }
+    window.addEventListener("pointermove", handleMove);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [activeId]);
 
   useEffect(() => {

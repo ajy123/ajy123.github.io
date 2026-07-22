@@ -6,11 +6,12 @@
 // (`ASKING ABOUT: <NOUN>`), so the wiring agent (T6) can delete that function
 // and call zoneKindLabel/resolveAskContext instead.
 //
-// Resolution runs once, at open — not via a persistent observer — because the
-// label is frozen for the life of the thread (see the design doc): a live
-// label would drift the moment the pointer moves, and after the first answer
-// the thread's system-prompt context is already baked in, so a moving label
-// would misreport what the model actually read.
+// Resolution is a pure function of a point, called on open and again on
+// pointer move while the thread is still a draft. It deliberately owns no
+// observer and no state: the caller decides when a thread may retarget and
+// stops calling once a question is asked, because from then on the thread's
+// system-prompt context is baked in and a moving label would misreport what
+// the model actually read.
 import { essaysById } from "./essays";
 import { getAudienceRole, type AudienceRole } from "./audienceRole";
 
@@ -56,7 +57,8 @@ const DEELI_LABEL = "ASKING ABOUT: DEELI CASE STUDY";
 const HOME_LABEL = "ASKING ABOUT: JOANNA'S WORK";
 const ESSAY_LABEL = zoneKindLabel("essay"); // "ASKING ABOUT: THIS ESSAY" — fixed
 // wording per correction; the open essay's title is NOT interpolated in (it
-// would overflow the 360px zonetag row).
+// would overflow the zonetag row, which shares its line with the close
+// button inside a 340px panel).
 
 // ---------------------------------------------------------------------------
 // Home page defaults — copy reused verbatim from the old AUDIENCE_PROMPTS

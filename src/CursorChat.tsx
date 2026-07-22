@@ -85,8 +85,9 @@ type Thread = {
   zoneContext?: CursorChatZoneContext;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
-  // "ASKING ABOUT: <NOUN>" for the topbar tag, resolved at open and frozen —
-  // see askContext.ts for why it must not track the pointer afterwards.
+  // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
+  // thread is still a draft, then freezes on the first question — see the
+  // pointer-follow effect below.
   contextLabel?: string;
 };
 
@@ -97,8 +98,8 @@ type Thread = {
 const COMPOSER_WIDTH = 340;
 const COMPOSER_MAX_HEIGHT = 440;
 const EDGE = 14;
-// Gap between the anchor point and the panel's tight corner. Kept smaller than
-// EDGE so the sharpened corner visibly touches what it points at.
+// Gap between the anchor point and the panel's nearest corner. Kept smaller
+// than EDGE so the panel visibly sits against what it was opened from.
 const ANCHOR_GAP = 6;
 // Must match cursorChatOut's duration in index.css.
 const LEAVE_MS = 170;
@@ -559,6 +560,10 @@ export function CursorChat({
   // stay inside the same section don't churn state.
   const resolvedElementRef = useRef<HTMLElement | null>(null);
   const draftRef = useRef("");
+  // Mirrors whether the active thread still accepts retargeting, so the
+  // pointer handler can bail before doing resolver work rather than
+  // discovering it inside setThreads and returning a fresh array every frame.
+  const followableRef = useRef(false);
   const previousPanelHeightRef = useRef<number | null>(null);
   const heightTimerRef = useRef<number | null>(null);
   const suggestionExitTimerRef = useRef<number | null>(null);
@@ -874,6 +879,15 @@ export function CursorChat({
   }, [draft]);
 
   useEffect(() => {
+    followableRef.current = Boolean(
+      activeThread &&
+        activeThread.status === "draft" &&
+        !activeThread.history.length &&
+        !activeThread.selectedTextOverride,
+    );
+  }, [activeThread]);
+
+  useEffect(() => {
     if (!activeId) return;
     window.setTimeout(() => textareaRef.current?.focus(), 0);
   }, [activeId]);
@@ -889,6 +903,7 @@ export function CursorChat({
 
     let frame = 0;
     const retarget = (x: number, y: number) => {
+      if (!followableRef.current) return;
       const panel = panelRef.current;
       const element = document.elementFromPoint(x, y);
       // Reaching for the textarea must never count as choosing a new section.
@@ -900,19 +915,33 @@ export function CursorChat({
       });
       if ((next.element ?? null) === resolvedElementRef.current) return;
 
+      resolvedElementRef.current = next.element ?? null;
+      const contextText = getBoundedText(next.element ?? element);
+      // The zone instructions must move with the section too. Leaving the
+      // opening zone in place would tell the model to focus on the section
+      // the panel launched from while the tag named a different one.
+      const zoneContext: CursorChatZoneContext | undefined = next.element
+        ? {
+            hint: next.element.dataset.askHint ?? "",
+            kind: next.element.dataset.askKind ?? "",
+            contextText,
+          }
+        : undefined;
+
       setThreads((current) =>
         current.map((thread) => {
           if (thread.id !== activeId) return thread;
-          // Frozen once asked, and a selection thread is about its selection.
+          // Re-checked here because followableRef is a frame behind a state
+          // change; the ref is the cheap gate, this is the correct one.
           if (thread.status !== "draft") return thread;
           if (thread.history.length || thread.selectedTextOverride) return thread;
 
-          resolvedElementRef.current = next.element ?? null;
           const chips = toSuggestedPrompts(next.chips);
           return {
             ...thread,
             contextLabel: next.label,
-            nearbyTextOverride: getBoundedText(next.element ?? element),
+            zoneContext,
+            nearbyTextOverride: contextText,
             suggestedPrompts: chips,
             promptPool: buildPromptPool(
               chips,
@@ -963,6 +992,9 @@ export function CursorChat({
   // Close discards the thread — pinning is only ever the explicit pin
   // button's job. Auto-pinning on close left "random" pin markers behind.
   const closeActive = () => {
+    // Release the resolved section so a closed panel can't retain a
+    // detached subtree after that part of the page unmounts.
+    resolvedElementRef.current = null;
     const id = activeIdRef.current;
     if (!id || leavingIdRef.current) return;
 
@@ -1170,6 +1202,9 @@ export function CursorChat({
   };
 
   const collapseActive = () => {
+    // Release the resolved section so a closed panel can't retain a
+    // detached subtree after that part of the page unmounts.
+    resolvedElementRef.current = null;
     if (!activeThread || activeThread.status === "draft") return;
     if (leavingIdRef.current) return;
 

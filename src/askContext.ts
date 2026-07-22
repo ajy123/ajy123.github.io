@@ -19,6 +19,11 @@ export type AskContext = {
   chips: string[];
   followUps: string[];
   placeholder: string;
+  /** The section this resolved from, when it resolved to one. The caller feeds
+   * the model text from this element rather than from whatever sat under the
+   * pointer: if the pointer rests in the gutter between two work items, the
+   * panel would otherwise label one section while the prompt quoted another. */
+  element?: HTMLElement;
 };
 
 type PageDefault = {
@@ -135,6 +140,7 @@ function deeliPageDefault(): PageDefault {
  * falls back to the underlying page's default so an unknown id never breaks
  * the panel. */
 function essayPageDefault(essayId: string, underlyingPage: PageDefault): PageDefault {
+  // readOpenEssayId only returns ids present in essaysById, so this is defined.
   const item = essaysById[essayId];
   if (!item) return { ...underlyingPage, label: ESSAY_LABEL };
 
@@ -166,7 +172,11 @@ function readOpenEssayId(): string | null {
   const { hash } = window.location;
   if (!hash.startsWith(ESSAY_HASH_PREFIX)) return null;
   const id = hash.slice(ESSAY_HASH_PREFIX.length);
-  return id ? decodeURIComponent(id) : null;
+  if (!id) return null;
+  const decoded = decodeURIComponent(id);
+  // An id we can't resolve renders no dialog, so the reader is still looking
+  // at the page underneath — claiming "THIS ESSAY" there would be a lie.
+  return essaysById[decoded] ? decoded : null;
 }
 
 function resolvePageDefault(): PageDefault {
@@ -292,6 +302,7 @@ function sectionAskContext(
     chips: chips.slice(0, 3),
     followUps,
     placeholder: pageDefault.placeholder,
+    element,
   };
 }
 
@@ -324,11 +335,10 @@ export function resolveAskContext(opts: {
   // 2. Nearest section in the viewport. While the essay modal is open the
   // search is scoped to it — a section behind the overlay is not what the
   // reader is looking at, and letting it win would contradict the label.
-  const essayPanel =
-    typeof window !== "undefined" && readOpenEssayId()
-      ? document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR)
-      : null;
   const essayIsOpen = typeof window !== "undefined" && !!readOpenEssayId();
+  const essayPanel = essayIsOpen
+    ? document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR)
+    : null;
   if (!essayIsOpen || essayPanel) {
     const section = findNearestSection(
       opts.anchorElement,

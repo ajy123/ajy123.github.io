@@ -8,7 +8,7 @@
 // but a link ever sets this.
 import { trackAudienceRole } from "./analytics";
 
-export const AUDIENCE_PRESETS = {
+const AUDIENCE_PRESETS = {
   recruiter: "recruiter",
   "product-design": "product design",
 } as const;
@@ -34,10 +34,20 @@ function sessionSet(key: string, value: string): void {
   }
 }
 
+// Backs up the sessionStorage gate below. getAudienceRole is called on every
+// composer open and every send, so when storage throws (private browsing) the
+// stored flag never sticks and first_touch would fire on each call.
+let loggedFirstTouchThisPage = false;
+
 /** The first role seen this session is the "intent" signal and must never be
  * overwritten by a later page's read; this flag is the one-shot gate. */
 function markFirstTouchLoggedOnce(role: AudienceRole): void {
-  if (sessionGet(AUDIENCE_ROLE_LOGGED_KEY) === "1") return;
+  if (loggedFirstTouchThisPage) return;
+  if (sessionGet(AUDIENCE_ROLE_LOGGED_KEY) === "1") {
+    loggedFirstTouchThisPage = true;
+    return;
+  }
+  loggedFirstTouchThisPage = true;
   sessionSet(AUDIENCE_ROLE_LOGGED_KEY, "1");
   trackAudienceRole(role, { trigger: "first_touch", switchCount: 0 });
 }

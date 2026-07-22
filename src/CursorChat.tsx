@@ -751,9 +751,6 @@ export function CursorChat({
       const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;
       const id = crypto.randomUUID();
       const anchorElement = document.elementFromPoint(anchor.x, anchor.y);
-      const nearbyTextOverride =
-        zoneContext?.contextText || getBoundedText(anchorElement);
-
       // What the reader is actually looking at, resolved once and frozen for
       // the life of the thread: an explicit zone wins, else the nearest
       // section in the viewport, else the page (or open essay) default.
@@ -764,6 +761,13 @@ export function CursorChat({
         zoneFollowUps: followUpPrompts?.map((entry) => entry.prompt),
         zoneLabel: zoneContext ? zoneKindLabel(zoneContext.kind) : undefined,
       });
+      // The model reads the same section the panel names. Taking this from the
+      // raw pointer element instead would let the tag say "THIS PROJECT" while
+      // the prompt quoted whatever the cursor happened to rest on.
+      const nearbyTextOverride =
+        zoneContext?.contextText ||
+        getBoundedText(askContext.element ?? anchorElement);
+
       // A text selection is about the selection, not the section, so it keeps
       // its own placeholder and offers no opening chips.
       const threadSuggestedPrompts =

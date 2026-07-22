@@ -25,11 +25,12 @@ import {
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
 import {
-  trackAudienceRole,
   trackChatQuery,
   trackChatResponse,
   type ChatQuerySource,
 } from "./analytics";
+import { getAudienceRole } from "./audienceRole";
+import { resolveAskContext, zoneKindLabel } from "./askContext";
 // Same posters the WorkCanvas case-study cards use (see workItems in main.tsx),
 // reused as inline thumbnails when a response names one of those projects.
 import researchChatThumbUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -84,80 +85,24 @@ type Thread = {
   zoneContext?: CursorChatZoneContext;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
-  // First-open role ask (Component B): shown once per session, above the
-  // suggestion chips. See openComposer for the session gate.
-  showRoleAsk?: boolean;
-  // Whether this thread's chips/placeholder came from pickAudienceSuggestions
-  // (the default "/" / FAB / intro-dismiss path) rather than an explicit
-  // override (contextual hint, text selection) — a role pick only re-derives
-  // suggestions for threads that started out audience-driven.
-  audienceSuggestionsEligible?: boolean;
-  // The `fromSelection` flag captured at open time, replayed into
-  // pickDraftPlaceholder when a role pick re-derives the placeholder.
-  fromSelectionOnOpen?: boolean;
-  // The explicit followUpPrompts this thread opened with, replayed into
-  // buildPromptPool when a role pick re-derives the pool (so they aren't lost).
-  followUpPromptsOnOpen?: SuggestedPrompt[];
+  // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
+  // thread is still a draft, then freezes on the first question — see the
+  // pointer-follow effect below.
+  contextLabel?: string;
 };
 
-const COMPOSER_WIDTH = 360;
-const COMPOSER_MAX_HEIGHT = 360;
+// Single source of truth for the panel's box. placeComposer() clamps the
+// fixed top/left against these, and they are injected as custom properties so
+// the stylesheet cannot drift away from the numbers the placement math uses —
+// which it did once, opening the panel 41px below the viewport floor.
+const COMPOSER_WIDTH = 340;
+const COMPOSER_MAX_HEIGHT = 440;
 const EDGE = 14;
-// Gap between the anchor point and the panel's tight corner. Kept smaller than
-// EDGE so the sharpened corner visibly touches what it points at.
+// Gap between the anchor point and the panel's nearest corner. Kept smaller
+// than EDGE so the panel visibly sits against what it was opened from.
 const ANCHOR_GAP = 6;
 // Must match cursorChatOut's duration in index.css.
 const LEAVE_MS = 170;
-const AUDIENCE_PRESETS = {
-  recruiter: "recruiter",
-  "product-design": "product design",
-} as const;
-
-// Suggested chips carry the questions. Placeholders stay instructional so the
-// composer never repeats the same copy in two places.
-const AUDIENCE_PROMPTS: Record<
-  string,
-  { chips: string[]; placeholder: string }
-> = {
-  recruiter: {
-    chips: [
-      "what is Joanna's role?",
-      "what did she build for Deeli?",
-      "what does Joanna focus on?",
-      "did she build Deeli's site in a week?",
-      "is Joanna a designer and engineer?",
-      "what is Joanna's email?",
-    ],
-    placeholder: "or ask what's on your checklist",
-  },
-  "product design": {
-    chips: [
-      "does Joanna build AI products that hold data rigor and design quality equally?",
-      "what was her role on the brand identity?",
-      "does Joanna work across Figma and code?",
-      "what did she build in a week?",
-      "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
-      "is Joanna a designer and engineer?",
-    ],
-    placeholder: "or ask how anything here was made",
-  },
-  default: {
-    chips: [
-      "what is Joanna's role?",
-      "what did she build for Deeli?",
-      "what does Joanna focus on?",
-      "did she build Deeli's site in a week?",
-      "is Joanna a designer and engineer?",
-      "what is Joanna's email?",
-    ],
-    placeholder: "or ask anything about her work",
-  },
-};
-
-function getAudiencePrompts() {
-  const role = getAudienceRole();
-  return (role && AUDIENCE_PROMPTS[role]) || AUDIENCE_PROMPTS.default;
-}
 
 function toSuggestedPromptId(value: string, index: number) {
   const slug = value
@@ -167,40 +112,29 @@ function toSuggestedPromptId(value: string, index: number) {
   return `persona-${slug || "prompt"}-${index}`;
 }
 
-function pickAudienceSuggestions(): SuggestedPrompt[] {
-  return getAudiencePrompts()
-    .chips
-    .slice(0, 3)
-    .map((prompt, index) => ({
-      id: toSuggestedPromptId(prompt, index),
-      label: prompt,
-      prompt,
-    }));
+function toSuggestedPrompts(values: string[]): SuggestedPrompt[] {
+  return values.map((prompt, index) => ({
+    id: toSuggestedPromptId(prompt, index),
+    label: prompt,
+    prompt,
+  }));
 }
 
-function pickDraftPlaceholder(fromSelection: boolean): string {
-  if (fromSelection) return "ask about what you selected";
-  return getAudiencePrompts().placeholder;
-}
-
-// Union of a thread's opening suggestions and the full audience chip set,
-// deduped by prompt text. This is the pool follow-up suggestions draw from
-// after each answered turn.
+// Union of a thread's opening suggestions, any explicit follow-ups it opened
+// with, and its resolved context's follow-up pool — deduped by prompt text.
+// This is the pool follow-up suggestions draw from after each answered turn.
 function buildPromptPool(
   initial: SuggestedPrompt[] | undefined,
   followUps: SuggestedPrompt[] | undefined,
+  contextFollowUps: SuggestedPrompt[],
 ): SuggestedPrompt[] {
-  const audience: SuggestedPrompt[] = getAudiencePrompts().chips.map(
-    (prompt, index) => ({
-      id: toSuggestedPromptId(prompt, index),
-      label: prompt,
-      prompt,
-    }),
-  );
-
   const seen = new Set<string>();
   const pool: SuggestedPrompt[] = [];
-  for (const entry of [...(initial ?? []), ...(followUps ?? []), ...audience]) {
+  for (const entry of [
+    ...(initial ?? []),
+    ...(followUps ?? []),
+    ...contextFollowUps,
+  ]) {
     const key = entry.prompt.trim().toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
@@ -226,82 +160,12 @@ function followUpsFor(
   return picks.length ? picks : undefined;
 }
 
-function getZoneTagLabel(zoneContext?: CursorChatZoneContext) {
-  if (!zoneContext) return null;
-
-  const labelByKind: Record<string, string> = {
-    project: "THIS PROJECT",
-    essay: "THIS ESSAY",
-    profile: "JOANNA",
-  };
-
-  return `ASKING ABOUT: ${labelByKind[zoneContext.kind] ?? "THIS PAGE"}`;
-}
-
 const CURSOR_CHAT_DEFAULTS = {
   chipStaggerMs: 70,
-  radiusTight: 2,
-  radiusRoomy: 16,
+  radiusRoomy: 12,
 };
 
 type AnchorCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
-// Session keys for the first-open role ask (Component B). Kept alongside
-// getAudienceRole so the read/write sides of the sessionStorage contract sit
-// together. sessionGet/Set swallow the private-browsing throw in one place.
-const AUDIENCE_ROLE_KEY = "ask-audience-role";
-const AUDIENCE_ROLE_ASKED_KEY = "ask-audience-role-asked";
-const AUDIENCE_ROLE_LOGGED_KEY = "ask-audience-role-logged";
-
-function sessionGet(key: string): string | null {
-  try {
-    return sessionStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function sessionSet(key: string, value: string): void {
-  try {
-    sessionStorage.setItem(key, value);
-  } catch {
-    // Storage may be unavailable in private browsing modes.
-  }
-}
-
-const readStoredAudienceRole = (): string | null =>
-  sessionGet(AUDIENCE_ROLE_KEY);
-const writeStoredAudienceRole = (role: keyof typeof AUDIENCE_PRESETS): void =>
-  sessionSet(AUDIENCE_ROLE_KEY, role);
-
-const hasAskedAudienceRole = (): boolean =>
-  sessionGet(AUDIENCE_ROLE_ASKED_KEY) === "1";
-const markAudienceRoleAsked = (): void =>
-  sessionSet(AUDIENCE_ROLE_ASKED_KEY, "1");
-
-// First pick this session is the "intent" signal and must never be
-// overwritten by a later toggle; this flag is the one-shot gate for that.
-const hasLoggedAudienceRoleFirstTouch = (): boolean =>
-  sessionGet(AUDIENCE_ROLE_LOGGED_KEY) === "1";
-const markAudienceRoleFirstTouchLogged = (): void =>
-  sessionSet(AUDIENCE_ROLE_LOGGED_KEY, "1");
-
-function getAudienceRole(): CapturedContext["audienceRole"] {
-  const audience = new URLSearchParams(window.location.search)
-    .get("audience")
-    ?.trim()
-    .toLowerCase();
-
-  if (audience) {
-    return AUDIENCE_PRESETS[audience as keyof typeof AUDIENCE_PRESETS];
-  }
-
-  // Fallback: the deferred first-open role ask (Component B) writes the
-  // visitor's pick here instead of a URL param.
-  const stored = readStoredAudienceRole()?.trim().toLowerCase();
-  if (!stored) return undefined;
-  return AUDIENCE_PRESETS[stored as keyof typeof AUDIENCE_PRESETS];
-}
 
 function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -691,10 +555,15 @@ export function CursorChat({
     abortControllersRef.current.delete(id);
   };
   const suspendedRef = useRef(suspended);
-  // Increments on every role change after the first — the "switch" trigger's
-  // counter. The first pick itself is logged as first_touch, never counted.
-  const audienceRoleSwitchCountRef = useRef(0);
   const panelRef = useRef<HTMLElement | null>(null);
+  // The section a draft thread is currently pointed at, so pointer moves that
+  // stay inside the same section don't churn state.
+  const resolvedElementRef = useRef<HTMLElement | null>(null);
+  const draftRef = useRef("");
+  // Mirrors whether the active thread still accepts retargeting, so the
+  // pointer handler can bail before doing resolver work rather than
+  // discovering it inside setThreads and returning a fresh array every frame.
+  const followableRef = useRef(false);
   const previousPanelHeightRef = useRef<number | null>(null);
   const heightTimerRef = useRef<number | null>(null);
   const suggestionExitTimerRef = useRef<number | null>(null);
@@ -761,7 +630,7 @@ export function CursorChat({
   }, []);
 
   const activeThread = threads.find((thread) => thread.id === activeId) ?? null;
-  const activeZoneTag = getZoneTagLabel(activeThread?.zoneContext);
+  const activeZoneTag = activeThread?.contextLabel ?? null;
 
   // Generation narration index; restarts per thread.
   const [thinkingPhase, setThinkingPhase] = useState(0);
@@ -890,27 +759,36 @@ export function CursorChat({
       const selectionAnchor = getSelectionAnchor();
       const anchor = anchorOverride ?? selectionAnchor ?? pointerRef.current;
       const fromSelection = !anchorOverride && selectionAnchor !== null;
-      const audienceSuggestionsEligible = !anchorOverride && !fromSelection;
-      const threadSuggestedPrompts =
-        suggestedPrompts ??
-        (audienceSuggestionsEligible ? pickAudienceSuggestions() : undefined);
       // Explicit request wins; otherwise the small-screen layout docks.
       const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;
       const id = crypto.randomUUID();
       const anchorElement = document.elementFromPoint(anchor.x, anchor.y);
+      // What the reader is actually looking at, resolved once and frozen for
+      // the life of the thread: an explicit zone wins, else the nearest
+      // section in the viewport, else the page (or open essay) default.
+      const askContext = resolveAskContext({
+        anchorElement,
+        anchorPoint: anchor,
+        zonePrompts: suggestedPrompts?.map((entry) => entry.prompt),
+        zoneFollowUps: followUpPrompts?.map((entry) => entry.prompt),
+        zoneLabel: zoneContext ? zoneKindLabel(zoneContext.kind) : undefined,
+      });
+      // The model reads the same section the panel names. Taking this from the
+      // raw pointer element instead would let the tag say "THIS PROJECT" while
+      // the prompt quoted whatever the cursor happened to rest on.
       const nearbyTextOverride =
-        zoneContext?.contextText || getBoundedText(anchorElement);
-      // Deferred role ask (Component B): fires once per session, on whichever
-      // path is first to call openComposer — the "/" key, the FAB, the intro
-      // dismiss, a contextual hint, or a text selection all funnel through
-      // here, so gating here (rather than main.tsx's intro-only hook) is the
-      // only place that sees every entry point.
-      const showRoleAsk = !hasAskedAudienceRole();
-      if (showRoleAsk) markAudienceRoleAsked();
+        zoneContext?.contextText ||
+        getBoundedText(askContext.element ?? anchorElement);
 
+      // A text selection is about the selection, not the section, so it keeps
+      // its own placeholder and offers no opening chips.
+      const threadSuggestedPrompts =
+        suggestedPrompts ??
+        (fromSelection ? undefined : toSuggestedPrompts(askContext.chips));
       setDraft("");
       setAnnouncement("");
       setExitingSuggestions(null);
+      resolvedElementRef.current = askContext.element ?? null;
       activeIdRef.current = id;
       setThreads((current) => [
         ...current,
@@ -928,17 +806,20 @@ export function CursorChat({
           isPinned: false,
           createdAt: Date.now(),
           suggestedPrompts: threadSuggestedPrompts,
-          promptPool: buildPromptPool(threadSuggestedPrompts, followUpPrompts),
+          promptPool: buildPromptPool(
+            threadSuggestedPrompts,
+            followUpPrompts,
+            toSuggestedPrompts(askContext.followUps),
+          ),
           shownPromptIds: (threadSuggestedPrompts ?? []).map(
             (prompt) => prompt.id,
           ),
           zoneContext,
           docked: isDocked,
-          draftPlaceholder: pickDraftPlaceholder(fromSelection),
-          showRoleAsk,
-          audienceSuggestionsEligible,
-          fromSelectionOnOpen: fromSelection,
-          followUpPromptsOnOpen: followUpPrompts,
+          draftPlaceholder: fromSelection
+            ? "ask about what you selected"
+            : askContext.placeholder,
+          contextLabel: askContext.label,
         },
       ]);
       setActiveId(id);
@@ -994,8 +875,110 @@ export function CursorChat({
   }, []);
 
   useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
+
+  useEffect(() => {
+    followableRef.current = Boolean(
+      activeThread &&
+        activeThread.status === "draft" &&
+        !activeThread.history.length &&
+        !activeThread.selectedTextOverride,
+    );
+  }, [activeThread]);
+
+  useEffect(() => {
     if (!activeId) return;
     window.setTimeout(() => textareaRef.current?.focus(), 0);
+  }, [activeId]);
+
+  // A draft thread follows the pointer. Hovering a different section retargets
+  // its chips, its label, and the text the model will read — all three move
+  // together, so the tag never promises context the prompt won't carry. The
+  // moment a question is asked the thread freezes: from then on it is about
+  // what was asked, and offering questions the loaded context can't answer
+  // would be worse than offering none.
+  useEffect(() => {
+    if (!activeId) return;
+
+    let frame = 0;
+    const retarget = (x: number, y: number) => {
+      if (!followableRef.current) return;
+      const panel = panelRef.current;
+      const element = document.elementFromPoint(x, y);
+      // Reaching for the textarea must never count as choosing a new section.
+      if (panel && element && panel.contains(element)) return;
+
+      const next = resolveAskContext({
+        anchorElement: element,
+        anchorPoint: { x, y },
+      });
+      if ((next.element ?? null) === resolvedElementRef.current) return;
+
+      resolvedElementRef.current = next.element ?? null;
+      const contextText = getBoundedText(next.element ?? element);
+      // The zone instructions must move with the section too. Leaving the
+      // opening zone in place would tell the model to focus on the section
+      // the panel launched from while the tag named a different one.
+      const zoneContext: CursorChatZoneContext | undefined = next.element
+        ? {
+            hint: next.element.dataset.askHint ?? "",
+            kind: next.element.dataset.askKind ?? "",
+            contextText,
+          }
+        : undefined;
+
+      setThreads((current) =>
+        current.map((thread) => {
+          if (thread.id !== activeId) return thread;
+          // Re-checked here because followableRef is a frame behind a state
+          // change; the ref is the cheap gate, this is the correct one.
+          if (thread.status !== "draft") return thread;
+          if (thread.history.length || thread.selectedTextOverride) return thread;
+
+          const chips = toSuggestedPrompts(next.chips);
+          return {
+            ...thread,
+            contextLabel: next.label,
+            zoneContext,
+            nearbyTextOverride: contextText,
+            suggestedPrompts: chips,
+            promptPool: buildPromptPool(
+              chips,
+              undefined,
+              toSuggestedPrompts(next.followUps),
+            ),
+            shownPromptIds: chips.map((chip) => chip.id),
+            // Retargeting must not yank the placeholder out from under someone
+            // who has already started typing.
+            draftPlaceholder: draftRef.current
+              ? thread.draftPlaceholder
+              : next.placeholder,
+          };
+        }),
+      );
+    };
+
+    const handleMove = (event: PointerEvent) => {
+      if (frame) return;
+      const { clientX, clientY } = event;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        retarget(clientX, clientY);
+      });
+    };
+
+    if (import.meta.env.DEV) {
+      // requestAnimationFrame is paused in a hidden tab, so browser-driven
+      // verification can't reach retarget through handleMove. Same escape
+      // hatch as __cursorChatTestResponse in chatApi.
+      (window as unknown as { __retargetNow?: unknown }).__retargetNow = retarget;
+    }
+    window.addEventListener("pointermove", handleMove);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [activeId]);
 
   useEffect(() => {
@@ -1009,6 +992,9 @@ export function CursorChat({
   // Close discards the thread — pinning is only ever the explicit pin
   // button's job. Auto-pinning on close left "random" pin markers behind.
   const closeActive = () => {
+    // Release the resolved section so a closed panel can't retain a
+    // detached subtree after that part of the page unmounts.
+    resolvedElementRef.current = null;
     const id = activeIdRef.current;
     if (!id || leavingIdRef.current) return;
 
@@ -1210,14 +1196,15 @@ export function CursorChat({
       response: "",
       isPinned: false,
       suggestedPrompts: undefined,
-      // An ignored first-open role ask tucks away once the visitor sends.
-      showRoleAsk: false,
     }));
 
     await runGeneration(id, message, context, history, zoneContext, extraContext);
   };
 
   const collapseActive = () => {
+    // Release the resolved section so a closed panel can't retain a
+    // detached subtree after that part of the page unmounts.
+    resolvedElementRef.current = null;
     if (!activeThread || activeThread.status === "draft") return;
     if (leavingIdRef.current) return;
 
@@ -1251,68 +1238,6 @@ export function CursorChat({
   const retryActive = () => {
     if (!activeThread) return;
     void submitThread();
-  };
-
-  // A pick from the first-open role ask. Persists the role (so
-  // getAudienceRole() picks it up everywhere), logs the intent once as
-  // first_touch and every later change as a switch, then re-derives the
-  // *current* thread's chips + placeholder so the tailoring updates live
-  // instead of waiting for the next open.
-  const pickAudienceRole = (
-    id: string,
-    role: keyof typeof AUDIENCE_PRESETS,
-  ) => {
-    writeStoredAudienceRole(role);
-
-    if (hasLoggedAudienceRoleFirstTouch()) {
-      audienceRoleSwitchCountRef.current += 1;
-      trackAudienceRole(role, {
-        trigger: "switch",
-        switchCount: audienceRoleSwitchCountRef.current,
-      });
-    } else {
-      markAudienceRoleFirstTouchLogged();
-      trackAudienceRole(role, { trigger: "first_touch", switchCount: 0 });
-    }
-
-    setThreads((current) =>
-      current.map((thread) => {
-        if (thread.id !== id) return thread;
-        // The placeholder is audience-driven, so it refreshes for every thread.
-        const draftPlaceholder = pickDraftPlaceholder(
-          thread.fromSelectionOnOpen ?? false,
-        );
-        // But chips/pool only re-derive for threads that opened with the
-        // default audience-driven suggestions; a contextual hint's or a
-        // selection's own suggestions are intentional and stay untouched.
-        if (!thread.audienceSuggestionsEligible) {
-          return { ...thread, showRoleAsk: false, draftPlaceholder };
-        }
-        const nextSuggestedPrompts = pickAudienceSuggestions();
-        return {
-          ...thread,
-          showRoleAsk: false,
-          suggestedPrompts: nextSuggestedPrompts,
-          promptPool: buildPromptPool(
-            nextSuggestedPrompts,
-            thread.followUpPromptsOnOpen,
-          ),
-          shownPromptIds: (nextSuggestedPrompts ?? []).map(
-            (prompt) => prompt.id,
-          ),
-          draftPlaceholder,
-        };
-      }),
-    );
-  };
-
-  // Dismissing the ask logs nothing — it's not a signal either way.
-  const dismissRoleAsk = (id: string) => {
-    setThreads((current) =>
-      current.map((thread) =>
-        thread.id === id ? { ...thread, showRoleAsk: false } : thread,
-      ),
-    );
   };
 
   const dragStateRef = useRef<{
@@ -1486,8 +1411,9 @@ export function CursorChat({
               ...(activePosition
                 ? { left: activePosition.left, top: activePosition.top }
                 : {}),
-              "--chat-radius-tight": `${CURSOR_CHAT_DEFAULTS.radiusTight}px`,
               "--chat-radius-roomy": `${CURSOR_CHAT_DEFAULTS.radiusRoomy}px`,
+              "--chat-width": `${COMPOSER_WIDTH}px`,
+              "--chat-max-height": `${COMPOSER_MAX_HEIGHT}px`,
             } as CSSProperties
           }
           role="dialog"
@@ -1542,39 +1468,6 @@ export function CursorChat({
               </svg>
             </button>
           </div>
-
-          {activeThread.showRoleAsk ? (
-            <div className="cursor-chat-roleask" role="group" aria-label="Who are you here as?">
-              <span className="cursor-chat-roleask-label">here for</span>
-              <button
-                type="button"
-                className="cursor-chat-roleask-pick"
-                onClick={() => pickAudienceRole(activeThread.id, "recruiter")}
-              >
-                hiring
-              </button>
-              <span className="cursor-chat-roleask-sep" aria-hidden="true">
-                ·
-              </span>
-              <button
-                type="button"
-                className="cursor-chat-roleask-pick"
-                onClick={() =>
-                  pickAudienceRole(activeThread.id, "product-design")
-                }
-              >
-                exploring
-              </button>
-              <button
-                type="button"
-                className="cursor-chat-roleask-dismiss"
-                aria-label="Dismiss"
-                onClick={() => dismissRoleAsk(activeThread.id)}
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          ) : null}
 
           {activeThread.prompt ? (
             <div className="cursor-chat-message">

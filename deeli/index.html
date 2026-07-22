@@ -255,7 +255,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 <div class="cs-content">
 
-<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On Deeli, Joanna was solo product designer (led framing, strategy, interaction, and launch analysis) with a 5-engineer build team, launched June 2026." data-ask-prompts='["What was Joanna&#39;s role on Deeli?", "How long did this take to ship?"]'>
+<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On Deeli, Joanna was solo product designer (led framing, strategy, interaction, and launch analysis) with a 5-engineer build team, launched June 2026." data-ask-prompts='["What was Joanna&#39;s role on Deeli?", "How long did this take to ship?"]' data-ask-follow-up-prompts='["does the page say her role covered framing, strategy, interaction, and launch analysis?", "did engineering own the model and production implementation?", "was impact measured over the first two weeks after launch?"]'>
   <p class="cs-hero-eyebrow">Deeli · Enterprise AI research</p>
   <h1 class="cs-hero-title">From search box to research partner.</h1>
   <p class="cs-hero-lede">I redesigned Deeli&rsquo;s enterprise research workflow for a top-5 semiconductor foundry, replacing keyword retrieval with intent-aware, inspectable synthesis.</p>
@@ -305,7 +305,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-lede-p">A keyword flattened distinct research needs into the same templated report. Users could neither shape the answer nor verify it.</p>
   </div></div>
   <!-- ===== ANCHOR 1: PROBLEM ===== -->
-<section class="anchor" id="anchor-problem" data-ask-hint="Ask why keyword search failed" data-ask-kind="project" data-ask-prompts='["Why did keyword search fail researchers?", "What did users do instead?"]'>
+<section class="anchor" id="anchor-problem" data-ask-hint="Ask why keyword search failed" data-ask-kind="project" data-ask-prompts='["Why did keyword search fail researchers?", "What did users do instead?"]' data-ask-follow-up-prompts='["does the page say the report showed no sources and no reasoning?", "did three different roles asking the same keyword get an identical report?", "could researchers verify the report themselves?"]'>
 <style>
 #anchor-problem{font-family:var(--font-body);color:var(--body);}
 /* Two diagrams, one desktop row. The column is only ~696px, so each canvas
@@ -411,7 +411,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-lede-p">Customer behavior, product issues, and technical constraints pointed to the same gap: retrieval worked, but Deeli could not interpret intent or return an answer researchers could confidently use. Closing it took two control surfaces: a design spec the interface had to obey, and an eval suite that told me when the system&rsquo;s judgment could be trusted.</p>
   </div></div>
   <!-- ===== ANCHOR 2: PROCESS ===== -->
-<section class="anchor" id="anchor-process" data-ask-hint="Ask what changed the direction" data-ask-kind="project" data-ask-prompts='["Which finding changed the product direction?", "How was the research run?"]'>
+<section class="anchor" id="anchor-process" data-ask-hint="Ask what changed the direction" data-ask-kind="project" data-ask-prompts='["Which finding changed the product direction?", "How was the research run?"]' data-ask-follow-up-prompts='["does the page say the thesis was to stop returning documents and return the synthesis?", "how many issues were ranked in the tracker behind this finding?", "did path-grounded retrieval cost about six times more per run than fast retrieval?"]'>
 <style>
   #anchor-process{font-family:var(--font-body);color:var(--body);}
   #anchor-process .pc-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:center;}
@@ -668,7 +668,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
     <p class="gal-move-note"><b>Decision:</b> keep design.md machine-readable, so every generated variant gets checked against the spec, not against taste.</p>
   </div></div>
-<section class="anchor" id="anchor-spec" data-ask-hint="Ask why design.md became the spec" data-ask-kind="project" data-ask-prompts='["Why write the spec as design.md?", "How did agents use the spec?"]'>
+<section class="anchor" id="anchor-spec" data-ask-hint="Ask why design.md became the spec" data-ask-kind="project" data-ask-prompts='["Why write the spec as design.md?", "How did agents use the spec?"]' data-ask-follow-up-prompts='["does the page say low-credibility sources are shown gray, not red?", "which marker style got selected: number, icon, or label?", "does the page say design.md is versioned, not sacred?"]'>
 <figure class="ps-figure">
   <div role="status" id="ps-status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"></div>
   <div class="ps-eyebrow">Spec to surface &middot; interactive</div>
@@ -897,7 +897,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
     <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice" data-essay-id="eval-is-the-spec">More on evals as the spec &rarr;</a></p>
   </div></div>
-<section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]'>
+<section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]' data-ask-follow-up-prompts='["does the page say the suite has nine golden cases drawn from a 263-issue tracker?", "does the page say 10 of 11 checks scored 100%?", "did the single miss involve a billing question about plan seats and credit usage?"]'>
 <figure class="pe-figure">
   <div class="pe-panel">
     <div class="pe-miss-card">
@@ -926,7 +926,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </section>
 </div>
 
-<div class="cs-sechead" id="sec-solution" data-ask-hint="Ask why these four decisions" data-ask-kind="project" data-ask-prompts='["Why these four decisions?", "What got cut?"]'><span class="cs-sec-eyebrow">Solution</span></div>
+<div class="cs-sechead" id="sec-solution" data-ask-hint="Ask why these four decisions" data-ask-kind="project" data-ask-prompts='["Why these four decisions?", "What got cut?"]' data-ask-follow-up-prompts='["does the page say each decision closes one gap: express, aim, observe, verify?", "does one tap on a clarifying chip change the shape and depth of the report?", "does the page say Deeli was designed as a research instrument, not a chatbot?"]'><span class="cs-sec-eyebrow">Solution</span></div>
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
@@ -3354,7 +3354,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     </div>
   </div></div>
   <!-- ===== ANCHOR 5: FLIP ===== -->
-<section class="anchor" id="anchor-flip" data-ask-hint="Ask what 13→70% means" data-ask-kind="project" data-ask-prompts='["What does the 13% to 70% shift prove?", "How was NL share measured?"]'>
+<section class="anchor" id="anchor-flip" data-ask-hint="Ask what 13→70% means" data-ask-kind="project" data-ask-prompts='["What does the 13% to 70% shift prove?", "How was NL share measured?"]' data-ask-follow-up-prompts='["does the page say keyword usage fell from 87% to 30% after launch?", "did average queries per active day rise about 220% from pilot to launch week two?", "does the page call it a working tool, not a curiosity?"]'>
 <style>
   #anchor-flip{background:var(--canvas);color:var(--body);font-family:var(--font-body);}
   #anchor-flip .fl-wrap{display:flex;flex-wrap:wrap;gap:var(--space-block);justify-content:flex-start;align-items:flex-start;}
@@ -3504,7 +3504,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     </div>
   </div></div>
   <!-- ===== ANCHOR 6: RE-ASK ===== -->
-<section class="anchor" id="anchor-reask" data-ask-hint="Ask about the 28% re-asks" data-ask-kind="project" data-ask-prompts='["Why did 28% of queries get re-asked?", "What would you fix next?"]'>
+<section class="anchor" id="anchor-reask" data-ask-hint="Ask about the 28% re-asks" data-ask-kind="project" data-ask-prompts='["Why did 28% of queries get re-asked?", "What would you fix next?"]' data-ask-follow-up-prompts='["does the page say a mram-aerospace question asked five times produced two different report titles?", "does the page say the next move here is research, not a feature?", "does the page ask whether a re-ask means a rejected answer or a genuinely new angle?"]'>
 <style>
   #anchor-reask{font-family:var(--font-body);color:var(--body);}
   #anchor-reask .ra-wrap{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:flex-start;}

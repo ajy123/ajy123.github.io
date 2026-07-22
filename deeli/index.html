@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From search box to research partner · Joanna Yen</title>
 <meta name="description" content="Product-design case study: redesigning Deeli's deep-tech research product for a top-5 semiconductor foundry, from keyword search to an agentic research partner.">
+<!-- Same icon set as the landing page's head, in the same order — a tab
+     opened from the case study must not look like a different site. -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" sizes="32x32" href="/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
 <!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
@@ -890,7 +895,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <h3 class="gal-move-title">Run evaluation to find design edge cases.</h3>
     <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
     <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
-    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice">More on evals as the spec &rarr;</a></p>
+    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice" data-essay-id="eval-is-the-spec">More on evals as the spec &rarr;</a></p>
   </div></div>
 <section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]'>
 <figure class="pe-figure">

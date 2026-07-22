@@ -184,5 +184,13 @@ rendered capture — a passing diff does not satisfy them.
 
 - Model-generated follow-ups (rejected: adds a round-trip, risks off-voice questions).
 - Re-authoring the home page's existing per-item chip copy.
-- The separate finding that pressing `/` during the intro dismisses the intro but does **not**
-  open the composer. Real, reproduced, but a different defect — logged, not fixed here.
+**Retracted:** an earlier draft logged "pressing `/` during the intro dismisses the intro but
+does not open the composer" as a real, reproduced defect. It is neither. The browser automation
+tool was sent the key name `slash`, reported `Pressed 1 key: slash`, and delivered no event to
+the page at all — a `keydown` capture listener recorded zero events. Sending the literal `/`
+produces `key: "/", code: "Slash"`, dismisses the intro, and opens the composer. The handoff at
+`main.tsx:909-914` is correct: CursorChat's effect clears `suspendedRef` before App's effect
+schedules `requestCursorChatOpen()` on a macrotask, so the guard at `CursorChat.tsx:735` passes.
+
+Lesson worth keeping: a tool reporting success for input it silently dropped looks exactly like
+a product bug. Confirm the event reached the page before believing the page is broken.

@@ -89,15 +89,31 @@ Close and reopen elsewhere → new thread, new label. Accepted consequence: on a
 label stays put across several screens of scroll. Sections are the authoring unit, so the label
 is honest about its granularity.
 
-**Wording — [Likely], not user-confirmed.** Caption form, no verb, matching the existing plain
-lowercase voice of *"or ask anything about her work"*:
+**Wording — corrected against ground truth after the spec was first drafted.**
 
-- `/deeli/` → `about the Deeli case study`
-- home, work item → `about From keyword search to a research chat`
-- essay open → `about <essay title>`
-- home, no section resolved → `about Joanna's work`
+The label is not new. `getZoneTagLabel` (`CursorChat.tsx:229-239`) already emits
+`ASKING ABOUT: THIS PROJECT`, rendered by `.cursor-chat-zonetag`
+(`CursorChat.tsx:1504-1508`, styled `chat-ui.css:270-286`): 10px mono, uppercase, muted,
+`nowrap` + `text-overflow: ellipsis`, sharing a flex row with the pin/close buttons inside a
+360px panel. Its generic buckets are short on purpose.
 
-Single string map; cheap to revise.
+An earlier draft of this spec proposed lowercase caption labels (`about the Deeli case study`).
+That is **rejected** — it breaks the established treatment and overflows the row. Budget is
+~34 characters including the prefix.
+
+| Context | Label |
+|---|---|
+| zone kind `project` | `ASKING ABOUT: THIS PROJECT` *(existing)* |
+| zone kind `essay`, or an essay modal is open | `ASKING ABOUT: THIS ESSAY` *(existing)* |
+| zone kind `profile` | `ASKING ABOUT: JOANNA` *(existing)* |
+| `/deeli*`, no zone resolved | `ASKING ABOUT: DEELI CASE STUDY` *(new)* |
+| home, nothing resolved | `ASKING ABOUT: JOANNA'S WORK` *(new)* |
+
+Home work item titles are not interpolated — *"From keyword search to a research chat"* far
+exceeds the budget, so resolved work items use the `THIS PROJECT` bucket.
+
+Consequence: `getZoneTagLabel` becomes redundant and is deleted, its job absorbed by
+`resolveAskContext`.
 
 ## Chip resolution chain
 
@@ -136,7 +152,7 @@ Ordered by dependency. T3 must be frozen before T4/T5 run in parallel.
 | # | Task | Files |
 |---|---|---|
 | T1 | Delete role-ask UI: the row, the CSS block, `showRoleAsk`, `dismissRoleAsk`, the `-asked` session key. Keep everything listed under "Silent role → Kept". | `CursorChat.tsx:1546-1577, 903-909, 1310-1316`; `chat-ui.css:428-523, 1224-1226` |
-| T2 | Topbar earns its height: context label + `×` on one row. No empty layout rows remain. | `CursorChat.tsx` topbar; `chat-ui.css:247-264` |
+| T2 | Make the topbar's context tag **always resolve**. The tag element already exists (`.cursor-chat-zonetag`, `CursorChat.tsx:1504-1508`) — it renders nothing when there is no zone, which is exactly the empty band. Feed it from T3 and delete `getZoneTagLabel`. No new element is added. | `CursorChat.tsx:229-239, 764, 1504-1508`; `chat-ui.css:247-286` |
 | T3 | `src/askContext.ts` — resolve zone → nearest section → page/essay. Returns `{ label, chips, followUps, placeholder }`. | new `src/askContext.ts` |
 | T4 | Author the missing `data-ask-follow-up-prompts` on `/deeli/`'s 8 zones. | `deeli/index.html` |
 | T5 | Page-default sets (home / deeli / essay) + label map. | `src/askContext.ts` |

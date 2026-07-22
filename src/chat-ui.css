@@ -211,9 +211,11 @@
   --chat-panel-fill: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   position: fixed;
   z-index: 1103;
-  width: 340px;
+  /* Injected from COMPOSER_WIDTH/COMPOSER_MAX_HEIGHT in CursorChat.tsx, which
+     is what placeComposer() clamps against. Fallbacks match those constants. */
+  width: var(--chat-width, 340px);
   max-width: calc(100vw - 28px);
-  max-height: min(440px, calc(100vh - 28px));
+  max-height: min(var(--chat-max-height, 440px), calc(100vh - 28px));
   overflow: auto;
   /* The row is the unit: 6px horizontal container padding is the fill edge,
      and each row's own 8px padding lands text on a single 14px text edge.
@@ -1120,7 +1122,7 @@
 
 @media (max-width: 860px) {
   .cursor-chat {
-    width: min(360px, calc(100vw - 28px));
+    width: min(var(--chat-width, 340px), calc(100vw - 28px));
   }
 
   .contextual-ask-hint {

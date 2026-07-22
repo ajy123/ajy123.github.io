@@ -90,8 +90,12 @@ type Thread = {
   contextLabel?: string;
 };
 
-const COMPOSER_WIDTH = 360;
-const COMPOSER_MAX_HEIGHT = 360;
+// Single source of truth for the panel's box. placeComposer() clamps the
+// fixed top/left against these, and they are injected as custom properties so
+// the stylesheet cannot drift away from the numbers the placement math uses —
+// which it did once, opening the panel 41px below the viewport floor.
+const COMPOSER_WIDTH = 340;
+const COMPOSER_MAX_HEIGHT = 440;
 const EDGE = 14;
 // Gap between the anchor point and the panel's tight corner. Kept smaller than
 // EDGE so the sharpened corner visibly touches what it points at.
@@ -1373,6 +1377,8 @@ export function CursorChat({
                 ? { left: activePosition.left, top: activePosition.top }
                 : {}),
               "--chat-radius-roomy": `${CURSOR_CHAT_DEFAULTS.radiusRoomy}px`,
+              "--chat-width": `${COMPOSER_WIDTH}px`,
+              "--chat-max-height": `${COMPOSER_MAX_HEIGHT}px`,
             } as CSSProperties
           }
           role="dialog"

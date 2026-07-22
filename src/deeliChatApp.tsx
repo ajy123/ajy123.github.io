@@ -15,6 +15,7 @@ import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
 import { essaysById } from "./essays";
 import type { EssayItem } from "./essays/types";
+import { useEssayHashRoute } from "./essays/useEssayHashRoute";
 import { DEELI_CASE_CONTEXT } from "./deeliCaseContext";
 
 // Opens the shared essay modal in place of navigating to `/#ai-practice`.
@@ -23,8 +24,15 @@ import { DEELI_CASE_CONTEXT } from "./deeliCaseContext";
 // id (or a link with no data-essay-id at all) is left alone — the click
 // falls through to the anchor's href as a plain navigation.
 function DeeliEssayModal() {
-  const [activeItem, setActiveItem] = useState<EssayItem | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const { essayId, openEssay, closeEssay } = useEssayHashRoute();
+  const item = essayId ? essaysById[essayId] : undefined;
+  // The hash goes empty the instant we close, but AnimatePresence still needs
+  // an item to render the exit morph against — so hold the last one open.
+  const [renderedItem, setRenderedItem] = useState<EssayItem | null>(null);
+
+  useEffect(() => {
+    if (item) setRenderedItem(item);
+  }, [item]);
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -35,26 +43,24 @@ function DeeliEssayModal() {
       const link = target.closest<HTMLAnchorElement>("a[data-essay-id]");
       if (!link) return;
 
-      const essayId = link.dataset.essayId;
-      const item = essayId ? essaysById[essayId] : undefined;
-      if (!item) return; // unknown id: graceful degradation to the href
+      const clickedId = link.dataset.essayId;
+      if (!clickedId || !essaysById[clickedId]) return; // unknown id: fall through to the href
 
       event.preventDefault();
-      setActiveItem(item);
-      setIsOpen(true);
+      openEssay(clickedId);
     };
 
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, []);
+  }, [openEssay]);
 
-  if (!activeItem) return null;
+  if (!renderedItem) return null;
 
   return (
     <EssayDialog
-      item={activeItem}
-      open={isOpen}
-      onClose={() => setIsOpen(false)}
+      item={renderedItem}
+      open={Boolean(item)}
+      onClose={closeEssay}
     />
   );
 }

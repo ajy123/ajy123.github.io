@@ -37,6 +37,7 @@ import { initAnalytics } from "./analytics";
 import { initFaviconPulse } from "./faviconPulse";
 import { aiPracticeItems } from "./essays";
 import type { EssayItem, WorkItem } from "./essays/types";
+import { useEssayHashRoute } from "./essays/useEssayHashRoute";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
 import caseStudyVideoUrl from "../images/case-study-test.mp4?url";
 import deeliCaseStudyPosterUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -576,17 +577,20 @@ function WorkMedia({ item }: { item: WorkItem }) {
 }
 
 function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) {
-  const [isOpen, setIsOpen] = useState(false);
+  // The URL owns which essay is open, so a deep link, a share, and the Back
+  // button all agree with the dialog.
+  const { essayId, openEssay, closeEssay } = useEssayHashRoute();
+  const isOpen = essayId === item.id;
   const [isCardHovered, setIsCardHovered] = useState(false);
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const dialogId = `essay-dialog-${item.id}`;
 
   const openDialog = () => {
-    setIsOpen(true);
+    openEssay(item.id);
   };
   const closeDialog = () => {
-    setIsOpen(false);
+    closeEssay();
   };
 
   const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {

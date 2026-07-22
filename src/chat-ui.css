@@ -211,13 +211,15 @@
   --chat-panel-fill: color-mix(in srgb, var(--surface-warm) 97%, transparent);
   position: fixed;
   z-index: 1103;
-  width: 360px;
+  width: 340px;
   max-width: calc(100vw - 28px);
-  max-height: min(360px, calc(100vh - 28px));
+  max-height: min(440px, calc(100vh - 28px));
   overflow: auto;
-  /* 16px ≥ the 14px corner radius, so content clears the rounded corners;
-     12px left chip hover pills 5px from the panel edge. */
-  padding: 16px;
+  /* The row is the unit: 6px horizontal container padding is the fill edge,
+     and each row's own 8px padding lands text on a single 14px text edge.
+     12px radius vs the 6px inset means the hover fill's own 6px radius nests
+     inside the panel's rounded corner instead of colliding with it. */
+  padding: 14px 6px;
   color: var(--ink);
   background: var(--chat-panel-fill);
   border: 1px solid var(--hairline-faint);
@@ -240,41 +242,37 @@
 
 .cursor-chat[data-anchor-corner="top-left"] {
   --chat-origin: top left;
-  border-top-left-radius: var(--chat-radius-tight, 4px);
 }
 
 .cursor-chat[data-anchor-corner="top-right"] {
   --chat-origin: top right;
-  border-top-right-radius: var(--chat-radius-tight, 4px);
 }
 
 .cursor-chat[data-anchor-corner="bottom-left"] {
   --chat-origin: bottom left;
   --chat-enter-y: -6px;
-  border-bottom-left-radius: var(--chat-radius-tight, 4px);
 }
 
 .cursor-chat[data-anchor-corner="bottom-right"] {
   --chat-origin: bottom right;
   --chat-enter-y: -6px;
-  border-bottom-right-radius: var(--chat-radius-tight, 4px);
 }
 
 /* Slim header strip: real drag handle + ghost window controls. */
 .cursor-chat-topbar {
   /* Sticky against the panel's own scroll so pin/close stay reachable on
-     long answers; -16px cancels the panel padding, the side bleeds + fill
-     keep scrolled content from peeking around the controls. */
+     long answers; -14px cancels the panel's vertical padding so the fill
+     still keeps scrolled content from peeking around the controls. */
   position: sticky;
-  top: -16px;
+  top: -14px;
   z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
   min-height: 22px;
-  margin: -16px -16px 8px;
-  padding: 16px 16px 4px;
+  margin: 0 0 10px;
+  padding: 0 8px;
   background: var(--chat-panel-fill);
   cursor: grab;
   touch-action: none;
@@ -340,7 +338,7 @@
   width: 100%;
   max-height: 154px;
   overflow-y: auto;
-  padding: 12px 44px 12px 12px;
+  padding: 12px 44px 12px 8px;
   color: var(--ink);
   background: var(--surface-subtle);
   border-radius: 8px;
@@ -360,7 +358,7 @@
   /* Rows carry their own 8px padding; near-zero gap keeps the borderless
      list reading as one group instead of three floating lines. */
   gap: 2px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .cursor-chat-suggestions.is-exiting {
@@ -375,9 +373,9 @@
 /*
  * Chips speak the hint badge's mono annotation voice: lowercase mono
  * questions led by a subdirectory arrow — the arrow alone signals
- * "tappable", so the rows carry no border or resting fill. The hover pill
- * bleeds past the text column (negative margin) while the label stays flush
- * with the answer's left edge.
+ * "tappable", so the rows carry no border or resting fill. The row is the
+ * layout unit now: it fills the container's content width and its own 8px
+ * padding lands the label on the panel's single text edge.
  */
 .cursor-chat-suggestions button {
   all: unset;
@@ -386,9 +384,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: calc(100% + 16px);
-  max-width: calc(100% + 16px);
-  margin: 0 -8px;
+  width: 100%;
   /* 12px text + 2x8px padding ≈ 32px box; min-height tops it up to a
      36px target without the old 44px row's dead air. */
   min-height: 36px;
@@ -444,6 +440,7 @@
 
 .cursor-chat-message,
 .cursor-chat-response {
+  margin: 0 0 8px;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 14px;
@@ -456,7 +453,6 @@
  * muted type so the reply reads as the primary ink.
  */
 .cursor-chat-message {
-  margin-bottom: 8px;
   background: color-mix(in srgb, var(--ink) 6%, var(--surface-warm));
 }
 
@@ -471,7 +467,6 @@
  */
 .cursor-chat-response {
   position: relative;
-  margin-bottom: 8px;
   padding: 8px 12px;
   border-top: 1px solid var(--hairline-faint);
   color: var(--ink);
@@ -945,7 +940,7 @@
  * old consent copy, one line, no interaction. */
 .cursor-chat-disclosure {
   margin: 2px 0 0;
-  padding: 0 2px;
+  padding: 0 8px;
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: 10px;

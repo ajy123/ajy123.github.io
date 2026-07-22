@@ -157,8 +157,7 @@ function followUpsFor(
 
 const CURSOR_CHAT_DEFAULTS = {
   chipStaggerMs: 70,
-  radiusTight: 2,
-  radiusRoomy: 16,
+  radiusRoomy: 12,
 };
 
 type AnchorCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -1373,7 +1372,6 @@ export function CursorChat({
               ...(activePosition
                 ? { left: activePosition.left, top: activePosition.top }
                 : {}),
-              "--chat-radius-tight": `${CURSOR_CHAT_DEFAULTS.radiusTight}px`,
               "--chat-radius-roomy": `${CURSOR_CHAT_DEFAULTS.radiusRoomy}px`,
             } as CSSProperties
           }

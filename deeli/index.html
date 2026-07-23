@@ -545,16 +545,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   #anchor-spec .ps-plusn{font:600 9px/1 Inter,sans-serif;color:#717182;margin-left:3px;}
   /* C: label chip */
   #anchor-spec .ps-chiplabel{display:inline-block;font-family:var(--font-mono);font-size:.7em;font-weight:500;color:#717182;background:rgba(19,43,36,.05);border-radius:4px;padding:1px 5px;vertical-align:1px;margin:0 1px;}
-  /* The machine twin + the rule it lost */
-  #anchor-spec .ps-json{margin-top:14px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start;}
-  #anchor-spec .ps-json-card{background:var(--canvas);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:13px 15px;font-family:var(--font-mono);min-width:0;}
-  #anchor-spec .ps-json-head{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 9px;}
-  #anchor-spec .ps-json-rule{font-size:10.5px;line-height:1.65;color:var(--muted-strong);margin:0 0 10px;}
-  #anchor-spec .ps-json-rule:last-child{margin-bottom:0;}
-  #anchor-spec .ps-json-name{color:var(--ink);font-weight:600;}
-  #anchor-spec .ps-json-over{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-deep);margin-left:6px;}
-  #anchor-spec .ps-json-note{font-size:12.5px;line-height:1.65;color:var(--muted-strong);margin:0;padding-top:2px;}
-  #anchor-spec .ps-json-note b{color:var(--ink);font-weight:600;}
   #anchor-spec .ps-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
   @media (max-width:760px){
     #anchor-spec .ps-panes{grid-template-columns:1fr;padding:18px;gap:16px;}
@@ -563,7 +553,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     #anchor-spec .ps-doc-scroll{height:300px;overscroll-behavior:auto;}
     #anchor-spec .ps-explore{order:3;}
     #anchor-spec .ps-exp-row{grid-template-columns:1fr;}
-    #anchor-spec .ps-json{grid-template-columns:1fr;gap:10px;}
   }
 
   /* --- Eval figure: the scorer table, one row loud --- */
@@ -659,13 +648,13 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 <div class="pb-hypothesis">
   <p class="pb-statement">Stop returning documents. <em>Return the synthesis.</em></p>
-  <p class="pb-support">Nine cents a run bought grounded synthesis. I made the case to pay it: an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
+  <p class="pb-support">The current ran the other way: the team had just settled a model trial on cost, not quality, and the customer&rsquo;s loudest fear was one deep question eating a third of the budget. Nine cents a run bought grounded synthesis, and I made the case to pay it anyway &mdash; an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
 </div>
 </section>
 
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Control the interface with a spec.</h3>
-    <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting.</p>
+    <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting. The doc is versioned, not sacred &mdash; the amber accent, once reserved for AI-only regions, lost that rule in June when citation caution needed the color more.</p>
     <p class="gal-move-note"><b>Decision:</b> keep design.md machine-readable, so every generated variant gets checked against the spec, not against taste.</p>
   </div></div>
 <section class="anchor" id="anchor-spec" data-ask-hint="Ask why design.md became the spec" data-ask-kind="project" data-ask-prompts='["Why write the spec as design.md?", "How did agents use the spec?"]' data-ask-follow-up-prompts='["does the page say low-credibility sources are shown gray, not red?", "which marker style got selected: number, icon, or label?", "does the page say design.md is versioned, not sacred?"]'>
@@ -685,10 +674,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           <p class="ps-sec-h"><span class="ps-secno">1.3</span>Encode by exception</p>
           <p>Most data is fine; only the outliers change a decision. So the common case shows <em>nothing extra</em>. A page of good citations stays whisper-quiet; the eye lands exactly on the 1&ndash;2 that matter. This is how good lint/error UIs behave: invisible until there&rsquo;s a problem.</p>
         </div>
-        <div class="ps-sec" id="ps-sec-14">
-          <p class="ps-sec-h"><span class="ps-secno">1.4</span>Hierarchy through weight &amp; space, not lines &amp; color</p>
-          <p>Reach for size, weight, opacity, and whitespace before borders, fills, or hues. One accent color is a feature; three is noise. Color is a scarce resource.</p>
-        </div>
         <h4>2 &middot; Foundations</h4>
         <div class="ps-sec" id="ps-sec-21">
           <p class="ps-sec-h"><span class="ps-secno">2.1</span>Color</p>
@@ -703,10 +688,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           <p>One typeface: Inter. Base body 13px&thinsp;/&thinsp;1.5. Hierarchy is made with weight and size, never a second display face. Inline UI elements size in em so they scale with the prose they sit in. Avoid monospace for inline product UI: it reads &ldquo;techy&rdquo; and breaks the editorial calm.</p>
         </div>
         <h4>3 &middot; The citation system</h4>
-        <div class="ps-sec" id="ps-sec-32">
-          <p class="ps-sec-h"><span class="ps-secno">3.2</span>The layered disclosure model</p>
-          <p>Loudest &rarr; quietest: prose &rarr; section trust line &rarr; inline marker &rarr; exception tick &rarr; hover card &rarr; pinned panel. The exception tick is the <b>only</b> inline color, appearing solely on outliers: green = primary/high, amber = scrutinize. The common case stays bare.</p>
-        </div>
         <div class="ps-sec" id="ps-sec-33">
           <p class="ps-sec-h"><span class="ps-secno">3.3</span>Rules of thumb</p>
           <p>One signal leads inline. Domain names belong in the card, not inline. Alarms never hide: stale and conflict always surface, because they change behavior.</p>
@@ -754,14 +735,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
           <div class="ps-exp-surface">Capacity utilization recovered to 87% in Q4 <span class="ps-chiplabel">reuters</span><span class="ps-chiplabel">+2</span>.</div>
           <p class="ps-exp-note"><button class="ps-pin" type="button" data-sec="ps-sec-22" aria-pressed="false" aria-label="Trace to design.md section 2.2, typography">C</button><span>Monospace chips read techy and break the editorial calm. &rarr; &sect;2.2</span></p>
         </div>
-      </div>
-      <div class="ps-json">
-        <div class="ps-json-card">
-          <div class="ps-json-head">design.md &middot; the named rules</div>
-          <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The One Voice Rule&rdquo;</span> &mdash; &ldquo;The forest-green primary appears on less than 10% of any given screen. Its rarity is the signal.&rdquo;</p>
-          <p class="ps-json-rule"><span class="ps-json-name">&ldquo;The Collaboration Color Rule&rdquo;</span><span class="ps-json-over">Overturned &middot; Jun 02</span><br>&ldquo;The amber tertiary is reserved for AI-influenced regions only. Never a brand accent, never decorative.&rdquo;</p>
-        </div>
-        <p class="ps-json-note">Generated variants are checked against these rules, not against taste. <b>And the doc is versioned, not sacred:</b> the amber rule lost in June. Citation caution needed the color more, and &sect;2.1 now reads &ldquo;caution is on-brand, not a new hue.&rdquo;</p>
       </div>
     </div>
   </div>
@@ -894,8 +867,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Run evaluation to find design edge cases.</h3>
     <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
-    <p class="gal-move-note"><b>Decision:</b> when the eval flags a query as genuinely ambiguous, the product asks instead of guessing. Clarification came out of a diagnosed miss, not a feature brainstorm.</p>
-    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. The single miss sat on the field left to the model&rsquo;s judgment. <a class="pc-essay-link" href="/#ai-practice" data-essay-id="eval-is-the-spec">More on evals as the spec &rarr;</a></p>
+    <p class="gal-move-note"><b>Decision:</b> when the parser can&rsquo;t type a query, it asks instead of guessing. The suite&rsquo;s one miss &mdash; a plan-seats billing question the parser refused to persona-type &mdash; routed to clarification rather than a wrong report, and it landed on the only field left to the model by design.</p>
+    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. <a class="pc-essay-link" href="/#ai-practice" data-essay-id="eval-is-the-spec">More on evals as the spec &rarr;</a></p>
   </div></div>
 <section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]' data-ask-follow-up-prompts='["does the page say the suite has nine golden cases drawn from a 263-issue tracker?", "does the page say 10 of 11 checks scored 100%?", "did the single miss involve a billing question about plan seats and credit usage?"]'>
 <figure class="pe-figure">
@@ -937,7 +910,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy" id="move-1"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Take the question, not the keyword.</h3>
     <p class="gal-move-summary">Researchers could ask naturally, including fragments, long questions, and bilingual queries, without translating their intent into search syntax.</p>
-    <p class="gal-move-note"><b>Decision:</b> preserve the original query and show the system&rsquo;s interpretation separately. Silent rewrites would break trust.</p>
+    <p class="gal-move-note"><b>Decision:</b> the obvious build was a chat thread. I kept one box and showed the system&rsquo;s reading as numbered footnotes instead &mdash; silently rewriting a researcher&rsquo;s words breaks trust, and this is a research instrument, not a chatbot.</p>
     <p class="gal-move-proof">Observed: 70% of live queries used forms the old box could not support.</p>
   </div></div>
   <details class="cs-prototype" open>
@@ -1412,7 +1385,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy" id="move-2"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Let the researcher aim the report.</h3>
     <p class="gal-move-summary">Instead of guessing, Deeli asks one focused question back. A single tap changes the shape and depth of the report.</p>
-    <p class="gal-move-note"><b>Why chips:</b> mid-task engineers needed a one-tap choice, with a rewrite escape hatch when the options were wrong.</p>
+    <p class="gal-move-note"><b>Decision:</b> a free-text follow-up was the obvious ask. Chips won: mid-task engineers won&rsquo;t type a paragraph about scope. The real uncertainty was whether they&rsquo;d tolerate being asked at all &mdash; so the escape hatch keeps control with the researcher.</p>
   </div></div>
   <details class="cs-prototype" open>
     <summary>Shipped clarification</summary>
@@ -1985,7 +1958,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Show what the agents are doing.</h3>
     <p class="gal-move-summary">While generating, each named agent reports the sources it is touching. The panel closes on how many of them the report uses, so the wait shows its work instead of an unverifiable percentage.</p>
-    <p class="gal-move-note"><b>Decision:</b> narrate concrete source activity, such as 145 USPTO patents or 312 matched papers, instead of showing a progress bar.</p>
+    <p class="gal-move-note"><b>Decision:</b> the default was a progress bar. A percentage is theater no one can verify &mdash; and a pilot user had already asked for &ldquo;collecting sources&rdquo;-style updates over a spinner. Naming agents and their source counts turns the wait itself into evidence.</p>
   </div></div>
   <details class="cs-prototype" open>
     <summary>Generating panel</summary>
@@ -2530,6 +2503,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   <div class="gal-copy" id="move-3b"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Make every claim inspectable.</h3>
     <p class="gal-move-summary">The final report exposes its source count, citations, and drill-down paths so researchers can check a claim before using it.</p>
+    <p class="gal-move-note"><b>Decision:</b> design for the expert who signs off, not only the researcher who asks. Citation failures were the rarest issue class and the costliest &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn.</p>
     <p class="gal-move-proof">Observed: 91 of 92 live queries returned an inspectable report. This measures generation reliability, not research outcome quality.</p>
   </div></div>
   <details class="cs-prototype" open>

@@ -10,12 +10,7 @@
 // the frame stays put. Its own product character: a brisk 4.2s ticket cadence
 // with a crisp ease-out snap, out of step with Swiftly's slower rhythm. One
 // forest focal: the record's "Open" status. Selection is a neutral wash.
-const ACCENT = "#174C3A";
-const STROKE = "#171717";
-const PAPER = "#FAF9F5";
-const HAIR = "rgba(23,23,23,0.14)";
-const FAINT = "rgba(23,23,23,0.28)";
-const WASH = "rgba(23,23,23,0.06)";
+import { ACCENT, STROKE, PAPER, HAIR, FAINT, WASH, CURSOR_SCALE, GROUP_SCALE, CursorArrow } from "./thumbnailArt";
 
 const CSS = `
 .nyt-select{opacity:1}
@@ -62,7 +57,7 @@ export function NyuThumbnail() {
 
       <g clipPath="url(#nyt-clip)">
         {/* inner UI scaled to 80% inside the full-size frame */}
-        <g transform="translate(160 120) scale(0.8) translate(-160 -120)">
+        <g transform={`translate(160 120) scale(${GROUP_SCALE}) translate(-160 -120)`}>
           {/* PERSISTENT chrome: top bar + narrow-queue divider */}
           <rect x="52" y="58" width="34" height="6" rx="3" fill={STROKE} />
           <line x1="40" y1="72" x2="280" y2="72" stroke={HAIR} />
@@ -105,15 +100,10 @@ export function NyuThumbnail() {
             ))}
           </g>
 
-          {/* cursor — hovers the selected ticket (0.625 * 0.8 group = half size) */}
+          {/* cursor — hovers the selected ticket; divides by the group scale so
+              it nets the same on-screen half size as the Swiftly cursor */}
           <g className="nyt-cursor">
-            <path
-              d="M0 0 L0 15 L4.2 10.8 L7 16.5 L9.4 15.4 L6.6 9.7 L12 9.4 Z"
-              transform="scale(0.625)"
-              fill={STROKE}
-              stroke={PAPER}
-              strokeWidth="1"
-            />
+            <CursorArrow scale={CURSOR_SCALE / GROUP_SCALE} />
           </g>
         </g>
       </g>

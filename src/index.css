@@ -1480,6 +1480,13 @@ a.card-eyebrow-flag .flag-verb {
     animation-iteration-count: 1 !important;
   }
 
+  /* Coded thumbnails have no motion under reduced motion, so their play/pause
+     control would be inert — hide it. Video controls stay: the video still
+     plays. */
+  .work-media--thumbnail .work-media-control {
+    display: none;
+  }
+
   .reveal {
     opacity: 1;
     transform: none;

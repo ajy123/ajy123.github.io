@@ -568,6 +568,27 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
   );
 }
 
+// Shared play/pause control for the work-card media (video and coded
+// thumbnail). stopPropagation keeps the toggle from bubbling into the card's
+// askable region (and the "See it live" overlay on live projects).
+function MediaControl({ isPlaying, onToggle }: { isPlaying: boolean; onToggle: () => void }) {
+  return (
+    <button
+      className="work-media-control"
+      type="button"
+      aria-label={isPlaying ? "Pause preview" : "Play preview"}
+      title={isPlaying ? "Pause preview" : "Play preview"}
+      data-ask-ignore="true"
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggle();
+      }}
+    >
+      {isPlaying ? <PauseGlyph /> : <PlayGlyph />}
+    </button>
+  );
+}
+
 // Coded-thumbnail sibling of the video branch. The Swiftly/NYU cards render an
 // animated SVG instead of a video, but match the video cards' behaviour:
 // autoplay loop plus a pause/play control. data-playing gates the CSS
@@ -575,23 +596,12 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
 // the card on its resting hero frame.
 function ThumbnailMedia({ item }: { item: WorkItem }) {
   const [isPlaying, setIsPlaying] = useState(true);
-  const Thumbnail = item.thumbnail!;
+  if (!item.thumbnail) return null;
+  const Thumbnail = item.thumbnail;
   return (
     <div className="work-media work-media--thumbnail" data-playing={isPlaying}>
       <Thumbnail />
-      <button
-        className="work-media-control"
-        type="button"
-        aria-label={isPlaying ? "Pause preview" : "Play preview"}
-        title={isPlaying ? "Pause preview" : "Play preview"}
-        data-ask-ignore="true"
-        onClick={(event) => {
-          event.stopPropagation();
-          setIsPlaying((playing) => !playing);
-        }}
-      >
-        {isPlaying ? <PauseGlyph /> : <PlayGlyph />}
-      </button>
+      <MediaControl isPlaying={isPlaying} onToggle={() => setIsPlaying((playing) => !playing)} />
     </div>
   );
 }
@@ -638,21 +648,7 @@ function WorkMedia({ item }: { item: WorkItem }) {
       >
         <source src={item.media.src} type={item.media.mimeType} />
       </video>
-      <button
-        className="work-media-control"
-        type="button"
-        aria-label={isPlaying ? "Pause preview" : "Play preview"}
-        title={isPlaying ? "Pause preview" : "Play preview"}
-        data-ask-ignore="true"
-        onClick={(event) => {
-          // Keep playback toggling from bubbling into the card's askable
-          // region (and the "See it live" overlay on live projects).
-          event.stopPropagation();
-          void togglePlayback();
-        }}
-      >
-        {isPlaying ? <PauseGlyph /> : <PlayGlyph />}
-      </button>
+      <MediaControl isPlaying={isPlaying} onToggle={() => void togglePlayback()} />
     </div>
   );
 }

@@ -10,11 +10,7 @@
 // out of step with NYU's brisker rhythm so the two read as separate products.
 // Loops beside the video cards; reset crossfades; paused / reduced-motion
 // settles on the matrix with the device found. One forest exception.
-const ACCENT = "#174C3A";
-const STROKE = "#171717";
-const PAPER = "#FAF9F5";
-const HAIR = "rgba(23,23,23,0.14)";
-const FAINT = "rgba(23,23,23,0.28)";
+import { ACCENT, STROKE, PAPER, HAIR, FAINT, CURSOR_SCALE, CursorArrow } from "./thumbnailArt";
 
 const CSS = `
 .swt-alert{opacity:0;transform-box:fill-box;transform-origin:center}
@@ -114,13 +110,7 @@ export function SwiftlyThumbnail() {
 
       {/* cursor — arrives after the pulse, hovers the flagged device (half size) */}
       <g className="swt-cursor">
-        <path
-          d="M0 0 L0 15 L4.2 10.8 L7 16.5 L9.4 15.4 L6.6 9.7 L12 9.4 Z"
-          transform="scale(0.5)"
-          fill={STROKE}
-          stroke={PAPER}
-          strokeWidth="1"
-        />
+        <CursorArrow scale={CURSOR_SCALE} />
       </g>
     </svg>
   );

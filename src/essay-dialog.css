@@ -3,7 +3,7 @@
  * file directly (via EssayDialog.tsx) without pulling in the rest of the
  * landing page's stylesheet (and its own :root).
  *
- * Left in index.css (landing-only): .essay-carousel*, .essay-dialog-trigger*,
+ * Left in index.css (landing-only): .essay-dialog-trigger*,
  * .essay-dialog-visual*, .card-* — the card grid/trigger has no equivalent on
  * deeli, which only ever opens the dialog standalone.
  *

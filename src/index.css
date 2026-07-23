@@ -639,28 +639,8 @@ h1 span {
   row-gap: var(--space-major);
 }
 
-/* AI Practice is a carousel: two essays in view, the rest scroll in.
-   Snap keeps cards aligned to the same left edge as the grid above.
-   The scroll container clips overflow, so padding + negative margin keep
-   the cards' 8px-offset focus rings inside the scrollport. */
-.essay-carousel {
-  display: flex;
-  gap: 16px;
-  margin: -12px -12px 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-left: 12px;
-  padding: 12px 12px 14px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--hairline) transparent;
-}
-
-.essay-carousel > * {
-  flex: 0 0 calc(50% - 8px);
-  min-width: 0;
-  scroll-snap-align: start;
-}
+/* AI Practice reuses .work-grid, so essays align to the same two-column grid
+   (and single-column mobile collapse) as the case-study work cards above. */
 
 /* case-card: transparent, no border/shadow, eyebrow → title → meta → image. */
 .work-card {
@@ -1414,12 +1394,6 @@ a.card-eyebrow-flag .flag-verb {
     row-gap: var(--space-block);
   }
 
-  /* 80% keeps the next card's peek above Reveal's 0.16 intersection
-     threshold, so the peeking card is visible, not a blank strip. */
-  .essay-carousel > * {
-    flex-basis: 80%;
-  }
-
   .intro-stage {
     padding: 36px 20px;
   }
@@ -1451,18 +1425,8 @@ a.card-eyebrow-flag .flag-verb {
   }
 }
 
-/* thin scrollbar-width reads as barely-there for a mouse in a narrow window;
-   fine pointers get the OS's normal-weight scrollbar as an affordance, still
-   quiet (muted, no track fill). */
-@media (max-width: 860px) and (pointer: fine) {
-  .essay-carousel {
-    scrollbar-width: auto;
-    scrollbar-color: var(--muted) transparent;
-  }
-}
-
-/* Small phones: the 860px step's 40px ghost heading and 80% carousel card
-   still crowd a ~375-390px viewport. Additive step-down only. */
+/* Small phones: the 860px step's 40px ghost heading still crowds a ~375-390px
+   viewport. Additive step-down only. */
 @media (max-width: 560px) {
   .section-heading {
     font-size: 32px;
@@ -1470,12 +1434,6 @@ a.card-eyebrow-flag .flag-verb {
 
   .portfolio-shell {
     padding: 0 var(--gutter);
-  }
-
-  /* Slimmer next-card peek than the 80% used at ≤860 — leaves more of the
-     active card breathing room on the narrowest phones. */
-  .essay-carousel > * {
-    flex-basis: 92%;
   }
 }
 
@@ -1520,6 +1478,13 @@ a.card-eyebrow-flag .flag-verb {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  /* Coded thumbnails have no motion under reduced motion, so their play/pause
+     control would be inert — hide it. Video controls stay: the video still
+     plays. */
+  .work-media--thumbnail .work-media-control {
+    display: none;
   }
 
   .reveal {

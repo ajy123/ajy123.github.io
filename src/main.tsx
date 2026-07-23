@@ -26,6 +26,8 @@ import {
   type AskAnchorPreference,
 } from "./components/ContextualAskHint";
 import { CursorTrail } from "./components/CursorTrail";
+import { SwiftlyThumbnail } from "./components/SwiftlyThumbnail";
+import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
 import { SiteLogo } from "./components/SiteLogo";
@@ -120,6 +122,56 @@ const workItems: WorkItem[] = [
       mimeType: "video/mp4",
       poster: caseStudyPosterUrl,
     },
+  },
+  // Case-study page still to be built; card carries the coded thumbnail + status
+  // flag until it ships. Copy locked against the deck (deck numbers only) + résumé.
+  {
+    eyebrow: "Service design",
+    title: "From paper reports to live monitoring",
+    role: "Product designer · Data Monitor Team",
+    year: "2022",
+    status: "Coming soon",
+    askHint: "Ask about the Swiftly work",
+    askKind: "project",
+    askAnchorPreference: "cursor",
+    askPromptChips: [
+      "What did Joanna design at Swiftly?",
+      "How much did it cut device investigation time?",
+      "Who was the tool built for?",
+    ],
+    askFollowUpPromptChips: [
+      "What was the before state?",
+      "How did it reduce support inbound?",
+      "Is a full case study coming?",
+    ],
+    summary:
+      "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily reports. Cut investigation time from 30+ hours to 12–24 and dropped device-issue inbound to the support team 20%.",
+    thumbnail: SwiftlyThumbnail,
+  },
+  // Case-study page still to be built; card carries the coded thumbnail + status
+  // flag until it ships. Copy locked against the résumé (real project facts).
+  {
+    eyebrow: "Service design",
+    title: "Unifying a campus maintenance workflow",
+    role: "Product designer · Maintenance Team",
+    year: "2018",
+    status: "Coming soon",
+    askHint: "Ask about the NYU work",
+    askKind: "project",
+    askAnchorPreference: "cursor",
+    askPromptChips: [
+      "What did Joanna design at NYU?",
+      "What did the unified platform replace?",
+      "Who used it day to day?",
+    ],
+    askFollowUpPromptChips: [
+      "What was the before state?",
+      "What was Joanna's role on the team?",
+      "Is a full case study coming?",
+    ],
+    summary:
+      "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform.",
+    thumbnail: NyuThumbnail,
   },
 ];
 
@@ -516,11 +568,40 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
   );
 }
 
+// Coded-thumbnail sibling of the video branch. The Swiftly/NYU cards render an
+// animated SVG instead of a video, but match the video cards' behaviour:
+// autoplay loop plus a pause/play control. data-playing gates the CSS
+// animations declared inside each thumbnail component, so toggling it settles
+// the card on its resting hero frame.
+function ThumbnailMedia({ item }: { item: WorkItem }) {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const Thumbnail = item.thumbnail!;
+  return (
+    <div className="work-media work-media--thumbnail" data-playing={isPlaying}>
+      <Thumbnail />
+      <button
+        className="work-media-control"
+        type="button"
+        aria-label={isPlaying ? "Pause preview" : "Play preview"}
+        title={isPlaying ? "Pause preview" : "Play preview"}
+        data-ask-ignore="true"
+        onClick={(event) => {
+          event.stopPropagation();
+          setIsPlaying((playing) => !playing);
+        }}
+      >
+        {isPlaying ? <PauseGlyph /> : <PlayGlyph />}
+      </button>
+    </div>
+  );
+}
+
 function WorkMedia({ item }: { item: WorkItem }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   if (!item.media) {
+    if (item.thumbnail) return <ThumbnailMedia item={item} />;
     return <div className="work-media" aria-hidden="true" />;
   }
 
@@ -606,10 +687,7 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
     ? { duration: 0.01 }
     : { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
 
-  // Cards past the first pair start clipped by the carousel, so their
-  // IntersectionObserver only fires mid-swipe — reveal those instantly
-  // instead of staggering into an empty snap slot.
-  const revealDelay = index < 2 ? 120 + index * 90 : 0;
+  const revealDelay = 120 + index * 90;
 
   return (
     <Reveal
@@ -801,7 +879,7 @@ function WorkCanvas() {
         </span>
       </Reveal>
 
-      <div aria-label="AI practice essays" className="essay-carousel" role="region">
+      <div aria-label="AI practice essays" className="work-grid" role="region">
         {aiPracticeItems.map((item, index) => (
           <EssayPracticeCard item={item} index={index} key={item.title} />
         ))}

@@ -30,6 +30,10 @@ export type WorkItem = {
     mimeType: string;
     poster?: string;
   };
+  /** Coded line-art thumbnail, rendered when there is no video media.
+   * Mirrors EssayItem.thumbnail so work cards can show a designed surface
+   * instead of a blank placeholder. */
+  thumbnail?: ComponentType;
 };
 
 export type EssaySection = {

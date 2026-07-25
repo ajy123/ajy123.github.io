@@ -468,7 +468,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             "did Joanna build Deeli's site in a week?",
             "what is Joanna's email?",
           ]}
-          askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
+          askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. Before Deeli she spent around seven years in product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
           <div className="profile-identity">
             <h1>
@@ -502,6 +502,11 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             Designer and engineer who sweats the details and ships them. I build
             AI-native products end to end, from the systems thinking down to the
             pixels.
+          </p>
+          <p className="sidebar-bio">
+            Seven years of product design before Deeli, across enterprise SaaS,
+            analytics, and transit data. Previously Swiftly, Diligent, NYU, and
+            Blue Fountain Media.
           </p>
           <p className="sidebar-bio">
             Avid long distance runner based in <s>NYC</s> remote in APAC.

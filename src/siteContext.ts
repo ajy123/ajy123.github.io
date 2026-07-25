@@ -5,8 +5,8 @@
 // Joanna and this portfolio, regardless of where the cursor sits.
 //
 // Keep it short and factual. The model has a small context window — dense bullet
-// facts ground better than prose. Fill the TODO slots with real detail; the
-// model can only be as accurate as what's written here.
+// facts ground better than prose. Every line is a claim the model may repeat to
+// a recruiter, so it can only be as accurate as what's written here.
 
 type SiteProfile = {
   name: string;
@@ -43,16 +43,26 @@ const PROFILE: SiteProfile = {
         "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     },
     {
-      title: "AI Agent",
-      role: "AI systems",
-      year: "2026",
-      // TODO: what was it, your role, the problem, the outcome.
-      summary: "Placeholder — replace with the real case study summary.",
+      title: "From daily paper reports to live device monitoring (Swiftly)",
+      role: "Product designer, cross-functional team of 5",
+      year: "2022",
+      summary:
+        "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily paper reports. Cut investigation time from 30+ hours to 12-24 and dropped device-issue inbound to the internal support team by 20%.",
+    },
+    {
+      title: "Unifying a campus maintenance workflow (NYU)",
+      role: "Product designer, cross-functional team of 6",
+      year: "2018",
+      summary:
+        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform.",
     },
   ],
   facts: [
-    "Works across Figma and code.",
-    // TODO: add real background, skills, location, what she's looking for, etc.
+    "Around 7 years of product design experience since 2015, across enterprise SaaS, governance analytics, transit data, and now AI-native products.",
+    "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
+    "Studied data storytelling at Columbia's School of Journalism between roles.",
+    "Works across Figma and code (React, Vue).",
+    "Open to relocating to Singapore.",
   ],
 };
 

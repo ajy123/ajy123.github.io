@@ -35,9 +35,17 @@ const PROFILE: SiteProfile = {
   ],
   work: [
     {
+      title: "From search to a research assistant (Deeli)",
+      role: "Led design + part PM, team of 5",
+      year: "2026",
+      liveUrl: "/deeli/",
+      summary:
+        "Designed a research assistant that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
+    },
+    {
       title: "Brand Identity",
       role: "Solo design + build",
-      year: "2026; case study coming soon",
+      year: "2026",
       liveUrl: "https://deeli.ai",
       summary:
         "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
@@ -56,7 +64,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. The project shipped with tracking set up for processing time, training time, and communication load instead of a single retroactive metric — instrumenting the launch rather than measuring it after the fact.",
+        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. Instrumented three metrics at launch — processing, training, and communication time — and in the first month post-launch average work-request turnaround fell roughly 33%.",
     },
   ],
   facts: [

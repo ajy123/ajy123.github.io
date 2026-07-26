@@ -479,15 +479,15 @@ function buildMessages(
 type ResponseMedia = { src: string; alt: string };
 const RESPONSE_MEDIA: { pattern: RegExp; media: ResponseMedia }[] = [
   {
-    pattern: /research chat|keyword search/i,
+    pattern: /research assistant|research chat|keyword search/i,
     media: {
       src: researchChatThumbUrl,
-      alt: "Poster from the research chat case study",
+      alt: "Poster from the research-assistant case study",
     },
   },
   {
     // Not /deeli/: both case studies are Deeli work, so the company name
-    // would bind this poster to research-chat answers via earliest-match.
+    // would bind this poster to research-assistant answers via earliest-match.
     pattern: /brand identity|sales kit|computex/i,
     media: {
       src: brandIdentityThumbUrl,

@@ -533,7 +533,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
               <a
                 className="rail-link"
                 href="/resume.pdf"
-                download
+                download="JoannaYen_SeniorProductDesigner.pdf"
                 aria-label="Download resume"
               >
                 <span className="rail-link-label">Resume</span>

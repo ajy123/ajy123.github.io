@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From paper reports to live monitoring · Joanna Yen</title>
+<meta name="description" content="Product-design case study: a 0-to-1 device-status monitoring dashboard for Swiftly, replacing a daily paper report with a live, triage-first view for transit IT.">
+<!-- Same icon set as the landing page's head, in the same order — a tab
+     opened from the case study must not look like a different site. -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" sizes="32x32" href="/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+<!-- Shared spacing + measure tokens. Vite bundles this for the swiftly entry;
+     see vite.config.ts rollupOptions.input. -->
+<link rel="stylesheet" href="/src/tokens.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-body: Figtree, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-hand: "Caveat", cursive;
+  --canvas:#ffffff;
+  --surface-subtle:#f7f7f7;
+  --surface-warm:#faf9f5;
+  --ghost:#e0e0e0;
+  --muted:#757169;
+  --muted-strong:#57534b;
+  --body:#141413;
+  --ink:#111111;
+  --ink-strong:#000000;
+  --hairline:rgba(31,30,29,0.4);
+  --hairline-faint:rgba(31,30,29,0.12);
+  --accent:#f44800;
+  --accent-deep:#d63e00;
+  --accent-wash:rgba(244,72,0,0.08);
+  --radius:4px;
+  --ease:cubic-bezier(0.25,0.46,0.45,0.94);
+  --ease-out-strong:cubic-bezier(0.23,1,0.32,1);
+  color-scheme: light;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:auto;}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
+::selection{color:var(--accent-deep);background:var(--accent-wash);}
+
+/* .gal-block owns the 40px page gutter; children must NOT add their own
+   horizontal padding. Trimmed from deeli/index.html: kept only the prose,
+   proof-strip, decision-row and next-flow vocabulary this simpler,
+   text+placeholder page actually uses. */
+.gal-block{padding:var(--space-block) var(--gutter);}
+.gal-block-head{margin:0 0 30px;}
+
+.gal-copy{padding:0;}
+.gal-copy-inner{max-width:var(--measure-prose);}
+.gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
+.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);text-wrap:balance;color:var(--ink);}
+.gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;text-wrap:pretty;}
+.gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
+.gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
+.gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
+.gal-copy li b{color:var(--ink);font-weight:600;}
+.gal-copy .gal-kick{font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin:6px 0 20px;padding:16px 20px;background:var(--surface-warm);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);text-wrap:balance;}
+.gal-copy .gal-pm{font-size:15px;line-height:1.6;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:16px;margin:16px 0 24px;font-style:italic;}
+
+/* ---- figures: real slide crops from Joanna's Swiftly deck ---- */
+.cs-figure{margin:0 0 var(--space-figure);}
+.cs-figure-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+.cs-figure-img{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);background:var(--surface-subtle);}
+.cs-figure-zoom{display:block;cursor:zoom-in;border-radius:var(--radius);}
+.cs-figure-zoom:focus-visible{outline:1px solid var(--accent);outline-offset:3px;}
+.cs-figure-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px auto 0;max-width:var(--measure-caption);}
+.cs-figure-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
+@media(max-width:720px){.cs-figure-row{grid-template-columns:1fr;}}
+
+/* ---- decision rows: considered / chose / because ---- */
+.cs-decision{margin:14px 0 24px;}
+.cs-decision dl{max-width:var(--measure-prose);margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
+.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
+.cs-decision dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--body);}
+.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
+@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
+
+/* ---- impact stat grid ---- */
+.impact-findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
+.gal-copy-inner > .impact-findings:last-child{margin-bottom:var(--space-block);}
+.impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
+.impact-finding:first-child{padding-left:0;box-shadow:none;}
+.impact-finding b{display:block;font-family:var(--font-mono);font-size:22px;line-height:1;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;}
+.impact-finding span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
+@media(max-width:680px){
+  .impact-findings{grid-template-columns:1fr;}
+  .impact-finding,.impact-finding:first-child{padding:16px 0;box-shadow:inset 0 1px 0 var(--hairline-faint);}
+  .impact-finding:first-child{box-shadow:none;}
+}
+
+/* ---- learnings takeaway grid ---- */
+.cs-next-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:12px;margin-top:8px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
+.cs-next-step b{display:block;font-size:13px;color:var(--ink);margin-bottom:4px;}
+.cs-next-step span{display:block;font-size:12px;line-height:1.45;color:var(--muted-strong);}
+@media(max-width:680px){.cs-next-flow{grid-template-columns:1fr;}}
+
+/* ---- final-page shell ---- */
+.cs-hero{padding:64px var(--gutter) 24px;}
+.cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
+.cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
+.cs-hero-lede{font-size:19px;line-height:1.55;color:var(--body);max-width:var(--measure-lede);margin:18px 0 0;}
+.cs-hero-lede b{color:var(--ink);}
+.cs-hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 32px;margin:30px 0 0;}
+.cs-hero-meta-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-hero-meta-val{font-size:14px;line-height:1.55;color:var(--muted-strong);margin:0;}
+@media(max-width:720px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;}}
+@media(max-width:420px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px;}.cs-hero-meta>div:last-child{grid-column:1 / -1;}}
+.cs-proof-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:30px 0 0;padding:22px 0;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
+.cs-proof-strip--single{grid-template-columns:1fr;}
+.cs-proof-strip--single .cs-proof-item{box-shadow:none;padding:0;}
+.cs-proof-item{padding:0 20px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
+.cs-proof-item:first-child{padding-left:0;box-shadow:none;}
+.cs-proof-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
+.cs-proof-value{display:block;font-family:var(--font-mono);font-size:clamp(25px,3.4vw,36px);font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
+.cs-proof-label{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
+.cs-hero-honest{font-size:13px;line-height:1.55;color:var(--muted-strong);font-style:italic;margin:16px 0 0;max-width:var(--measure-prose);}
+@media(max-width:640px){
+  .cs-proof-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px 0;}
+  .cs-proof-item,.cs-proof-item:first-child{padding:0 9px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
+  .cs-proof-item:first-child{padding-left:0;box-shadow:none;}
+  .cs-proof-value{font-size:22px;}
+  .cs-proof-label{font-size:10.5px;line-height:1.4;}
+}
+.cs-sechead{padding:var(--space-section) var(--gutter) 0;}
+.cs-sechead + .gal-block{border-top:none !important;padding-top:var(--space-copy);}
+.cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
+.gal-block + .gal-block{border-top:none;}
+
+.cs-rail{padding:32px var(--gutter) 28px;}
+.cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+.cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
+.cs-rail ol{max-width:var(--measure-prose);}
+.cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
+.cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
+.cs-rail a{display:flex;align-items:baseline;gap:14px;padding:12px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
+.cs-rail a:hover{color:var(--accent-deep);}
+.cs-rail a:focus-visible,.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+
+/* ---- page shell matching the landing .portfolio-shell geometry (locked:
+   no accent in the rail, ink+weight-600 active state only, no numbering in
+   the side TOC, shell max-width 1200px centered, no rail divider) ---- */
+.cs-shell{display:flex;padding:0 40px;gap:64px;max-width:1200px;margin:0 auto;}
+.cs-rail-col{position:relative;width:280px;flex-shrink:0;}
+.cs-content{flex:1 1 auto;min-width:0;}
+@media(max-width:999px){.cs-shell{padding:0;}.cs-rail-col{display:none;}}
+@media(min-width:1000px){.cs-content{max-width:776px;margin:0 auto;}}
+
+.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
+.cs-side ol{margin-top:4px;}
+.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .15s var(--ease);}
+.cs-side ol a:hover{color:var(--ink);}
+.cs-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
+@media(prefers-reduced-motion:reduce){.cs-side ol a{transition:none;}}
+.cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
+.cs-side-home:hover{color:var(--accent-deep);}
+@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}
+
+.cs-sechead,#sec-problem,#sec-process,#sec-solution,#sec-impact,#sec-learnings{scroll-margin-top:24px;}
+</style>
+</head>
+<body id="top">
+
+<div class="cs-shell">
+<div class="cs-rail-col">
+<nav class="cs-side" aria-label="Sections">
+  <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
+  <ol>
+    <li><a href="#sec-problem">Problem</a></li>
+    <li><a href="#sec-process">Process</a></li>
+    <li><a href="#sec-solution">Solution</a></li>
+    <li><a href="#sec-impact">Impact</a></li>
+    <li><a href="#sec-learnings">Learnings</a></li>
+  </ol>
+</nav>
+</div>
+<div class="cs-content">
+
+<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On Swiftly, Joanna was product designer on a cross-functional team of 5 (PM, TPM, eng manager, engineer), May–June 2022. Validated through crit and internal design review, not usability testing." data-ask-prompts='["What was Joanna&#39;s role on Swiftly?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, TPM, eng manager, and engineer?", "did this ship as a 0-to-1 MVP?", "did the project run May–June 2022?"]'>
+  <p class="cs-hero-eyebrow">Swiftly &middot; Service design</p>
+  <h1 class="cs-hero-title">From paper reports to live monitoring.</h1>
+  <p class="cs-hero-lede">I designed a 0-to-1 device-status monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on a daily paper report.</p>
+  <div class="cs-hero-meta">
+    <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Product designer</p><p class="cs-hero-meta-val">Data Monitor Team</p></div>
+    <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 5</p><p class="cs-hero-meta-val">PM, TPM, eng manager, engineer</p></div>
+    <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">May&ndash;June 2022</p><p class="cs-hero-meta-val">Shipped as a 0-to-1 MVP</p></div>
+  </div>
+  <div class="cs-proof-strip" aria-label="Launch evidence">
+    <div class="cs-proof-item"><span class="cs-proof-tag">Investigation time</span><span class="cs-proof-value">12&ndash;24 hrs</span><span class="cs-proof-label">down from 30+ hours per device issue</span></div>
+    <div class="cs-proof-item"><span class="cs-proof-tag">Support inbound</span><span class="cs-proof-value">&minus;20%</span><span class="cs-proof-label">device-issue inbound to the internal team</span></div>
+  </div>
+  <p class="cs-hero-honest">The internal goal was under 12 hours &mdash; the miss, and what it taught, is covered in Impact.</p>
+</header>
+
+<nav class="cs-rail" aria-label="Case study summary">
+  <p class="cs-rail-title">The case in fifteen seconds</p>
+  <ol>
+    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One daily paper report, filled out by hand, was IT&rsquo;s only signal that a device had failed.</a></li>
+    <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Agency size varied widely, and back-end diagnostics couldn&rsquo;t explain why a device failed.</a></li>
+    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> A live, color-coded, hover-first status view replaced the report.</a></li>
+    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Investigation time fell to 12&ndash;24 hrs &mdash; short of the goal, which taught us the metric was wrong.</a></li>
+  </ol>
+</nav>
+
+<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
+<div class="gal-block" data-ask-hint="Ask what made the paper report unreliable" data-ask-kind="project" data-ask-prompts='["What made the daily paper report unreliable?", "Why did small and medium agencies have no formal report at all?"]' data-ask-follow-up-prompts='["did small and medium agencies rely on word of mouth for outages?", "did investigating one device issue take over 30 hours?"]'>
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h2 class="gal-headline">One report, filled out by hand, was the whole signal.</h2>
+    <p class="gal-lede-p">Transit agencies had no reliable way to see which in-service vehicle devices were failing. IT depended on bus operators submitting a daily maintenance report, and monitoring was spread across multiple platforms.</p>
+    <p>For many small and medium agencies there wasn&rsquo;t even a formal report. Outages on GPS trackers or headsigns got reported by word of mouth. The cost landed on Swiftly&rsquo;s own Client Success team: almost 40% of their time went to fielding inbound about device issues. Investigating a single device issue took 30+ hours.</p>
+    <p class="gal-pm">&ldquo;As an IT at Capmetro, I want to feel confident that I know which in-service vehicle devices require my attention so that we can troubleshoot quickly without interrupting services and have better data for future prediction (e.g. arrival time).&rdquo;</p>
+  </div></div>
+
+  <div class="cs-figure-row">
+    <figure class="cs-figure">
+      <p class="cs-figure-eyebrow">Existing experience</p>
+      <img class="cs-figure-img" src="assets/existing-experience.png" alt="Diagram of a transit bus with its eight in-service devices labeled: trackers, routers, headsign, security camera, automatic passenger counter, automated fare collection, mobile data terminal and next-stop annunciator." loading="lazy" width="1180" height="900">
+      <figcaption class="cs-figure-cap">Before: eight-plus devices per vehicle to keep alive, and the only failure signal was a hand-filled daily report.</figcaption>
+    </figure>
+    <figure class="cs-figure">
+      <p class="cs-figure-eyebrow">After: live monitoring</p>
+      <img class="cs-figure-img" src="assets/live-monitoring.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device column showing each device&rsquo;s status at a glance." loading="lazy" width="1300" height="880">
+      <figcaption class="cs-figure-cap">After: a live Data Health device-status view replaced the daily report &mdash; device state per vehicle, in one place.</figcaption>
+    </figure>
+  </div>
+</div>
+
+<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
+<div class="gal-block" data-ask-hint="Ask what findings changed the direction" data-ask-kind="project" data-ask-prompts='["Which findings changed the design direction?", "Why didn&#39;t the design promise automated diagnosis?"]' data-ask-follow-up-prompts='["did agency size vary widely in reporting maturity?", "was back-end diagnostic depth limited?"]'>
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h2 class="gal-headline">Two constraints reframed the direction.</h2>
+    <p class="gal-lede-p">Before designing, I mapped how device-related data actually traveled through an agency &mdash; what a day at a transit agency looks like end to end. That surfaced two constraints that reshaped the direction:</p>
+    <ul>
+      <li><b>Agency size varies widely.</b> Many small and medium agencies don&rsquo;t run a formal reporting process at all &mdash; outages travel by word of mouth. A design built only around &ldquo;make the daily report better&rdquo; would miss them.</li>
+      <li><b>Back-end diagnostic depth is limited.</b> The team didn&rsquo;t have rich data on why a device failed, only that it had, which ruled out a design that promised deep automated diagnosis.</li>
+    </ul>
+    <p>Together these pushed the solution away from &ldquo;a better report&rdquo; and toward a real-time, triage-first status view: don&rsquo;t over-promise diagnosis the data can&rsquo;t support, make it instantly obvious which vehicles need attention right now, and let IT take it from there.</p>
+    <p class="gal-kick">If IT can see device status transparently in one place, they will investigate and troubleshoot with more confidence, and stop routing that work through Client Success.</p>
+  </div></div>
+
+  <figure class="cs-figure">
+    <p class="cs-figure-eyebrow">System thinking</p>
+    <a class="cs-figure-zoom" href="assets/system-map-full.png" target="_blank" rel="noopener" aria-label="Open the full-size journey map in a new tab">
+      <img class="cs-figure-img" src="assets/system-map.png" alt="A service blueprint laying out a day at a transit agency in swimlanes (rider, operator, onboard hardware, dispatcher, OCC manager, planner, IT, customer service), tracing how device-related data moves between roles over time." loading="lazy" width="1600" height="900">
+    </a>
+    <figcaption class="cs-figure-cap">Mapping a full day at an agency, every role from operator to Client Success, surfaced where device reporting broke down. Opens full size.</figcaption>
+  </figure>
+</div>
+
+<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow">Solution</span></div>
+<div class="gal-block" data-ask-hint="Ask why a color legend over icons" data-ask-kind="project" data-ask-prompts='["Why did you choose a color legend over icons?", "How does hover vs. click work in the device status view?"]' data-ask-follow-up-prompts='["why hover instead of click for the device status view?", "did a color legend replace icon-only status indicators?"]'>
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h2 class="gal-headline">Four shipped decisions.</h2>
+    <ul>
+      <li><b>One live view replacing the daily report.</b> Moved from a paper daily maintenance report across multiple platforms to immediate, in-product device troubleshooting.</li>
+      <li><b>Triage-first information hierarchy.</b> The first column leads with the vehicle&rsquo;s in-service status, so IT sees what needs attention before any device detail &mdash; triage before diagnosis.</li>
+    </ul>
+    <p class="gal-pm">&ldquo;We considered the common F-shaped reading pattern for English-speaking users. The first column prioritizes task triage, with the vehicle&rsquo;s in-service status being the most critical element.&rdquo;</p>
+
+    <div class="cs-decision">
+      <dl>
+        <div><dt>Considered</dt><dd>Icon-only vs. a color legend for device status.</dd></div>
+        <div><dt>Chose</dt><dd>A color legend over icon-only status.</dd></div>
+        <div><dt>Because</dt><dd>Status stays legible to IT regardless of icon familiarity &mdash; weighed against how much visual complexity a fast-scanning ops audience could absorb.</dd></div>
+      </dl>
+    </div>
+
+    <div class="cs-decision">
+      <dl>
+        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize monitoring or investigating?&rdquo;</dd></div>
+        <div><dt>Chose</dt><dd>Hover to monitor, click to investigate.</dd></div>
+        <div><dt>Because</dt><dd>Glanceable status stays the default mode; going deeper into a device is optional, not a forced navigation.</dd></div>
+      </dl>
+    </div>
+  </div></div>
+
+  <figure class="cs-figure">
+    <p class="cs-figure-eyebrow">Shipped: information hierarchy</p>
+    <img class="cs-figure-img" src="assets/info-hierarchy.png" alt="Two versions of the device table side by side: one keyed on malfunctioned devices, the other on in-service vehicles, with legends beneath each." loading="lazy" width="1260" height="720">
+    <figcaption class="cs-figure-cap">Weighing an all-vehicles view against an in-service one: leading the first column with in-service status put triage before diagnosis, F-pattern first.</figcaption>
+  </figure>
+</div>
+
+<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
+<div class="gal-block" data-ask-hint="Ask if investigation time dropped" data-ask-kind="project" data-ask-prompts='["Did investigation time drop from 30+ hrs to 12–24 hrs?", "Did the tool hit its under-12-hour goal?"]' data-ask-follow-up-prompts='["you missed your own 12-hour goal — what did that teach you?", "how did this project shift the team from engineering-led to design-led?"]'>
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h2 class="gal-headline">Investigation time fell. The goal wasn&rsquo;t met.</h2>
+    <div class="impact-findings" role="list" aria-label="MVP results">
+      <div class="impact-finding" role="listitem"><span class="impact-tag">Investigation time</span><b>12&ndash;24 hrs</b><span>down from 30+ hours per device issue</span></div>
+      <div class="impact-finding" role="listitem"><span class="impact-tag">Support inbound</span><b>&minus;20%</b><span>device-issue inbound to the internal team</span></div>
+      <div class="impact-finding" role="listitem"><span class="impact-tag">Internal goal</span><b>Not met</b><span>target was under 12 hours</span></div>
+    </div>
+    <p>The internal goal of under 12 hours was not met. That&rsquo;s an honest result, and it produced the most useful learning of the project: IT teams triage differently, so a single investigation-time target measured the wrong thing.</p>
+    <p>Beyond the metrics: the tool improved organizational scalability, and the team credited the project with shifting its working culture from engineering-led to design-led.</p>
+  </div></div>
+
+</div>
+
+<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow">Learnings</span></div>
+<div class="gal-block" data-ask-hint="Ask what the missed goal taught" data-ask-kind="project" data-ask-prompts='["What did you learn from missing the goal?", "What would you change next time?"]' data-ask-follow-up-prompts='["did the project improve organizational scalability?", "did the team culture shift from engineering-led to design-led?"]'>
+
+  <div class="gal-copy"><div class="gal-copy-inner">
+    <h2 class="gal-headline">Measure the right thing.</h2>
+    <div class="cs-next-flow" role="img" aria-label="Three learnings from the Swiftly project">
+      <div class="cs-next-step"><b>Measure the right thing.</b><span>A one-size-fits-all investigation-time target hid real variation between agencies.</span></div>
+      <div class="cs-next-step"><b>Look beyond the interface.</b><span>Invest in micro-interactions, and hold the design to WCAG accessibility standards.</span></div>
+      <div class="cs-next-step"><b>Ask the consequence question.</b><span>Product thinking: what happens if we don&rsquo;t solve this right now.</span></div>
+    </div>
+  </div></div>
+</div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var railCol = document.querySelector('.cs-rail-col');
+  var nav = document.querySelector('.cs-side');
+  if(!railCol || !nav) return;
+
+  var links = Array.prototype.slice.call(nav.querySelectorAll('ol a[href^="#sec-"]'));
+  var sections = links.map(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    return el ? {id:id, el:el, link:a} : null;
+  }).filter(Boolean);
+  if(!sections.length) return;
+
+  var activeId = null;
+
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id){ s.link.setAttribute('aria-current','location'); }
+      else { s.link.removeAttribute('aria-current'); }
+    });
+  }
+
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; // rail hidden <1000px: skip cheaply
+
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+
+    var readingLine = scrollY + viewportH * 0.375;
+    var current = null;
+    for(var i = 0; i < sections.length; i++){
+      var top = sections[i].el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine){
+        current = sections[i].id;
+      } else {
+        break;
+      }
+    }
+    setActive(current);
+  }
+
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
+
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){
+      setActive(s.id);
+    });
+  });
+
+  var hash = window.location.hash.slice(1);
+  if(hash && sections.some(function(s){ return s.id === hash; })){
+    setActive(hash);
+  }
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(computeActive); }
+  setTimeout(computeActive, 400);
+})();
+</script>
+
+<script type="module" src="/src/swiftlyChat.tsx"></script>
+</body>
+</html>

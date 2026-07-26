@@ -46,15 +46,17 @@ const PROFILE: SiteProfile = {
       title: "From daily paper reports to live device monitoring (Swiftly)",
       role: "Product designer, cross-functional team of 5",
       year: "2022",
+      liveUrl: "/swiftly/",
       summary:
-        "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily paper reports. Cut investigation time from 30+ hours to 12-24 and dropped device-issue inbound to the internal support team by 20%.",
+        "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily reports. Cut investigation time from 30+ hours to 12-24 and dropped device-issue inbound to the internal team by 20%.",
     },
     {
       title: "Unifying a campus maintenance workflow (NYU)",
       role: "Product designer, cross-functional team of 6",
       year: "2018",
+      liveUrl: "/nyu/",
       summary:
-        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform.",
+        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. The project shipped with tracking set up for processing time, training time, and communication load instead of a single retroactive metric — instrumenting the launch rather than measuring it after the fact.",
     },
   ],
   facts: [

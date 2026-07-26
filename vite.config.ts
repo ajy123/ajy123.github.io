@@ -9,6 +9,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         deeli: resolve(__dirname, "deeli/index.html"),
+        swiftly: resolve(__dirname, "swiftly/index.html"),
+        nyu: resolve(__dirname, "nyu/index.html"),
       },
     },
   },

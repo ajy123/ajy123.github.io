@@ -543,7 +543,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
 
               <a
                 className="rail-link"
-                href="https://www.linkedin.com/"
+                href="https://www.linkedin.com/in/joanna-yen"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Open LinkedIn"

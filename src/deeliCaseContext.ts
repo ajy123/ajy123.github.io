@@ -39,6 +39,7 @@ export const DEELI_CASE_CONTEXT: string = [
   `  - 91 of 92 live queries returned an inspectable report — generation reliability; research-outcome quality was evaluated separately.`,
   `  - 28% of live queries were re-asks — the redesigned input fixed intent capture but left two seams unresolved (see open questions).`,
   `- Open questions (Learnings): near-identical queries sometimes produced different report titles (e.g. one MRAM-aerospace question asked 5x produced 2 different report titles) — a re-ask could mean a rejected first answer or a genuinely new angle, unresolved which. Next bet: surface the system's interpretation before generating the answer, let users steer it, and make same-intent queries return a consistent report.`,
+  `- Never cite $300K ARR or 82% booked revenue — unverified old-resume figures.`,
 ].join("\n");
 
 if (import.meta.env.DEV && DEELI_CASE_CONTEXT.length > 3500) {

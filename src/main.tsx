@@ -66,7 +66,7 @@ const DEFAULT_LINK_LABEL = "See it live";
 const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
-    title: "From keyword search to a research chat",
+    title: "From search to a research assistant",
     role: "Led design + part PM, team of 5",
     year: "2026",
     liveHref: "/deeli/",
@@ -76,7 +76,7 @@ const workItems: WorkItem[] = [
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "does the page title say from keyword search to a research chat?",
+      "does the page title say from search to a research assistant?",
       "does the page say time-to-report was cut 50%+?",
       "does it pin down intent before answering?",
     ],
@@ -86,7 +86,7 @@ const workItems: WorkItem[] = [
       "does the page list Joanna's role as led design + part PM, team of 5?",
     ],
     summary:
-      "Designed a chat that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
+      "Designed a research assistant that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
     media: {
       type: "video",
       src: deeliCaseStudyVideoUrl,
@@ -169,12 +169,12 @@ const workItems: WorkItem[] = [
       "who signed off before launch?",
     ],
     askFollowUpPromptChips: [
-      "There's no final outcome number in this one — what did you actually learn from it?",
+      "How was the 33% turnaround improvement measured?",
       "How did you decide to keep the floating action button over the alternatives?",
       "What would you build next if you'd kept working on this?",
     ],
     summary:
-      "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. The project shipped with tracking set up for processing time, training time, and communication load instead of a single retroactive metric — instrumenting the launch rather than measuring it after the fact.",
+      "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. Instrumented three metrics at launch — processing, training, and communication time — and in the first month post-launch average work-request turnaround fell roughly 33%.",
     thumbnail: NyuThumbnail,
   },
 ];

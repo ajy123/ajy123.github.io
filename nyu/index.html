@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unifying a campus maintenance workflow · Joanna Yen</title>
 <meta name="description" content="Product-design case study: a unified work-order platform for NYU Client Service staff, replacing CSV files and software-hopping with one record of a maintenance request's full lifecycle.">
+<script>
+/* Visiting a case study counts as knowing the site: set the landing page's
+   intro-seen flag (read in src/main.tsx) so the back-link goes straight to
+   the Work grid instead of replaying the intro loader. */
+try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
+</script>
 <!-- Same icon set as the landing page's head, in the same order — a tab
      opened from the case study must not look like a different site. -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -116,8 +122,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 @media(max-width:720px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;}}
 @media(max-width:420px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px;}.cs-hero-meta>div:last-child{grid-column:1 / -1;}}
 .cs-proof-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:30px 0 0;padding:22px 0;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-.cs-proof-strip--single{grid-template-columns:1fr;}
-.cs-proof-strip--single .cs-proof-item{box-shadow:none;padding:0;}
 .cs-proof-item{padding:0 20px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
 .cs-proof-item:first-child{padding-left:0;box-shadow:none;}
 .cs-proof-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
@@ -128,10 +132,6 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
   .cs-proof-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px 0;}
   .cs-proof-item,.cs-proof-item:first-child{padding:0 9px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
   .cs-proof-item:first-child{padding-left:0;box-shadow:none;}
-  /* single-stat strip stays one full-width column on mobile; without this the
-     rule above re-forces 2 cols and crams the lone stat into the left half. */
-  .cs-proof-strip--single{grid-template-columns:1fr;}
-  .cs-proof-strip--single .cs-proof-item,.cs-proof-strip--single .cs-proof-item:first-child{padding:0;box-shadow:none;}
   .cs-proof-value{font-size:22px;}
   .cs-proof-label{font-size:10.5px;line-height:1.4;}
 }
@@ -190,7 +190,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 <div class="cs-content">
 
-<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On NYU, Joanna was product designer on a cross-functional team of 6 (PM, 2 product owners, 2 engineers), Sept–Oct 2018. Validated through crit and internal design review, not usability testing. No numeric outcome metric exists for this project." data-ask-prompts='["What was Joanna&#39;s role on the NYU project?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, two product owners, and two engineers?", "did this run Sept–Oct 2018?", "is there a numeric outcome metric for this project?"]'>
+<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On NYU, Joanna was product designer on a cross-functional team of 6 (PM, 2 product owners, 2 engineers), Sept–Oct 2018. Validated through crit and internal design review, not usability testing. Outcome: average work-request turnaround fell ~33% in the first month post-launch (Joanna's own analytics, not a deck figure)." data-ask-prompts='["What was Joanna&#39;s role on the NYU project?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, two product owners, and two engineers?", "did this run Sept–Oct 2018?", "how was the ~33% turnaround improvement measured?"]'>
   <p class="cs-hero-eyebrow">NYU &middot; Service design</p>
   <h1 class="cs-hero-title">Unifying a campus maintenance workflow.</h1>
   <p class="cs-hero-lede">I redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform.</p>
@@ -199,10 +199,11 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 6</p><p class="cs-hero-meta-val">PM, 2 product owners, 2 engineers</p></div>
     <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">Sept&ndash;Oct 2018</p><p class="cs-hero-meta-val">Shipped as a unified work-order platform</p></div>
   </div>
-  <div class="cs-proof-strip cs-proof-strip--single" aria-label="Launch evidence">
-    <div class="cs-proof-item"><span class="cs-proof-tag">Shipped</span><span class="cs-proof-value">Day-one</span><span class="cs-proof-label">instrumentation: processing, training, and communication time &mdash; designed to be evaluated, not guessed at</span></div>
+  <div class="cs-proof-strip" aria-label="Launch evidence">
+    <div class="cs-proof-item"><span class="cs-proof-tag">Post-launch</span><span class="cs-proof-value">~33%</span><span class="cs-proof-label">lower average work-request turnaround time in the first month, tracked in our analytics</span></div>
+    <div class="cs-proof-item"><span class="cs-proof-tag">Shipped</span><span class="cs-proof-value">3 metrics</span><span class="cs-proof-label">instrumented day one: processing, training, and communication time</span></div>
   </div>
-  <p class="cs-hero-honest">This project shipped without a post-launch outcome number. What it shipped with instead was an instrumented measurement plan &mdash; the honest result, covered in Impact.</p>
+  <p class="cs-hero-honest">That ~33% is our own post-launch analytics over the first month, not a figure from the original deck &mdash; an early, directional read. The full picture is in Impact.</p>
 </header>
 
 <nav class="cs-rail" aria-label="Case study summary">
@@ -211,7 +212,7 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
     <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> Staff processed maintenance requests by hand across disconnected tools &mdash; CSVs and constant software-hopping.</a></li>
     <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Requests were multi-step and crossed departments &mdash; the record had to reflect the whole workflow.</a></li>
     <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> One continuous, unified work-order platform replaced the CSVs and the software-switching.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> No numeric outcome; the team shipped with a measurement plan instead.</a></li>
+    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Average work-request turnaround fell ~33% in the first month, tracked against the metrics instrumented at launch.</a></li>
   </ol>
 </nav>
 
@@ -297,20 +298,20 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 
 <div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
-<div class="gal-block" data-ask-hint="Ask what happened instead of a number" data-ask-kind="project" data-ask-prompts='["There&#39;s no final outcome number in this one — what happened instead?", "What did the team set up to measure at launch?"]' data-ask-follow-up-prompts='["did the project ship without a published outcome number?", "were three metrics instrumented at launch instead of one retroactive number?"]'>
+<div class="gal-block" data-ask-hint="Ask about the post-launch result" data-ask-kind="project" data-ask-prompts='["What happened after launch?", "How was the ~33% turnaround improvement measured?"]' data-ask-follow-up-prompts='["was the ~33% from Joanna&#39;s own analytics over the first month?", "were three metrics instrumented at launch, with turnaround the first to report?"]'>
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">No numeric outcome &mdash; a measurement plan instead.</h2>
-    <p class="gal-lede-p">This project has no published outcome number, and this page doesn&rsquo;t invent one.</p>
-    <p>What it does have is a defined measurement plan set at launch:</p>
+    <h2 class="gal-headline">Average turnaround fell about a third in the first month.</h2>
+    <p class="gal-lede-p">Three metrics were instrumented at launch &mdash; and the first came back: average work-request turnaround time dropped roughly 33% over the first month post-launch.</p>
+    <p>That figure is from our own post-launch analytics, tracked over the first month and revisited in follow-ups as we looked to improve the service design &mdash; an early, directional result, not a long-run study. It isn&rsquo;t in the original deck; the deck set the measurement plan, and this is what that plan returned:</p>
     <p class="gal-pm">&ldquo;Post-launch, we will track both work request processing time, student employee training time, and communication time between client and Client Service Staff.&rdquo;</p>
-    <p>The team shipped a platform and instrumented three specific metrics to validate it, instead of shipping and hoping. That&rsquo;s the case study&rsquo;s legitimate result for this project.</p>
+    <p>Instrumenting three specific metrics, instead of shipping and hoping, is what let that turnaround number exist at all.</p>
   </div></div>
 
   <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">What we set up to measure</p>
+    <p class="cs-figure-eyebrow">What we shipped and measured</p>
     <img class="cs-figure-img" src="assets/shipped.png" alt="The shipped NYU WorkLink work-order screen, captioned with the post-launch measurement plan: work-request processing time, student-employee training time, and client-to-staff communication time." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">The shipped platform, with the measurement plan set at launch: work-request processing time, student-employee training time, and client-to-staff communication time.</figcaption>
+    <figcaption class="cs-figure-cap">The shipped platform, instrumented at launch for work-request processing, training, and communication time &mdash; turnaround was the first to report back, down ~33% in month one.</figcaption>
   </figure>
 </div>
 

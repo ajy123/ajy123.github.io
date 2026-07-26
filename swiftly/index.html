@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From paper reports to live monitoring · Joanna Yen</title>
 <meta name="description" content="Product-design case study: a 0-to-1 device-status monitoring dashboard for Swiftly, replacing a daily paper report with a live, triage-first view for transit IT.">
+<script>
+/* Visiting a case study counts as knowing the site: set the landing page's
+   intro-seen flag (read in src/main.tsx) so the back-link goes straight to
+   the Work grid instead of replaying the intro loader. */
+try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
+</script>
 <!-- Same icon set as the landing page's head, in the same order — a tab
      opened from the case study must not look like a different site. -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

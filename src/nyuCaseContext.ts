@@ -8,10 +8,11 @@
 // (~1.5k), zone contextText (<=2200), and 40-message history — this digest
 // must leave room for all of that.
 //
-// Source of truth: the deck-verified merged case-study draft. Every claim
-// below traces to a deck slide — never invent a number not listed here. This
-// project has NO numeric outcome metric; do not imply one. Team is listed by
-// role only; do not add names not already public.
+// Source of truth: the deck-verified merged case-study draft, plus Joanna's own
+// post-launch analytics for the one outcome number (the ~33% turnaround figure
+// below, which is NOT in the deck). Never invent a number not listed here — the
+// ~33% turnaround improvement is the ONLY outcome metric this project has. Team
+// is listed by role only; do not add names not already public.
 export const NYU_CASE_CONTEXT: string = [
   `NYU case study — grounding facts (published copy is authoritative; never invent a number not listed here):`,
   `- Product: a unified work-order platform for NYU Client Service staff processing campus maintenance requests. Role: product designer, cross-functional team of 6 (PM, 2 product owners, 2 engineers). Timeline: Sept-Oct 2018.`,
@@ -20,9 +21,9 @@ export const NYU_CASE_CONTEXT: string = [
   `- Findings that changed direction: early process work mapped how a request traveled from the submitter, through the Client Service Center, to the maintenance department — framed as "How might we help with facility request management?" This surfaced the multi-step, multi-department constraint and reframed the project from "replace the CSV with a form" to "represent the full lifecycle of a request in one place."`,
   `- Thesis: if staff work from one unified record instead of many disconnected tools, they will communicate more confidently, process requests faster, and train new employees more easily.`,
   `- Shipped decisions: (1) one unified work-order platform replacing CSV files and multiple platforms outright; (2) a single continuous form view over a paginated one — framed as "Should we prioritize lessening information overload or scannability?", chose scannability so a multi-department request stays visible in one pass; (3) kept the floating action button over alternatives — framed as visibility vs. minimizing distractions, chose visibility so the primary action stayed reachable while staff reviewed dense request details; (4) two separate pre-launch review loops — high-fidelity prototypes went to Client Service Center/maintenance staff for workflow and content sign-off, and separately to engineering for specs, edge cases, and micro-interactions.`,
-  `- Impact: this project has NO published numeric outcome metric. What it has instead: a defined measurement plan set at launch — verbatim: "Post-launch, we will track both work request processing time, student employee training time, and communication time between client and Client Service Staff." The team shipped a platform and instrumented three specific metrics to validate it, instead of shipping and hoping.`,
-  `- Learnings: measure the tradeoff directly (compare staff accuracy and task time against visual clutter); track email-heavy tasks to find remaining communication overhead; design for upstream/downstream users differently within the same workflow; pre-launch review also flagged future scope — search functionality and grouping multiple work orders; open question — how the relationship between physical campus space and digital tools should be rethought.`,
-  `- Never say "user-tested" — this project was validated through crit and internal design review, not usability testing with end users. Never state a numeric outcome for this project; there isn't one.`,
+  `- Impact: over the first month post-launch, average work-request turnaround time fell roughly 33% — Joanna's own post-launch analytics (tracked that month, revisited in follow-ups), an early directional read, NOT a deck figure and NOT a long-run study. The deck only set the plan (verbatim): "Post-launch, we will track both work request processing time, student employee training time, and communication time between client and Client Service Staff." Turnaround was the first of three instrumented metrics to report — do NOT invent training or communication figures.`,
+  `- Learnings: measure the tradeoff directly (staff accuracy and task time vs. visual clutter); track email-heavy tasks for remaining communication overhead; design upstream/downstream users differently in one workflow; pre-launch review flagged future scope (search, grouping work orders); open question — how physical campus space and digital tools should relate.`,
+  `- Never say "user-tested" — this project was validated through crit and internal design review, not usability testing with end users. The ~33% turnaround improvement is the only outcome number; never invent others.`,
 ].join("\n");
 
 if (import.meta.env.DEV && NYU_CASE_CONTEXT.length > 3500) {

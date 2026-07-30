@@ -126,7 +126,7 @@ const workItems: WorkItem[] = [
   // Case-study page still to be built; card carries the coded thumbnail + status
   // flag until it ships. Copy locked against the deck (deck numbers only) + résumé.
   {
-    eyebrow: "Service design",
+    eyebrow: "Product design",
     title: "From paper reports to live monitoring",
     role: "Product designer · Data Monitor Team",
     year: "2022",

@@ -117,15 +117,21 @@ svg {
   /* The cap is what holds the rail-to-content gap at the declared 64px:
      uncapped, .work-canvas's auto margins centre it in the whole flex
      remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
-     ~390px on a wide display. 1200 = 40 gutter + 280 rail + 64 gap
-     + 776 measure + 40 gutter. */
+     ~390px on a wide display. 1200 = 40 gutter + rail + 64 gap + measure
+     + 40 gutter, where the rail is clamp(264–300px) (280px baseline) and
+     the measure takes the remainder (~776px at the 280px baseline). */
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .profile-rail {
   position: relative;
-  width: 280px;
+  /* Fluid rail: the bio measure and dot leaders scale with the window instead
+     of locking at a fixed 280px. Tight bounds keep the bio close to its tuned
+     ~40-char measure (264–300px). Must match .profile-sticky below, which is
+     position:fixed and carries the actual visual width. The ≤1100px step still
+     overrides this to 240px for the two-column work grid. */
+  width: clamp(264px, 20vw, 300px);
   flex-shrink: 0;
 }
 
@@ -133,7 +139,8 @@ svg {
   position: fixed;
   top: 0;
   display: flex;
-  width: 280px;
+  /* Keep in lockstep with .profile-rail's fluid width above. */
+  width: clamp(264px, 20vw, 300px);
   height: 100vh;
   height: 100dvh;
   flex-direction: column;
@@ -346,11 +353,15 @@ h1 span {
   .rail-ask-key {
     display: none;
   }
+}
 
-  /* The chip itself still renders on touch (only its keycap hides), so its
-     hit area must clear the 44px minimum like the other three affordances. */
+/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
+   persistent chat entry here, so the inline rail chip is redundant — hide it
+   and let the FAB own the affordance. Kept on fine-pointer desktop, which has
+   no FAB and relies on this chip to advertise the "/" composer. */
+@media (pointer: coarse), (max-width: 860px) {
   .rail-ask {
-    min-height: 44px;
+    display: none;
   }
 }
 
@@ -1341,47 +1352,60 @@ a.card-eyebrow-flag .flag-verb {
 
 @media (max-width: 860px) {
   .portfolio-shell {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    /* Own the vertical rhythm through each item's margins/padding below,
+       not a flex gap — otherwise the desktop --space-major gap would apply
+       between every stacked block. */
+    gap: 0;
     max-width: none;
     padding: 0 var(--gutter);
   }
 
-  .profile-rail {
-    position: static;
-    width: auto;
-  }
-
-  /* Stacked mobile layout: the desktop rail-clearing measure cap/centering
-     doesn't apply once the shell is block, not flex. */
-  .work-canvas {
-    max-width: none;
-    margin: 0;
-  }
-
-  .profile-sticky {
-    position: relative;
-    width: auto;
-    height: auto;
-    min-height: auto;
-    padding: 48px 0 32px;
-    box-shadow: none;
-    /* Desktop's space-between spreads identity/footer across a fixed 100dvh
-       rail; stacked here the container is content-height, so any leftover
-       free space must not become a gap — flow the two blocks together and
-       let .rail-footer's 44px margin-top be the only rhythm between them. */
-    justify-content: flex-start;
+  /* Flatten the rail wrappers AND the footer so the identity/bio block, the
+     contact links, and the copyright line each become direct shell-level
+     children alongside the work grid (.rail-footer-body is already
+     display:contents globally, so its two children promote all the way up).
+     Then `order` places them: intro → contact → work → ©. Only the copyright
+     drops to the true page end; the contact links stay up in the rail where
+     they were. Desktop keeps the whole footer pinned in the fixed rail
+     (space-between) — untouched.
+     Trade-off: display:contents drops the <aside> complementary landmark on
+     mobile; acceptable for the stacked layout, content is unchanged. */
+  .profile-rail,
+  .profile-sticky,
+  .rail-footer {
+    display: contents;
   }
 
   .profile-content {
+    order: 1;
     max-width: 320px;
+    /* Restores the top breathing room the flattened .profile-sticky used to
+       carry as its 48px top padding. */
+    padding-top: 48px;
   }
 
-  .rail-footer {
+  /* Contact links keep their rail position, right after the bio. */
+  .rail-contact {
+    order: 2;
     margin-top: 44px;
   }
 
+  /* Stacked mobile layout: the desktop rail-clearing measure cap/centering
+     doesn't apply once the shell stacks in one column. */
   .work-canvas {
+    order: 3;
+    max-width: none;
+    margin: 0;
     padding: 42px 0 64px;
+  }
+
+  /* Copyright alone drops to the true page end, below the work grid. */
+  .rail-footer-body > p {
+    order: 4;
+    margin-top: 44px;
+    padding-bottom: 32px;
   }
 
   /* Ghost titles scale down so they stay proportional (design.md). */

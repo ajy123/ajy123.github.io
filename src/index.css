@@ -313,18 +313,11 @@ h1 span {
 
 /* Experience ledger — Caleb's two-tone row grammar: company ink,
    role muted, year right-aligned. Data the recruiter scans for,
-   living in the rail itself. */
-.rail-exp-label {
-  margin: calc(var(--space-block) - 12px) 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
+   living in the rail itself. No section label: the row shape is
+   self-describing, so it sits one zone seam under the ask card. */
 .rail-ledger {
   width: 100%;
-  margin: 2px 0 0;
+  margin: calc(var(--space-figure) - 4px) 0 0;
   padding: 0;
   list-style: none;
 }

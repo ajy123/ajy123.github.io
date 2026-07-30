@@ -506,12 +506,11 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
                 </span>
                 <span className="rail-askbox-copy">
                   <b>Ask about my work</b>
-                  <span>Answers pull from the case studies.</span>
+                  <span>Try: what shipped at Deeli?</span>
                 </span>
               </button>
             ) : null}
 
-            <p className="rail-exp-label">Experience</p>
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>

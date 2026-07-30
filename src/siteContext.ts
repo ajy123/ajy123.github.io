@@ -40,7 +40,7 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "Designed a research assistant that pins down intent before it answers and shows its work as it builds — turning keyword search into consult-grade reports and cutting time-to-report 50%+.",
+        "A research assistant that pins down intent before it answers and shows its work as it builds. Keyword search became consult-grade reports, and time-to-report fell 50%+.",
     },
     {
       title: "Brand Identity",
@@ -56,7 +56,7 @@ const PROFILE: SiteProfile = {
       year: "2022",
       liveUrl: "/swiftly/",
       summary:
-        "Designed a 0-to-1 monitoring dashboard so transit IT could spot failing in-vehicle devices without waiting on daily reports. Investigation time fell from 30+ hours to 12-24, and device-issue inbound to the internal team dropped 20%.",
+        "A 0-to-1 dashboard that let transit IT spot failing in-vehicle devices themselves instead of waiting on daily reports. Investigation time fell from 30+ hours to 12–24, and requests to the internal team dropped 20%.",
     },
     {
       title: "Unifying campus maintenance (NYU)",
@@ -64,7 +64,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "Replaced the CSV files and software-hopping NYU Client Service staff used to process maintenance requests with one unified work-order platform. Instrumented processing, training, and communication time at launch; first-month turnaround fell roughly 33%.",
+        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. I replaced that with one work-order platform and measured processing, training, and communication time from launch. First-month turnaround fell roughly 33%.",
     },
   ],
   facts: [

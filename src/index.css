@@ -1345,7 +1345,7 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 /* Coarse pointers have no Enter key — swap the keycap sentence for tap copy.
-   Same CSS-only gate as .rail-ask-key, so hybrid devices that attach or shed
+   Same CSS-only gate as the deleted rail chip keycap, so hybrid devices that attach or shed
    a mouse re-evaluate live, with both variants inside the measured CTA. */
 .intro-cta-copy--fine {
   display: contents;

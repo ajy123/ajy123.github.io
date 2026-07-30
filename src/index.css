@@ -297,15 +297,10 @@ h1 span {
   cursor: pointer;
 }
 
-/* Contact labels in the cards' flag voice (.card-eyebrow-flag): 11px
-   caps, 500. Ink instead of muted — these are the rail's primary
-   actions, and the leader dots already quiet the rows. */
 .rail-link-label {
   color: var(--ink);
-  font-weight: 500;
-  font-size: var(--rl-label-size, 11px);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--rl-label-size, 12px);
 }
 
 .rail-link-sub {

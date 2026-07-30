@@ -472,49 +472,52 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             "did Joanna build Deeli's site in a week?",
             "what is Joanna's email?",
           ]}
-          askContextText="Joanna Yen is a designer and engineer who builds AI-native products end to end, from systems thinking down to pixels. Before Deeli she spent around seven years in product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
+          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for AI chatbots: designing what they say, testing whether they're right, and planning for when they're wrong. She currently designs and ships at Deeli AI, with 7+ years of product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
           <div className="profile-identity">
             <h1>
               <span>Joanna Yen</span>
             </h1>
+            <p className="card-eyebrow">Senior Product Designer · 7+ yrs</p>
+
+            <p className="sidebar-bio sidebar-lede">
+              Designer and engineer who sweats the details and ships them.
+            </p>
+
+            {/*
+              Persistent chat entry affordance: the only always-visible way to
+              discover the "/" composer on a fine-pointer desktop (the FAB
+              only shows on touch / narrow viewports). Hidden while the intro
+              overlay is up so it can't be reached before the shell dismisses.
+            */}
+            {!suspended ? (
+              <button
+                className="rail-ask"
+                type="button"
+                aria-keyshortcuts="/"
+                onClick={() => requestCursorChatOpen()}
+              >
+                <span className="rail-ask-key" aria-hidden="true">
+                  /
+                </span>
+                <span className="rail-ask-label">
+                  <TextScramble text="Ask about my work" durationMs={800} />
+                </span>
+              </button>
+            ) : null}
+            <p className="sidebar-bio sidebar-story">
+              Most of my work shrinks queues: maintenance tickets, device-issue
+              reports, searches people gave up on.
+            </p>
+            <p className="sidebar-bio">
+              Lately I&apos;m doing the same for AI chatbots: designing what
+              they say, testing whether they&apos;re right, and planning for
+              when they&apos;re wrong.
+            </p>
+            <p className="sidebar-bio">
+              Avid long distance runner based in <s>NYC</s> APAC.
+            </p>
           </div>
-
-          {/*
-            Persistent chat entry affordance: the only always-visible way to
-            discover the "/" composer on a fine-pointer desktop (the FAB below
-            only shows on touch / narrow viewports). Hidden while the intro
-            overlay is up so it can't be reached before the shell is dismissed.
-          */}
-          {!suspended ? (
-            <button
-              className="rail-ask"
-              type="button"
-              aria-keyshortcuts="/"
-              onClick={() => requestCursorChatOpen()}
-            >
-              <span className="rail-ask-key" aria-hidden="true">
-                /
-              </span>
-              <span className="rail-ask-label">
-                <TextScramble text="Ask about my work" durationMs={800} />
-              </span>
-            </button>
-          ) : null}
-
-          <p className="sidebar-bio">
-            Designer and engineer who sweats the details and ships them. I build
-            AI-native products end to end, from the systems thinking down to the
-            pixels.
-          </p>
-          <p className="sidebar-bio">
-            Seven years of product design before Deeli, across enterprise SaaS,
-            analytics, and transit data. Previously Swiftly, Diligent, NYU, and
-            Blue Fountain Media.
-          </p>
-          <p className="sidebar-bio">
-            Avid long distance runner based in <s>NYC</s> remote in APAC.
-          </p>
         </Reveal>
 
         <Reveal

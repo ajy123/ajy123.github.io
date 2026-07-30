@@ -162,9 +162,28 @@ svg {
 
 .profile-identity {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-  margin: 0 0 18px;
+  margin: 0 0 var(--space-figure);
+}
+
+/* Bio folded into the masthead band: the flex gap plus this top margin
+   reproduces the body's 16px paragraph rhythm. Zone seams (identity ->
+   thesis, story -> runner aside, band -> actions) open to 24px
+   (--space-figure): the spacing scale, not styling, encodes the tiers. */
+.profile-identity .sidebar-bio {
+  margin: calc(var(--space-tight) - 4px) 0 0;
+}
+
+/* Zone seams land on --space-figure; the flex gap (4px chrome) already
+   contributes, so the margin carries the remainder. */
+.profile-identity .sidebar-lede {
+  margin-top: calc(var(--space-tight) - 4px);
+}
+
+.profile-identity .sidebar-bio:last-child {
+  margin-top: calc(var(--space-figure) - 4px);
 }
 
 h1,
@@ -183,8 +202,52 @@ h1 {
   letter-spacing: -0.02em;
 }
 
+/* Name in the same label voice as the title eyebrow — rank carried by
+   weight and ink against the eyebrow's 500/muted, not by size. */
 .profile-identity h1 {
   margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Inside the identity cluster the flex gap alone spaces the rows —
+   drop the card-eyebrow's own bottom margin so name / title / keyword
+   line sit at one even rhythm. */
+.profile-identity .card-eyebrow {
+  margin: 0;
+}
+
+/* Chip sits between the identity cluster and the lede; both seams land
+   on --space-figure (lede's own top margin closes the lower one). Quiet
+   voice up here: with the name at label size the chip must not outrank
+   it — muted label (inks/accents on hover), smaller key. Hit target
+   stays 40px via the base rule. */
+.profile-identity .rail-ask {
+  margin: calc(var(--space-tight) - 4px) 0 0;
+}
+
+.profile-identity .rail-ask .rail-ask-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.profile-identity .rail-ask .rail-ask-key {
+  flex-basis: 16px;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  border-radius: 3px;
+}
+
+/* Masthead section (name / title / lede / chip) is one tight unit;
+   the story opens after it on the zone seam. Anchored to the story
+   paragraph itself, not the chip: the chip unmounts while the intro
+   overlay is up, and the seam must not depend on it. */
+.profile-identity .sidebar-story {
+  margin-top: calc(var(--space-figure) - 4px);
 }
 
 h1 span {
@@ -194,11 +257,30 @@ h1 span {
 /* Body narrative — body-md scale (16/1.6), muted, flat (no chip). */
 .sidebar-bio {
   width: 100%;
-  margin: 0 0 32px;
+  margin: 0 0 var(--space-copy);
   color: var(--muted);
   font-size: 15px;
   font-weight: 400;
   line-height: 1.6;
+}
+
+/* Lede line — ink + weight, the same emphasis pattern as the rail
+   contact labels. (Spacing comes entirely from the identity cluster's
+   scoped rules; the base class carries voice only.) */
+.sidebar-lede {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* The ink stroke opens the story block, directly above "Most of my
+   work…" — it marks the masthead/story seam, not the lede itself. */
+.profile-identity .sidebar-story::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+  margin: 0 0 14px;
 }
 
 .social-stack {

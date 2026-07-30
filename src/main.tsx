@@ -472,13 +472,29 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             "did Joanna build Deeli's site in a week?",
             "what is Joanna's email?",
           ]}
-          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for AI chatbots: designing what they say, testing whether they're right, and planning for when they're wrong. She designs and ships at Deeli. Before that, she spent around seven years in product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
+          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for AI chatbots: designing what they say, testing whether they're right, and planning for when they're wrong. She currently designs and ships at Deeli AI, with 7+ years of product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
           <div className="profile-identity">
             <h1>
               <span>Joanna Yen</span>
             </h1>
             <p className="card-eyebrow">Senior Product Designer</p>
+            <p className="card-eyebrow">7+ years | Enterprise and Analytics</p>
+            <p className="sidebar-bio sidebar-lede">
+              Designer and engineer who sweats the details and ships them.
+            </p>
+            <p className="sidebar-bio">
+              Most of my work shrinks queues: maintenance tickets, device-issue
+              reports, searches people gave up on.
+            </p>
+            <p className="sidebar-bio">
+              Lately I&apos;m doing the same for AI chatbots: designing what
+              they say, testing whether they&apos;re right, and planning for
+              when they&apos;re wrong.
+            </p>
+            <p className="sidebar-bio">
+              Avid long distance runner based in <s>NYC</s> remote in APAC.
+            </p>
           </div>
 
           {/*
@@ -503,23 +519,6 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             </button>
           ) : null}
 
-          <p className="sidebar-bio sidebar-lede">
-            Designer and engineer who sweats the details and ships them.
-          </p>
-          <p className="sidebar-bio">
-            Most of my work shrinks queues: maintenance tickets, device-issue
-            reports, searches people gave up on. Lately I&apos;m doing the same
-            for AI chatbots: designing what they say, testing whether
-            they&apos;re right, and planning for when they&apos;re wrong.
-          </p>
-          <p className="sidebar-bio">
-            I design and ship at Deeli. Seven years of product design before
-            that, across enterprise SaaS, analytics, and transit data.
-            Previously Swiftly, Diligent, and NYU.
-          </p>
-          <p className="sidebar-bio">
-            Avid long distance runner based in <s>NYC</s> remote in APAC.
-          </p>
         </Reveal>
 
         <Reveal

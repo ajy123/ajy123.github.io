@@ -166,8 +166,13 @@ svg {
   align-items: flex-start;
   gap: 4px;
   margin: 0 0 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--hairline-faint);
+}
+
+/* Bio folded into the masthead band: the flex gap plus this top margin
+   reproduces the body's 16px paragraph rhythm; the band's own padding
+   closes the space above the divider. */
+.profile-identity .sidebar-bio {
+  margin: 12px 0 0;
 }
 
 h1,
@@ -197,7 +202,7 @@ h1 span {
 /* Body narrative — body-md scale (16/1.6), muted, flat (no chip). */
 .sidebar-bio {
   width: 100%;
-  margin: 0 0 32px;
+  margin: 0 0 var(--space-copy);
   color: var(--muted);
   font-size: 15px;
   font-weight: 400;
@@ -213,13 +218,13 @@ h1 span {
   font-weight: 500;
 }
 
-.sidebar-lede::before {
+.sidebar-lede::after {
   content: "";
   display: block;
   width: 24px;
   height: 2px;
   background: var(--ink);
-  margin: 0 0 14px;
+  margin: 14px 0 0;
 }
 
 .social-stack {

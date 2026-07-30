@@ -147,14 +147,14 @@ const workItems: WorkItem[] = [
       "How did this project shift the team from engineering-led to design-led?",
     ],
     summary:
-      "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily reports. Cut investigation time from 30+ hours to 12–24 and dropped device-issue inbound to the internal team by 20%.",
+      "Designed a 0-to-1 monitoring dashboard so transit IT could spot failing in-vehicle devices without waiting on daily reports. Investigation time fell from 30+ hours to 12–24, and device-issue inbound to the internal team dropped 20%.",
     thumbnail: SwiftlyThumbnail,
   },
   // Case-study page still to be built; card carries the coded thumbnail + status
   // flag until it ships. Copy locked against the résumé (real project facts).
   {
     eyebrow: "Service design",
-    title: "Unifying a campus maintenance workflow",
+    title: "Unifying campus maintenance",
     role: "Product designer · Maintenance Team",
     year: "2018",
     liveHref: "/nyu/",
@@ -174,7 +174,7 @@ const workItems: WorkItem[] = [
       "What would you build next if you'd kept working on this?",
     ],
     summary:
-      "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. Instrumented three metrics at launch — processing, training, and communication time — and in the first month post-launch average work-request turnaround fell roughly 33%.",
+      "Replaced the CSV files and software-hopping NYU Client Service staff used to process maintenance requests with one unified work-order platform. Instrumented processing, training, and communication time at launch; first-month turnaround fell roughly 33%.",
     thumbnail: NyuThumbnail,
   },
 ];
@@ -724,7 +724,6 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
             item.year,
             item.summary,
             item.dek,
-            item.takeaway,
             ...item.sections.flatMap((section) => [
               section.heading,
               ...section.body,

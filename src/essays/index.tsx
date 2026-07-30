@@ -62,8 +62,6 @@ export const aiPracticeItems: EssayItem[] = [
         ],
       },
     ],
-    takeaway:
-      "The UI shows the promise. The eval proves whether the product can keep it.",
     thumbnail: EssayEvalThumbnail,
   },
   {
@@ -128,12 +126,10 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "The judgment stayed mine",
         body: [
-          "That's the shape of the whole workflow. Agents find the possibilities. What they can't do is tell you which possibility the rest of the company can actually stand behind. That judgment — technical truth, business model, trust — stayed mine. The agents got me to it faster, from a mapped set of tradeoffs instead of a blank page.",
+          "That pattern held across the whole workflow. Agents are good at finding possibilities, and bad at telling you which possibility the rest of the company can actually stand behind. The judgment about technical truth, the business model, and user trust stayed mine. What the agents changed is where I started: from a mapped set of tradeoffs instead of a blank page.",
         ],
       },
     ],
-    takeaway:
-      "Agents mapped the tradeoffs. The judgment — technical truth, business model, trust — stayed mine.",
   },
   {
     id: "persona-golden-dataset",
@@ -177,7 +173,7 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "Personas became situations",
         body: [
-          "The goal isn't speed. It's that the personas turn into something I can test against. Each one becomes a scenario, and those scenarios pressure-test the design and the model at once. Real queries didn't arrive in clean English. They came mixed — a sentence in one language with technical terms dropped in from another. That broke three things at once: language detection guessed wrong, our eval cases didn't cover it, and the model answered in the wrong language for the user's intent. It wasn't a translation feature. It was an entire user the write-once personas had never surfaced. The scenario also changed the interface: instead of letting the system guess, the chat now confirms the response language as part of pinning down intent.",
+          "Speed was a side effect. What I actually wanted was personas I could test against: each one becomes a scenario, and those scenarios pressure-test the design and the model at once. Real queries didn't arrive in clean English. They came mixed, a sentence in one language with technical terms dropped in from another. That broke three things at once: language detection guessed wrong, our eval cases didn't cover it, and the model answered in the wrong language for the user's intent. What looked like a translation bug was actually an entire user the write-once personas had never surfaced. The scenario changed the interface too: instead of letting the system guess, the chat now confirms the response language as part of pinning down intent.",
         ],
         visual: <PersonaScenarioCards />,
         visualCaption: "Personas became situations the product had to survive.",
@@ -197,8 +193,6 @@ export const aiPracticeItems: EssayItem[] = [
         ],
       },
     ],
-    takeaway:
-      "The personas regenerate weekly. The judgment about what's real doesn't automate.",
   },
 ];
 

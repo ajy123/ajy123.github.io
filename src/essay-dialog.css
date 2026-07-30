@@ -352,17 +352,6 @@
   align-items: center;
 }
 
-.essay-dialog-takeaway {
-  margin: 34px 0 0;
-  padding-top: 20px;
-  color: var(--ink);
-  border-top: 1px solid var(--hairline-faint);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-wrap: balance;
-}
-
 @media (max-width: 860px) {
   .essay-dialog-stage {
     align-items: stretch;

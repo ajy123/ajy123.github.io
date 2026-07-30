@@ -282,7 +282,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <figure class="pr-fig">
     <div class="pr-eyebrow">The black box</div>
     <div class="pr-canvas">
-      <svg viewBox="0 0 480 260" role="img" aria-label="A keyword enters a sealed, unexplainable process and a report comes out, with no visible sources or reasoning">
+      <svg viewBox="0 0 480 320" role="img" aria-label="A keyword enters a sealed, unexplainable process and a report comes out, with no visible sources or reasoning">
         <defs>
           <marker id="pr-arrowhead-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path>
@@ -292,19 +292,19 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
             <line x1="0" y1="0" x2="0" y2="8" stroke="var(--hairline-faint)" stroke-width="2"></line>
           </pattern>
         </defs>
-        <text x="70" y="75" text-anchor="middle" class="pr-lbl">Query</text>
-        <rect x="20" y="90" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <text x="70" y="115" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
-        <path d="M120,115 L178,115" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
-        <rect class="pr-sealed" x="185" y="65" width="140" height="110" rx="4" fill="url(#pr-hatch-b)" stroke="var(--accent)" stroke-width="1.5"></rect>
-        <text x="255" y="132" text-anchor="middle" class="pr-q">?</text>
-        <circle cx="317" cy="73" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
-        <text x="255" y="196" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
-        <path d="M325,115 L378,115" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
-        <text x="430" y="80" text-anchor="middle" class="pr-lbl">Report</text>
-        <rect x="380" y="90" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
-        <line x1="395" y1="110" x2="465" y2="110" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
-        <line x1="395" y1="124" x2="450" y2="124" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <text x="70" y="100" text-anchor="middle" class="pr-lbl">Query</text>
+        <rect x="20" y="115" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <text x="70" y="140" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
+        <path d="M120,140 L178,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <rect class="pr-sealed" x="185" y="35" width="140" height="210" rx="4" fill="url(#pr-hatch-b)" stroke="var(--accent)" stroke-width="1.5"></rect>
+        <text x="255" y="152" text-anchor="middle" class="pr-q">?</text>
+        <circle cx="317" cy="43" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
+        <text x="255" y="266" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
+        <path d="M325,140 L378,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <text x="430" y="105" text-anchor="middle" class="pr-lbl">Report</text>
+        <rect x="380" y="115" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
+        <line x1="395" y1="135" x2="465" y2="135" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
+        <line x1="395" y1="149" x2="450" y2="149" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>
       </svg>
     </div>
     <figcaption class="pr-caption">The output showed neither its sources nor its reasoning.</figcaption>
@@ -487,7 +487,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   #anchor-eval .pe-row--miss{background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:8px 10px;margin-top:8px;flex-wrap:wrap;row-gap:2px;}
   #anchor-eval .pe-row--miss .pe-dim{color:var(--ink);font-weight:600;}
   #anchor-eval .pe-row--miss .pe-val{color:#c93a00;font-weight:700;}
-  #anchor-eval .pe-miss-note{width:100%;font-size:10px;line-height:1.5;color:var(--muted-strong);}
   #anchor-eval .pe-caption{font-family:var(--font-serif);font-style:italic;font-size:13.5px;color:var(--muted);text-align:center;margin:14px 0 0;line-height:1.5;}
   @media (max-width:760px){
     #anchor-eval .pe-panel{padding:18px;grid-template-columns:1fr;gap:12px;}
@@ -779,9 +778,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <h3 class="gal-move-title">Run evaluation to find design edge cases.</h3>
     <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
     <p class="gal-move-note"><b>Decision:</b> when the parser can&rsquo;t type a query, it asks instead of guessing. The suite&rsquo;s one miss &mdash; a plan-seats billing question the parser refused to persona-type &mdash; routed to clarification rather than a wrong report, and it landed on the only field left to the model by design.</p>
-    <p class="gal-move-proof">9-case suite against the live parser: 10 of 11 checks at 100%. <a class="pc-essay-link" href="/#ai-practice" data-essay-id="eval-is-the-spec">More on evals as the spec &rarr;</a></p>
   </div></div>
-<section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]' data-ask-follow-up-prompts='["does the page say the suite has nine golden cases drawn from a 263-issue tracker?", "does the page say 10 of 11 checks scored 100%?", "did the single miss involve a billing question about plan seats and credit usage?"]'>
+<section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]' data-ask-follow-up-prompts='["does the page say the suite has nine golden cases drawn from a 263-issue tracker?", "did the single miss involve a billing question about plan seats and credit usage?"]'>
 <figure class="pe-figure">
   <div class="pe-panel">
     <div class="pe-miss-card">
@@ -801,7 +799,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="pe-row pe-row--rest"><span class="pe-dim">+ 6 more exact-match checks</span><span class="pe-dots"></span><span class="pe-val">100%</span></div>
       <div class="pe-row pe-row--miss">
         <span class="pe-dim">persona_hint</span><span class="pe-dots"></span><span class="pe-val">85.7%</span>
-        <span class="pe-miss-note">The miss: a plan-seats billing question the parser refused to persona-type, routing it to clarification instead. 6 of the 7 persona-scored cases passed.</span>
       </div>
     </div>
   </div>

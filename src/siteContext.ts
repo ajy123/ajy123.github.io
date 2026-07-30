@@ -56,15 +56,15 @@ const PROFILE: SiteProfile = {
       year: "2022",
       liveUrl: "/swiftly/",
       summary:
-        "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily reports. Cut investigation time from 30+ hours to 12-24 and dropped device-issue inbound to the internal team by 20%.",
+        "Designed a 0-to-1 monitoring dashboard so transit IT could spot failing in-vehicle devices without waiting on daily reports. Investigation time fell from 30+ hours to 12-24, and device-issue inbound to the internal team dropped 20%.",
     },
     {
-      title: "Unifying a campus maintenance workflow (NYU)",
+      title: "Unifying campus maintenance (NYU)",
       role: "Product designer, cross-functional team of 6",
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "Redesigned how NYU Client Service staff process campus maintenance requests, replacing CSV files and software-hopping with one unified work-order platform. Instrumented three metrics at launch — processing, training, and communication time — and in the first month post-launch average work-request turnaround fell roughly 33%.",
+        "Replaced the CSV files and software-hopping NYU Client Service staff used to process maintenance requests with one unified work-order platform. Instrumented processing, training, and communication time at launch; first-month turnaround fell roughly 33%.",
     },
   ],
   facts: [

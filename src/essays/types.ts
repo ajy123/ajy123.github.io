@@ -47,6 +47,5 @@ export type EssayItem = WorkItem & {
   id: string;
   dek: string;
   sections: EssaySection[];
-  takeaway: string;
   thumbnail: ComponentType<{ interactive?: boolean; active?: boolean }>;
 };

@@ -279,6 +279,15 @@ h1 span {
   outline-offset: 2px;
 }
 
+/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
+   persistent chat entry there, so the rail card would be a duplicate
+   affordance — same call as the old rail chip. */
+@media (pointer: coarse), (max-width: 860px) {
+  .rail-askbox {
+    display: none;
+  }
+}
+
 /* Keycap glyph — shared visual language with the contextual hint,
    selection pill, and touch FAB. Ink on accent: 5.19:1 from the :root
    hexes (#111111 on #f44800), clears the 4.5:1 text bar despite being
@@ -1460,14 +1469,11 @@ a.card-eyebrow-flag .flag-verb {
   }
 
   /* The identity block otherwise shrinks to the bio's measure, which
-     strands the card/ledger short of the contact rows' right edge. */
+     strands the card/ledger short of the contact rows' right edge. The
+     bio wraps to the same full column as everything else. */
   .profile-content,
   .profile-identity {
     width: 100%;
-  }
-
-  .profile-content .sidebar-bio {
-    max-width: 46ch;
   }
 
   /* Contact links keep their rail position, right after the bio. */

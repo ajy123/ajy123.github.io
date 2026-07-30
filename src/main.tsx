@@ -477,7 +477,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <h1>
               <span>Joanna Yen</span>
             </h1>
-            <p className="profile-role-line">Senior product designer, 7+ yrs</p>
+            <p className="profile-role-line">Senior product designer</p>
 
             <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue

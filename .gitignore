@@ -2,7 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 .DS_Store
-.claude/skills/
+.claude/
 .agents/
 PRODUCT.md
 design.md

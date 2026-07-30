@@ -243,8 +243,10 @@ h1 {
 }
 
 /* Masthead section (name / title / lede / chip) is one tight unit;
-   the story opens after it on the zone seam. */
-.profile-identity .rail-ask + .sidebar-bio {
+   the story opens after it on the zone seam. Anchored to the story
+   paragraph itself, not the chip: the chip unmounts while the intro
+   overlay is up, and the seam must not depend on it. */
+.profile-identity .sidebar-story {
   margin-top: calc(var(--space-figure) - 4px);
 }
 
@@ -262,18 +264,17 @@ h1 span {
   line-height: 1.6;
 }
 
-/* Lede line — ink + weight (same emphasis pattern as the rail contact
-   labels), pulled tight to its supporting paragraph. A short ink stroke
-   marks it, closing the masthead band the identity hairline opens. */
+/* Lede line — ink + weight, the same emphasis pattern as the rail
+   contact labels. (Spacing comes entirely from the identity cluster's
+   scoped rules; the base class carries voice only.) */
 .sidebar-lede {
-  margin-bottom: 12px;
   color: var(--ink);
   font-weight: 500;
 }
 
 /* The ink stroke opens the story block, directly above "Most of my
    work…" — it marks the masthead/story seam, not the lede itself. */
-.profile-identity .rail-ask + .sidebar-bio::before {
+.profile-identity .sidebar-story::before {
   content: "";
   display: block;
   width: 24px;

@@ -505,7 +505,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
                 </span>
               </button>
             ) : null}
-            <p className="sidebar-bio">
+            <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue
               reports, searches people gave up on.
             </p>

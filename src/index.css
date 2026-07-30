@@ -125,7 +125,12 @@ svg {
 
 .profile-rail {
   position: relative;
-  width: 280px;
+  /* Fluid rail: the bio measure and dot leaders scale with the window instead
+     of locking at a fixed 280px. Tight bounds keep the bio close to its tuned
+     ~40-char measure (264–300px). Must match .profile-sticky below, which is
+     position:fixed and carries the actual visual width. The ≤1100px step still
+     overrides this to 240px for the two-column work grid. */
+  width: clamp(264px, 20vw, 300px);
   flex-shrink: 0;
 }
 
@@ -133,7 +138,8 @@ svg {
   position: fixed;
   top: 0;
   display: flex;
-  width: 280px;
+  /* Keep in lockstep with .profile-rail's fluid width above. */
+  width: clamp(264px, 20vw, 300px);
   height: 100vh;
   height: 100dvh;
   flex-direction: column;

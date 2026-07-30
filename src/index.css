@@ -202,15 +202,14 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-/* Name in the same label voice as the title eyebrow — rank carried by
-   weight and ink against the eyebrow's 500/muted, not by size. */
+/* Name in the work cards' title voice (.card-title): the rail reads as
+   the first card, so all four rail voices map onto the card system. */
 .profile-identity h1 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 /* Inside the identity cluster the flex gap alone spaces the rows —
@@ -231,14 +230,14 @@ h1 span {
   display: block;
 }
 
-/* Body narrative — body-md scale (16/1.6), muted, flat (no chip). */
+/* Body narrative — the work cards' summary voice (14/1.55, muted). */
 .sidebar-bio {
   width: 100%;
   margin: 0 0 var(--space-copy);
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 /* Lede line — ink + weight, the same emphasis pattern as the rail
@@ -298,10 +297,15 @@ h1 span {
   cursor: pointer;
 }
 
+/* Contact labels in the cards' flag voice (.card-eyebrow-flag): 11px
+   caps, 500. Ink instead of muted — these are the rail's primary
+   actions, and the leader dots already quiet the rows. */
 .rail-link-label {
   color: var(--ink);
-  font-weight: 600;
-  font-size: var(--rl-label-size, 12px);
+  font-weight: 500;
+  font-size: var(--rl-label-size, 11px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .rail-link-sub {

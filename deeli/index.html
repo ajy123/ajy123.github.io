@@ -20,38 +20,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
+<!-- Shared case-study chrome (:root palette, hero, proof strip, rail, side
+     TOC, shell geometry). Page-specific vocabulary stays in the inline
+     <style> below, which loads later and therefore wins ties. -->
+<link rel="stylesheet" href="/src/case-study.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --font-body: Figtree, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-serif: Georgia, "Times New Roman", serif;
-  --font-hand: "Caveat", cursive;
-  --canvas:#ffffff;
-  --surface-subtle:#f7f7f7;
-  --surface-warm:#faf9f5;
-  --ghost:#e0e0e0;
-  --muted:#757169;
-  --muted-strong:#57534b;
-  --body:#141413;
-  --ink:#111111;
-  --ink-strong:#000000;
-  --hairline:rgba(31,30,29,0.4);
-  --hairline-faint:rgba(31,30,29,0.12);
-  --accent:#f44800;
-  --accent-deep:#d63e00;
-  --accent-wash:rgba(244,72,0,0.08);
-  --radius:4px;
-  --ease:cubic-bezier(0.25,0.46,0.45,0.94);
-  --ease-out-strong:cubic-bezier(0.23,1,0.32,1);
-  color-scheme: light;
-}
-*{box-sizing:border-box;}
-html{scroll-behavior:auto;}
-body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
-::selection{color:var(--accent-deep);background:var(--accent-wash);}
+/* Page-specific vocabulary only — the shared chrome (:root palette, hero,
+   proof strip, sechead, rail, side TOC, shell) lives in /src/case-study.css. */
 
 
 /* .gal-block owns the 40px page gutter; children (gal-copy, gal-widget-wrap,
@@ -133,92 +111,19 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 }
 
 
-/* ---- final-page shell ---- */
-.cs-hero{padding:64px var(--gutter) 24px;}
-.cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
-.cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;text-wrap:balance;color:var(--ink);}
-.cs-hero-lede{font-size:19px;line-height:1.55;color:var(--body);max-width:var(--measure-lede);margin:18px 0 0;}
-.cs-hero-lede b{color:var(--ink);}
-.cs-hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 32px;margin:30px 0 0;}
-.cs-hero-meta-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-hero-meta-val{font-size:14px;line-height:1.55;color:var(--muted-strong);margin:0;}
-@media(max-width:720px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;}}
-@media(max-width:420px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px;}.cs-hero-meta>div:last-child{grid-column:1 / -1;}}
-.cs-proof-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:30px 0 0;padding:22px 0;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-.cs-proof-item{padding:0 20px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-.cs-proof-item:first-child{padding-left:0;box-shadow:none;}
-.cs-proof-tag,.impact-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
-.cs-proof-value{display:block;font-family:var(--font-mono);font-size:clamp(25px,3.4vw,36px);font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
-.cs-proof-label{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
+/* ---- final-page shell (page-specific parts; base chrome is shared) ---- */
+/* .impact-tag reuses the proof-strip tag look on the impact stat grid; the
+   shared file only styles .cs-proof-tag, so the alias lives here. */
+.impact-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
 .cs-hero-visual{margin:0;padding:4px var(--gutter) 30px;}
 .cs-hero-visual img,.cs-hero-visual video{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
 .cs-hero-visual figcaption{margin:12px 0 0;font-family:var(--font-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--muted);text-align:center;}
-@media(max-width:640px){
-  .cs-proof-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px 0;}
-  .cs-proof-item,.cs-proof-item:first-child{padding:0 9px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-  .cs-proof-item:first-child{padding-left:0;box-shadow:none;}
-  .cs-proof-value{font-size:22px;}
-  .cs-proof-label{font-size:10.5px;line-height:1.4;}
-}
-.cs-sechead{padding:var(--space-section) var(--gutter) 0;}
-.cs-sechead + .gal-block{border-top:none !important;padding-top:var(--space-copy);}
-.cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
 .gal-block + .gal-block{border-top:none;}
 
-/* ---- FIX 4: five-decisions skim rail ---- */
-/* 30px bottom, not 34: .cs-hero-visual adds 4px of its own padding-top, so
-   this is what makes the gap above and below the rail read as equal (34/34). */
-.cs-rail{padding:32px var(--gutter) 28px;}
-.cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
-.cs-rail ol{max-width:var(--measure-prose);}
-.cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
-.cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
-.cs-rail a{display:flex;align-items:baseline;gap:14px;padding:12px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
-.cs-rail a:hover{color:var(--accent-deep);}
-.cs-rail a:focus-visible,.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
-.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
+/* ---- FIX 4: five-decisions skim rail (deeli addition: per-item section
+   tag on the right edge; the rail itself is shared chrome) ---- */
 .cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
 @media(max-width:560px){.cs-rail-sec{display:none;}}
-
-/* ---- FIX 5: page shell matching the landing .portfolio-shell geometry ---- */
-/* Same numbers as src/index.css: 40px page padding, 280px rail, 64px gap.
-   .cs-rail-col is an in-flow flex spacer the same size as the visible rail;
-   .cs-side is position:fixed with no left/right set, so its used left value
-   is its static position, exactly where .cs-rail-col sits in the flex
-   row. That's the same trick .profile-sticky relies on.
-   The shell is capped and centred, same as .portfolio-shell. The cap is what
-   holds the rail-to-content gap at the declared 64px: uncapped, .cs-content's
-   auto margins centre it in the whole flex remainder, so the gap grew as
-   64 + (viewport - 1200)/2 and reached ~390px on a wide display. The rail
-   moves with the shell rather than sitting in the viewport gutter, which is
-   why the rail carries no divider — a full-height hairline needs a page edge
-   to belong to, and a centred shell has none. 1200 = 40 + 280 + 64 + 776
-   + 40, matching .work-canvas. */
-.cs-shell{display:flex;padding:0 40px;gap:64px;max-width:1200px;margin:0 auto;}
-.cs-rail-col{position:relative;width:280px;flex-shrink:0;}
-.cs-content{flex:1 1 auto;min-width:0;}
-@media(max-width:999px){.cs-shell{padding:0;}.cs-rail-col{display:none;}}
-/* Rail/content geometry only needs to cap+center once the rail is visible
-   (>=1000px) mirrors .work-canvas's max-width/margin and, in the narrower
-   band, the src/index.css 861-1100px rail-narrowing step (240px rail/40px
-   gap), restricted to the range where this page actually shows a rail, so
-   the two pages sit at identical x at every shared width. */
-@media(min-width:1000px){.cs-content{max-width:776px;margin:0 auto;}}
-
-/* No divider: the 64px gap does the separating. See .profile-sticky. */
-.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
-.cs-side ol{margin-top:4px;}
-.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .15s var(--ease);}
-.cs-side ol a:hover{color:var(--ink);}
-.cs-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
-@media(prefers-reduced-motion:reduce){.cs-side ol a{transition:none;}}
-.cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
-.cs-side-home:hover{color:var(--accent-deep);}
-/* Must stay after the base .cs-side rule: same specificity, so source order
-   decides. When it sat above, .cs-side's unconditional width:280px won and the
-   visible rail overhung its 240px spacer, closing the gap to 0 in this band. */
-@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}
 
 /* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
 .cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:24px;}
@@ -3573,99 +3478,8 @@ body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b
 </div>
 </div>
 
-<script>
-(function(){
-  var railCol = document.querySelector('.cs-rail-col');
-  var nav = document.querySelector('.cs-side');
-  if(!railCol || !nav) return;
-
-  var links = Array.prototype.slice.call(nav.querySelectorAll('ol a[href^="#sec-"]'));
-  var sections = links.map(function(a){
-    var id = a.getAttribute('href').slice(1);
-    var el = document.getElementById(id);
-    return el ? {id:id, el:el, link:a} : null;
-  }).filter(Boolean);
-  if(!sections.length) return;
-
-  var activeId = null;
-
-  function setActive(id){
-    if(id === activeId) return;
-    activeId = id;
-    sections.forEach(function(s){
-      if(s.id === id){ s.link.setAttribute('aria-current','location'); }
-      else { s.link.removeAttribute('aria-current'); }
-    });
-  }
-
-  function computeActive(){
-    if(getComputedStyle(railCol).display === 'none') return; // rail hidden <1000px: skip cheaply
-
-    var doc = document.documentElement;
-    var scrollY = window.pageYOffset || doc.scrollTop;
-    var viewportH = window.innerHeight;
-    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
-
-    // bottom-of-page fallback: last section wins even if too short to reach the reading line
-    if(scrollY + viewportH >= scrollHeight - 2){
-      setActive(sections[sections.length - 1].id);
-      return;
-    }
-
-    var readingLine = scrollY + viewportH * 0.375; // ~37.5% down viewport, matches scroll-margin-top offset
-    var current = null;
-    for(var i = 0; i < sections.length; i++){
-      var top = sections[i].el.getBoundingClientRect().top + scrollY;
-      if(top <= readingLine){
-        current = sections[i].id;
-      } else {
-        break;
-      }
-    }
-    setActive(current); // null above the first section: nothing active
-  }
-
-  var ticking = false;
-  function onScrollOrResize(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(function(){
-      computeActive();
-      ticking = false;
-    });
-  }
-  window.addEventListener('scroll', onScrollOrResize, {passive:true});
-  window.addEventListener('resize', onScrollOrResize, {passive:true});
-  // A backgrounded tab suspends rAF, which can strand `ticking` true and drop
-  // every later scroll event. Reset and recompute directly on refocus.
-  document.addEventListener('visibilitychange', function(){
-    if(!document.hidden){ ticking = false; computeActive(); }
-  });
-
-  sections.forEach(function(s){
-    s.link.addEventListener('click', function(){
-      setActive(s.id); // settle instantly on click, before the (instant) jump lands
-    });
-  });
-
-  // deep-link load (e.g. #sec-impact): seed from the hash immediately so the
-  // correct item is highlighted before any scroll event has a chance to fire.
-  var hash = window.location.hash.slice(1);
-  if(hash && sections.some(function(s){ return s.id === hash; })){
-    setActive(hash);
-  }
-  // Reconcile once layout/scroll has truly settled. Deliberately NOT run on the
-  // very next animation frame: at that point web fonts may not have swapped in
-  // yet and the browser's native hash-scroll may not have landed, so
-  // scrollHeight/scrollY can be transiently wrong (e.g. spuriously tripping the
-  // bottom-of-page fallback and clobbering a correct hash-seeded section with
-  // nothing left to correct it afterward). 'load' and fonts.ready cover the
-  // normal cases; the timeout is a safety net that fires regardless.
-  window.addEventListener('load', computeActive);
-  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(computeActive); }
-  setTimeout(computeActive, 400);
-})();
-</script>
+<!-- Side-TOC scroll spy shared by the case pages; see src/caseNav.ts. -->
+<script type="module" src="/src/caseNav.ts"></script>
 
 <script type="module" src="/src/deeliChat.tsx"></script>
 </body>

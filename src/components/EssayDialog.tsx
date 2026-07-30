@@ -306,7 +306,6 @@ export function EssayDialog({
                   ) : null}
                 </section>
               ))}
-              <p className="essay-dialog-takeaway">{item.takeaway}</p>
             </motion.div>
           </motion.article>
         </motion.div>

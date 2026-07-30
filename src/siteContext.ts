@@ -59,7 +59,7 @@ const PROFILE: SiteProfile = {
         "Designed a 0-to-1 monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on daily reports. Cut investigation time from 30+ hours to 12-24 and dropped device-issue inbound to the internal team by 20%.",
     },
     {
-      title: "Unifying a campus maintenance workflow (NYU)",
+      title: "Unifying campus maintenance (NYU)",
       role: "Product designer, cross-functional team of 6",
       year: "2018",
       liveUrl: "/nyu/",

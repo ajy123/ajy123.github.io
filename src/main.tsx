@@ -478,11 +478,33 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <h1>
               <span>Joanna Yen</span>
             </h1>
-            <p className="card-eyebrow">Senior Product Designer</p>
-            <p className="card-eyebrow">7+ years | Enterprise and Analytics</p>
+            <p className="card-eyebrow">Senior Product Designer · 7+ yrs</p>
+
             <p className="sidebar-bio sidebar-lede">
               Designer and engineer who sweats the details and ships them.
             </p>
+
+            {/*
+              Persistent chat entry affordance: the only always-visible way to
+              discover the "/" composer on a fine-pointer desktop (the FAB
+              only shows on touch / narrow viewports). Hidden while the intro
+              overlay is up so it can't be reached before the shell dismisses.
+            */}
+            {!suspended ? (
+              <button
+                className="rail-ask"
+                type="button"
+                aria-keyshortcuts="/"
+                onClick={() => requestCursorChatOpen()}
+              >
+                <span className="rail-ask-key" aria-hidden="true">
+                  /
+                </span>
+                <span className="rail-ask-label">
+                  <TextScramble text="Ask about my work" durationMs={800} />
+                </span>
+              </button>
+            ) : null}
             <p className="sidebar-bio">
               Most of my work shrinks queues: maintenance tickets, device-issue
               reports, searches people gave up on.
@@ -493,32 +515,9 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
               when they&apos;re wrong.
             </p>
             <p className="sidebar-bio">
-              Avid long distance runner based in <s>NYC</s> remote in APAC.
+              Avid long distance runner based in <s>NYC</s> APAC.
             </p>
           </div>
-
-          {/*
-            Persistent chat entry affordance: the only always-visible way to
-            discover the "/" composer on a fine-pointer desktop (the FAB below
-            only shows on touch / narrow viewports). Hidden while the intro
-            overlay is up so it can't be reached before the shell is dismissed.
-          */}
-          {!suspended ? (
-            <button
-              className="rail-ask"
-              type="button"
-              aria-keyshortcuts="/"
-              onClick={() => requestCursorChatOpen()}
-            >
-              <span className="rail-ask-key" aria-hidden="true">
-                /
-              </span>
-              <span className="rail-ask-label">
-                <TextScramble text="Ask about my work" durationMs={800} />
-              </span>
-            </button>
-          ) : null}
-
         </Reveal>
 
         <Reveal

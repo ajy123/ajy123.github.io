@@ -7,6 +7,7 @@
 // same components the landing page uses.
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { Agentation } from "agentation";
 import "./chat-ui.css";
 import "./essay-dialog.css";
 import { CursorChat } from "./CursorChat";
@@ -75,5 +76,6 @@ createRoot(root).render(
     <SelectionAskPill />
     <CursorChat extraContext={DEELI_CASE_CONTEXT} />
     <DeeliEssayModal />
+    {import.meta.env.DEV ? <Agentation /> : null}
   </>,
 );

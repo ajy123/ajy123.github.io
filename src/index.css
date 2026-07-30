@@ -15,6 +15,8 @@
   --surface-elevated: #ffffff; /* elevated surface background */
   --surface-subtle: #f7f7f7; /* faint card / divider fill */
   --surface-warm: #faf9f5; /* warm off-white control surface */
+  --surface-card: #f5f4f1; /* warm gray object card (rail ask box) */
+  --surface-card-hover: #efede9;
   --ghost: #e0e0e0; /* oversized decorative section titles */
   --muted: #757169; /* secondary text, captions, eyebrows — AA on all surfaces */
   --muted-strong: #57534b; /* muted ink at small sizes — 7.1:1 on warm surfaces */
@@ -160,6 +162,15 @@ svg {
   padding-top: 14px;
 }
 
+/* With the ask card + experience ledger the rail runs ~790px tall; on
+   short viewports let the fixed column scroll instead of clipping the
+   contact block off the bottom. */
+@media (max-height: 820px) {
+  .profile-sticky {
+    overflow-y: auto;
+  }
+}
+
 .profile-identity {
   display: flex;
   flex-direction: column;
@@ -168,21 +179,16 @@ svg {
   margin: 0 0 var(--space-figure);
 }
 
-/* Bio folded into the masthead band: the flex gap plus this top margin
-   reproduces the body's 16px paragraph rhythm. Zone seams (identity ->
-   thesis, story -> runner aside, band -> actions) open to 24px
-   (--space-figure): the spacing scale, not styling, encodes the tiers. */
+/* Rail rhythm, Caleb-style: hierarchy from ink-vs-muted pairs and
+   whitespace alone — no rules, no caps. The flex gap (4px chrome)
+   contributes to every seam, so margins carry the remainder: zone seams
+   (role line -> prose, prose -> ask card, card -> ledger) land on
+   --space-figure; paragraph rhythm lands on --space-copy. */
 .profile-identity .sidebar-bio {
-  margin: calc(var(--space-tight) - 4px) 0 0;
+  margin: calc(var(--space-copy) - 4px) 0 0;
 }
 
-/* Zone seams land on --space-figure; the flex gap (4px chrome) already
-   contributes, so the margin carries the remainder. */
-.profile-identity .sidebar-lede {
-  margin-top: calc(var(--space-tight) - 4px);
-}
-
-.profile-identity .sidebar-bio:last-child {
+.profile-identity .sidebar-story {
   margin-top: calc(var(--space-figure) - 4px);
 }
 
@@ -212,18 +218,14 @@ h1 {
   letter-spacing: -0.01em;
 }
 
-/* Inside the identity cluster the flex gap alone spaces the rows —
-   drop the card-eyebrow's own bottom margin so name / title / keyword
-   line sit at one even rhythm. */
-.profile-identity .card-eyebrow {
+/* The identity pair: muted sentence-case role line directly under the
+   ink name — same size as body, rank carried by color alone. */
+.profile-role-line {
   margin: 0;
-}
-
-/* Story follows the lede directly (the ask chip is gone). 16px box margin
-   plus the lede's descender leading lands the VISUAL gap above the seam
-   stroke on --space-figure (24px), matching the gap below it. */
-.profile-identity .sidebar-story {
-  margin-top: var(--space-copy);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
 }
 
 h1 span {
@@ -240,25 +242,121 @@ h1 span {
   line-height: 1.55;
 }
 
-/* Lede line — ink + weight, the same emphasis pattern as the rail
-   contact labels. (Spacing comes entirely from the identity cluster's
-   scoped rules; the base class carries voice only.) */
-.sidebar-lede {
-  color: var(--ink);
-  font-weight: 500;
+/* The rail's one material object: chat entry as a warm-gray card
+   (accent keycap + ink label + muted subline). Being the only filled
+   shape in the rail is what ranks it — no border, no shadow. */
+.rail-askbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: calc(var(--space-figure) - 4px) 0 0;
+  padding: 13px 14px;
+  text-align: left;
+  color: inherit;
+  background: var(--surface-card);
+  border: 0;
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font: inherit;
+  transition: background 160ms var(--ease-out-strong);
 }
 
-/* The ink stroke opens the story block, directly above "Most of my
-   work…" — it marks the masthead/story seam, not the lede itself. */
-.profile-identity .sidebar-story::before {
-  content: "";
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--ink);
-  /* Measured line-box gap above the stroke (lede bottom -> stroke) is
-     23px; 20px here + the story's half-leading matches it below. */
-  margin: 0 0 20px;
+.rail-askbox:hover {
+  background: var(--surface-card-hover);
+}
+
+.rail-askbox:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Keycap glyph — shared visual language with the contextual hint,
+   selection pill, and touch FAB. Ink on accent: 5.19:1 from the :root
+   hexes (#111111 on #f44800), clears the 4.5:1 text bar despite being
+   aria-hidden. ~1:4.5 radius-to-size ratio, matching the family. */
+.rail-askbox-key {
+  display: inline-flex;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  background: var(--accent);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rail-askbox-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rail-askbox-copy b {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.rail-askbox-copy span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Experience ledger — Caleb's two-tone row grammar: company ink,
+   role muted, year right-aligned. Data the recruiter scans for,
+   living in the rail itself. */
+.rail-exp-label {
+  margin: calc(var(--space-block) - 12px) 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.rail-ledger {
+  width: 100%;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail-ledger li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.rail-ledger-co {
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rail-ledger-role {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-ledger-yr {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .social-stack {

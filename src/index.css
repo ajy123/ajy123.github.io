@@ -208,14 +208,12 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-/* Name in the work cards' title voice (.card-title): the rail reads as
-   the first card, so all four rail voices map onto the card system. */
+/* Name in the base h1 masthead voice (30/700/1.05) — deliberately NOT
+   the 20px card-title step: at card size the identity pair read as one
+   more work-card header. The rail is the landing's only identity
+   surface, so the name owns the page's top rank. */
 .profile-identity h1 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
 }
 
 /* Inline ink emphasis in the muted bio — the Caleb move: the phrase
@@ -225,14 +223,15 @@ h1 {
   font-weight: 500;
 }
 
-/* The identity pair: muted sentence-case role line directly under the
-   ink name — same size as body, rank carried by color alone. */
+/* Role line bound to the masthead as a 13px label: label leading (1.4,
+   not the body's 1.55) and muted-strong keep it one lockup with the
+   name rather than a stray body line. 8px seam = 4px margin + flex gap. */
 .profile-role-line {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
+  margin: 4px 0 0;
+  color: var(--muted-strong);
+  font-size: 13px;
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 h1 span {

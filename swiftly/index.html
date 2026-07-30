@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From paper reports to live monitoring · Joanna Yen</title>
-<meta name="description" content="Product-design case study: a 0-to-1 device-status monitoring dashboard for Swiftly, replacing a daily paper report with a live, triage-first view for transit IT.">
+<meta name="description" content="Product-design case study: a 0-to-1 device-status dashboard for Swiftly. Transit IT investigates failing devices themselves; device-issue inbound to Client Success fell 20%.">
 <script>
 /* Visiting a case study counts as knowing the site: set the landing page's
    intro-seen flag (read in src/main.tsx) so the back-link goes straight to
@@ -113,7 +113,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On Swiftly, Joanna was product designer on a cross-functional team of 5 (PM, TPM, eng manager, engineer), May–June 2022. Validated through crit and internal design review, not usability testing." data-ask-prompts='["What was Joanna&#39;s role on Swiftly?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, TPM, eng manager, and engineer?", "did this ship as a 0-to-1 MVP?", "did the project run May–June 2022?"]'>
   <p class="cs-hero-eyebrow">Swiftly &middot; Product design</p>
   <h1 class="cs-hero-title">From paper reports to live monitoring.</h1>
-  <p class="cs-hero-lede">I designed a 0-to-1 device-status monitoring dashboard so transit IT could spot and investigate failing in-vehicle devices without waiting on a daily paper report.</p>
+  <p class="cs-hero-lede">I designed a 0-to-1 device-status dashboard that let transit IT find and investigate failing in-vehicle devices themselves, instead of routing that work through our Client Success team.</p>
   <div class="cs-hero-meta">
     <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Product designer</p><p class="cs-hero-meta-val">Data Monitor Team</p></div>
     <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 5</p><p class="cs-hero-meta-val">PM, TPM, eng manager, engineer</p></div>
@@ -121,9 +121,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   </div>
   <div class="cs-proof-strip" aria-label="Launch evidence">
     <div class="cs-proof-item"><span class="cs-proof-tag">Investigation time</span><span class="cs-proof-value">12&ndash;24 hrs</span><span class="cs-proof-label">down from 30+ hours per device issue</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">Support inbound</span><span class="cs-proof-value">&minus;20%</span><span class="cs-proof-label">device-issue inbound to the internal team</span></div>
+    <div class="cs-proof-item"><span class="cs-proof-tag">Support inbound</span><span class="cs-proof-value">&minus;20%</span><span class="cs-proof-label">device-issue inbound to Client Success</span></div>
   </div>
-  <p class="cs-hero-honest">The internal goal was under 12 hours &mdash; the miss, and what it taught, is covered in Impact.</p>
+  <p class="cs-hero-honest">The internal goal was under 12 hours. The miss, and what it taught, is covered in Impact.</p>
 </header>
 
 <nav class="cs-rail" aria-label="Case study summary">
@@ -132,7 +132,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One daily paper report, filled out by hand, was IT&rsquo;s only signal that a device had failed.</a></li>
     <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Agency size varied widely, and back-end diagnostics couldn&rsquo;t explain why a device failed.</a></li>
     <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> A live, color-coded, hover-first status view replaced the report.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Investigation time fell to 12&ndash;24 hrs &mdash; short of the goal, which taught us the metric was wrong.</a></li>
+    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Investigation time fell to 12&ndash;24 hrs, short of the goal, which taught us the metric was wrong.</a></li>
   </ol>
 </nav>
 
@@ -155,7 +155,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <figure class="cs-figure">
       <p class="cs-figure-eyebrow">After: live monitoring</p>
       <img class="cs-figure-img" src="assets/live-monitoring.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device column showing each device&rsquo;s status at a glance." loading="lazy" width="1300" height="880">
-      <figcaption class="cs-figure-cap">After: a live Data Health device-status view replaced the daily report &mdash; device state per vehicle, in one place.</figcaption>
+      <figcaption class="cs-figure-cap">After: a live Data Health device-status view replaced the daily report: device state per vehicle, in one place.</figcaption>
     </figure>
   </div>
 </div>
@@ -165,12 +165,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Two constraints reframed the direction.</h2>
-    <p class="gal-lede-p">Before designing, I mapped how device-related data actually traveled through an agency &mdash; what a day at a transit agency looks like end to end. That surfaced two constraints that reshaped the direction:</p>
+    <p class="gal-lede-p">Before designing, I mapped how device-related data actually traveled through an agency: what a day at a transit agency looks like end to end. That surfaced two constraints that reshaped the direction:</p>
     <ul>
-      <li><b>Agency size varies widely.</b> Many small and medium agencies don&rsquo;t run a formal reporting process at all &mdash; outages travel by word of mouth. A design built only around &ldquo;make the daily report better&rdquo; would miss them.</li>
+      <li><b>Agency size varies widely.</b> Many small and medium agencies don&rsquo;t run a formal reporting process at all; outages travel by word of mouth. A design built only around &ldquo;make the daily report better&rdquo; would miss them.</li>
       <li><b>Back-end diagnostic depth is limited.</b> The team didn&rsquo;t have rich data on why a device failed, only that it had, which ruled out a design that promised deep automated diagnosis.</li>
     </ul>
-    <p>Together these pushed the solution away from &ldquo;a better report&rdquo; and toward a real-time, triage-first status view: don&rsquo;t over-promise diagnosis the data can&rsquo;t support, make it instantly obvious which vehicles need attention right now, and let IT take it from there.</p>
+    <p>Together these pushed the solution away from &ldquo;a better report&rdquo; and toward a real-time, triage-first status view: show which vehicles need attention right now, and don&rsquo;t promise diagnosis the data can&rsquo;t support.</p>
     <p class="gal-kick">If IT can see device status transparently in one place, they will investigate and troubleshoot with more confidence, and stop routing that work through Client Success.</p>
   </div></div>
 
@@ -190,15 +190,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <h2 class="gal-headline">Four shipped decisions.</h2>
     <ul>
       <li><b>One live view replacing the daily report.</b> Moved from a paper daily maintenance report across multiple platforms to immediate, in-product device troubleshooting.</li>
-      <li><b>Triage-first information hierarchy.</b> The first column leads with the vehicle&rsquo;s in-service status, so IT sees what needs attention before any device detail &mdash; triage before diagnosis.</li>
+      <li><b>Triage-first information hierarchy.</b> I leaned on the F-shaped reading pattern: the first column carries the vehicle&rsquo;s in-service status, the one thing IT scans for first, so triage comes before diagnosis.</li>
     </ul>
-    <p class="gal-pm">&ldquo;We considered the common F-shaped reading pattern for English-speaking users. The first column prioritizes task triage, with the vehicle&rsquo;s in-service status being the most critical element.&rdquo;</p>
 
     <div class="cs-decision">
       <dl>
         <div><dt>Considered</dt><dd>Icon-only vs. a color legend for device status.</dd></div>
         <div><dt>Chose</dt><dd>A color legend over icon-only status.</dd></div>
-        <div><dt>Because</dt><dd>Status stays legible to IT regardless of icon familiarity &mdash; weighed against how much visual complexity a fast-scanning ops audience could absorb.</dd></div>
+        <div><dt>Because</dt><dd>Status stays legible to IT regardless of icon familiarity, weighed against how much visual complexity a fast-scanning ops audience could absorb.</dd></div>
       </dl>
     </div>
 
@@ -225,11 +224,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <h2 class="gal-headline">Investigation time fell. The goal wasn&rsquo;t met.</h2>
     <div class="impact-findings" role="list" aria-label="MVP results">
       <div class="impact-finding" role="listitem"><span class="impact-tag">Investigation time</span><b>12&ndash;24 hrs</b><span>down from 30+ hours per device issue</span></div>
-      <div class="impact-finding" role="listitem"><span class="impact-tag">Support inbound</span><b>&minus;20%</b><span>device-issue inbound to the internal team</span></div>
+      <div class="impact-finding" role="listitem"><span class="impact-tag">Support inbound</span><b>&minus;20%</b><span>device-issue inbound to Client Success</span></div>
       <div class="impact-finding" role="listitem"><span class="impact-tag">Internal goal</span><b>Not met</b><span>target was under 12 hours</span></div>
     </div>
-    <p>The internal goal of under 12 hours was not met. That&rsquo;s an honest result, and it produced the most useful learning of the project: IT teams triage differently, so a single investigation-time target measured the wrong thing.</p>
-    <p>Beyond the metrics: the tool improved organizational scalability, and the team credited the project with shifting its working culture from engineering-led to design-led.</p>
+    <p>Client Success had been spending almost 40% of its time on these issues, so the 20% drop came directly out of that load.</p>
+    <p>The internal goal of under 12 hours was not met. The miss produced the most useful learning of the project: IT teams triage differently, so a single investigation-time target measured the wrong thing.</p>
+    <p>Two things the numbers don&rsquo;t show: device monitoring now scaled across agencies of very different sizes, and the team credited the project with shifting its working culture from engineering-led to design-led.</p>
   </div></div>
 
 </div>
@@ -238,11 +238,11 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <div class="gal-block" data-ask-hint="Ask what the missed goal taught" data-ask-kind="project" data-ask-prompts='["What did you learn from missing the goal?", "What would you change next time?"]' data-ask-follow-up-prompts='["did the project improve organizational scalability?", "did the team culture shift from engineering-led to design-led?"]'>
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Measure the right thing.</h2>
+    <h2 class="gal-headline">What the miss taught.</h2>
     <div class="cs-next-flow" role="img" aria-label="Three learnings from the Swiftly project">
       <div class="cs-next-step"><b>Measure the right thing.</b><span>A one-size-fits-all investigation-time target hid real variation between agencies.</span></div>
-      <div class="cs-next-step"><b>Look beyond the interface.</b><span>Invest in micro-interactions, and hold the design to WCAG accessibility standards.</span></div>
-      <div class="cs-next-step"><b>Ask the consequence question.</b><span>Product thinking: what happens if we don&rsquo;t solve this right now.</span></div>
+      <div class="cs-next-step"><b>Look beyond the existing interface.</b><span>Invest in micro-interactions, and hold the design to WCAG accessibility standards.</span></div>
+      <div class="cs-next-step"><b>Ask the consequence question.</b><span>What happens if we don&rsquo;t solve this right now.</span></div>
     </div>
   </div></div>
 </div>

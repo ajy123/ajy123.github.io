@@ -185,6 +185,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <p class="cs-rail-title">The case in fifteen seconds</p>
   <ol>
     <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One keyword produced one generic, uncheckable report.</a></li>
+    <li><a href="#sec-process"><span class="cs-rail-num">Method</span> A machine-readable design spec and a 9-case eval suite governed the AI.</a></li>
     <li><a href="#the-fork"><span class="cs-rail-num">Product vision</span> Stop returning documents. Return the synthesis.</a></li>
     <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> Interpret intent, aim the output, and show the work.</a></li>
     <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Researchers changed how they ask, and trusted what came back.</a></li>
@@ -213,7 +214,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">It answered the topic, not the question.</h2>
-    <p class="gal-lede-p">A keyword flattened distinct research needs into the same templated report. Users could neither shape the answer nor verify it.</p>
+    <p class="gal-lede-p">A keyword flattened distinct research needs into the same templated report, with no sources to check. For a foundry using these reports in capacity-bet decisions, an answer no expert could verify was an answer no one could use.</p>
   </div></div>
   <!-- ===== ANCHOR 1: PROBLEM ===== -->
 <section class="anchor" id="anchor-problem" data-ask-hint="Ask why keyword search failed" data-ask-kind="project" data-ask-prompts='["Why did keyword search fail researchers?", "What did users do instead?"]' data-ask-follow-up-prompts='["does the page say the report showed no sources and no reasoning?", "did three different roles asking the same keyword get an identical report?", "could researchers verify the report themselves?"]'>
@@ -558,13 +559,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </div>
 <div class="pb-hypothesis">
   <p class="pb-statement">Stop returning documents. <em>Return the synthesis.</em></p>
-  <p class="pb-support">The current ran the other way: the team had just settled a model trial on cost, not quality, and the customer&rsquo;s loudest fear was one deep question eating a third of the budget. Nine cents a run bought grounded synthesis, and I made the case to pay it anyway &mdash; an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
+  <p class="pb-support">The team had just settled a model trial on cost, not quality, and the customer&rsquo;s loudest fear was one deep question eating a third of the budget. Path-grounded retrieval cost nine cents more per run. I argued we pay it: an unsourced number in front of a skeptical expert is the one failure the product cannot afford twice.</p>
 </div>
 </section>
 
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Control the interface with a spec.</h3>
-    <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting. The doc is versioned, not sacred &mdash; the amber accent, once reserved for AI-only regions, lost that rule in June when citation caution needed the color more.</p>
+    <p class="gal-move-summary">Before any screens, I wrote design.md: five principles in priority order, then tokens. When two principles conflict, the earlier one wins, so layout arguments end in the doc instead of in a meeting. The doc is versioned, not sacred: the amber accent, once reserved for AI-only regions, lost that rule in June when citation caution needed the color more. AI drafted the 56 exploration boards; the doc decided which shipped, and anyone generating a variant gets the same verdict I would give.</p>
     <p class="gal-move-note"><b>Decision:</b> keep design.md machine-readable, so every generated variant gets checked against the spec, not against taste.</p>
   </div></div>
 <section class="anchor" id="anchor-spec" data-ask-hint="Ask why design.md became the spec" data-ask-kind="project" data-ask-prompts='["Why write the spec as design.md?", "How did agents use the spec?"]' data-ask-follow-up-prompts='["does the page say low-credibility sources are shown gray, not red?", "which marker style got selected: number, icon, or label?", "does the page say design.md is versioned, not sacred?"]'>
@@ -648,7 +649,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </div>
     </div>
   </div>
-  <figcaption class="ps-caption">Every annotation traces to the rule that produced it. AI drafted the 56 boards; the doc decided.</figcaption>
+  <figcaption class="ps-caption">Every annotation traces to the rule that produced it.</figcaption>
 </figure>
 <script>
 (function(){
@@ -777,7 +778,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="gal-copy"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Run evaluation to find design edge cases.</h3>
     <p class="gal-move-summary">A PRD cannot specify a non-deterministic output, so the eval suite is the spec: deterministic scorers for the unambiguous fields of the intent parser, an LLM judge only for the field that needed judgment. The nine golden cases distill the failure classes from the 263-issue tracker; the suite is small because each case is a class, not a sample.</p>
-    <p class="gal-move-note"><b>Decision:</b> when the parser can&rsquo;t type a query, it asks instead of guessing. The suite&rsquo;s one miss &mdash; a plan-seats billing question the parser refused to persona-type &mdash; routed to clarification rather than a wrong report, and it landed on the only field left to the model by design.</p>
+    <p class="gal-move-note"><b>Decision:</b> when the parser can&rsquo;t type a query, it asks instead of guessing. The suite&rsquo;s one miss, a plan-seats billing question the parser refused to persona-type, routed to clarification rather than a wrong report, and it landed on the only field left to the model by design.</p>
   </div></div>
 <section class="anchor" id="anchor-eval" data-ask-hint="Ask how the evals were written" data-ask-kind="project" data-ask-prompts='["What did the evals measure?", "Why evals before UI?"]' data-ask-follow-up-prompts='["does the page say the suite has nine golden cases drawn from a 263-issue tracker?", "did the single miss involve a billing question about plan seats and credit usage?"]'>
 <figure class="pe-figure">
@@ -812,13 +813,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Four decisions turned search into a research assistant.</h2>
-    <p class="gal-lede-p">I designed Deeli as a research instrument, not a chatbot: calm at entry, dense where evidence matters. Each decision closes one gap: express, aim, observe, verify.</p>
+    <p class="gal-lede-p">I designed Deeli as a research instrument, not a chatbot: calm at entry, dense where evidence matters. Each decision closes one gap: express, aim, observe, verify. Each is shown as a working prototype I rebuilt in code for this page; try them.</p>
   </div></div>
 
   <div class="gal-copy" id="move-1"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Take the question, not the keyword.</h3>
     <p class="gal-move-summary">Researchers could ask naturally, including fragments, long questions, and bilingual queries, without translating their intent into search syntax.</p>
-    <p class="gal-move-note"><b>Decision:</b> the obvious build was a chat thread. I kept one box and showed the system&rsquo;s reading as numbered footnotes instead &mdash; silently rewriting a researcher&rsquo;s words breaks trust, and this is a research instrument, not a chatbot.</p>
+    <p class="gal-move-note"><b>Decision:</b> the obvious build was a chat thread. I kept one box and showed the system&rsquo;s reading as numbered footnotes instead: silently rewriting a researcher&rsquo;s words breaks trust.</p>
     <p class="gal-move-proof">Observed: 70% of live queries used forms the old box could not support.</p>
   </div></div>
   <details class="cs-prototype" open>
@@ -1293,7 +1294,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="gal-copy" id="move-2"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Let the researcher aim the report.</h3>
     <p class="gal-move-summary">Instead of guessing, Deeli asks one focused question back. A single tap changes the shape and depth of the report.</p>
-    <p class="gal-move-note"><b>Decision:</b> a free-text follow-up was the obvious ask. Chips won: mid-task engineers won&rsquo;t type a paragraph about scope. The real uncertainty was whether they&rsquo;d tolerate being asked at all &mdash; so the escape hatch keeps control with the researcher.</p>
+    <p class="gal-move-note"><b>Decision:</b> a free-text follow-up was the obvious ask. Chips won: mid-task engineers won&rsquo;t type a paragraph about scope. The real uncertainty was whether they&rsquo;d tolerate being asked at all, so the escape hatch keeps control with the researcher.</p>
   </div></div>
   <details class="cs-prototype" open>
     <summary>Shipped clarification</summary>
@@ -1866,7 +1867,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="gal-copy" id="move-3a"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Show what the agents are doing.</h3>
     <p class="gal-move-summary">While generating, each named agent reports the sources it is touching. The panel closes on how many of them the report uses, so the wait shows its work instead of an unverifiable percentage.</p>
-    <p class="gal-move-note"><b>Decision:</b> the default was a progress bar. A percentage is theater no one can verify &mdash; and a pilot user had already asked for &ldquo;collecting sources&rdquo;-style updates over a spinner. Naming agents and their source counts turns the wait itself into evidence.</p>
+    <p class="gal-move-note"><b>Decision:</b> the default was a progress bar. A percentage is theater no one can verify. A pilot user had already asked for &ldquo;collecting sources&rdquo;-style updates over a spinner. Naming agents and their source counts turns the wait itself into evidence.</p>
   </div></div>
   <details class="cs-prototype" open>
     <summary>Generating panel</summary>
@@ -2411,7 +2412,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="gal-copy" id="move-3b"><div class="gal-copy-inner gal-move">
     <h3 class="gal-move-title">Make every claim inspectable.</h3>
     <p class="gal-move-summary">The final report exposes its source count, citations, and drill-down paths so researchers can check a claim before using it.</p>
-    <p class="gal-move-note"><b>Decision:</b> design for the expert who signs off, not only the researcher who asks. Citation failures were the rarest issue class and the costliest &mdash; one bad citation in a capacity-bet memo costs more than a hundred clean reports earn.</p>
+    <p class="gal-move-note"><b>Decision:</b> design for the expert who signs off, not only the researcher who asks. Citation failures were the rarest issue class and the costliest: one bad citation in a capacity-bet memo costs more than a hundred clean reports earn.</p>
     <p class="gal-move-proof">Observed: 91 of 92 live queries returned an inspectable report. This measures generation reliability, not research outcome quality.</p>
   </div></div>
   <details class="cs-prototype" open>
@@ -3229,7 +3230,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   <div class="gal-copy"><div class="gal-copy-inner">
     <h2 class="gal-headline">Researchers changed how they ask, and trusted what came back.</h2>
-    <p class="gal-lede-p">The first couple of weeks show three things moving together: keyword habits gave way to real questions, reports returned reliably enough to act on, and daily use climbed week over week. And launch didn&rsquo;t slow the team down &mdash; feedback kept turning into shipped fixes.</p>
+    <p class="gal-lede-p">In the first two weeks, keyword habits gave way to real questions, reports returned reliably enough to act on, and daily use climbed week over week. Launch didn&rsquo;t slow the team down either: feedback kept turning into shipped fixes.</p>
     <div class="impact-findings" role="list" aria-label="Early launch signals">
       <div class="impact-finding" role="listitem"><span class="impact-tag">Behavior change</span><b>13% to 70%</b><span>natural-language share, comparing historical search with the post-launch window</span></div>
       <div class="impact-finding" role="listitem"><span class="impact-tag">System reliability</span><b>91 of 92</b><span>live queries returned an inspectable report; research quality was evaluated separately</span></div>
@@ -3376,7 +3377,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <div class="gal-block">
 
   <div class="gal-copy"><div class="gal-copy-inner">
-    <p><b>The team stayed fast after launch.</b> In the first three weeks live, user-reported issues went from report to shipped fix in a median of <b>10 days</b>, with the fastest turnaround at four &mdash; against a pre-launch queue where a fix took months to land. Feedback, triage, design, and ship ran as one loop instead of a backlog.</p>
+    <p><b>The team stayed fast after launch.</b> In the first three weeks live, user-reported issues went from report to shipped fix in a median of <b>10 days</b>, with the fastest turnaround at four. Before launch, a fix took months to land. Feedback, triage, design, and ship ran as one loop instead of a backlog.</p>
   </div></div>
 </div>
 

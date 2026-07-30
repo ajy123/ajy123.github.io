@@ -15,7 +15,7 @@
 // is listed by role only; do not add names not already public.
 export const NYU_CASE_CONTEXT: string = [
   `NYU case study — grounding facts (published copy is authoritative; never invent a number not listed here):`,
-  `- Product: a unified work-order platform for NYU Client Service staff processing campus maintenance requests. Role: product designer, cross-functional team of 6 (PM, 2 product owners, 2 engineers). Timeline: Sept-Oct 2018.`,
+  `- Product: an internal work-order tool (service design) for NYU Client Service staff, the team processing campus maintenance requests. Role: product designer, cross-functional team of 6 (PM, 2 product owners, 2 engineers). Timeline: Sept-Oct 2018.`,
   `- Problem: staff processed maintenance requests by hand across disconnected tools — labor-intensive data entry, jumping between software to find work-request history. Representative request: Request Type "Campus Cash," Problem Code B801, "Campus cash — laundry refund." Through-line problem: no accurate, unified maintenance record to communicate from. Many requests are multi-step and span multiple departments.`,
   `- User framing (verbatim project quote): "As a Client Service Staff at NYU, I want to have an accurate maintenance record so that we can communicate more effectively with departments and clients."`,
   `- Findings that changed direction: early process work mapped how a request traveled from the submitter, through the Client Service Center, to the maintenance department — framed as "How might we help with facility request management?" This surfaced the multi-step, multi-department constraint and reframed the project from "replace the CSV with a form" to "represent the full lifecycle of a request in one place."`,

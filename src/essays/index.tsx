@@ -15,7 +15,10 @@ import {
 } from "../components/EssayPersonaVisuals";
 import type { EssayItem } from "./types";
 
-export const aiPracticeItems: EssayItem[] = [
+// Unlisted: kept out of the landing grid until the essay has a concrete
+// incident/number to carry it, but still resolvable by id so a shared
+// #essay/eval-is-the-spec deep link keeps working.
+const unlistedEssayItems: EssayItem[] = [
   {
     id: "eval-is-the-spec",
     eyebrow: "Essay",
@@ -36,7 +39,7 @@ export const aiPracticeItems: EssayItem[] = [
       "does the essay say exact states in a conventional product spec still matter?",
     ],
     summary:
-      "You can design a report's layout and citations — but not the sentences a model writes fresh every time. So the eval becomes the spec — it's how I define product quality.",
+      "In an AI product, screens are only half the spec. The model writes the other half fresh every run, so I use evals to define what a good answer is.",
     dek:
       "In AI products, the interface is only half the spec. The other half is the test that tells the model what good work means.",
     sections: [
@@ -44,7 +47,7 @@ export const aiPracticeItems: EssayItem[] = [
         heading: "The hard part is the part that changes",
         body: [
           "A conventional product spec can describe a report screen with exact states: what loads, what fails, what the citation chip looks like, what the empty state says. That still matters.",
-          "But the most important surface in an AI product is often generated fresh every run. The paragraph, recommendation, synthesis, or follow-up question is not a static component. It is behavior.",
+          "But the most important surface in an AI product is often generated fresh every run. The paragraph, recommendation, synthesis, or follow-up question is behavior, not a static component.",
         ],
       },
       {
@@ -57,13 +60,16 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "Designing with evals changes the conversation",
         body: [
-          "Instead of arguing whether an answer feels smart, the team can ask what failure mode it triggered. Instead of polishing one golden demo, the team can test the shape of quality across messy inputs.",
-          "For me, that is the practical bridge between design and AI systems: define the experience, then define the evidence that the experience is actually happening.",
+          "With an eval in hand, the review question changes from whether an answer feels smart to which failure mode it triggered. Quality gets tested across messy inputs instead of one polished demo.",
+          "For me, that is the practical bridge between design and AI systems: define the experience, then define the evidence that it is actually happening.",
         ],
       },
     ],
     thumbnail: EssayEvalThumbnail,
   },
+];
+
+export const aiPracticeItems: EssayItem[] = [
   {
     id: "team-of-agents",
     eyebrow: "Essay",
@@ -86,9 +92,9 @@ export const aiPracticeItems: EssayItem[] = [
       "did Joanna treat agents as a temporary design team?",
     ],
     summary:
-      "I ran agents as a temporary design team — grouping hundreds of tickets into themes, scoring them with RICE, generating fourteen baselines — and kept the judgment human.",
+      "I used agents for the grunt work of research synthesis: grouping hundreds of tickets into themes and drafting fourteen baselines. The judgment calls stayed mine.",
     dek:
-      "How I turned messy product context into reviewable design direction — and why the judgment stayed mine.",
+      "How I turned messy product context into reviewable design direction, and why the judgment stayed mine.",
     thumbnail: EssayAgentsThumbnail,
     sections: [
       {
@@ -99,7 +105,7 @@ export const aiPracticeItems: EssayItem[] = [
         ],
       },
       {
-        heading: "Agents went wide. Judgment went right.",
+        heading: "The pipeline: from raw tickets to fourteen baselines",
         body: [
           "I built an agent pipeline that fed the raw material in, grouped tickets into feature themes, then scored the themes with the RICE framework to decide what actually deserved design time. From there I spun up focused agents around specific lenses to generate fourteen baseline options for human review.",
         ],
@@ -110,8 +116,8 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "One ticket, read twice",
         body: [
-          "One example was the token-usage feature. The request looked simple — “show token usage.” The real question underneath was not simple: how much cost should a user see, and when?",
-          "Token usage scored high mostly on reach: cost isn't a corner feature, it's attached to every report generation — the product's core action — so it touched the entire active base, not a subset. High reach, low effort. That's what earned it design time over louder but narrower requests.",
+          "One example was the token-usage feature. The request looked simple: “show token usage.” Underneath sat a harder question: how much cost should a user see, and when?",
+          "Token usage scored high mostly on reach. Cost is attached to every report generation, the product's core action, so it touched the entire active base rather than a subset. High reach and low effort earned it design time over louder but narrower requests.",
         ],
         visual: <AgentsTriptychVisual />,
         visualCaption: "Three generated directions. The comparison was the point.",
@@ -119,14 +125,14 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "The productive kill",
         body: [
-          "Then the design did something better than shipping. The strongest-looking direction showed users a confident cost estimate before they generated a report. On screen, it was clean and reassuring. The problem: the ML side couldn't actually produce an accurate estimate yet. The interface was making a promise the model couldn't keep — and a confident number the system can't back is worse than no number, because it kills trust.",
-          "Killing it surfaced two calibrations no mockup had made visible before. One technical: how confident can the UI be before it outruns what the model can truthfully show? One business: is usage even metered per person or per team — a pricing question that changes what the number on screen means. The generated design turned “show token usage” into a real decision, grounding engineering and business in the same room — and showing everyone exactly where we weren't ready.",
+          "Then the design did something better than shipping. The strongest-looking direction showed users a confident cost estimate before they generated a report. On screen, it was clean and reassuring. The problem: the ML side couldn't actually produce an accurate estimate yet. The interface was making a promise the model couldn't keep. A confident number the system can't back is worse than no number, because it kills trust.",
+          "Killing it surfaced two calibrations no mockup had made visible before. One technical: how confident can the UI be before it outruns what the model can truthfully show? One business: is usage metered per person or per team, a pricing question that changes what the number on screen means. The generated design turned “show token usage” into a real decision. It put engineering and business in the same room and showed everyone exactly where we weren't ready.",
         ],
       },
       {
         heading: "The judgment stayed mine",
         body: [
-          "That pattern held across the whole workflow. Agents are good at finding possibilities, and bad at telling you which possibility the rest of the company can actually stand behind. The judgment about technical truth, the business model, and user trust stayed mine. What the agents changed is where I started: from a mapped set of tradeoffs instead of a blank page.",
+          "That pattern held across the whole workflow. Agents are good at finding possibilities, and bad at telling you which possibility the rest of the company can actually stand behind. The judgment about technical truth, the business model, and user trust stayed mine. What the agents changed is the starting point: the team reviewed a mapped set of tradeoffs instead of a blank page, and that review put an engineering constraint and a pricing question on the table before anything shipped.",
         ],
       },
     ],
@@ -153,21 +159,21 @@ export const aiPracticeItems: EssayItem[] = [
       "does each persona become a scenario to test against?",
     ],
     summary:
-      "Every week agents regenerate personas from transcripts, product data, and past queries — each one becomes a scenario the design and the model must survive.",
-    dek: "How weekly research became living scenarios — and evals.",
+      "In my research workflow, agents update the personas weekly from fresh transcripts and queries. Each becomes a test scenario; one caught mixed-language users breaking language detection, the evals, and the model at once.",
+    dek: "Agents refresh our personas every week, and each persona becomes a scenario that tests the design and the model.",
     thumbnail: EssayPersonaThumbnail,
     sections: [
       {
         heading: "Static personas can't keep up",
         body: [
-          "I don't fully trust static personas for AI products. Not because user goals change — they're stable. What changes fast is what people expect the AI to do. Someone who uses these tools daily builds new instincts in weeks. They ask longer questions. They mix languages. They expect the system to clarify intent, show its work, and recover when the answer isn't good enough. A persona written three months ago still describes the user's job but quietly misses how that user now expects the product to behave.",
+          "I don't fully trust static personas for AI products. Not because user goals change; those are stable. What changes fast is what people expect the AI to do. Someone who uses these tools daily builds new instincts in weeks. They ask longer questions. They mix languages. They expect the system to clarify intent, show its work, and recover when the answer isn't good enough. A persona written three months ago still describes the user's job but quietly misses how that user now expects the product to behave.",
         ],
       },
       {
         heading: "From document to pipeline",
         body: [
           "I saw this the moment we shipped a chat-based report flow. Query behavior shifted fast: users stopped typing one-line searches and started writing longer, iterative prompts. The persona we'd designed against was already behind the users it described. So I stopped treating research as a document and started treating it as a pipeline.",
-          "Every week, agents ingest interviews, product data, and past queries to extract personas, jobs, vocabulary, objections, and edge cases. The old version was manual: tag transcripts by hand, read every ticket, assign owners. It cost 6+ hours a week. The workflow cuts that to about an hour — reviewing the output and watching how the direction moves over time.",
+          "Every week, agents ingest interviews, product data, and past queries to extract personas, jobs, vocabulary, objections, and edge cases. The old version was manual: tag transcripts by hand, read every ticket, assign owners. It cost 6+ hours a week. The workflow cuts that to about an hour, spent reviewing the output and watching how the direction moves over time.",
         ],
       },
       {
@@ -181,15 +187,15 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "Where research meets the model",
         body: [
-          "That's the shift that matters most: in an AI product, a persona isn't a portrait — it's a scenario generator. The weekly scenarios feed the eval suite directly, so a change in how users actually behave becomes a test case the model is measured against that same week.",
+          "That's the shift that matters most: in an AI product, the value of a persona is the scenarios it generates. The weekly scenarios feed the eval suite directly, so a change in how users actually behave becomes a test case the model is measured against that same week.",
         ],
         visual: <PersonaCoverageGrid />,
-        visualCaption: "Where research meets the model — shipped, in design, gap.",
+        visualCaption: "Where research meets the model: shipped, in design, gap.",
       },
       {
         heading: "Judgment doesn't automate",
         body: [
-          "None of this runs unattended. Agents overgeneralize, invent quotes, and flatten the messy specifics that make a scenario real. So I still own the judgment: is this persona accurate, is this scenario realistic. For AI products, research written once is already behind. Research that regenerates keeps the product honest — and keeps the team meeting users' expectations while those expectations are still current.",
+          "None of this runs unattended. Agents overgeneralize, invent quotes, and flatten the messy specifics that make a scenario real. So I still own the judgment: is this persona accurate, is this scenario realistic. For AI products, research written once is already behind. Research that regenerates keeps the product honest and keeps the team current with what users expect.",
         ],
       },
     ],
@@ -197,5 +203,5 @@ export const aiPracticeItems: EssayItem[] = [
 ];
 
 export const essaysById: Record<string, EssayItem> = Object.fromEntries(
-  aiPracticeItems.map((item) => [item.id, item]),
+  [...aiPracticeItems, ...unlistedEssayItems].map((item) => [item.id, item]),
 );

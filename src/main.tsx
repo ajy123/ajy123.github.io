@@ -31,7 +31,6 @@ import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
 import { SiteLogo } from "./components/SiteLogo";
-import { TextScramble } from "./components/TextScramble";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
@@ -72,7 +71,7 @@ const workItems: WorkItem[] = [
     liveHref: "/deeli/",
     linkLabel: "Read the case study",
     flagLabel: "Case study",
-    askHint: "Ask how this became a chat",
+    askHint: "Ask how we turn a search into a research assistant",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -472,51 +471,69 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             "did Joanna build Deeli's site in a week?",
             "what is Joanna's email?",
           ]}
-          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for AI chatbots: designing what they say, testing whether they're right, and planning for when they're wrong. She currently designs and ships at Deeli AI, with 7+ years of product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
+          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for Deeli AI's research assistant: designing what it says, testing the model's output, and planning for when it's wrong. She currently designs and ships at Deeli AI, with 7+ years of product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
         >
           <div className="profile-identity">
             <h1>
               <span>Joanna Yen</span>
             </h1>
-            <p className="card-eyebrow">Senior Product Designer · 7+ yrs</p>
+            <p className="profile-role-line">Senior product designer</p>
 
-            <p className="sidebar-bio sidebar-lede">
-              Designer and engineer who sweats the details and ships them.
+            <p className="sidebar-bio sidebar-story">
+              Most of my work shrinks queues: maintenance tickets, device-issue
+              reports, searches people gave up on. Lately I&apos;m doing the
+              same for{" "}
+              <span className="bio-hl">
+                Deeli AI&apos;s research assistant
+              </span>
+              : designing what they say, testing model&apos;s output, and
+              planning for when they&apos;re wrong.
             </p>
 
             {/*
-              Persistent chat entry affordance: the only always-visible way to
-              discover the "/" composer on a fine-pointer desktop (the FAB
-              only shows on touch / narrow viewports). Hidden while the intro
-              overlay is up so it can't be reached before the shell dismisses.
+              Chat entry as the rail's one material object (the Caleb-style
+              gray card). Unmounts while the intro overlay is up so it can't
+              be reached before the shell dismisses.
             */}
             {!suspended ? (
               <button
-                className="rail-ask"
+                className="rail-askbox"
                 type="button"
                 aria-keyshortcuts="/"
                 onClick={() => requestCursorChatOpen()}
               >
-                <span className="rail-ask-key" aria-hidden="true">
+                <span className="rail-askbox-key" aria-hidden="true">
                   /
                 </span>
-                <span className="rail-ask-label">
-                  <TextScramble text="Ask about my work" durationMs={800} />
+                <span className="rail-askbox-copy">
+                  <b>Ask about my work</b>
+                  <span>Try: what shipped at Deeli?</span>
                 </span>
               </button>
             ) : null}
-            <p className="sidebar-bio sidebar-story">
-              Most of my work shrinks queues: maintenance tickets, device-issue
-              reports, searches people gave up on.
-            </p>
-            <p className="sidebar-bio">
-              Lately I&apos;m doing the same for AI chatbots: designing what
-              they say, testing whether they&apos;re right, and planning for
-              when they&apos;re wrong.
-            </p>
-            <p className="sidebar-bio">
-              Avid long distance runner based in <s>NYC</s> APAC.
-            </p>
+
+            <ul className="rail-ledger">
+              <li>
+                <span className="rail-ledger-co">Deeli AI</span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-yr">now</span>
+              </li>
+              <li>
+                <span className="rail-ledger-co">Swiftly</span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-yr">&rsquo;22</span>
+              </li>
+              <li>
+                <span className="rail-ledger-co">Diligent</span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-yr">&rsquo;20</span>
+              </li>
+              <li>
+                <span className="rail-ledger-co">NYU</span>
+                <span className="rail-ledger-role">Service design</span>
+                <span className="rail-ledger-yr">&rsquo;18</span>
+              </li>
+            </ul>
           </div>
         </Reveal>
 

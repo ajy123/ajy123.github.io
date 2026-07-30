@@ -99,7 +99,7 @@
   color: var(--ink);
   background: var(--surface-warm);
   border: 0;
-  /* 4px system radius (see .rail-ask-key); its left corners sit flush over the
+  /* 4px system radius (see .rail-askbox-key); its left corners sit flush over the
      key's 4px left corners, its right corners round the copy end. */
   border-radius: 4px;
   box-shadow: none;
@@ -135,7 +135,7 @@
   clip-path: inset(0 0 0 0 round 4px);
 }
 
-/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale. */
+/* Keycap glyph — see .rail-askbox-key for the shared color/radius rationale. */
 .contextual-ask-hint .contextual-ask-key {
   display: inline-flex;
   flex: 0 0 var(--ask-pin-size, 20px);
@@ -998,7 +998,7 @@
   outline-offset: 2px;
 }
 
-/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale.
+/* Keycap glyph — see .rail-askbox-key for the shared color/radius rationale.
    8px is the same radius-to-size ratio as the 4px/~20px keys elsewhere
    (0.2), scaled to this key's 40px size. */
 .cursor-chat-fab-key {
@@ -1073,7 +1073,7 @@
   outline-offset: 2px;
 }
 
-/* Keycap glyph — see .rail-ask-key for the shared color/radius rationale. */
+/* Keycap glyph — see .rail-askbox-key for the shared color/radius rationale. */
 .selection-ask-pill-key {
   display: inline-flex;
   flex: 0 0 20px;

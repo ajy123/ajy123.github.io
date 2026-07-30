@@ -15,6 +15,8 @@
   --surface-elevated: #ffffff; /* elevated surface background */
   --surface-subtle: #f7f7f7; /* faint card / divider fill */
   --surface-warm: #faf9f5; /* warm off-white control surface */
+  --surface-card: #f5f4f1; /* warm gray object card (rail ask box) */
+  --surface-card-hover: #efede9;
   --ghost: #e0e0e0; /* oversized decorative section titles */
   --muted: #757169; /* secondary text, captions, eyebrows — AA on all surfaces */
   --muted-strong: #57534b; /* muted ink at small sizes — 7.1:1 on warm surfaces */
@@ -160,6 +162,15 @@ svg {
   padding-top: 14px;
 }
 
+/* With the ask card + experience ledger the rail runs ~790px tall; on
+   short viewports let the fixed column scroll instead of clipping the
+   contact block off the bottom. */
+@media (max-height: 820px) {
+  .profile-sticky {
+    overflow-y: auto;
+  }
+}
+
 .profile-identity {
   display: flex;
   flex-direction: column;
@@ -168,21 +179,16 @@ svg {
   margin: 0 0 var(--space-figure);
 }
 
-/* Bio folded into the masthead band: the flex gap plus this top margin
-   reproduces the body's 16px paragraph rhythm. Zone seams (identity ->
-   thesis, story -> runner aside, band -> actions) open to 24px
-   (--space-figure): the spacing scale, not styling, encodes the tiers. */
+/* Rail rhythm, Caleb-style: hierarchy from ink-vs-muted pairs and
+   whitespace alone — no rules, no caps. The flex gap (4px chrome)
+   contributes to every seam, so margins carry the remainder: zone seams
+   (role line -> prose, prose -> ask card, card -> ledger) land on
+   --space-figure; paragraph rhythm lands on --space-copy. */
 .profile-identity .sidebar-bio {
-  margin: calc(var(--space-tight) - 4px) 0 0;
+  margin: calc(var(--space-copy) - 4px) 0 0;
 }
 
-/* Zone seams land on --space-figure; the flex gap (4px chrome) already
-   contributes, so the margin carries the remainder. */
-.profile-identity .sidebar-lede {
-  margin-top: calc(var(--space-tight) - 4px);
-}
-
-.profile-identity .sidebar-bio:last-child {
+.profile-identity .sidebar-story {
   margin-top: calc(var(--space-figure) - 4px);
 }
 
@@ -202,85 +208,163 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-/* Name in the same label voice as the title eyebrow — rank carried by
-   weight and ink against the eyebrow's 500/muted, not by size. */
+/* Name in the base h1 masthead voice (30/700/1.05) — deliberately NOT
+   the 20px card-title step: at card size the identity pair read as one
+   more work-card header. The rail is the landing's only identity
+   surface, so the name owns the page's top rank. */
 .profile-identity h1 {
   margin: 0;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
-/* Inside the identity cluster the flex gap alone spaces the rows —
-   drop the card-eyebrow's own bottom margin so name / title / keyword
-   line sit at one even rhythm. */
-.profile-identity .card-eyebrow {
-  margin: 0;
-}
-
-/* Chip sits between the identity cluster and the lede; both seams land
-   on --space-figure (lede's own top margin closes the lower one). Quiet
-   voice up here: with the name at label size the chip must not outrank
-   it — muted label (inks/accents on hover), smaller key. Hit target
-   stays 40px via the base rule. */
-.profile-identity .rail-ask {
-  margin: calc(var(--space-tight) - 4px) 0 0;
-}
-
-.profile-identity .rail-ask .rail-ask-label {
-  color: var(--muted);
+/* Inline ink emphasis in the muted bio — the Caleb move: the phrase
+   the skim should catch, ranked by color and weight, not size. */
+.sidebar-bio .bio-hl {
+  color: var(--ink);
   font-weight: 500;
 }
 
-.profile-identity .rail-ask .rail-ask-key {
-  flex-basis: 16px;
-  width: 16px;
-  height: 16px;
-  font-size: 10px;
-  border-radius: 3px;
-}
-
-/* Masthead section (name / title / lede / chip) is one tight unit;
-   the story opens after it on the zone seam. Anchored to the story
-   paragraph itself, not the chip: the chip unmounts while the intro
-   overlay is up, and the seam must not depend on it. */
-.profile-identity .sidebar-story {
-  margin-top: calc(var(--space-figure) - 4px);
+/* Role line bound to the masthead as a 13px label: label leading (1.4,
+   not the body's 1.55) and muted-strong keep it one lockup with the
+   name rather than a stray body line. 8px seam = 4px margin + flex gap. */
+.profile-role-line {
+  margin: 4px 0 0;
+  color: var(--muted-strong);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 h1 span {
   display: block;
 }
 
-/* Body narrative — body-md scale (16/1.6), muted, flat (no chip). */
+/* Body narrative — the work cards' summary voice (14/1.55, muted). */
 .sidebar-bio {
   width: 100%;
   margin: 0 0 var(--space-copy);
   color: var(--muted);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
-/* Lede line — ink + weight, the same emphasis pattern as the rail
-   contact labels. (Spacing comes entirely from the identity cluster's
-   scoped rules; the base class carries voice only.) */
-.sidebar-lede {
+/* The rail's one material object: chat entry as a warm-gray card
+   (accent keycap + ink label + muted subline). Being the only filled
+   shape in the rail is what ranks it — no border, no shadow. */
+.rail-askbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: calc(var(--space-figure) - 4px) 0 0;
+  padding: 13px 14px;
+  text-align: left;
+  color: inherit;
+  background: var(--surface-card);
+  border: 0;
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font: inherit;
+  transition: background 160ms var(--ease-out-strong);
+}
+
+.rail-askbox:hover {
+  background: var(--surface-card-hover);
+}
+
+.rail-askbox:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
+   persistent chat entry there, so the rail card would be a duplicate
+   affordance — same call as the old rail chip. */
+@media (pointer: coarse), (max-width: 860px) {
+  .rail-askbox {
+    display: none;
+  }
+}
+
+/* Keycap glyph — shared visual language with the contextual hint,
+   selection pill, and touch FAB. Ink on accent: 5.19:1 from the :root
+   hexes (#111111 on #f44800), clears the 4.5:1 text bar despite being
+   aria-hidden. ~1:4.5 radius-to-size ratio, matching the family. */
+.rail-askbox-key {
+  display: inline-flex;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  background: var(--accent);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rail-askbox-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rail-askbox-copy b {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.rail-askbox-copy span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Experience ledger — Caleb's two-tone row grammar: company ink,
+   role muted, year right-aligned. Data the recruiter scans for,
+   living in the rail itself. No section label: the row shape is
+   self-describing, so it sits one zone seam under the ask card. */
+.rail-ledger {
+  width: 100%;
+  margin: calc(var(--space-figure) - 4px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail-ledger li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.rail-ledger-co {
   color: var(--ink);
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* The ink stroke opens the story block, directly above "Most of my
-   work…" — it marks the masthead/story seam, not the lede itself. */
-.profile-identity .sidebar-story::before {
-  content: "";
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--ink);
-  margin: 0 0 14px;
+.rail-ledger-role {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-ledger-yr {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .social-stack {
@@ -357,94 +441,6 @@ h1 span {
 
 .rail-link.is-copied .rail-link-sub {
   color: var(--ink);
-}
-
-/*
- * Persistent chat entry pill: the only zero-interaction, always-visible way
- * to discover the "/" composer on a fine pointer (the touch entry FAB, now
- * in chat-ui.css, only shows on touch / narrow viewports). Sits under the name so
- * it's the first action the rail offers; the bottom margin hands off to the
- * bio without crowding the identity block's own 18px.
- * min-height keeps the hit target >=40px even though the row's text is small.
- */
-.rail-ask {
-  display: flex;
-  min-height: 40px;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  margin: 0 0 24px;
-  padding: 0;
-  color: var(--muted);
-  text-align: left;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  font: inherit;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .rail-ask:hover .rail-ask-label {
-    color: var(--accent);
-  }
-}
-
-.rail-ask:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.rail-ask-label {
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: var(--rl-label-size, 12px);
-  transition: color 160ms var(--ease-out-strong);
-}
-
-/*
- * Keycap glyph — shared visual language across the rail chip, contextual
- * hint, selection pill, and touch FAB (see index.css search "keycap glyph
- * system" for the other three). Ink on accent: 5.19:1, computed from the
- * :root hex values (#111111 on #f44800) — clears the 4.5:1 text bar despite
- * being aria-hidden in every instance. 4px radius on the ~18-20px keys; the
- * FAB's 40px key uses 8px, the same ~1:5 radius-to-size ratio.
- */
-.rail-ask-key {
-  display: inline-flex;
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  background: var(--accent);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-/* Keyboard hint only makes sense where a keyboard is the primary input. */
-@media (pointer: coarse) {
-  .rail-ask-key {
-    display: none;
-  }
-}
-
-/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
-   persistent chat entry here, so the inline rail chip is redundant — hide it
-   and let the FAB own the affordance. Kept on fine-pointer desktop, which has
-   no FAB and relies on this chip to advertise the "/" composer. */
-@media (pointer: coarse), (max-width: 860px) {
-  .rail-ask {
-    display: none;
-  }
 }
 
 .rail-footer p {
@@ -1349,7 +1345,7 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 /* Coarse pointers have no Enter key — swap the keycap sentence for tap copy.
-   Same CSS-only gate as .rail-ask-key, so hybrid devices that attach or shed
+   Same CSS-only gate as the deleted rail chip keycap, so hybrid devices that attach or shed
    a mouse re-evaluate live, with both variants inside the measured CTA. */
 .intro-cta-copy--fine {
   display: contents;
@@ -1462,10 +1458,22 @@ a.card-eyebrow-flag .flag-verb {
 
   .profile-content {
     order: 1;
-    max-width: 320px;
+    /* No fixed cap: the ask card and ledger span the same column as the
+       contact rows below, so their right edges agree (the year column
+       lands where the leader icons do). Only running text keeps a
+       reading measure — ch, so it tracks the type size. */
+    max-width: none;
     /* Restores the top breathing room the flattened .profile-sticky used to
        carry as its 48px top padding. */
     padding-top: 48px;
+  }
+
+  /* The identity block otherwise shrinks to the bio's measure, which
+     strands the card/ledger short of the contact rows' right edge. The
+     bio wraps to the same full column as everything else. */
+  .profile-content,
+  .profile-identity {
+    width: 100%;
   }
 
   /* Contact links keep their rail position, right after the bio. */

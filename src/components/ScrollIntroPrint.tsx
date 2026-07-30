@@ -241,7 +241,7 @@ export function ScrollIntroPrint({
           >
             <span className="intro-cta-line">
               {/* Both copies render; CSS's pointer:coarse gate picks one, the
-                  same mechanism as .rail-ask-key. Coarse has no Enter key, so it
+                  same mechanism as the old rail chip keycap. Coarse has no Enter key, so it
                   drops the ↵ and shows "Read on" as a tappable plate. */}
               <span className="intro-cta-copy--fine">
                 <span className="intro-cta-word">Read on</span>

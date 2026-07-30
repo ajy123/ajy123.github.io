@@ -117,8 +117,9 @@ svg {
   /* The cap is what holds the rail-to-content gap at the declared 64px:
      uncapped, .work-canvas's auto margins centre it in the whole flex
      remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
-     ~390px on a wide display. 1200 = 40 gutter + 280 rail + 64 gap
-     + 776 measure + 40 gutter. */
+     ~390px on a wide display. 1200 = 40 gutter + rail + 64 gap + measure
+     + 40 gutter, where the rail is clamp(264–300px) (280px baseline) and
+     the measure takes the remainder (~776px at the 280px baseline). */
   max-width: 1200px;
   margin: 0 auto;
 }

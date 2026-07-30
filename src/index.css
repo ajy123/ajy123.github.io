@@ -162,9 +162,12 @@ svg {
 
 .profile-identity {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-  margin: 0 0 18px;
+  margin: 0 0 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hairline-faint);
 }
 
 h1,
@@ -199,6 +202,24 @@ h1 span {
   font-size: 15px;
   font-weight: 400;
   line-height: 1.6;
+}
+
+/* Lede line — ink + weight (same emphasis pattern as the rail contact
+   labels), pulled tight to its supporting paragraph. A short ink stroke
+   marks it, closing the masthead band the identity hairline opens. */
+.sidebar-lede {
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.sidebar-lede::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+  margin: 0 0 14px;
 }
 
 .social-stack {

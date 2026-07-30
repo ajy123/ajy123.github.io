@@ -218,6 +218,13 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+/* Inline ink emphasis in the muted bio — the Caleb move: the phrase
+   the skim should catch, ranked by color and weight, not size. */
+.sidebar-bio .bio-hl {
+  color: var(--ink);
+  font-weight: 500;
+}
+
 /* The identity pair: muted sentence-case role line directly under the
    ink name — same size as body, rank carried by color alone. */
 .profile-role-line {

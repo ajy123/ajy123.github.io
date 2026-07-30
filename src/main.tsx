@@ -481,12 +481,13 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
 
             <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue
-              reports, searches people gave up on.
-            </p>
-            <p className="sidebar-bio">
-              Lately I&apos;m doing the same for Deeli AI&apos;s research
-              assistant: designing what they say, testing model&apos;s output,
-              and planning for when they&apos;re wrong.
+              reports, searches people gave up on. Lately I&apos;m doing the
+              same for{" "}
+              <span className="bio-hl">
+                Deeli AI&apos;s research assistant
+              </span>
+              : designing what they say, testing model&apos;s output, and
+              planning for when they&apos;re wrong.
             </p>
 
             {/*

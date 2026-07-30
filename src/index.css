@@ -206,7 +206,7 @@ h1 {
    weight and ink against the eyebrow's 500/muted, not by size. */
 .profile-identity h1 {
   margin: 0;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
   line-height: 1.4;
   letter-spacing: 0.1em;
@@ -220,37 +220,11 @@ h1 {
   margin: 0;
 }
 
-/* Chip sits between the identity cluster and the lede; both seams land
-   on --space-figure (lede's own top margin closes the lower one). Quiet
-   voice up here: with the name at label size the chip must not outrank
-   it — muted label (inks/accents on hover), smaller key. Hit target
-   stays 40px via the base rule. */
-.profile-identity .rail-ask {
-  margin: calc(var(--space-tight) - 4px) 0 0;
-}
-
-.profile-identity .rail-ask .rail-ask-label {
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.profile-identity .rail-ask .rail-ask-key {
-  flex-basis: 16px;
-  width: 16px;
-  height: 16px;
-  font-size: 10px;
-  border-radius: 3px;
-}
-
-/* Masthead section (name / title / lede / chip) is one tight unit;
-   the story opens after it on the zone seam. Anchored to the story
-   paragraph itself, not the chip: the chip unmounts while the intro
-   overlay is up, and the seam must not depend on it. */
-/* The chip's 40px hit target carries ~12px of invisible padding below its
-   ink; margin-top only closes the remainder so the VISUAL gap above the
-   seam stroke lands on --space-figure (24px), matching the gap below. */
+/* Story follows the lede directly (the ask chip is gone). 16px box margin
+   plus the lede's descender leading lands the VISUAL gap above the seam
+   stroke on --space-figure (24px), matching the gap below it. */
 .profile-identity .sidebar-story {
-  margin-top: var(--space-tight);
+  margin-top: var(--space-copy);
 }
 
 h1 span {
@@ -283,9 +257,9 @@ h1 span {
   width: 24px;
   height: 2px;
   background: var(--ink);
-  /* 18px box margin + ~6px of line-box leading above the text ink =
-     24px visual, symmetric with the gap above the stroke. */
-  margin: 0 0 18px;
+  /* Measured line-box gap above the stroke (lede bottom -> stroke) is
+     23px; 20px here + the story's half-leading matches it below. */
+  margin: 0 0 20px;
 }
 
 .social-stack {
@@ -362,100 +336,6 @@ h1 span {
 
 .rail-link.is-copied .rail-link-sub {
   color: var(--ink);
-}
-
-/*
- * Persistent chat entry pill: the only zero-interaction, always-visible way
- * to discover the "/" composer on a fine pointer (the touch entry FAB, now
- * in chat-ui.css, only shows on touch / narrow viewports). Sits under the name so
- * it's the first action the rail offers; the bottom margin hands off to the
- * bio without crowding the identity block's own 18px.
- * min-height keeps the hit target >=40px even though the row's text is small.
- */
-.rail-ask {
-  display: flex;
-  min-height: 40px;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  margin: 0 0 24px;
-  padding: 0;
-  color: var(--muted);
-  text-align: left;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  font: inherit;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .rail-ask:hover .rail-ask-label {
-    color: var(--accent);
-  }
-}
-
-.rail-ask:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.rail-ask-label {
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: var(--rl-label-size, 12px);
-  transition: color 160ms var(--ease-out-strong);
-}
-
-/*
- * Keycap glyph — shared visual language across the rail chip, contextual
- * hint, selection pill, and touch FAB (see index.css search "keycap glyph
- * system" for the other three). Ink on accent: 5.19:1, computed from the
- * :root hex values (#111111 on #f44800) — clears the 4.5:1 text bar despite
- * being aria-hidden in every instance. 4px radius on the ~18-20px keys; the
- * FAB's 40px key uses 8px, the same ~1:5 radius-to-size ratio.
- */
-.rail-ask-key {
-  display: inline-flex;
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  background: var(--accent);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-/* Keyboard hint only makes sense where a keyboard is the primary input. */
-@media (pointer: coarse) {
-  .rail-ask-key {
-    display: none;
-  }
-}
-
-/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
-   persistent chat entry here, so the inline rail chip is redundant — hide it
-   and let the FAB own the affordance. Kept on fine-pointer desktop, which has
-   no FAB and relies on this chip to advertise the "/" composer. */
-@media (pointer: coarse), (max-width: 860px) {
-  .rail-ask {
-    display: none;
-  }
-
-  /* With the chip gone the story follows the lede directly — no invisible
-     hit-target padding to absorb, so the seam takes the full zone margin. */
-  .profile-identity .sidebar-story {
-    margin-top: calc(var(--space-figure) - 4px);
-  }
 }
 
 .rail-footer p {

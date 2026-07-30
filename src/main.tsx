@@ -31,7 +31,6 @@ import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
 import { SiteLogo } from "./components/SiteLogo";
-import { TextScramble } from "./components/TextScramble";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
@@ -72,7 +71,7 @@ const workItems: WorkItem[] = [
     liveHref: "/deeli/",
     linkLabel: "Read the case study",
     flagLabel: "Case study",
-    askHint: "Ask how this became a chat",
+    askHint: "Ask how we turn a search into a research assistant",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -442,7 +441,7 @@ function SiteLogoMount() {
   return <SiteLogo />;
 }
 
-function ProfileRail({ suspended }: { suspended: boolean }) {
+function ProfileRail() {
   const [copied, setCopied] = useState(false);
   const dials = useContext(FooterDialsContext);
   const footerBodyRef = useRef<HTMLDivElement | null>(null);
@@ -484,27 +483,6 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
               Designer and engineer who sweats the details and ships them.
             </p>
 
-            {/*
-              Persistent chat entry affordance: the only always-visible way to
-              discover the "/" composer on a fine-pointer desktop (the FAB
-              only shows on touch / narrow viewports). Hidden while the intro
-              overlay is up so it can't be reached before the shell dismisses.
-            */}
-            {!suspended ? (
-              <button
-                className="rail-ask"
-                type="button"
-                aria-keyshortcuts="/"
-                onClick={() => requestCursorChatOpen()}
-              >
-                <span className="rail-ask-key" aria-hidden="true">
-                  /
-                </span>
-                <span className="rail-ask-label">
-                  <TextScramble text="Ask about my work" durationMs={800} />
-                </span>
-              </button>
-            ) : null}
             <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue
               reports, searches people gave up on.
@@ -1023,7 +1001,7 @@ function App() {
 
   const shell = (
     <div className="portfolio-shell">
-      <ProfileRail suspended={showIntro} />
+      <ProfileRail />
       <WorkCanvas />
     </div>
   );

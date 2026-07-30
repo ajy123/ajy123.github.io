@@ -206,7 +206,7 @@ h1 {
    weight and ink against the eyebrow's 500/muted, not by size. */
 .profile-identity h1 {
   margin: 0;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1.4;
   letter-spacing: 0.1em;
@@ -246,8 +246,11 @@ h1 {
    the story opens after it on the zone seam. Anchored to the story
    paragraph itself, not the chip: the chip unmounts while the intro
    overlay is up, and the seam must not depend on it. */
+/* The chip's 40px hit target carries ~12px of invisible padding below its
+   ink; margin-top only closes the remainder so the VISUAL gap above the
+   seam stroke lands on --space-figure (24px), matching the gap below. */
 .profile-identity .sidebar-story {
-  margin-top: calc(var(--space-figure) - 4px);
+  margin-top: var(--space-tight);
 }
 
 h1 span {
@@ -280,7 +283,9 @@ h1 span {
   width: 24px;
   height: 2px;
   background: var(--ink);
-  margin: 0 0 14px;
+  /* 18px box margin + ~6px of line-box leading above the text ink =
+     24px visual, symmetric with the gap above the stroke. */
+  margin: 0 0 18px;
 }
 
 .social-stack {
@@ -444,6 +449,12 @@ h1 span {
 @media (pointer: coarse), (max-width: 860px) {
   .rail-ask {
     display: none;
+  }
+
+  /* With the chip gone the story follows the lede directly — no invisible
+     hit-target padding to absorb, so the seam takes the full zone margin. */
+  .profile-identity .sidebar-story {
+    margin-top: calc(var(--space-figure) - 4px);
   }
 }
 

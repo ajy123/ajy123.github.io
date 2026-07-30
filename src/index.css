@@ -1449,10 +1449,25 @@ a.card-eyebrow-flag .flag-verb {
 
   .profile-content {
     order: 1;
-    max-width: 320px;
+    /* No fixed cap: the ask card and ledger span the same column as the
+       contact rows below, so their right edges agree (the year column
+       lands where the leader icons do). Only running text keeps a
+       reading measure — ch, so it tracks the type size. */
+    max-width: none;
     /* Restores the top breathing room the flattened .profile-sticky used to
        carry as its 48px top padding. */
     padding-top: 48px;
+  }
+
+  /* The identity block otherwise shrinks to the bio's measure, which
+     strands the card/ledger short of the contact rows' right edge. */
+  .profile-content,
+  .profile-identity {
+    width: 100%;
+  }
+
+  .profile-content .sidebar-bio {
+    max-width: 46ch;
   }
 
   /* Contact links keep their rail position, right after the bio. */

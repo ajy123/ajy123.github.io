@@ -222,7 +222,9 @@ function ScrollableIntroFrame({
   });
 
   const style = {
-    "--intro-track": `${dials.trackVh}vh`,
+    // svh (stable small viewport) so the track can't re-length when the mobile
+    // URL bar collapses on first scroll — that mid-scroll relayout was the jump.
+    "--intro-track": `${dials.trackVh}svh`,
   } as CSSProperties;
 
   return (

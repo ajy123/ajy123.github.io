@@ -21,7 +21,9 @@ const MAX_ROTATION_DEG = 28;
 const SETTLE_WINDOW = 0.3;
 const SCRAMBLE_SEED = 7;
 const GHOST = "#e0e0e0";
-const INK = "#111111";
+// Softened from #111 to match --intro-ink on .intro-sentence (charcoal, not
+// pure black). Keep in sync with that CSS var.
+const INK = "#3a3a3a";
 const SETTLE_SPRING = { stiffness: 220, damping: 18 };
 
 type CharScatter = {

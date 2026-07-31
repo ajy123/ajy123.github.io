@@ -1067,15 +1067,16 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 .intro-track {
-  min-height: var(--intro-track, 350vh);
+  min-height: var(--intro-track, 350svh);
 }
 
 .intro-stage {
   position: sticky;
   top: 0;
   display: grid;
-  min-height: 100vh;
-  min-height: 100dvh;
+  /* svh matches --intro-track so the sticky frame never grows mid-scroll when
+     the mobile URL bar retracts. dvh/vh here re-centered on first scroll. */
+  min-height: 100svh;
   place-items: center;
   overflow: hidden;
   padding: 44px 24px;
@@ -1093,6 +1094,10 @@ a.card-eyebrow-flag .flag-verb {
 }
 
 .intro-sentence {
+  /* Hero-local ink, softened from the global --ink (#111) so the resolved
+     words read charcoal rather than pure black. Scoped here so the site token
+     stays #111 everywhere else. */
+  --intro-ink: #3a3a3a;
   max-width: 980px;
   margin: 0;
   color: var(--ghost);
@@ -1109,7 +1114,7 @@ a.card-eyebrow-flag .flag-verb {
 
 .intro-word {
   --fill: 0;
-  --fill-color: var(--ink);
+  --fill-color: var(--intro-ink, var(--ink));
   display: inline;
   color: transparent;
   background-image: linear-gradient(
@@ -1149,7 +1154,7 @@ a.card-eyebrow-flag .flag-verb {
 
 @keyframes introLeadInk {
   to {
-    color: var(--ink);
+    color: var(--intro-ink, var(--ink));
   }
 }
 
@@ -1565,8 +1570,15 @@ a.card-eyebrow-flag .flag-verb {
   }
 
   /* Drop the stretched table-of-contents leaders in the stacked range; the
-     desktop rail keeps them. Label + icon stay. */
-  .rail-link-leader {
+     desktop rail keeps them. Label + icon stay, falling back to the .rail-link
+     8px gap so each label sits right beside its icon (proximity).
+     A bare `.rail-link-leader { display: none }` (0-1-0) lost to the dotleader
+     variant's `.rail-footer-body[data-variant="dotleader"] .rail-link-leader
+     { display: block; flex: 1 }` (0-3-0), so the stretched leader survived on
+     mobile and shoved each icon to the far edge. This selector is byte-for-byte
+     that same 0-3-0 — equal specificity, so the later source position (here,
+     below the block rule) is what wins. */
+  .rail-footer-body[data-variant="dotleader"] .rail-link-leader {
     display: none;
   }
   .rail-contact {
@@ -1626,22 +1638,6 @@ a.card-eyebrow-flag .flag-verb {
     /* `balance` rags harder as the line count climbs; `pretty` avoids
        orphaned fragments (a lone "to the pixels.") on narrow measures. */
     text-wrap: pretty;
-  }
-
-  /* Subtle paper backing behind the whole CTA on mobile: even with the quieted
-     field, "Read on" sits directly on halftone dots with no mask pocket of its
-     own (the mask only clears the sentence). The same plate material the coarse
-     "Read on" chip already uses (--plate-fill / --shadow-soft), spread into a
-     soft pad + backdrop-blur, mutes the dots under the tap target so it lifts
-     off the field without reading as a hard UI chip. Desktop (fine, >860) is
-     untouched. */
-  .intro-cta--print.is-visible {
-    padding: 10px 20px;
-    background: var(--plate-fill);
-    border-radius: 14px;
-    box-shadow: 0 2px 12px var(--shadow-soft);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
   }
 }
 

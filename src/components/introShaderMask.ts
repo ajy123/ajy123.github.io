@@ -17,6 +17,11 @@ const DILATE_EM_MAX = 0.1;
 const DILATE_EM_MIN = 0.06;
 const FEATHER_EM_MAX = 0.14;
 const FEATHER_EM_MIN = 0.08;
+// Touch viewports wrap deep at tiny glyphs, where a softly-feathered pocket
+// edge reads as a fuzzy per-glyph outline. Tighten the feather floor on coarse
+// pointers only so mobile letter edges stay crisp; desktop keeps its softer
+// pocket (this floor only bites at small font sizes, i.e. the mobile clamp).
+const FEATHER_EM_MIN_COARSE = 0.06;
 const FONT_SIZE_MAX = 72;
 const FONT_SIZE_MIN = 40;
 
@@ -33,9 +38,10 @@ function drawWord(
   text: string,
   rect: DOMRect,
   stage: DOMRect,
+  scale: number,
 ) {
-  const x = rect.left - stage.left;
-  const y = (rect.top + rect.bottom) / 2 - stage.top;
+  const x = (rect.left - stage.left) * scale;
+  const y = ((rect.top + rect.bottom) / 2 - stage.top) * scale;
   context.strokeText(text, x, y);
   context.fillText(text, x, y);
 }
@@ -79,15 +85,30 @@ export function buildSentenceMask(
   const style = getComputedStyle(sentence);
   const fontSize = Number.parseFloat(style.fontSize);
   if (!Number.isFinite(fontSize) || fontSize <= 0) return null;
-  const font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
-  const dilate = fontSize * lerpEm(DILATE_EM_MIN, DILATE_EM_MAX, fontSize);
-  const feather = fontSize * lerpEm(FEATHER_EM_MIN, FEATHER_EM_MAX, fontSize);
 
-  // Keep the mask bitmap at a working resolution: 1x is plenty under the
-  // feather blur and keeps the data URL small.
+  // Rasterize the mask at the shader's own device-pixel resolution on touch
+  // viewports. A mask baked at 1 CSS px then stretched (mask-size:100% 100%)
+  // over a 2-3x phone gets upscaled, smearing every feathered letterform
+  // pocket into a fuzzy outline the halftone dots bleed through — the reported
+  // "font border". Matching the shader's min(dpr,2) makes the pockets land 1:1
+  // with device pixels, so edges stay crisp. Desktop stays at 1x (unchanged).
+  const coarse =
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse), (max-width: 860px)").matches;
+  const scale = coarse ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const featherEmMin = coarse ? FEATHER_EM_MIN_COARSE : FEATHER_EM_MIN;
+
+  const font = `${style.fontWeight} ${fontSize * scale}px ${style.fontFamily}`;
+  // dilate/feather keep their em ratios, then convert to the bitmap's device
+  // pixels via `scale` so the gutter and edge softness read identically.
+  const dilate =
+    fontSize * lerpEm(DILATE_EM_MIN, DILATE_EM_MAX, fontSize) * scale;
+  const feather =
+    fontSize * lerpEm(featherEmMin, FEATHER_EM_MAX, fontSize) * scale;
+
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(stage.width);
-  canvas.height = Math.round(stage.height);
+  canvas.width = Math.round(stage.width * scale);
+  canvas.height = Math.round(stage.height * scale);
   const context = canvas.getContext("2d");
   if (!context) return null;
 
@@ -111,11 +132,11 @@ export function buildSentenceMask(
   )) {
     const text = token.textContent ?? "";
     if (text.trim()) {
-      drawWord(glyphContext, text, token.getBoundingClientRect(), stage);
+      drawWord(glyphContext, text, token.getBoundingClientRect(), stage, scale);
     }
   }
   for (const { text, rect } of wordRectsFromTextNodes(sentence)) {
-    drawWord(glyphContext, text, rect, stage);
+    drawWord(glyphContext, text, rect, stage, scale);
   }
 
   // Opaque field with soft glyph holes: where the mask is transparent, the

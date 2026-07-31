@@ -6,6 +6,9 @@
 :root {
   --font-body: Figtree, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Masthead name face — a modern grotesque with character; holds from the
+     32px desktop rail up to the 60px stacked masthead. */
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
 
@@ -214,6 +217,11 @@ h1 {
    surface, so the name owns the page's top rank. */
 .profile-identity h1 {
   margin: 0;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Inline ink emphasis in the muted bio — the Caleb move: the phrase
@@ -1438,6 +1446,9 @@ a.card-eyebrow-flag .flag-verb {
     gap: 0;
     max-width: none;
     padding: 0 var(--gutter);
+    /* Framed column: faint side rules in the stacked range only. */
+    border-left: 1px solid var(--hairline-faint);
+    border-right: 1px solid var(--hairline-faint);
   }
 
   /* Flatten the rail wrappers AND the footer so the identity/bio block, the
@@ -1521,6 +1532,87 @@ a.card-eyebrow-flag .flag-verb {
   }
 }
 
+/* ===========================================================================
+   Direction 1 — editorial masthead (stacked range only, ≤860px).
+   Desktop (≥861) keeps the fixed rail untouched. The rail content was tuned
+   for a 280px column; stacked full-width it stretched — overlong dot-leaders,
+   a yawning company→year gap, an empty experience→contact seam. Here the name
+   goes masthead-scale over a hairline rule, bio + experience share two columns
+   on tablet, and the contact links drop their leaders for a tight inline row.
+   =========================================================================== */
+@media (max-width: 860px) {
+  /* The name is the masthead now: display face, big, one line. */
+  .profile-identity h1 {
+    font-size: clamp(38px, 8.5vw, 60px);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  /* Hairline under the name + role lockup — the editorial rule. */
+  .profile-identity .profile-role-line {
+    margin: 6px 0 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--hairline-faint);
+  }
+
+  /* Grid/gap owns the rhythm now, not the rail's tuned top-margins. */
+  .profile-identity .sidebar-bio,
+  .profile-identity .sidebar-story {
+    margin-top: 20px;
+  }
+  .profile-identity .rail-ledger {
+    margin-top: 20px;
+  }
+
+  /* Drop the stretched table-of-contents leaders in the stacked range; the
+     desktop rail keeps them. Label + icon stay. */
+  .rail-footer-body[data-variant="dotleader"] .rail-link-leader,
+  .rail-link-leader {
+    display: none;
+  }
+  .rail-contact {
+    margin-top: 28px;
+  }
+  .rail-link {
+    font-size: 13px;
+  }
+}
+
+/* Tablet: the width earns two columns — bio | experience side by side, so
+   neither stretches, and the contact links collapse to one inline row. */
+@media (min-width: 561px) and (max-width: 860px) {
+  .profile-identity {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    column-gap: 44px;
+    row-gap: 0;
+    align-items: start;
+  }
+  .profile-identity h1,
+  .profile-identity .profile-role-line {
+    grid-column: 1 / -1;
+  }
+  .profile-identity .sidebar-bio,
+  .profile-identity .sidebar-story {
+    grid-column: 1;
+    margin-top: 24px;
+  }
+  .profile-identity .rail-ledger {
+    grid-column: 2;
+    margin-top: 24px;
+  }
+
+  .rail-contact {
+    flex-flow: row wrap;
+    gap: 22px;
+    align-items: center;
+  }
+  .rail-link {
+    width: auto;
+  }
+}
+
 /* Mobile wraps the print sentence to 6-8 lines; desktop's tight 1.05
    line-height puts wrapped lines close enough to collide with the halftone
    mask's dilated+feathered per-glyph pockets (introShaderMask.ts), which
@@ -1541,13 +1633,43 @@ a.card-eyebrow-flag .flag-verb {
 
 /* Small phones: the 860px step's 40px ghost heading still crowds a ~375-390px
    viewport. Additive step-down only. */
+/* The short "Email" label rides only on the smallest breakpoint's one-line
+   footer; the full address shows everywhere else. */
+.rail-link-email-short {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .section-heading {
     font-size: 32px;
   }
 
+  /* Hold the framed column to a 390px reading width and centre it, so the
+     side hairlines frame the content instead of stretching to the screen
+     edges on the larger phones in this range. */
   .portfolio-shell {
+    max-width: 390px;
+    margin: 0 auto;
     padding: 0 var(--gutter);
+  }
+
+  /* Contact links on one line: labels + icons in a single row, and the email
+     collapses to a short "Email" so all three fit the phone measure. */
+  .rail-contact {
+    flex-flow: row wrap;
+    gap: 16px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .rail-link {
+    width: auto;
+    font-size: 13px;
+  }
+  .rail-link-email-long {
+    display: none;
+  }
+  .rail-link-email-short {
+    display: inline;
   }
 }
 

@@ -1630,14 +1630,16 @@ a.card-eyebrow-flag .flag-verb {
 
   /* Subtle paper backing behind the whole CTA on mobile: even with the quieted
      field, "Read on" sits directly on halftone dots with no mask pocket of its
-     own (the mask only clears the sentence). A translucent warm wash + soft
-     radius mutes the dots right under the tap target so it lifts off the field
-     without reading as a hard UI chip. Desktop (fine, >860) is untouched. */
+     own (the mask only clears the sentence). The same plate material the coarse
+     "Read on" chip already uses (--plate-fill / --shadow-soft), spread into a
+     soft pad + backdrop-blur, mutes the dots under the tap target so it lifts
+     off the field without reading as a hard UI chip. Desktop (fine, >860) is
+     untouched. */
   .intro-cta--print.is-visible {
     padding: 10px 20px;
-    background: rgba(250, 249, 245, 0.82);
+    background: var(--plate-fill);
     border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(31, 30, 29, 0.05);
+    box-shadow: 0 2px 12px var(--shadow-soft);
     -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
   }

@@ -1627,6 +1627,20 @@ a.card-eyebrow-flag .flag-verb {
        orphaned fragments (a lone "to the pixels.") on narrow measures. */
     text-wrap: pretty;
   }
+
+  /* Subtle paper backing behind the whole CTA on mobile: even with the quieted
+     field, "Read on" sits directly on halftone dots with no mask pocket of its
+     own (the mask only clears the sentence). A translucent warm wash + soft
+     radius mutes the dots right under the tap target so it lifts off the field
+     without reading as a hard UI chip. Desktop (fine, >860) is untouched. */
+  .intro-cta--print.is-visible {
+    padding: 10px 20px;
+    background: rgba(250, 249, 245, 0.82);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(31, 30, 29, 0.05);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
 }
 
 /* Small phones: the 860px step's 40px ghost heading still crowds a ~375-390px

@@ -73,6 +73,23 @@ export function ScrollIntroPrint({
   // classList.add) so it can't be reconciled away by a re-render mid-exit.
   const [committing, setCommitting] = useState(false);
 
+  // Mobile/touch viewports render the halftone at a "quiet" density (see
+  // u_quiet in SplashShader) so the resolved ink sentence stops swimming in
+  // dots. Desktop keeps the full field. Same breakpoint gate as the mask.
+  const [quietField, setQuietField] = useState(() =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse), (max-width: 860px)").matches
+      ? 1
+      : 0,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse), (max-width: 860px)");
+    const onChange = () => setQuietField(mq.matches ? 1 : 0);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   dialsRef.current = dials;
 
   const shaderWrapRef = useRef<HTMLDivElement | null>(null);
@@ -213,6 +230,7 @@ export function ScrollIntroPrint({
           enabled
           cellPx={dials.cellPx}
           speed={dials.speed}
+          quiet={quietField}
           drive={reducedMotion ? undefined : driveRef}
         />
       </div>

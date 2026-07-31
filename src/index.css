@@ -1490,7 +1490,6 @@ a.card-eyebrow-flag .flag-verb {
   /* Contact links keep their rail position, right after the bio. */
   .rail-contact {
     order: 2;
-    margin-top: 44px;
   }
 
   /* Stacked mobile layout: the desktop rail-clearing measure cap/centering
@@ -1567,7 +1566,6 @@ a.card-eyebrow-flag .flag-verb {
 
   /* Drop the stretched table-of-contents leaders in the stacked range; the
      desktop rail keeps them. Label + icon stay. */
-  .rail-footer-body[data-variant="dotleader"] .rail-link-leader,
   .rail-link-leader {
     display: none;
   }
@@ -1596,11 +1594,11 @@ a.card-eyebrow-flag .flag-verb {
   .profile-identity .sidebar-bio,
   .profile-identity .sidebar-story {
     grid-column: 1;
-    margin-top: 24px;
+    margin-top: var(--space-figure);
   }
   .profile-identity .rail-ledger {
     grid-column: 2;
-    margin-top: 24px;
+    margin-top: var(--space-figure);
   }
 
   .rail-contact {
@@ -1659,7 +1657,7 @@ a.card-eyebrow-flag .flag-verb {
     flex-flow: row wrap;
     gap: 16px;
     align-items: center;
-    margin-top: 24px;
+    margin-top: var(--space-figure);
   }
   .rail-link {
     width: auto;

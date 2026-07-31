@@ -1572,10 +1572,12 @@ a.card-eyebrow-flag .flag-verb {
   /* Drop the stretched table-of-contents leaders in the stacked range; the
      desktop rail keeps them. Label + icon stay, falling back to the .rail-link
      8px gap so each label sits right beside its icon (proximity).
-     Must out-specify the dotleader variant's own `[data-variant="dotleader"]
-     .rail-link-leader { display: block }` (0-2-0) — a bare `.rail-link-leader`
-     (0-1-0) loses to it and the stretched leader survived on mobile, shoving
-     each icon to the far edge. Match its specificity; later source order wins. */
+     A bare `.rail-link-leader { display: none }` (0-1-0) lost to the dotleader
+     variant's `.rail-footer-body[data-variant="dotleader"] .rail-link-leader
+     { display: block; flex: 1 }` (0-3-0), so the stretched leader survived on
+     mobile and shoved each icon to the far edge. This selector is byte-for-byte
+     that same 0-3-0 — equal specificity, so the later source position (here,
+     below the block rule) is what wins. */
   .rail-footer-body[data-variant="dotleader"] .rail-link-leader {
     display: none;
   }

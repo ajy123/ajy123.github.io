@@ -66,10 +66,10 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From search to a research assistant",
-    role: "Led design + part PM, team of 5",
+    role: "Design + PM",
     year: "2026",
     liveHref: "/deeli/",
-    linkLabel: "Read the case study",
+    linkLabel: "Read",
     flagLabel: "Case study",
     askHint: "Ask how we turn a search into a research assistant",
     askKind: "project",
@@ -127,10 +127,10 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From paper reports to live monitoring",
-    role: "Product designer · Data Monitor Team",
+    role: "Data Monitor Team",
     year: "2022",
     liveHref: "/swiftly/",
-    linkLabel: "Read the case study",
+    linkLabel: "Read",
     flagLabel: "Case study",
     askHint: "Ask about the Swiftly work",
     askKind: "project",
@@ -154,10 +154,10 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Service design",
     title: "Unifying campus maintenance",
-    role: "Product designer · Maintenance Team",
+    role: "Maintenance Team",
     year: "2018",
     liveHref: "/nyu/",
-    linkLabel: "Read the case study",
+    linkLabel: "Read",
     flagLabel: "Case study",
     askHint: "Ask about the NYU work",
     askKind: "project",
@@ -579,7 +579,15 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
                 aria-label={copied ? "Email copied" : "Copy email"}
                 onClick={copyEmail}
               >
-                <span className="rail-link-label">joannayen24@gmail.com</span>
+                <span className="rail-link-label rail-link-email-long">
+                  joannayen24@gmail.com
+                </span>
+                <span
+                  className="rail-link-label rail-link-email-short"
+                  aria-hidden="true"
+                >
+                  Email
+                </span>
                 <span className="rail-link-leader" aria-hidden="true" />
                 {copied ? <CheckGlyph /> : <CopyGlyph />}
               </button>

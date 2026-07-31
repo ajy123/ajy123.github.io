@@ -103,10 +103,15 @@ export function SelectionAskPill({
         requestCursorChatOpen();
       }}
     >
-      <span className="selection-ask-pill-key" aria-hidden="true">
-        /
+      {/* Same flush key+copy surface as ContextualAskHint (shared
+          .contextual-ask-* visual classes). The button wraps it only to own the
+          fixed positioning + ≥44px touch target; the surface stays ~20px tall. */}
+      <span className="contextual-ask-surface">
+        <span className="contextual-ask-key" aria-hidden="true">
+          /
+        </span>
+        <span className="contextual-ask-copy">Ask about this</span>
       </span>
-      <span className="selection-ask-pill-label">Ask about this</span>
     </button>
   );
 }

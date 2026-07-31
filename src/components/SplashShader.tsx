@@ -12,6 +12,7 @@ type SplashShaderProps = {
   cellPx?: number; // halftone cell size, in CSS px
   speed?: number; // animation time multiplier
   enabled?: boolean;
+  quiet?: number; // 0 = full desktop field, 1 = mobile quiet field
   drive?: RefObject<SplashShaderDrive | null>;
 };
 
@@ -113,6 +114,10 @@ uniform float u_originAmp;
 uniform float u_develop;
 uniform float u_grain;
 uniform float u_wellStrength;
+// 0 = full-density desktop field; 1 = mobile "quiet" field. Trims peak dot
+// density, tames the compose diagonal, and lifts the corner vignette so ink
+// text stops swimming in dots on small viewports. Desktop passes 0 → identical.
+uniform float u_quiet;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -209,7 +214,11 @@ void main() {
   fld += breathAmp * sin(t * breathHz);
 
   float compose = smoothstep(-1.4, 1.4, p.y * 0.80 - p.x * 0.50);
-  fld = mix(fld, fld * 0.82 + (1.0 - compose) * 0.38, 0.30);
+  // Mobile halves the compose boost + its mix weight so the top-right density
+  // cluster that ink text lands on stops going near-black.
+  float composeBoost = 0.38 * (1.0 - 0.5 * u_quiet);
+  float composeMix = 0.30 * (1.0 - 0.45 * u_quiet);
+  fld = mix(fld, fld * 0.82 + (1.0 - compose) * composeBoost, composeMix);
 
   vec2 wellSize = vec2(0.22, 0.12);
   float wellD = length((cellP - aoP) / wellSize);
@@ -227,6 +236,9 @@ void main() {
   float birthVis = smoothstep(birthR + 0.08, birthR - 0.08, length(p - aoP));
   fld *= birthVis;
   fld *= u_develop;
+  // Air out the peak field on mobile so every glyph keeps a paper gutter, not
+  // just the mask-cleared core.
+  fld *= (1.0 - 0.16 * u_quiet);
 
   fld = clamp(fld, 0.0, 1.0);
 
@@ -249,7 +261,7 @@ void main() {
   col += (vnoise(fc * 0.006) - 0.5) * 0.012 * vec3(1.0, 0.97, 0.92);
 
   float vig = smoothstep(1.08, 0.38, length(uv - 0.5));
-  col = mix(col * 0.94, col, vig);
+  col = mix(col * mix(0.94, 0.99, u_quiet), col, vig);
 
   float mPx = distance(fc, u_mouse) / minDim;
   col += vec3(1.00, 0.96, 0.90) * exp(-mPx * mPx * 26.0) * u_mAct * 0.06;
@@ -263,13 +275,14 @@ export function SplashShader({
   cellPx = 14,
   speed = 1,
   enabled = true,
+  quiet = 0,
   drive,
 }: SplashShaderProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Latest props read live inside the rAF loop so prop/panel changes apply
   // without rebuilding the GL context.
-  const propsRef = useRef({ paper, cellPx, speed, enabled, drive });
-  propsRef.current = { paper, cellPx, speed, enabled, drive };
+  const propsRef = useRef({ paper, cellPx, speed, enabled, quiet, drive });
+  propsRef.current = { paper, cellPx, speed, enabled, quiet, drive };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -345,6 +358,7 @@ export function SplashShader({
       develop: loc("u_develop"),
       grain: loc("u_grain"),
       wellStrength: loc("u_wellStrength"),
+      quiet: loc("u_quiet"),
     };
 
     const reduced = window.matchMedia(
@@ -439,6 +453,7 @@ export function SplashShader({
       gl.uniform1f(u.originAmp, driveState ? Math.max(0, driveState.originAmp) : 0);
       gl.uniform1f(u.develop, driveState ? clamp01(driveState.develop) : 1);
       gl.uniform1f(u.grain, driveState ? Math.max(0, driveState.grain) : 0);
+      gl.uniform1f(u.quiet, clamp01(propsRef.current.quiet ?? 0));
       gl.uniform1f(
         u.wellStrength,
         driveState ? clamp01(driveState.wellStrength) : 1,

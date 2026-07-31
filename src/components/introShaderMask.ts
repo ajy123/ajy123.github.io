@@ -15,6 +15,10 @@
 // both terms lerp down toward the mobile end of the font-size clamp.
 const DILATE_EM_MAX = 0.1;
 const DILATE_EM_MIN = 0.06;
+// Touch viewports keep a fatter paper gutter per glyph: at the mobile clamp the
+// sentence sits over the (quieted, but still present) halftone, and a wider
+// moat is what visually lifts ink words off the dots. Desktop keeps 0.06.
+const DILATE_EM_MIN_COARSE = 0.085;
 const FEATHER_EM_MAX = 0.14;
 const FEATHER_EM_MIN = 0.08;
 // Touch viewports wrap deep at tiny glyphs, where a softly-feathered pocket
@@ -97,12 +101,13 @@ export function buildSentenceMask(
     window.matchMedia("(pointer: coarse), (max-width: 860px)").matches;
   const scale = coarse ? Math.min(window.devicePixelRatio || 1, 2) : 1;
   const featherEmMin = coarse ? FEATHER_EM_MIN_COARSE : FEATHER_EM_MIN;
+  const dilateEmMin = coarse ? DILATE_EM_MIN_COARSE : DILATE_EM_MIN;
 
   const font = `${style.fontWeight} ${fontSize * scale}px ${style.fontFamily}`;
   // dilate/feather keep their em ratios, then convert to the bitmap's device
   // pixels via `scale` so the gutter and edge softness read identically.
   const dilate =
-    fontSize * lerpEm(DILATE_EM_MIN, DILATE_EM_MAX, fontSize) * scale;
+    fontSize * lerpEm(dilateEmMin, DILATE_EM_MAX, fontSize) * scale;
   const feather =
     fontSize * lerpEm(featherEmMin, FEATHER_EM_MAX, fontSize) * scale;
 

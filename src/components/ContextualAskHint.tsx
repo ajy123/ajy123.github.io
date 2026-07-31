@@ -95,6 +95,13 @@ function activateActionZone(hint: ActiveHint) {
   link?.click();
 }
 
+// Mirrors SelectionAskPill's test for a "live" selection so the two agree on
+// when the pill is showing.
+function hasLiveSelection() {
+  const selection = window.getSelection();
+  return !!selection && !selection.isCollapsed && selection.toString().trim() !== "";
+}
+
 function canShowHoverHints() {
   return (
     window.innerWidth > 860 &&
@@ -291,6 +298,10 @@ export function ContextualAskHint({
   const pendingElementRef = useRef<HTMLElement | null>(null);
   const visibleRef = useRef(false);
   const hoverCapableRef = useRef(false);
+  // A live text selection means SelectionAskPill's "Ask about this" pill is
+  // showing; that pill is the more specific affordance, so the hint yields —
+  // it hides and refuses to reveal while a non-collapsed selection exists.
+  const selectionActiveRef = useRef(false);
   const pointerRef = useRef<Point>({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
@@ -436,6 +447,8 @@ export function ContextualAskHint({
       if (event.pointerType === "touch" || isEditableTarget(event.target)) return;
       const element = getAskableElement(event.target);
       if (!element) return;
+      // Yield to the selection pill while text is selected.
+      if (selectionActiveRef.current) return;
       pointerRef.current = { x: event.clientX, y: event.clientY };
       scheduleShow(element);
     };
@@ -461,6 +474,8 @@ export function ContextualAskHint({
 
       const element = getAskableElement(event.target);
       if (!element) return;
+      // Yield to the selection pill while text is selected.
+      if (selectionActiveRef.current) return;
       show(element, { anchor: getFocusAnchor(element) });
     };
 
@@ -530,6 +545,14 @@ export function ContextualAskHint({
       }
     };
 
+    const onSelectionChange = () => {
+      const active = hasLiveSelection();
+      selectionActiveRef.current = active;
+      // Selection pill takes precedence: retract any shown hint the moment a
+      // selection appears.
+      if (active) hide();
+    };
+
     window.addEventListener("pointerover", onPointerOver);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerout", onPointerOut);
@@ -539,6 +562,7 @@ export function ContextualAskHint({
     window.addEventListener("resize", hide);
     window.addEventListener("keydown", onKeyDown, true);
     window.addEventListener(CURSOR_CHAT_OPENED_EVENT, hide);
+    document.addEventListener("selectionchange", onSelectionChange);
 
     return () => {
       window.removeEventListener("pointerover", onPointerOver);
@@ -550,6 +574,7 @@ export function ContextualAskHint({
       window.removeEventListener("resize", hide);
       window.removeEventListener("keydown", onKeyDown, true);
       window.removeEventListener(CURSOR_CHAT_OPENED_EVENT, hide);
+      document.removeEventListener("selectionchange", onSelectionChange);
     };
   }, [dials]);
 

@@ -170,9 +170,27 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       padding:clamp(2.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem); -webkit-font-smoothing:antialiased;
     }
     .sol-b *{box-sizing:border-box;}
-    .sol-b .wrap{max-width:64rem;margin:0 auto;}
+    .sol-b .wrap{max-width:none;margin:0;}
+    /* Two-column shell cloned from the current page's cs-shell/cs-side chrome
+       (src/case-study.css), na- prefixed so caseNav.ts keeps binding to the
+       old page's .cs-rail-col/.cs-side untouched. Same numbers: 280px rail,
+       64px gap, 1200px cap, fixed rail via static-position trick. */
+    .sol-b .na-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
+    .sol-b .na-rail-col{position:relative;width:280px;flex-shrink:0;}
+    .sol-b .na-content{flex:1 1 auto;min-width:0;}
+    .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
+    .sol-b .na-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
+    .sol-b .na-side-home:hover{color:var(--accent-deep);}
+    .sol-b .na-side ol{list-style:none;margin:4px 0 0;padding:0;}
+    .sol-b .na-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--faint);text-decoration:none;padding:5px 0;transition:color .15s ease;}
+    .sol-b .na-side ol a:hover{color:var(--ink);}
+    .sol-b .na-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
+    .sol-b .na-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+    @media (prefers-reduced-motion:reduce){.sol-b .na-side ol a{transition:none;}}
+    @media (max-width:999px){.sol-b .na-rail-col{display:none;}.sol-b .na-shell{display:block;}}
+    @media (min-width:1000px) and (max-width:1100px){.sol-b .na-rail-col,.sol-b .na-side{width:240px;}.sol-b .na-shell{gap:40px;}}
     .sol-b .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;}
-    .sol-b .measure{max-width:34em;}
+    .sol-b .measure{max-width:65ch;}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
     .sol-b .masthead{border-bottom:1.5px solid var(--ink);padding-bottom:1.4rem;margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
     .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
@@ -181,13 +199,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.6;color:#57534b;max-width:62ch;margin:.35rem 0 0;}
     .sol-b .act{display:grid;grid-template-columns:minmax(0,1fr);gap:1.4rem;padding:clamp(2rem,4.5vw,3.2rem) 0;border-top:1px solid var(--line);}
     .sol-b .act:first-of-type{border-top:none;padding-top:0;}
-    .sol-b .act-head{display:grid;gap:.7rem;}
-    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:18em;color:var(--ink);}
+    /* Act heads read as stretched section headers: full column width, wide
+       serif measure — not narrow stacked fragments. */
+    .sol-b .act-head{display:grid;gap:.7rem;width:100%;}
+    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:30ch;color:var(--ink);}
     .sol-b .act p{color:var(--muted);margin:0;}
+    /* Problem act: text block full width first, figures in a 2-up row below. */
     .sol-b .setup-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem;align-items:start;}
-    @media (min-width:860px){.sol-b .setup-grid{grid-template-columns:1.05fr .95fr;gap:2.4rem;}}
     .sol-b .move .exp-line{font-family:var(--serif);font-style:italic;font-size:.86rem;line-height:1.4;color:#57534b;margin:.35rem 0 .2rem;min-height:2.8em;}
     .sol-b .prb-stack{display:grid;gap:18px;}
+    @media (min-width:860px){.sol-b .prb-stack{grid-template-columns:1fr 1fr;}}
     .sol-b .pr-lbl{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;fill:#757169;}
     .sol-b .pr-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:20px;fill:#111111;}
     .sol-b .pr-node-lbl{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;fill:#57534b;}
@@ -206,13 +227,17 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .hinge h3{color:#fff;max-width:15em;}
     .sol-b .hinge h3 em{font-style:italic;color:#e6ddd4;}
     .sol-b .hinge p{color:#d6cdc4;}
-    .sol-b .hinge .turn{font-family:var(--serif);font-style:italic;font-size:1.06rem;color:#fff;border-left:2px solid var(--accent);padding-left:1rem;margin-top:1.1rem;}
-    .sol-b .hinge .turn b{font-style:normal;font-weight:600;}
-    /* moves */
+    /* turn — the bridge line, pulled out of the dark panel as a standalone
+       full-column callout between the research and the solution acts */
+    .sol-b .turn-callout{background:var(--raised);border-left:2px solid var(--accent);border-radius:0 var(--radius,4px) var(--radius,4px) 0;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,1.15rem+.5vw,1.45rem);line-height:1.5;color:var(--ink);padding:1.4rem 1.6rem;max-width:62ch;margin:0 0 clamp(2rem,4.5vw,3.2rem);}
+    .sol-b .turn-callout b{font-style:normal;font-weight:600;}
+    /* moves — the four cards double as prototype selectors for the Try-it area */
     .sol-b .moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius,4px);overflow:hidden;margin-top:.4rem;}
     @media (min-width:900px){.sol-b .moves{grid-template-columns:repeat(4,minmax(0,1fr));}}
-    .sol-b .move{background:var(--paper);padding:1.3rem 1.15rem 1.4rem;display:grid;gap:.7rem;align-content:start;transition:background .25s ease;}
+    .sol-b .move{background:var(--paper);padding:1.3rem 1.15rem 1.4rem;display:grid;gap:.7rem;align-content:start;transition:background .25s ease;cursor:pointer;}
     .sol-b .move:hover{background:var(--raised);}
+    .sol-b .move[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent);}
+    .sol-b .move[aria-pressed="true"] .mnum{color:var(--accent-deep);font-weight:600;}
     .sol-b .move .mnum{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--faint);}
     .sol-b .thumb{height:88px;border:1px solid var(--line-strong);border-radius:2px;background:var(--paper);overflow:hidden;}
     .sol-b .thumb svg{display:block;width:100%;height:100%;}
@@ -225,28 +250,41 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .metric .big{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(2.4rem,6vw,3.4rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
     .sol-b .metric .lede{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:.55rem 0 0;}
     .sol-b .metric p{margin:.5rem 0 0;font-size:.88rem;color:var(--muted);}
-    /* coda */
-    .sol-b .coda{margin-top:clamp(2.5rem,6vw,4rem);border-top:1.5px solid var(--ink);padding-top:1.8rem;display:grid;grid-template-columns:minmax(0,1fr);gap:1.2rem 2.4rem;}
-    @media (min-width:760px){.sol-b .coda{grid-template-columns:.55fr 1.45fr;}}
-    .sol-b .coda .stat{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(1.8rem,4vw,2.4rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
-    .sol-b .coda .stat small{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:.55rem;font-variant-numeric:normal;}
-    .sol-b .coda p{color:var(--muted);margin:0 0 .7rem;}
-    .sol-b .coda p:last-child{margin-bottom:0;}
-    .sol-b .coda .pledge{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:1.02rem;}
+    /* post-launch closing line (the coda now uses the standard .act pattern) */
+    .sol-b .pledge{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:1.02rem;}
     .sol-b a:focus-visible,.sol-b .move:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
     .sol-b .reveal{opacity:0;transform:translateY(12px);animation:sol-b-in .7s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes sol-b-in{to{opacity:1;transform:none;}}
     @media (prefers-reduced-motion:reduce){.sol-b .reveal{animation:none;opacity:1;transform:none;} .sol-b .move{transition:none;}}
-    /* toc &mdash; compact mono section index under the masthead */
-    .sol-b .toc{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.55rem;row-gap:.4rem;margin:calc(-1*clamp(1.5rem,4vw,2.8rem)) 0 clamp(2rem,4.5vw,3.2rem);}
-    .sol-b .toc a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#757169;text-decoration:none;transition:color .18s ease;}
-    .sol-b .toc a:hover{color:#f44800;}
-    .sol-b .toc .toc-sep{font-family:var(--mono);font-size:11px;color:var(--line-strong);}
     .sol-b [id^="ns-"]{scroll-margin-top:3.5rem;}
-    /* try-it &mdash; cloned live prototypes stacked */
+    /* try-it &mdash; swap container: one cloned prototype visible at a time,
+       chosen by the solution cards above */
     .sol-b .try-stack{display:grid;gap:1.5rem;max-width:680px;margin-top:.4rem;}
+    .sol-b .try-stack > .na-proto-off{display:none !important;}
+    /* outcome charts &mdash; behavior flip + usage growth, side by side wide */
+    .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:start;margin-top:.4rem;}
+    @media (min-width:1000px){.sol-b .na-charts{grid-template-columns:1fr 1fr;gap:1.6rem;}}
     /* na-flip &mdash; behavior-flip bar chart cloned from the current page's impact section */
-    .sol-b .na-flip{margin:.4rem 0 0;max-width:680px;}
+    .sol-b .na-flip{margin:0;}
+    /* na-usage &mdash; week-over-week usage columns cloned from the current
+       page's #anchor-heatmap (+220% queries per active day) */
+    .sol-b .na-usage{margin:0;}
+    .sol-b .na-us-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
+    .sol-b .na-us-panel{background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;}
+    .sol-b .na-us-delta{flex:1 1 140px;min-width:0;}
+    .sol-b .na-us-delta-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);margin:0 0 10px;}
+    .sol-b .na-us-delta-label{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0;max-width:24ch;}
+    .sol-b .na-us-cols{flex:0 0 auto;display:flex;gap:20px;align-items:flex-end;box-shadow:0 1px 0 var(--line-strong);}
+    .sol-b .na-us-col{display:flex;flex-direction:column;align-items:center;width:60px;}
+    .sol-b .na-us-col-zone{height:148px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;}
+    .sol-b .na-us-col-pct{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:700;color:var(--ink);}
+    .sol-b .na-us-col-bar{width:40px;border-radius:3px 3px 0 0;background:var(--muted);transform-origin:bottom;animation:na-us-grow .55s cubic-bezier(0.23,1,0.32,1) both;animation-delay:var(--d,0ms);}
+    .sol-b .na-us-col-bar--pilot{background:var(--line-strong);}
+    .sol-b .na-us-col-bar--live{background:var(--accent);}
+    .sol-b .na-us-col-name{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-top:9px;text-align:center;line-height:1.35;}
+    .sol-b .na-us-caption{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--faint);text-align:center;line-height:1.55;margin:16px 0 0;}
+    @keyframes na-us-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+    @media (prefers-reduced-motion:reduce){.sol-b .na-us-col-bar{animation:none !important;transform:none !important;}}
     .sol-b .na-fl-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
     .sol-b .na-fl-figure{background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
     .sol-b .na-fl-bar-row + .na-fl-bar-row{margin-top:26px;}
@@ -270,21 +308,27 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-fl-row-2 .na-fl-seg-nl{animation-delay:250ms;}
     @media (prefers-reduced-motion:reduce){.sol-b .na-fl-seg{animation:none !important;transform:none !important;}}
   </style>
+  <div class="na-shell">
+  <div class="na-rail-col">
+  <nav class="na-side" aria-label="Story sections">
+    <a class="na-side-home" href="/">&larr; Joanna Yen</a>
+    <ol>
+      <li><a href="#ns-problem">The problem</a></li>
+      <li><a href="#ns-research">The research</a></li>
+      <li><a href="#ns-solution">The solution</a></li>
+      <li><a href="#ns-outcome">Outcome</a></li>
+      <li><a href="#ns-method">How I work with AI</a></li>
+      <li><a href="#ns-postlaunch">Post-launch</a></li>
+    </ol>
+  </nav>
+  </div>
+  <div class="na-content">
   <div class="wrap">
     <header class="masthead">
       <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h2>
       <p class="dossier">Case Study&nbsp;/&nbsp;Deeli<br>Top-5 semiconductor foundry<br>Solo product designer &middot; 5-engineer build<br>Launched June 2026</p>
 <p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords &mdash; a change that started with one test the model couldn&rsquo;t pass.</p>
     </header>
-
-    <nav class="toc" aria-label="Story sections">
-      <a href="#ns-problem">The problem</a><span class="toc-sep" aria-hidden="true">&middot;</span>
-      <a href="#ns-research">The research</a><span class="toc-sep" aria-hidden="true">&middot;</span>
-      <a href="#ns-solution">The solution</a><span class="toc-sep" aria-hidden="true">&middot;</span>
-      <a href="#ns-outcome">Outcome</a><span class="toc-sep" aria-hidden="true">&middot;</span>
-      <a href="#ns-method">How I work with AI</a><span class="toc-sep" aria-hidden="true">&middot;</span>
-      <a href="#ns-postlaunch">Post-launch</a>
-    </nav>
 
     <article class="act" id="ns-problem" aria-labelledby="sol-b-act1">
       <div class="setup-grid">
@@ -309,7 +353,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <path d="M120,140 L178,140" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
         <rect class="pr-sealed" x="185" y="35" width="140" height="210" rx="4" fill="url(#pr-hatch-b)" stroke="#f44800" stroke-width="1.5"></rect>
         <text x="255" y="152" text-anchor="middle" class="pr-q">?</text>
-        </circle>
         <text x="255" y="266" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
         <path d="M325,140 L378,140" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
         <text x="430" y="105" text-anchor="middle" class="pr-lbl">Report</text>
@@ -347,7 +390,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <line x1="345" y1="145" x2="445" y2="145" stroke="#757169" stroke-width="1" opacity=".55"></line>
         <line x1="345" y1="163" x2="445" y2="163" stroke="#757169" stroke-width="1" opacity=".55"></line>
         <line x1="345" y1="181" x2="420" y2="181" stroke="#757169" stroke-width="1" opacity=".55"></line>
-        </circle>
       </svg>
     </div>
     <figcaption class="pr-caption">Different research jobs went in. The same report came out.</figcaption>
@@ -363,8 +405,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <div>
           <p class="eyebrow">The research</p>
           <h3 id="sol-b-act2">I put the model through the same research I put <em>people</em> through.</h3>
-<p class="measure">On the model: mock-real queries built from researcher interviews, watching where the model breaks. Before it answers, it decides who it&rsquo;s writing for. That call landed six times out of seven &mdash; the seventh question fit two different readers, and the model refused to guess. On people: what researchers expect from AI &mdash; to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
-          <p class="turn"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em> &mdash; the same first move a good support conversation makes.</p>
+<p class="measure">On the model: mock-real queries from researcher interviews, watching where it breaks. Before answering, it decides who it&rsquo;s writing for &mdash; right six times out of seven. The seventh fit two different readers, and the model refused to guess.</p>
+          <p class="measure">On people: what researchers expect from AI &mdash; to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
         </div>
         <div>
         <figure class="mtr" aria-label="Trace of the model thinking through one query: it reads the domain and analysis type, cannot tell who the answer is for, and asks instead of guessing">
@@ -478,19 +520,21 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       
     </article>
 
+    <p class="turn-callout"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em> &mdash; the same first move a good support conversation makes.</p>
+
     <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
       <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the steps below meet expectations researchers told us about &mdash; the second exists because of the one test the model couldn&rsquo;t pass.</p></div>
       
       <div class="moves">
-        <div class="move" tabindex="0"><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
-        <div class="move" tabindex="0"><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h4>Aim the report</h4><p>I made the product confirm who the report is for and what it should cover before researching.</p></div>
-        <div class="move" tabindex="0"><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h4>Show the agents</h4><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
-        <div class="move" tabindex="0"><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="true" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h4>Aim the report</h4><p>I made the product confirm who the report is for and what it should cover before researching.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h4>Show the agents</h4><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
       </div>
     </article>
 
     <article class="act" aria-labelledby="sol-b-try">
-      <div class="act-head"><p class="eyebrow">Try it</p><h3 id="sol-b-try">The clarification flow, live.</h3></div>
+      <div class="act-head"><p class="eyebrow">Try it</p><h3 id="sol-b-try">The question input, live.</h3><p class="measure">Pick a step above &mdash; each card loads its working prototype here.</p></div>
       <div class="try-stack">
 <section class="sol-widget" id="na-w1" data-ask-ignore="true">
   <style>
@@ -954,7 +998,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   })();
   </script>
 </section>
-<section class="sol-widget" id="na-w2" data-ask-ignore="true">
+<section class="sol-widget na-proto-off" id="na-w2" data-ask-ignore="true">
   <style>
     #na-w2{
       --d-primary:#132B24; --d-primary-container:#001610;
@@ -1508,6 +1552,1342 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   })();
   </script>
 </section>
+<section class="sol-widget na-proto-off" id="na-w3" data-ask-ignore="true">
+  <style>
+    #na-w3{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      max-width:none;
+      box-sizing:border-box;
+    }
+    #na-w3 *{ box-sizing:border-box; }
+
+    #na-w3 .w3-panel{
+      max-width:600px;
+      margin:0 auto;
+      background:var(--d-white);
+      border-radius:8px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:22px 24px 20px;
+    }
+
+    /* ---------- Header ---------- */
+    #na-w3 .w3-head{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+    }
+    #na-w3 .w3-head-text{
+      flex:1 1 auto;
+      min-width:0;
+    }
+    #na-w3 .w3-title{
+      margin:0 0 4px;
+      font-size:20px;
+      font-weight:600;
+      line-height:1.25;
+      letter-spacing:-0.005em;
+      color:var(--d-text);
+    }
+    #na-w3 .w3-echo{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-style:italic;
+      font-size:13px;
+      line-height:1.45;
+      color:var(--d-sub);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    #na-w3 .w3-stop{
+      flex:0 0 auto;
+      appearance:none;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:var(--d-r-sm);
+      padding:7px 14px;
+      font-family:var(--d-font);
+      font-size:12.5px;
+      font-weight:500;
+      color:var(--d-text);
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease);
+    }
+    #na-w3 .w3-stop:hover{ background:var(--d-surface-low); }
+    #na-w3 .w3-stop:focus-visible{ outline:1px solid var(--d-primary); outline-offset:2px; }
+    #na-w3 .w3-stop svg{ display:block; color:var(--d-text); }
+    #na-w3 .w3-stop .w3-ic-play{ display:none; }
+    #na-w3 .w3-stop.is-paused .w3-ic-stop{ display:none; }
+    #na-w3 .w3-stop.is-paused .w3-ic-play{ display:block; }
+    #na-w3 .w3-panel.is-finished .w3-stop{ visibility:hidden; }
+
+    /* ---------- Replay ---------- */
+    #na-w3 .w3-replay{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--d-primary);
+      font-family:var(--d-font);
+      font-size:12px;
+      font-weight:500;
+      letter-spacing:.02em;
+      padding:5px 8px;
+      /* +4 rather than -8 so the icon's left edge lands on the panel card's
+         left edge (measured: icon was 12px adrift of the card it controls). */
+      margin:14px 0 0 4px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w3 .w3-replay:hover{ background:var(--d-surface-low); }
+    #na-w3 .w3-replay:focus-visible{ outline:1px solid var(--d-primary); outline-offset:2px; }
+    #na-w3 .w3-replay.is-hidden{ display:none; }
+
+    /* ---------- Agent rows ---------- */
+    #na-w3 .w3-agents{
+      margin-top:6px;
+    }
+    #na-w3 .w3-agent{
+      padding:13px 0 12px;
+      border-top:1px solid var(--d-ghost);
+    }
+    #na-w3 .w3-agent:first-child{ border-top:none; }
+
+    #na-w3 .w3-agent-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:18px;
+    }
+
+    /* indicator: ring (pending) / pulsing dot (active) / check (done) */
+    #na-w3 .w3-ind{
+      position:relative;
+      flex:0 0 auto;
+      width:12px;
+      height:12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #na-w3 .w3-ind-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      border:1.5px solid var(--d-surface-high);
+      background:transparent;
+      transition:background var(--d-base) var(--d-ease), border-color var(--d-base) var(--d-ease);
+    }
+    #na-w3 .w3-agent.is-active .w3-ind-dot{
+      border-color:var(--d-primary);
+      background:var(--d-primary);
+      animation:na-w3-pulse 1.1s var(--d-ease) infinite;
+    }
+    @keyframes na-w3-pulse{
+      0%,100%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(0.72); opacity:0.55; }
+    }
+    #na-w3 .w3-ind-check{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--d-primary);
+      opacity:0;
+      transform:scale(.5);
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease);
+    }
+    #na-w3 .w3-agent.is-done .w3-ind-dot{ opacity:0; }
+    #na-w3 .w3-agent.is-done .w3-ind-check{ opacity:1; transform:scale(1); }
+
+    #na-w3 .w3-agent-name{
+      font-size:13.5px;
+      font-weight:600;
+      line-height:1.4;
+      color:var(--d-sub);
+      transition:color var(--d-base) var(--d-ease);
+    }
+    #na-w3 .w3-agent.is-active .w3-agent-name,
+    #na-w3 .w3-agent.is-done .w3-agent-name{
+      color:var(--d-text);
+    }
+
+    #na-w3 .w3-agent-sep,
+    #na-w3 .w3-agent-status{
+      font-size:12.5px;
+      line-height:1.4;
+      color:var(--d-sub);
+      font-variant-numeric:tabular-nums;
+      opacity:0;
+      transition:opacity var(--d-base) var(--d-ease);
+    }
+    #na-w3 .w3-agent.is-active .w3-agent-sep,
+    #na-w3 .w3-agent.is-active .w3-agent-status,
+    #na-w3 .w3-agent.is-done .w3-agent-sep,
+    #na-w3 .w3-agent.is-done .w3-agent-status{
+      opacity:1;
+    }
+
+    /* ---------- Drill-down sub-rows ---------- */
+    #na-w3 .w3-subs{ padding-left:22px; }
+    #na-w3 .w3-sub{
+      display:flex;
+      align-items:baseline;
+      gap:7px;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--d-sub);
+      font-variant-numeric:tabular-nums;
+      max-height:0;
+      overflow:hidden;
+      opacity:0;
+      transform:translateY(-2px);
+      transition:max-height var(--d-base) var(--d-ease), opacity var(--d-base) var(--d-ease),
+                 transform var(--d-base) var(--d-ease), margin-top var(--d-base) var(--d-ease);
+    }
+    #na-w3 .w3-sub.is-in{
+      max-height:36px;
+      opacity:1;
+      transform:translateY(0);
+      margin-top:7px;
+    }
+    #na-w3 .w3-sub-chev{
+      flex:0 0 auto;
+      color:var(--d-sub);
+      font-size:12px;
+    }
+    #na-w3 .w3-sub strong{
+      font-weight:600;
+      color:var(--d-text);
+      white-space:nowrap;
+    }
+
+    #na-w3 .w3-sr-status{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+
+    @media (max-width:560px){
+      #na-w3 .w3-replay{ min-height:44px; padding:10px 8px; }
+      #na-w3 .w3-stop{ min-height:44px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #na-w3 *{
+        transition:none !important;
+        animation:none !important;
+      }
+    }
+  </style>
+
+  <div class="w3-panel">
+    <div class="w3-head">
+      <div class="w3-head-text">
+        <h3 class="w3-title">TSMC Super Power Rail vs Intel PowerVia</h3>
+        <p class="w3-echo">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
+      </div>
+      <button type="button" class="w3-stop" aria-label="Stop generating">
+        <svg class="w3-ic-stop" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" rx="1.5" fill="currentColor"/></svg>
+        <svg class="w3-ic-play" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1.2v7.6c0 .5.55.8.98.53l6.1-3.8a.62.62 0 0 0 0-1.06l-6.1-3.8A.62.62 0 0 0 2 1.2Z" fill="currentColor"/></svg>
+        <span class="w3-stop-label">Stop</span>
+      </button>
+    </div>
+
+    <div class="w3-agents">
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Source Discovery Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="Indexed 824 sources"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>supaboard.ai</strong> &nbsp;found 4 supported claims</span></div>
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>TechInsights</strong> &nbsp;power-delivery brief matched</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Patent Analysis Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="Reviewed 301 patents"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>USPTO</strong> &nbsp;145 patents in cluster A</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Research Papers Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="312 preprints triaged"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>arXiv</strong> &nbsp;312 papers matched</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Market Intelligence Agent</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="124 signals mapped"></span>
+        </div>
+        <div class="w3-subs">
+          <div class="w3-sub"><span class="w3-sub-chev">&rsaquo;</span><span><strong>Market data</strong> &nbsp;124 signals</span></div>
+        </div>
+      </div>
+
+      <div class="w3-agent">
+        <div class="w3-agent-row">
+          <span class="w3-ind" aria-hidden="true">
+            <span class="w3-ind-dot"></span>
+            <span class="w3-ind-check"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </span>
+          <span class="w3-agent-name">Synthesis &amp; Review</span>
+          <span class="w3-agent-sep">&middot;</span>
+          <span class="w3-agent-status" data-done="32 sources selected from 824"></span>
+        </div>
+        <div class="w3-subs"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="w3-sr-status" id="na-w3-status" role="status" aria-live="polite"></p>
+
+  <button type="button" class="w3-replay" aria-label="Replay the generating sequence prototype">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M13.5 8a5.5 5.5 0 1 1-1.66-3.93" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M13.5 2.5v3.3h-3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Replay
+  </button>
+
+  <script>
+  (function(){
+    var root = document.getElementById('na-w3');
+    if(!root) return;
+
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var panel = root.querySelector('.w3-panel');
+    var stopBtn = root.querySelector('.w3-stop');
+    var stopLabel = root.querySelector('.w3-stop-label');
+    var replayBtn = root.querySelector('.w3-replay');
+    var srStatus = root.querySelector('#na-w3-status');
+    var agentEls = Array.prototype.slice.call(root.querySelectorAll('.w3-agent'));
+
+    var INIT_MS = 450;      /* Initializing… before Scanning… */
+    var SCAN_MS = 400;      /* Scanning… before first sub-row */
+    var SUB_MS = 400;       /* between drill-down rows */
+    var DONE_MS = 450;      /* after last sub-row before check */
+    var GAP_MS = 200;       /* between agents */
+    var END_MS = 300;       /* before end line */
+
+    /* --- sequencer: array of {d, fn} steps; pausable, fully resettable --- */
+    var seq = [];
+    var seqIndex = 0;
+    var pendingTimer = null;
+    var paused = false;
+    var running = false;
+    var played = false;
+    var observer = null;
+
+    function clearPending(){
+      if(pendingTimer !== null){
+        clearTimeout(pendingTimer);
+        pendingTimer = null;
+      }
+    }
+
+    function runNext(){
+      if(paused || seqIndex >= seq.length) return;
+      var step = seq[seqIndex];
+      pendingTimer = setTimeout(function(){
+        pendingTimer = null;
+        step.fn();
+        seqIndex++;
+        if(seqIndex >= seq.length){
+          running = false;
+        } else {
+          runNext();
+        }
+      }, step.d);
+    }
+
+    function setStatus(el, text){
+      el.querySelector('.w3-agent-status').textContent = text;
+    }
+
+    // The panel's progress is otherwise conveyed only by class changes and
+    // silently-injected text, so announce each agent as it finishes.
+    function announce(el, text){
+      if (!srStatus || !text) return;
+      var name = el.querySelector('.w3-agent-name');
+      srStatus.textContent = (name ? name.textContent + ' — ' : '') + text;
+    }
+
+    function buildSequence(){
+      seq = [];
+      agentEls.forEach(function(el, i){
+        var subs = Array.prototype.slice.call(el.querySelectorAll('.w3-sub'));
+        var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
+        var isLast = i === agentEls.length - 1;
+
+        seq.push({ d: i === 0 ? 300 : GAP_MS, fn: function(){
+          el.classList.add('is-active');
+          setStatus(el, 'Initializing…');
+        }});
+        seq.push({ d: INIT_MS, fn: function(){
+          setStatus(el, 'Scanning…');
+        }});
+        subs.forEach(function(sub, j){
+          seq.push({ d: j === 0 ? SCAN_MS : SUB_MS, fn: function(){
+            sub.classList.add('is-in');
+          }});
+        });
+        seq.push({ d: DONE_MS, fn: function(){
+          el.classList.remove('is-active');
+          el.classList.add('is-done');
+          setStatus(el, doneText);
+          announce(el, isLast ? doneText + ' — Completed' : doneText);
+        }});
+      });
+      seq.push({ d: END_MS, fn: function(){
+        panel.classList.add('is-finished');
+      }});
+    }
+
+    function resetVisualState(){
+      agentEls.forEach(function(el){
+        el.classList.remove('is-active', 'is-done');
+        setStatus(el, '');
+        Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
+          sub.classList.remove('is-in');
+        });
+      });
+      panel.classList.remove('is-finished');
+      stopBtn.classList.remove('is-paused');
+      stopLabel.textContent = 'Stop';
+      stopBtn.setAttribute('aria-label', 'Stop generating');
+    }
+
+    function play(){
+      clearPending();
+      paused = false;
+      running = true;
+      resetVisualState();
+      buildSequence();
+      seqIndex = 0;
+      runNext();
+    }
+
+    function renderEndStateInstant(){
+      clearPending();
+      running = false;
+      agentEls.forEach(function(el, i){
+        var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
+        el.classList.add('is-done');
+        setStatus(el, doneText);
+        announce(el, i === agentEls.length - 1 ? doneText + ' — Completed' : doneText);
+        Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
+          sub.classList.add('is-in');
+        });
+      });
+      panel.classList.add('is-finished');
+    }
+
+    if(reduceMotion){
+      renderEndStateInstant();
+      replayBtn.classList.add('is-hidden');
+      stopBtn.style.display = 'none';
+    } else {
+      resetVisualState();
+
+      if('IntersectionObserver' in window){
+        observer = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(entry.isIntersecting && !played){
+              played = true;
+              play();
+              observer.unobserve(panel);
+            }
+          });
+        }, { threshold: 0.4 });
+        observer.observe(panel);
+      } else {
+        played = true;
+        play();
+      }
+
+      stopBtn.addEventListener('click', function(){
+        if(!running && !paused) return;
+        if(paused){
+          paused = false;
+          stopBtn.classList.remove('is-paused');
+          stopLabel.textContent = 'Stop';
+          stopBtn.setAttribute('aria-label', 'Stop generating');
+          runNext();
+        } else {
+          paused = true;
+          clearPending();
+          stopBtn.classList.add('is-paused');
+          stopLabel.textContent = 'Resume';
+          stopBtn.setAttribute('aria-label', 'Resume generating');
+        }
+      });
+
+      replayBtn.addEventListener('click', function(){
+        played = true;
+        play();
+      });
+    }
+  })();
+  </script>
+</section>
+<section class="sol-widget na-proto-off" id="na-w4" data-ask-ignore="true">
+  <style>
+    #na-w4{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      max-width:none;
+      box-sizing:border-box;
+    }
+    #na-w4 *{ box-sizing:border-box; }
+
+    #na-w4 .na-w4-card{
+      position:relative;
+      max-width:600px;
+      margin:0 auto;
+      background:var(--d-white);
+      border-radius:var(--d-r-md);
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:24px;
+    }
+
+    /* Header row: title + echoed query left, status cluster right */
+    #na-w4 .na-w4-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+    }
+    #na-w4 .na-w4-head-main{
+      min-width:0;
+      flex:1;
+    }
+    #na-w4 .na-w4-title{
+      margin:0;
+      font-size:20px;
+      font-weight:600;
+      line-height:1.25;
+      letter-spacing:-0.005em;
+      color:var(--d-text);
+      text-align:left;
+    }
+    #na-w4 .na-w4-query{
+      margin:5px 0 0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-style:italic;
+      font-size:13px;
+      font-weight:400;
+      line-height:1.4;
+      color:var(--d-sub);
+      max-width:100%;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+    #na-w4 .na-w4-head-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+      padding-top:2px;
+    }
+    #na-w4 .na-w4-regen{
+      appearance:none;
+      -webkit-appearance:none;
+      border:none;
+      background:var(--d-surface-high);
+      color:var(--d-text);
+      border-radius:var(--d-r-sm);
+      padding:5px 12px;
+      font-family:var(--d-font);
+      font-size:12px;
+      font-weight:500;
+      line-height:1.3;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w4 .na-w4-regen:hover{
+      background:var(--d-surface-low);
+    }
+    #na-w4 .na-w4-regen:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Metadata row + hairline */
+    #na-w4 .na-w4-meta{
+      margin:10px 0 0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+    #na-w4 .na-w4-hairline{
+      margin:14px 0 0;
+      border-top:1px solid var(--d-ghost);
+    }
+
+    /* Section label */
+    #na-w4 .na-w4-sec-label{
+      margin:18px 0 0;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.04em;
+      line-height:1.3;
+      text-transform:uppercase;
+      color:var(--d-sub);
+    }
+
+    #na-w4 .na-w4-body{
+      margin:8px 0 0;
+      max-width:var(--measure-prose);
+      font-size:13px;
+      font-weight:400;
+      line-height:1.5;
+      color:var(--d-text);
+    }
+
+    /* Citation superscripts */
+    #na-w4 .na-w4-cite{
+      appearance:none;
+      -webkit-appearance:none;
+      position:relative;
+      background:none;
+      border:none;
+      padding:0 1px;
+      margin:0 1px;
+      font:inherit;
+      font-size:11px;
+      font-weight:500;
+      line-height:1;
+      vertical-align:super;
+      color:var(--d-primary);
+      cursor:pointer;
+      border-radius:2px;
+      transition:color var(--d-fast) var(--d-ease), background-color var(--d-fast) var(--d-ease);
+    }
+    /* The superscript itself stays 6x11px; this gives the finger a 24px target
+       without changing the mark or the line height around it. */
+    #na-w4 .na-w4-cite::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:24px;
+      height:24px;
+      transform:translate(-50%,-50%);
+    }
+    #na-w4 .na-w4-cite:hover{
+      color:var(--d-primary-container);
+      background:var(--d-surface-low);
+    }
+    #na-w4 .na-w4-cite:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Drill-down entity term */
+    #na-w4 .na-w4-term{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      border-bottom:1px solid var(--d-ghost);
+      padding:0;
+      margin:0;
+      font:inherit;
+      font-style:italic;
+      color:inherit;
+      cursor:pointer;
+      border-radius:2px 2px 0 0;
+      transition:color var(--d-fast) var(--d-ease), background-color var(--d-fast) var(--d-ease), border-color var(--d-fast) var(--d-ease);
+    }
+    #na-w4 .na-w4-term:hover,
+    #na-w4 .na-w4-term[aria-expanded="true"]{
+      color:var(--d-primary);
+      border-bottom-color:var(--d-primary);
+      background:var(--d-surface-low);
+    }
+    #na-w4 .na-w4-term:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+
+    /* Eval strip */
+    #na-w4 .na-w4-eval{
+      margin:22px 0 0;
+      padding-top:18px;
+      border-top:1px solid var(--d-ghost);
+    }
+    #na-w4 .na-w4-eval-heading{
+      display:block;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      color:var(--d-sub);
+      margin-bottom:10px;
+      text-transform:uppercase;
+    }
+    #na-w4 .na-w4-eval-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+    #na-w4 .na-w4-eval-item{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:6px;
+    }
+    #na-w4 .na-w4-bar{
+      width:60px;
+      height:4px;
+      border-radius:2px;
+      background:var(--d-surface-high);
+      overflow:hidden;
+    }
+    #na-w4 .na-w4-bar span{
+      display:block;
+      height:100%;
+      border-radius:2px;
+      background:var(--d-primary);
+    }
+    #na-w4 .na-w4-eval-name{
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+
+    /* Shared popover base (citations) */
+    #na-w4 .na-w4-pop{
+      position:absolute;
+      top:0;
+      left:0;
+      width:max-content;
+      max-width:250px;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:var(--d-r-md);
+      /* Sits on a white card that already carries a 0.07 shadow, so it needs a
+         hairline and a heavier cast to read as a layer above rather than part of it. */
+      box-shadow:0 12px 32px -8px rgba(25,28,29,0.18), 0 4px 12px -4px rgba(25,28,29,0.10);
+      padding:12px 14px;
+      z-index:5;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateY(4px) scale(0.98);
+      transform-origin:center bottom;
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), visibility var(--d-fast);
+    }
+    #na-w4 .na-w4-pop[data-placement="bottom"]{
+      transform-origin:center top;
+    }
+    #na-w4 .na-w4-pop.is-open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+    #na-w4 .na-w4-pop::after{
+      content:"";
+      position:absolute;
+      left:var(--arrow-left, 20px);
+      width:9px;
+      height:9px;
+      background:var(--d-white);
+      transform:translateX(-50%) rotate(45deg);
+    }
+    #na-w4 .na-w4-pop[data-placement="top"]::after{
+      bottom:-5px;
+      border-right:1px solid var(--d-ghost);
+      border-bottom:1px solid var(--d-ghost);
+      box-shadow:3px 3px 6px -2px rgba(25,28,29,0.10);
+    }
+    #na-w4 .na-w4-pop[data-placement="bottom"]::after{
+      top:-5px;
+      border-left:1px solid var(--d-ghost);
+      border-top:1px solid var(--d-ghost);
+      box-shadow:-3px -3px 6px -2px rgba(25,28,29,0.10);
+    }
+
+    #na-w4 .na-w4-pop-chip{
+      display:inline-block;
+      background:var(--d-surface-low);
+      color:var(--d-text);
+      border-radius:var(--d-r-pill);
+      padding:3px 10px;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      margin-bottom:8px;
+    }
+    #na-w4 .na-w4-pop-title{
+      margin:0 0 4px;
+      font-size:13px;
+      font-weight:600;
+      line-height:1.4;
+      color:var(--d-text);
+    }
+    #na-w4 .na-w4-pop-sub{
+      margin:0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    /* Drill-down popover */
+    #na-w4 .na-w4-drill{
+      position:absolute;
+      top:0;
+      left:0;
+      width:300px;
+      max-width:calc(100% - 16px);
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:10px;
+      /* Sits above the citation popover in stacking order and can extend past
+         the panel onto the white page, so it needs at least as much lift. */
+      box-shadow:0 16px 40px -10px rgba(25,28,29,0.22), 0 6px 14px -5px rgba(25,28,29,0.12);
+      padding:6px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      z-index:6;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateY(4px) scale(0.98);
+      transform-origin:center bottom;
+      transition:opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), visibility var(--d-fast);
+    }
+    #na-w4 .na-w4-drill[data-placement="bottom"]{
+      transform-origin:center top;
+    }
+    #na-w4 .na-w4-drill.is-open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      transform:translateY(0) scale(1);
+    }
+    #na-w4 .na-w4-drill-head{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 8px 8px;
+      border-bottom:1px solid var(--d-ghost);
+      margin-bottom:2px;
+    }
+    #na-w4 .na-w4-drill-kind{
+      font-size:10px;
+      font-weight:500;
+      line-height:1;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--d-sub);
+      padding:4px 6px;
+      border-radius:var(--d-r-pill);
+      background:var(--d-surface-low);
+      flex-shrink:0;
+    }
+    #na-w4 .na-w4-drill-name{
+      font-size:13px;
+      font-weight:600;
+      line-height:1.2;
+      color:var(--d-text);
+      flex:1;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    #na-w4 .na-w4-drill-close{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      width:22px;
+      height:22px;
+      border-radius:5px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--d-sub);
+      flex-shrink:0;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #na-w4 .na-w4-drill-close:hover{
+      background:var(--d-surface-low);
+      color:var(--d-text);
+    }
+    #na-w4 .na-w4-drill-close:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:1px;
+    }
+    #na-w4 .na-w4-drill-action{
+      appearance:none;
+      -webkit-appearance:none;
+      background:none;
+      border:none;
+      padding:10px;
+      border-radius:var(--d-r-sm);
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      cursor:pointer;
+      text-align:left;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w4 .na-w4-drill-action:hover{
+      background:var(--d-surface-low);
+    }
+    #na-w4 .na-w4-drill-action:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:-1px;
+    }
+    #na-w4 .na-w4-drill-glyph{
+      width:26px;
+      height:26px;
+      border-radius:var(--d-r-sm);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--d-surface-low);
+      color:var(--d-sub);
+      flex-shrink:0;
+      margin-top:1px;
+    }
+    #na-w4 .na-w4-drill-text{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width:0;
+      flex:1;
+    }
+    #na-w4 .na-w4-drill-title{
+      font-size:13px;
+      font-weight:500;
+      line-height:1.35;
+      color:var(--d-text);
+    }
+    #na-w4 .na-w4-drill-title .na-w4-drill-strong{
+      font-weight:600;
+    }
+    #na-w4 .na-w4-drill-sub{
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    @media (max-width:560px){
+      /* 32px was leaking ~6px into the lines above and below, so taps on
+         ordinary prose opened the popover. 24px still meets the 24x24 minimum. */
+      #na-w4 .na-w4-cite::before{ width:24px; height:24px; }
+      /* Relative to the card, not a flat value — at 320 the card is only 184px
+         and a fixed 200px cap overhangs its edge.
+         calc(100% - 16px) exactly consumed the 8px clamp margins in position(),
+         which pinned every popover to the same left edge. Leave headroom so it
+         can still track the citation it belongs to. */
+      #na-w4 .na-w4-pop{ max-width:min(200px, calc(100% - 32px)); }
+      #na-w4 .na-w4-drill{ max-width:min(200px, calc(100% - 16px)); }
+      #na-w4 .na-w4-regen{ min-height:44px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #na-w4 .na-w4-cite,
+      #na-w4 .na-w4-term,
+      #na-w4 .na-w4-regen,
+      #na-w4 .na-w4-drill-close,
+      #na-w4 .na-w4-drill-action,
+      #na-w4 .na-w4-pop,
+      #na-w4 .na-w4-drill{
+        transition:none !important;
+        animation:none !important;
+      }
+      #na-w4 .na-w4-pop.is-open,
+      #na-w4 .na-w4-drill.is-open{
+        transform:none;
+      }
+    }
+  </style>
+
+  <div class="na-w4-card">
+    <div class="na-w4-head">
+      <div class="na-w4-head-main">
+        <h2 class="na-w4-title">TSMC Super Power Rail vs Intel PowerVia</h2>
+        <p class="na-w4-query">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
+      </div>
+      <div class="na-w4-head-actions">
+        <button type="button" class="na-w4-regen" aria-label="Regenerate report">Regenerate</button>
+      </div>
+    </div>
+
+    <p class="na-w4-meta">Generated Jul 2026 &middot; 32 sources &middot; ~12 min read</p>
+    <div class="na-w4-hairline" role="presentation"></div>
+
+    <p class="na-w4-sec-label">Power Delivery Architecture</p>
+    <p class="na-w4-body">
+      Both approaches move <button type="button" class="na-w4-term" id="na-w4-term-bpd" aria-expanded="false" aria-controls="na-w4-drill" aria-label="Drill down on backside power delivery">power delivery to the wafer backside</button>, but they diverge on where the transition happens. Intel's PowerVia routes power through nano-TSVs beneath the transistor layer<button type="button" class="na-w4-cite" data-cite="1" aria-expanded="false" aria-controls="na-w4-pop-1" aria-label="Citation 1, view source">1</button>, while TSMC's Super Power Rail connects the backside network directly to source/drain contacts<button type="button" class="na-w4-cite" data-cite="2" aria-expanded="false" aria-controls="na-w4-pop-2" aria-label="Citation 2, view source">2</button>. The denser scheme trades manufacturing complexity for IR-drop headroom<button type="button" class="na-w4-cite" data-cite="3" aria-expanded="false" aria-controls="na-w4-pop-3" aria-label="Citation 3, view source">3</button>.
+    </p>
+
+    <div id="na-w4-pop-1" class="na-w4-pop" data-pop="1" role="tooltip" aria-hidden="true">
+      <span class="na-w4-pop-chip">USPTO</span>
+      <p class="na-w4-pop-title">US-2024-0113742-A1: Backside power delivery with through-silicon vias</p>
+      <p class="na-w4-pop-sub">Filed by Intel Corp &middot; cited in &sect;2</p>
+    </div>
+    <div id="na-w4-pop-2" class="na-w4-pop" data-pop="2" role="tooltip" aria-hidden="true">
+      <span class="na-w4-pop-chip">arXiv</span>
+      <p class="na-w4-pop-title">2406.08871: Super Power Rail integration for N2 nodes</p>
+      <p class="na-w4-pop-sub">TSMC symposium paper &middot; cited in &sect;2</p>
+    </div>
+    <div id="na-w4-pop-3" class="na-w4-pop" data-pop="3" role="tooltip" aria-hidden="true">
+      <span class="na-w4-pop-chip">Market data</span>
+      <p class="na-w4-pop-title">TechInsights power-delivery brief, Q2 2026</p>
+      <p class="na-w4-pop-sub">cited in &sect;2, &sect;4</p>
+    </div>
+
+    <div id="na-w4-drill" class="na-w4-drill" role="dialog" aria-label="Drill down on backside power delivery" aria-hidden="true">
+      <div class="na-w4-drill-head">
+        <span class="na-w4-drill-kind">Technology</span>
+        <span class="na-w4-drill-name">backside power delivery</span>
+        <button type="button" class="na-w4-drill-close" aria-label="Close">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <button type="button" class="na-w4-drill-action" data-drill-action="standalone">
+        <span class="na-w4-drill-glyph" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+            <path d="m10.5 10.5 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="na-w4-drill-text">
+          <span class="na-w4-drill-title">Research <span class="na-w4-drill-strong">backside power delivery</span></span>
+          <span class="na-w4-drill-sub">Open a fresh report on this technology with no prior context.</span>
+        </span>
+      </button>
+      <button type="button" class="na-w4-drill-action" data-drill-action="context">
+        <span class="na-w4-drill-glyph" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </span>
+        <span class="na-w4-drill-text">
+          <span class="na-w4-drill-title"><span class="na-w4-drill-strong">backside power delivery</span> in context of <span class="na-w4-drill-strong">Super Power Rail vs PowerVia</span></span>
+          <span class="na-w4-drill-sub">Drill down using the current report as scope.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+
+  <script>
+  (function(){
+    var root = document.getElementById('na-w4');
+    if(!root) return;
+
+    var card = root.querySelector('.na-w4-card');
+    var buttons = Array.prototype.slice.call(root.querySelectorAll('.na-w4-cite'));
+    var term = root.querySelector('.na-w4-term');
+    var drill = root.querySelector('.na-w4-drill');
+    var popovers = {};
+
+    buttons.forEach(function(btn){
+      var id = btn.getAttribute('data-cite');
+      popovers[id] = root.querySelector('.na-w4-pop[data-pop="' + id + '"]');
+    });
+
+    var lockedId = null;   // click-locked citation
+    var openId = null;     // currently visible citation
+    var drillOpen = false;
+
+    var hoverCapable = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    var hoverOpenTimer = null;
+    var hoverCloseTimer = null;
+
+    function clearHoverOpenTimer(){
+      if (hoverOpenTimer !== null) { clearTimeout(hoverOpenTimer); hoverOpenTimer = null; }
+    }
+    function clearHoverCloseTimer(){
+      if (hoverCloseTimer !== null) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
+    }
+
+    function position(anchor, pop){
+      var cardRect = card.getBoundingClientRect();
+      var aRect = anchor.getBoundingClientRect();
+
+      var pw = pop.offsetWidth;
+      var ph = pop.offsetHeight;
+
+      var left = (aRect.left - cardRect.left) + (aRect.width / 2) - (pw / 2);
+      var minLeft = 8;
+      var maxLeft = cardRect.width - pw - 8;
+      if (maxLeft < minLeft) { maxLeft = minLeft; }
+      left = Math.max(minLeft, Math.min(left, maxLeft));
+
+      var placeAbove = true;
+      var top = (aRect.top - cardRect.top) - ph - 10;
+      if (top < 8) {
+        placeAbove = false;
+        top = (aRect.bottom - cardRect.top) + 10;
+      }
+
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      pop.setAttribute('data-placement', placeAbove ? 'top' : 'bottom');
+
+      var arrowLeft = (aRect.left - cardRect.left) + (aRect.width / 2) - left;
+      arrowLeft = Math.max(12, Math.min(arrowLeft, pw - 12));
+      pop.style.setProperty('--arrow-left', arrowLeft + 'px');
+    }
+
+    /* ---- Citation popovers ---- */
+    function show(id, btn){
+      if (drillOpen) { closeDrill(); }
+      if (openId && openId !== id) { hide(openId); }
+      var pop = popovers[id];
+      if (!pop) return;
+      position(btn, pop);
+      pop.classList.add('is-open');
+      pop.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+      openId = id;
+    }
+
+    function hide(id){
+      var pop = popovers[id];
+      var btn = root.querySelector('.na-w4-cite[data-cite="' + id + '"]');
+      if (pop) {
+        pop.classList.remove('is-open');
+        pop.setAttribute('aria-hidden', 'true');
+      }
+      if (btn) { btn.setAttribute('aria-expanded', 'false'); }
+      if (openId === id) { openId = null; }
+    }
+
+    /* ---- Drill-down popover ---- */
+    function openDrill(){
+      Object.keys(popovers).forEach(hide);
+      lockedId = null;
+      position(term, drill);
+      drill.classList.add('is-open');
+      drill.setAttribute('aria-hidden', 'false');
+      term.setAttribute('aria-expanded', 'true');
+      drillOpen = true;
+    }
+
+    function closeDrill(){
+      drill.classList.remove('is-open');
+      drill.setAttribute('aria-hidden', 'true');
+      term.setAttribute('aria-expanded', 'false');
+      drillOpen = false;
+    }
+
+    function hideAll(){
+      Object.keys(popovers).forEach(hide);
+      lockedId = null;
+      if (drillOpen) { closeDrill(); }
+    }
+
+    buttons.forEach(function(btn){
+      var id = btn.getAttribute('data-cite');
+
+      btn.addEventListener('mouseenter', function(){
+        if (hoverCapable) {
+          clearHoverCloseTimer();
+          clearHoverOpenTimer();
+          hoverOpenTimer = setTimeout(function(){
+            hoverOpenTimer = null;
+            show(id, btn);
+          }, 120);
+        } else {
+          show(id, btn);
+        }
+      });
+      btn.addEventListener('mouseleave', function(){
+        if (hoverCapable) {
+          clearHoverOpenTimer();
+          if (lockedId === id) return;
+          clearHoverCloseTimer();
+          hoverCloseTimer = setTimeout(function(){
+            hoverCloseTimer = null;
+            if (lockedId !== id) { hide(id); }
+          }, 200);
+        } else {
+          if (lockedId !== id) { hide(id); }
+        }
+      });
+      btn.addEventListener('focus', function(){
+        show(id, btn);
+      });
+      btn.addEventListener('blur', function(){
+        if (lockedId !== id) { hide(id); }
+      });
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        clearHoverOpenTimer();
+        clearHoverCloseTimer();
+        if (lockedId === id) {
+          lockedId = null;
+          hide(id);
+        } else {
+          if (lockedId) { hide(lockedId); }
+          lockedId = id;
+          show(id, btn);
+        }
+      });
+    });
+
+    if (hoverCapable) {
+      Object.keys(popovers).forEach(function(id){
+        var pop = popovers[id];
+        if (!pop) return;
+        pop.addEventListener('mouseenter', function(){
+          clearHoverCloseTimer();
+        });
+        pop.addEventListener('mouseleave', function(){
+          clearHoverOpenTimer();
+          if (lockedId === id) return;
+          hide(id);
+        });
+      });
+    }
+
+    if (term && drill) {
+      term.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (drillOpen) { closeDrill(); } else { openDrill(); }
+      });
+
+      drill.querySelector('.na-w4-drill-close').addEventListener('click', function(e){
+        e.stopPropagation();
+        closeDrill();
+        term.focus();
+      });
+
+      Array.prototype.forEach.call(drill.querySelectorAll('.na-w4-drill-action'), function(action){
+        action.addEventListener('click', function(e){
+          e.stopPropagation();
+          closeDrill();
+          term.focus();
+        });
+      });
+    }
+
+    document.addEventListener('click', function(e){
+      if (!root.contains(e.target)) {
+        hideAll();
+        return;
+      }
+      if (!e.target.closest('.na-w4-cite') &&
+          !e.target.closest('.na-w4-pop') &&
+          !e.target.closest('.na-w4-term') &&
+          !e.target.closest('.na-w4-drill')) {
+        hideAll();
+      }
+    });
+
+    root.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        var wasDrill = drillOpen;
+        hideAll();
+        if (wasDrill && term) { term.focus(); }
+      }
+    });
+
+    window.addEventListener('resize', function(){
+      if (openId) {
+        var btn = root.querySelector('.na-w4-cite[data-cite="' + openId + '"]');
+        var pop = popovers[openId];
+        if (btn && pop) { position(btn, pop); }
+      }
+      if (drillOpen) { position(term, drill); }
+    });
+  })();
+  </script>
+</section>
       </div>
     </article>
 
@@ -1517,6 +2897,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
         <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask: within two weeks of launch, 70% of live queries were real questions instead of keywords &mdash; the behavior the redesign was built to earn.</p></div>
       </div>
+      <div class="na-charts">
       <figure class="na-flip">
         <figcaption class="na-fl-eyebrow">Natural language became the default</figcaption>
         <div class="na-fl-figure">
@@ -1532,6 +2913,39 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
           </div>
         </div>
       </figure>
+      <figure class="na-usage">
+        <figcaption class="na-us-eyebrow">Usage climbed week over week</figcaption>
+        <div class="na-us-panel">
+          <div class="na-us-delta">
+            <p class="na-us-delta-value tnum">+220%</p>
+            <p class="na-us-delta-label">Average queries per active day, internal pilot to launch week&nbsp;2.</p>
+          </div>
+          <div class="na-us-cols" role="img" aria-label="Average queries per active day indexed to launch week 2: internal pilot 31 percent, launch week 1 53 percent, launch week 2 100 percent">
+            <div class="na-us-col">
+              <div class="na-us-col-zone">
+                <span class="na-us-col-pct">31%</span>
+                <div class="na-us-col-bar na-us-col-bar--pilot" style="height:46px;--d:0ms"></div>
+              </div>
+              <span class="na-us-col-name">Internal<br>pilot</span>
+            </div>
+            <div class="na-us-col">
+              <div class="na-us-col-zone">
+                <span class="na-us-col-pct">53%</span>
+                <div class="na-us-col-bar" style="height:78px;--d:110ms"></div>
+              </div>
+              <span class="na-us-col-name">Launch<br>wk 1</span>
+            </div>
+            <div class="na-us-col">
+              <div class="na-us-col-zone">
+                <span class="na-us-col-pct">100%</span>
+                <div class="na-us-col-bar na-us-col-bar--live" style="height:148px;--d:220ms"></div>
+              </div>
+              <span class="na-us-col-name">Launch<br>wk 2</span>
+            </div>
+          </div>
+        </div>
+      </figure>
+      </div>
     </article>
 
     <article class="act" id="ns-method" aria-labelledby="sol-b-method">
@@ -1541,6 +2955,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .sbm-tile{background:#f7f7f7;border:1px solid var(--line);border-radius:4px;padding:1.3rem 1.15rem;display:grid;gap:.55rem;align-content:start}
     .sol-b .sbm-tile h4{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#757169;margin:0}
     .sol-b .sbm-tile p{font-size:.9rem;line-height:1.55;color:#57534b;margin:0}
+    .sol-b .sbm-tile p b{color:#111111;font-weight:600}
   </style>
   <div class="act-head">
     <p class="eyebrow">Method &middot; How I worked with AI</p>
@@ -1550,29 +2965,117 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="sbm-grid">
     <div class="sbm-tile">
       <h4>persona.md &mdash; who we test for</h4>
-      <p>I build persona.md from interviews, user feedback, and usage data; it also feeds our product-prioritization flow. Upkeep that took 6+ hours a week now takes about one.</p>
+      <p>I build persona.md from interviews, user feedback, and usage data; it also feeds our product-prioritization flow. Upkeep that took <b>6+ hours a week now takes about one</b>.</p>
     </div>
     <div class="sbm-tile">
       <h4>Measured, not eyeballed</h4>
-      <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking which check failed &mdash; the flagged case above is one of its findings.</p>
+      <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking <b>which check failed</b> &mdash; the flagged case above is one of its findings.</p>
     </div>
     <div class="sbm-tile">
       <h4>Primitives the model can adapt</h4>
-      <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and the doc itself is the handoff &mdash; engineers read it, no meetings.</p>
+      <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and <b>the doc itself is the handoff &mdash; engineers read it, no meetings</b>.</p>
     </div>
   </div>
 </article>
 
-    <aside class="coda" id="ns-postlaunch" aria-labelledby="sol-b-coda">
-      <p class="stat tnum">28%<small>of queries were re-asks</small></p>
-      <div>
-        <h3 id="sol-b-coda" class="eyebrow" style="margin-bottom:.6rem;">Post-launch &middot; what we're still watching</h3>
-        <p class="measure">28% of queries were re-asks &mdash; what a support team would call repeat contacts. A re-ask can mean the answer missed, or the topic had a second angle. Those need opposite fixes, so the next move is research, not a feature.</p>
+    <article class="act" id="ns-postlaunch" aria-labelledby="sol-b-coda">
+      <div class="act-head">
+        <p class="eyebrow">Post-launch</p>
+        <h3 id="sol-b-coda">28% of queries were re-asks. We&rsquo;re finding out why.</h3>
+        <p class="measure">Re-asks are what a support team would call repeat contacts. A re-ask can mean the answer missed, or the topic had a second angle &mdash; those need opposite fixes, so the next move is research, not a feature.</p>
         <p class="pledge measure">Shipped, still measuring &mdash; the log decides which one it is.</p>
       </div>
-    </aside>
+    </article>
+  </div>
+  </div>
   </div>
 </section>
+<script>
+(function(){
+  /* Prototype selector: the four solution cards swap which cloned widget is
+     visible in the Try-it stack. Card 01 / na-w1 is the default. */
+  var cards = Array.prototype.slice.call(document.querySelectorAll('#deeli-after .moves .move[data-proto]'));
+  var tryTitle = document.getElementById('sol-b-try');
+  function select(card){
+    cards.forEach(function(c){
+      var on = c === card;
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var w = document.getElementById(c.getAttribute('data-proto'));
+      if(w) w.classList.toggle('na-proto-off', !on);
+    });
+    var label = card.getAttribute('data-try-label');
+    if(tryTitle && label) tryTitle.textContent = label;
+  }
+  cards.forEach(function(card){
+    card.addEventListener('click', function(){ select(card); });
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+        e.preventDefault();
+        select(card);
+      }
+    });
+  });
+
+  /* Rail scroll spy: same reading-line logic as src/caseNav.ts, scoped to the
+     na- rail so caseNav keeps binding to the old page's .cs-side untouched. */
+  var railCol = document.querySelector('#deeli-after .na-rail-col');
+  var nav = document.querySelector('#deeli-after .na-side');
+  if(!railCol || !nav) return;
+  var sections = [];
+  Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#ns-"]'), function(link){
+    var el = document.getElementById((link.getAttribute('href') || '').slice(1));
+    if(el) sections.push({id: el.id, el: el, link: link});
+  });
+  if(!sections.length) return;
+  var activeId = null;
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id) s.link.setAttribute('aria-current', 'location');
+      else s.link.removeAttribute('aria-current');
+    });
+  }
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+    var readingLine = scrollY + viewportH * 0.375;
+    var current = null;
+    sections.forEach(function(s){
+      var top = s.el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine) current = s.id;
+    });
+    setActive(current);
+  }
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){ setActive(s.id); });
+  });
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
+  setTimeout(computeActive, 400);
+})();
+</script>
 </div>
 <div id="deeli-before" hidden>
 

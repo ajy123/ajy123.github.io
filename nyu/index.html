@@ -133,7 +133,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* ---------- masthead ---------- */
   .sol-nyu .sn-kicker{font-family:var(--sn-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--sn-faint);margin:0 0 18px;}
   .sol-nyu h2{text-wrap:balance;}
-  .sol-nyu #sol-nyu-title{font-family:var(--sn-serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-0.01em;color:var(--sn-ink);margin:0 0 18px;max-width:22ch;text-wrap:balance;}
+  .sol-nyu #sol-nyu-title{font-family:var(--sn-serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-0.01em;color:var(--sn-ink);margin:0 0 18px;max-width:30ch;text-wrap:balance;}
   .sol-nyu .sn-lede{font-size:18px;line-height:1.55;color:var(--sn-body);margin:0 0 34px;max-width:60ch;text-wrap:pretty;}
   .sol-nyu .sn-dossier{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--sn-hairline-strong);border-bottom:1px solid var(--sn-hairline);margin:0 0 8px;}
   .sol-nyu .sn-dossier>div{padding:16px 18px 18px 0;border-left:1px solid var(--sn-hairline);padding-left:18px;}
@@ -148,16 +148,33 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-nyu .sn-dossier>div:nth-child(-n+2){border-top:none;}
   }
 
-  /* ---------- compact TOC ---------- */
-  .sol-nyu .sn-toc{display:flex;flex-wrap:wrap;gap:8px 22px;margin:22px 0 0;}
-  .sol-nyu .sn-toc a{font-family:var(--sn-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--sn-mid);text-decoration:none;}
-  .sol-nyu .sn-toc a:hover,.sol-nyu .sn-toc a:focus-visible{color:var(--sn-ink);text-decoration:underline;text-underline-offset:3px;}
+  /* ---------- left rail (cloned from deeli's na-shell/na-side treatment;
+     ny- prefixed so caseNav.ts keeps binding to the old page's .cs-side
+     untouched. Same numbers: 280px rail, 64px gap, 1200px cap, fixed rail
+     via the static-position trick.) ---------- */
+  .sol-nyu .ny-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
+  .sol-nyu .ny-rail-col{position:relative;width:280px;flex-shrink:0;}
+  .sol-nyu .ny-content{flex:1 1 auto;min-width:0;}
+  .sol-nyu .ny-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
+  .sol-nyu .ny-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--sn-ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
+  .sol-nyu .ny-side-home:hover{color:var(--sn-deep);}
+  .sol-nyu .ny-side ol{list-style:none;margin:4px 0 0;padding:0;}
+  .sol-nyu .ny-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--sn-faint);text-decoration:none;padding:5px 0;transition:color .15s ease;}
+  .sol-nyu .ny-side ol a:hover{color:var(--sn-ink);}
+  .sol-nyu .ny-side ol a[aria-current="location"]{color:var(--sn-ink);font-weight:600;}
+  .sol-nyu .ny-side a:focus-visible{outline:1px solid var(--sn-accent);outline-offset:2px;}
+  @media(prefers-reduced-motion:reduce){.sol-nyu .ny-side ol a{transition:none;}}
+  @media(max-width:999px){.sol-nyu .ny-rail-col{display:none;}.sol-nyu .ny-shell{display:block;}}
+  @media(min-width:1000px) and (max-width:1100px){.sol-nyu .ny-rail-col,.sol-nyu .ny-side{width:240px;}.sol-nyu .ny-shell{gap:40px;}}
   .sol-nyu #ny-problem,.sol-nyu #ny-insight,.sol-nyu #ny-solution,.sol-nyu #ny-outcome,.sol-nyu #ny-postlaunch{scroll-margin-top:3.5rem;}
 
   /* ---------- act structure ---------- */
   .sol-nyu .sn-act{margin-top:64px;}
   .sol-nyu .sn-act-mark{font-family:var(--sn-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sn-accent);margin:0 0 10px;}
-  .sol-nyu .sn-act h3{font-family:var(--sn-serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;color:var(--sn-ink);margin:0 0 16px;max-width:28ch;text-wrap:balance;}
+  /* Act heads read as stretched section headers: full row width, 30ch serif
+     measure — matches deeli's act-head width:100% treatment. */
+  .sol-nyu .sn-act .sn-act-mark,.sol-nyu .sn-act h3{width:100%;}
+  .sol-nyu .sn-act h3{font-family:var(--sn-serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;color:var(--sn-ink);margin:0 0 16px;max-width:30ch;text-wrap:balance;}
   .sol-nyu .sn-prose{max-width:65ch;}
   .sol-nyu .sn-prose p{font-size:16px;line-height:1.65;margin:0 0 14px;color:var(--sn-body);text-wrap:pretty;}
   .sol-nyu .sn-quote{font-family:var(--sn-serif);font-style:italic;font-size:15.5px;line-height:1.6;color:var(--sn-mid);border-left:2px solid var(--sn-hairline-strong);padding-left:16px;margin:20px 0 22px;max-width:58ch;}
@@ -173,6 +190,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-before-chip{font-family:var(--sn-mono);font-size:11.5px;font-weight:500;color:var(--sn-mid);background:var(--sn-canvas);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);padding:8px 12px;font-variant-numeric:tabular-nums;}
   .sol-nyu .sn-before-hop{font-family:var(--sn-mono);font-size:12px;color:var(--sn-faint);}
   .sol-nyu .sn-before-cap{font-size:12.5px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;max-width:60ch;}
+  /* Problem act: the two visual exhibits sit in a 2-up row wide, stacked
+     narrow — cloned from deeli's .prb-stack treatment. */
+  .sol-nyu .ny-prb-stack{display:grid;gap:18px;align-items:start;margin:24px 0 0;}
+  @media(min-width:1000px){.sol-nyu .ny-prb-stack{grid-template-columns:1fr 1fr;}}
+  .sol-nyu .ny-prb-stack .sn-before{margin:0;max-width:none;}
+  .sol-nyu .ny-prb-stack .sn-figure{margin:0;max-width:none;}
 
   /* ---------- hinge panel ---------- */
   .sol-nyu .sn-hinge{background:var(--sn-wash);border-left:3px solid var(--sn-accent);border-radius:var(--sn-radius);padding:28px 28px 24px;margin:64px 0 0;}
@@ -210,7 +233,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-stat.sn-key b{color:var(--sn-accent);}
   .sol-nyu .sn-stat span{display:block;font-size:12.5px;line-height:1.5;color:var(--sn-mid);max-width:32ch;}
   .sol-nyu .sn-stat .sn-denom{display:block;font-family:var(--sn-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sn-faint);margin-top:8px;}
-  .sol-nyu .sn-stat-note{font-family:var(--sn-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sn-faint);margin:10px 0 0;}
   @media(max-width:720px){
     .sol-nyu .sn-stats{grid-template-columns:1fr;}
     .sol-nyu .sn-stat,.sol-nyu .sn-stat:first-child{border-left:none;padding-left:0;border-top:1px solid var(--sn-hairline);padding-top:18px;padding-bottom:18px;}
@@ -218,18 +240,28 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   }
   .sol-nyu .sn-honest{font-size:13px;line-height:1.6;color:var(--sn-faint);margin:16px 0 0;max-width:62ch;}
 
-  /* ---------- coda ---------- */
-  .sol-nyu .sn-coda{margin-top:56px;background:var(--sn-panel);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);padding:26px 28px;}
-  .sol-nyu .sn-coda .sn-coda-mark{font-family:var(--sn-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sn-faint);margin:0 0 10px;}
-  .sol-nyu .sn-coda p{font-size:15px;line-height:1.65;color:var(--sn-body);margin:0 0 10px;max-width:62ch;}
-  .sol-nyu .sn-coda p:last-child{margin-bottom:0;}
-  .sol-nyu .sn-coda .sn-open-q{font-family:var(--sn-serif);font-style:italic;color:var(--sn-ink);}
+  /* ---------- coda (standard act; the pledge line stays serif italic) ---------- */
+  .sol-nyu .sn-open-q{font-family:var(--sn-serif);font-style:italic;color:var(--sn-ink);}
 
   @media(prefers-reduced-motion:no-preference){
     .sol-nyu .sn-move{transition:box-shadow .18s ease;}
     .sol-nyu .sn-move:hover{box-shadow:0 0 0 1px var(--sn-hairline-strong);}
   }
 </style>
+<div class="ny-shell">
+<div class="ny-rail-col">
+<nav class="ny-side" aria-label="Story sections">
+  <a class="ny-side-home" href="/">&larr; Joanna Yen</a>
+  <ol>
+    <li><a href="#ny-problem">The problem</a></li>
+    <li><a href="#ny-insight">The insight</a></li>
+    <li><a href="#ny-solution">The solution</a></li>
+    <li><a href="#ny-outcome">Outcome</a></li>
+    <li><a href="#ny-postlaunch">Post-launch</a></li>
+  </ol>
+</nav>
+</div>
+<div class="ny-content">
 <div class="sn-wrap">
 
   <!-- ================= MASTHEAD ================= -->
@@ -243,13 +275,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div><dt>Used by</dt><dd>Client Service staff<small>NYU campus maintenance requests</small></dd></div>
       <div><dt>Timeline</dt><dd>Sept&ndash;Oct 2018<small>Shipped as a unified platform</small></dd></div>
     </dl>
-    <nav class="sn-toc" aria-label="On this page">
-      <a href="#ny-problem">The problem</a>
-      <a href="#ny-insight">The insight</a>
-      <a href="#ny-solution">The solution</a>
-      <a href="#ny-outcome">Outcome</a>
-      <a href="#ny-postlaunch">Post-launch</a>
-    </nav>
   </header>
 
   <!-- ================= ACT I ================= -->
@@ -260,18 +285,22 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <p>NYU Client Service staff processed maintenance requests by hand &mdash; a CSV here, a legacy screen there &mdash; and jumped between systems to find any request&rsquo;s history.</p>
       <p>A representative request &mdash; Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund&rdquo; &mdash; had no single accurate record to communicate from. Neither did any other request.</p>
     </div>
-    <div class="sn-before" role="img" aria-label="Diagram: one request, Problem Code B801, re-typed across a CSV file and two separate legacy systems">
-      <span class="sn-before-chip">B801 &middot; CSV file</span>
-      <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
-      <span class="sn-before-chip">B801 &middot; Legacy system</span>
-      <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
-      <span class="sn-before-chip">B801 &middot; Invoice screen</span>
+    <div class="ny-prb-stack">
+      <div>
+        <div class="sn-before" role="img" aria-label="Diagram: one request, Problem Code B801, re-typed across a CSV file and two separate legacy systems">
+          <span class="sn-before-chip">B801 &middot; CSV file</span>
+          <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
+          <span class="sn-before-chip">B801 &middot; Legacy system</span>
+          <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
+          <span class="sn-before-chip">B801 &middot; Invoice screen</span>
+        </div>
+        <p class="sn-before-cap">The same request, re-typed into each tool. Nothing carried over.</p>
+      </div>
+      <figure class="sn-figure">
+        <img src="assets/existing-experience.png" alt="The legacy tools: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
+        <figcaption>The real thing: the problem-code CSV and the legacy invoice screen staff worked across, with request B801 called out.</figcaption>
+      </figure>
     </div>
-    <p class="sn-before-cap">The same request, re-typed into each tool. Nothing carried over.</p>
-    <figure class="sn-figure">
-      <img src="assets/existing-experience.png" alt="The legacy tools: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
-      <figcaption>The real thing: the problem-code CSV and the legacy invoice screen staff worked across, with request B801 called out.</figcaption>
-    </figure>
     <blockquote class="sn-quote">
       &ldquo;As a Client Service Staff at NYU, I want to have an accurate maintenance record so that we can communicate more effectively with departments and clients.&rdquo;
       <cite>User story from process work</cite>
@@ -291,6 +320,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-journey-arrow" aria-hidden="true">&rarr;</div>
       <div class="sn-journey-node"><b>Maintenance</b><span>Operators and supervisors perform the work order</span></div>
     </div>
+    <figure class="sn-figure">
+      <img src="assets/work-request-journey.png" alt="Journey diagram from process work: submitters (student, faculty, campus staff) raise a work request, the Client Service Center receives, reviews and approves it, and operators and supervisors perform the work order." loading="lazy" width="1600" height="900">
+      <figcaption>The journey map from process work: a request crosses submitter, Client Service Center, and maintenance.</figcaption>
+    </figure>
   </section>
 
   <!-- ================= ACT III ================= -->
@@ -337,8 +370,17 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <span>lower average work-request turnaround</span>
         <span class="sn-denom">First month post-launch &middot; our own analytics</span>
       </div>
+      <div class="sn-stat">
+        <b>3</b>
+        <span>metrics instrumented at launch: processing, training, and communication time</span>
+        <span class="sn-denom">Measurement plan set pre-ship</span>
+      </div>
+      <div class="sn-stat">
+        <b>2</b>
+        <span>sign-off loops before launch: ops staff on workflow, engineering on specs</span>
+        <span class="sn-denom">Split review &middot; pre-launch</span>
+      </div>
     </div>
-    <p class="sn-stat-note">Measurement plan set pre-ship: 3 metrics instrumented at launch &middot; 2 sign-off loops before launch.</p>
     <p class="sn-honest">Honest denominator: the ~33% comes from our own first-month post-launch analytics, not the deck. It&rsquo;s early and directional &mdash; but the plan behind it was set before we shipped.</p>
     <figure class="sn-figure">
       <img src="assets/shipped.png" alt="Deck slide: the shipped WorkLink work-order screen beside the pre-launch measurement plan &mdash; work-request processing time, student-employee training time, and client-to-staff communication time." loading="lazy" width="1600" height="900">
@@ -347,14 +389,81 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   </section>
 
   <!-- ================= CODA ================= -->
-  <section class="sn-coda" id="ny-postlaunch" aria-label="Where it goes next">
-    <p class="sn-coda-mark">Post-launch &middot; What I&rsquo;d measure next</p>
-    <p>Pre-launch review flagged the next scope: search, and grouping multiple work orders. Next I&rsquo;d measure the overload-versus-scannability tradeoff directly, and track remaining email-heavy overhead.</p>
-    <p class="sn-open-q">The open question I still carry is how much of a service problem belongs in the digital tool, and how much in the physical space around it.</p>
+  <section class="sn-act" id="ny-postlaunch" aria-label="Where it goes next">
+    <p class="sn-act-mark">Post-launch</p>
+    <h3>Shipped, still measuring.</h3>
+    <div class="sn-prose">
+      <p>Pre-launch review flagged the next scope: search, and grouping multiple work orders. Next I&rsquo;d measure the overload-versus-scannability tradeoff directly, and track remaining email-heavy overhead.</p>
+      <p class="sn-open-q">The open question I still carry is how much of a service problem belongs in the digital tool, and how much in the physical space around it.</p>
+    </div>
   </section>
 
 </div>
+</div>
+</div>
 </section>
+<script>
+(function(){
+  /* Rail scroll spy: same reading-line logic as src/caseNav.ts, scoped to the
+     ny- rail so caseNav keeps binding to the old page's .cs-side untouched. */
+  var railCol = document.querySelector('#nyu-after .ny-rail-col');
+  var nav = document.querySelector('#nyu-after .ny-side');
+  if(!railCol || !nav) return;
+  var sections = [];
+  Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#ny-"]'), function(link){
+    var el = document.getElementById((link.getAttribute('href') || '').slice(1));
+    if(el) sections.push({id: el.id, el: el, link: link});
+  });
+  if(!sections.length) return;
+  var activeId = null;
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id) s.link.setAttribute('aria-current', 'location');
+      else s.link.removeAttribute('aria-current');
+    });
+  }
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+    var readingLine = scrollY + viewportH * 0.375;
+    var current = null;
+    sections.forEach(function(s){
+      var top = s.el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine) current = s.id;
+    });
+    setActive(current);
+  }
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){ setActive(s.id); });
+  });
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
+  setTimeout(computeActive, 400);
+})();
+</script>
 </div>
 <div id="nyu-before" hidden>
 

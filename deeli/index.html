@@ -176,7 +176,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .measure{max-width:34em;}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
     .sol-b .masthead{border-bottom:1.5px solid var(--ink);padding-bottom:1.4rem;margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
-    .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.02;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);}
+    .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.02;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
     .sol-b h2 em{font-style:italic;}
     .sol-b .masthead .dossier{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:right;line-height:1.7;}
     .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.02rem;line-height:1.6;color:#57534b;max-width:62ch;margin:.35rem 0 0;}
@@ -239,15 +239,56 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .reveal{opacity:0;transform:translateY(12px);animation:sol-b-in .7s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes sol-b-in{to{opacity:1;transform:none;}}
     @media (prefers-reduced-motion:reduce){.sol-b .reveal{animation:none;opacity:1;transform:none;} .sol-b .move{transition:none;}}
+    /* toc &mdash; compact mono section index under the masthead */
+    .sol-b .toc{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.55rem;row-gap:.4rem;margin:calc(-1*clamp(1.5rem,4vw,2.8rem)) 0 clamp(2rem,4.5vw,3.2rem);}
+    .sol-b .toc a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#757169;text-decoration:none;transition:color .18s ease;}
+    .sol-b .toc a:hover{color:#f44800;}
+    .sol-b .toc .toc-sep{font-family:var(--mono);font-size:11px;color:var(--line-strong);}
+    .sol-b [id^="ns-"]{scroll-margin-top:3.5rem;}
+    /* try-it &mdash; cloned live prototypes stacked */
+    .sol-b .try-stack{display:grid;gap:1.5rem;max-width:680px;margin-top:.4rem;}
+    /* na-flip &mdash; behavior-flip bar chart cloned from the current page's impact section */
+    .sol-b .na-flip{margin:.4rem 0 0;max-width:680px;}
+    .sol-b .na-fl-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
+    .sol-b .na-fl-figure{background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
+    .sol-b .na-fl-bar-row + .na-fl-bar-row{margin-top:26px;}
+    .sol-b .na-fl-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+    .sol-b .na-fl-row-title{font-family:var(--fbody);font-size:13px;font-weight:600;color:var(--ink);}
+    .sol-b .na-fl-track{display:flex;height:32px;width:100%;border-radius:var(--radius,4px);overflow:hidden;box-shadow:0 0 0 1px var(--line);background:var(--raised);}
+    .sol-b .na-fl-seg{height:100%;transform:scaleX(1);transform-origin:left center;animation:na-fl-grow 640ms cubic-bezier(0.23,1,0.32,1) both;}
+    .sol-b .na-fl-seg-kw{background:var(--muted);}
+    .sol-b .na-fl-seg-nl{background:var(--accent);}
+    .sol-b .na-fl-legend{display:flex;justify-content:space-between;margin-top:9px;}
+    .sol-b .na-fl-legend-item{display:flex;align-items:baseline;gap:7px;}
+    .sol-b .na-fl-dot{width:7px;height:7px;border-radius:50%;display:inline-block;transform:translateY(-1px);}
+    .sol-b .na-fl-dot-kw{background:var(--muted);}
+    .sol-b .na-fl-dot-nl{background:var(--accent);}
+    .sol-b .na-fl-legend-name{font-family:var(--fbody);font-size:11px;font-weight:400;letter-spacing:.03em;text-transform:uppercase;color:var(--faint);}
+    .sol-b .na-fl-legend-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;color:var(--ink);}
+    @keyframes na-fl-grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+    .sol-b .na-fl-row-1 .na-fl-seg-kw{animation-delay:0ms;}
+    .sol-b .na-fl-row-1 .na-fl-seg-nl{animation-delay:90ms;}
+    .sol-b .na-fl-row-2 .na-fl-seg-kw{animation-delay:160ms;}
+    .sol-b .na-fl-row-2 .na-fl-seg-nl{animation-delay:250ms;}
+    @media (prefers-reduced-motion:reduce){.sol-b .na-fl-seg{animation:none !important;transform:none !important;}}
   </style>
   <div class="wrap">
     <header class="masthead">
-      <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I rebuilt its search as a research assistant that asks what you need.</h2>
+      <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h2>
       <p class="dossier">Case Study&nbsp;/&nbsp;Deeli<br>Top-5 semiconductor foundry<br>Solo product designer &middot; 5-engineer build<br>Launched June 2026</p>
 <p class="mast-lede">Two weeks after launch, queries per active day were up <b>220%</b> and <b>70%</b> arrived as real questions instead of keywords &mdash; a change that started with one test the model couldn&rsquo;t pass.</p>
     </header>
 
-    <article class="act" aria-labelledby="sol-b-act1">
+    <nav class="toc" aria-label="Story sections">
+      <a href="#ns-problem">The problem</a><span class="toc-sep" aria-hidden="true">&middot;</span>
+      <a href="#ns-research">The research</a><span class="toc-sep" aria-hidden="true">&middot;</span>
+      <a href="#ns-solution">The solution</a><span class="toc-sep" aria-hidden="true">&middot;</span>
+      <a href="#ns-outcome">Outcome</a><span class="toc-sep" aria-hidden="true">&middot;</span>
+      <a href="#ns-method">How I work with AI</a><span class="toc-sep" aria-hidden="true">&middot;</span>
+      <a href="#ns-postlaunch">Post-launch</a>
+    </nav>
+
+    <article class="act" id="ns-problem" aria-labelledby="sol-b-act1">
       <div class="setup-grid">
         <div class="act-head"><p class="eyebrow">The problem</p><h3 id="sol-b-act1">Search answered the topic, not the question.</h3><p class="measure">The old search matched words. It never knew who was asking or what they needed &mdash; so every role got the same generic report, out of a process no one could inspect.</p></div>
         <div class="prb-stack">
@@ -317,7 +358,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </div>
     </article>
 
-    <article class="act" aria-labelledby="sol-b-act2">
+    <article class="act" id="ns-research" aria-labelledby="sol-b-act2">
       
       
       <div class="hinge reveal">
@@ -439,7 +480,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       
     </article>
 
-    <article class="act" aria-labelledby="sol-b-act3">
+    <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
       <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the steps below meet expectations researchers told us about &mdash; the second exists because of the one test the model couldn&rsquo;t pass.</p></div>
       
       <div class="moves">
@@ -450,15 +491,1052 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </div>
     </article>
 
-    <article class="act" aria-labelledby="sol-b-outcome">
+    <article class="act" aria-labelledby="sol-b-try">
+      <div class="act-head"><p class="eyebrow">Try it</p><h3 id="sol-b-try">The clarification flow, live.</h3></div>
+      <div class="try-stack">
+<section class="sol-widget" id="na-w1" data-ask-ignore="true">
+  <style>
+    #na-w1{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:60px 42px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      box-sizing:border-box;
+    }
+    #na-w1 *{ box-sizing:border-box; font-family:var(--d-font); }
+
+    #na-w1 .na-w1-inner{ max-width:560px; margin:0 auto; }
+
+    #na-w1 .na-w1-sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+
+    /* Sanctioned center-aligned entry surface */
+    #na-w1 .na-w1-heading{
+      font-size:24px; font-weight:600; line-height:1.2; letter-spacing:-0.01em;
+      color:var(--d-text); text-align:center; margin:0 0 46px;
+    }
+
+    /* Search card */
+    #na-w1 .na-w1-card{
+      position:relative;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:16px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:16px 16px 14px;
+      transition:border-color var(--d-fast) var(--d-ease);
+    }
+    #na-w1 .na-w1-card.is-focused{
+      border-color:var(--d-primary);
+    }
+
+    #na-w1 .na-w1-form{
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:96px;
+      cursor:text;
+    }
+    #na-w1 .na-w1-card.is-resolved .na-w1-form{ display:none; }
+
+    #na-w1 .na-w1-input{
+      display:block;
+      flex:0 0 auto;
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      background:transparent;
+      font-size:14.5px;
+      font-weight:400;
+      line-height:1.4;
+      color:var(--d-text);
+      padding:4px 2px 0;
+      /* overflow starts hidden so there's no scrollbar flash before the
+         auto-grow script runs on first input; JS flips this to auto once
+         content passes the 5-line cap. */
+      overflow-y:hidden;
+    }
+    #na-w1 .na-w1-input::placeholder{ color:var(--d-sub); }
+
+    #na-w1 .na-w1-actions{
+      display:flex;
+      justify-content:flex-end;
+    }
+    #na-w1 .na-w1-submit{
+      flex:0 0 auto;
+      width:34px; height:34px;
+      border:none;
+      border-radius:10px;
+      background:var(--d-surface-high);
+      color:var(--d-sub);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:default;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+      padding:0;
+    }
+    #na-w1 .na-w1-submit svg{ width:16px; height:16px; display:block; }
+    #na-w1 .na-w1-submit.is-active{
+      background:var(--d-primary);
+      color:var(--d-white);
+      cursor:pointer;
+    }
+    #na-w1 .na-w1-submit.is-active:hover{
+      background:var(--d-primary-container);
+    }
+
+    /* Resolved state */
+    #na-w1 .na-w1-resolved{
+      display:none;
+      opacity:0;
+      transition:opacity var(--d-base) var(--d-ease);
+    }
+    #na-w1 .na-w1-card.is-resolved .na-w1-resolved{
+      display:block;
+      opacity:1;
+    }
+    #na-w1 .na-w1-resolved-query{
+      font-size:14.5px; font-weight:400; line-height:1.5; color:var(--d-text);
+      margin:0 0 10px;
+      word-break:break-word;
+    }
+    #na-w1 .na-w1-entity{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+    }
+    #na-w1 .na-w1-entity sup{
+      font-size:10px;
+      font-weight:500;
+      line-height:0;
+      margin-left:1px;
+      color:var(--d-sub);
+    }
+    #na-w1 .na-w1-entity-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin:0 0 14px;
+    }
+    #na-w1 .na-w1-entity-chip{
+      display:inline-flex;
+      align-items:baseline;
+      gap:6px;
+      background:var(--d-surface-low);
+      border-radius:var(--d-r-sm);
+      padding:4px 10px;
+      font-size:11px;
+      line-height:1.3;
+      letter-spacing:0.02em;
+    }
+    #na-w1 .na-w1-entity-chip .na-w1-entity-num{
+      font-weight:400;
+      color:var(--d-sub);
+    }
+    #na-w1 .na-w1-entity-chip .na-w1-entity-name{
+      font-weight:600;
+      color:var(--d-text);
+    }
+    #na-w1 .na-w1-resolved-foot{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #na-w1 .na-w1-resolved-text{ min-width:0; }
+    #na-w1 .na-w1-resolved-label{
+      font-size:11px; font-weight:500; letter-spacing:0.02em; line-height:1.3;
+      color:var(--d-sub); margin:0 0 3px;
+    }
+    #na-w1 .na-w1-resolved-title{
+      font-size:14.5px; font-weight:600; line-height:1.35; color:var(--d-text);
+      margin:0;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    #na-w1 .na-w1-ask-another{
+      flex:0 0 auto;
+      border:none;
+      background:transparent;
+      color:var(--d-primary);
+      font-size:12px; font-weight:500;
+      border-radius:var(--d-r-sm);
+      padding:8px 12px;
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease);
+      white-space:nowrap;
+    }
+    #na-w1 .na-w1-ask-another:hover{ background:var(--d-surface-low); }
+
+    /* Suggestion chips: prototype look, white, ghost border, rectangular */
+    #na-w1 .na-w1-chips{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:8px;
+      margin:28px 0 0;
+      padding:0;
+      list-style:none;
+    }
+    #na-w1 .na-w1-chip{
+      border:1px solid var(--d-ghost);
+      background:var(--d-white);
+      color:var(--d-text);
+      font-size:11.5px; font-weight:500; letter-spacing:0.01em; line-height:1.3;
+      border-radius:var(--d-r-md);
+      padding:6px 12px;
+      cursor:pointer;
+      max-width:100%;
+      text-align:left;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w1 .na-w1-chip:hover{ background:var(--d-surface-low); }
+
+    /* focus-visible */
+    #na-w1 button:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+      box-shadow:none;
+    }
+    #na-w1 .na-w1-submit:focus-visible{
+      outline-offset:-2px;
+    }
+
+    @media (max-width:560px){
+      #na-w1{ padding:40px 20px; }
+      #na-w1 .na-w1-heading{ margin:0 0 32px; }
+      #na-w1 .na-w1-submit{ width:44px; height:44px; }
+      #na-w1 .na-w1-chip{ min-height:44px; display:inline-flex; align-items:center; padding:8px 14px; }
+      #na-w1 .na-w1-ask-another{ min-height:44px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #na-w1 .na-w1-card,
+      #na-w1 .na-w1-submit,
+      #na-w1 .na-w1-resolved,
+      #na-w1 .na-w1-ask-another,
+      #na-w1 .na-w1-chip{
+        transition:none !important;
+        animation:none !important;
+      }
+    }
+  </style>
+
+  <div class="na-w1-inner">
+    <h4 class="na-w1-heading">What would you like to research?</h4>
+
+    <div class="na-w1-card" id="na-w1-card">
+      <form class="na-w1-form" id="na-w1-form" novalidate>
+        <label class="na-w1-sr-only" for="na-w1-input">Research question</label>
+        <textarea
+          id="na-w1-input"
+          class="na-w1-input"
+          placeholder="Start with a specific technology, patent, or company"
+          autocomplete="off"
+          rows="1"
+        ></textarea>
+        <div class="na-w1-actions">
+          <button type="submit" class="na-w1-submit" id="na-w1-submit" aria-disabled="true" aria-label="Submit research question">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="na-w1-resolved" id="na-w1-resolved" role="status" aria-live="polite">
+        <p class="na-w1-resolved-query" id="na-w1-resolved-query"></p>
+        <div class="na-w1-entity-chips" id="na-w1-entity-chips"></div>
+        <div class="na-w1-resolved-foot">
+          <div class="na-w1-resolved-text">
+            <p class="na-w1-resolved-label">New research brief</p>
+            <p class="na-w1-resolved-title" id="na-w1-resolved-title"></p>
+          </div>
+          <button type="button" class="na-w1-ask-another" id="na-w1-ask-another">Ask another</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="na-w1-chips" role="group" aria-label="Example research queries">
+      <button type="button" class="na-w1-chip" data-query="OCS">OCS</button>
+      <button type="button" class="na-w1-chip" data-query="do you think TSV-coupled inductor is suitable for UMC or not?">do you think TSV-coupled inductor is suitable for UMC or not?</button>
+      <button type="button" class="na-w1-chip" data-query="silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?">silicon interposer 與 silicon bridge 哪一項技術適合聯電發展?</button>
+    </div>
+
+  </div>
+
+  <script>
+  (function(){
+    var root = document.getElementById('na-w1');
+    if(!root) return;
+
+    var card = root.querySelector('#na-w1-card');
+    var form = root.querySelector('#na-w1-form');
+    var input = root.querySelector('#na-w1-input');
+    var submitBtn = root.querySelector('#na-w1-submit');
+    var resolvedQuery = root.querySelector('#na-w1-resolved-query');
+    var entityChips = root.querySelector('#na-w1-entity-chips');
+    var resolvedTitle = root.querySelector('#na-w1-resolved-title');
+    var askAnotherBtn = root.querySelector('#na-w1-ask-another');
+    var chips = root.querySelectorAll('.na-w1-chip');
+
+    function updateSubmitState(){
+      var hasText = input.value.trim().length > 0;
+      submitBtn.classList.toggle('is-active', hasText);
+      submitBtn.setAttribute('aria-disabled', hasText ? 'false' : 'true');
+    }
+
+    // Auto-grow the composer textarea 1→5 lines. The cap is derived from the
+    // textarea's own computed line-height + vertical padding rather than a
+    // hardcoded px total, so it can't drift from the CSS above. Past the cap
+    // the textarea scrolls internally instead of growing further.
+    function autoGrowInput(){
+      var cs = window.getComputedStyle(input);
+      var lineHeight = parseFloat(cs.lineHeight) || 20;
+      var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      var maxHeight = Math.round(lineHeight * 5 + padY);
+      input.style.height = 'auto';
+      var next = Math.min(input.scrollHeight, maxHeight);
+      input.style.height = next + 'px';
+      input.style.overflowY = input.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    }
+
+    // Resolution map: report title + entity footnote (segment to underline + chip name)
+    function resolve(raw){
+      var text = raw.trim();
+      var lower = text.toLowerCase();
+      if(lower.indexOf('ocs') !== -1){
+        return { title:'Optical Circuit Switching Technology Overview',
+                 entity:'OCS', chipName:'Optical Circuit Switching' };
+      }
+      if(lower.indexOf('tsv') !== -1){
+        return { title:'TSV-Coupled Inductor Suitability for UMC',
+                 entity:'UMC', chipName:'United Microelectronics' };
+      }
+      if(lower.indexOf('silicon interposer') !== -1 || text.indexOf('聯電') !== -1){
+        return { title:'Silicon Interposer vs Silicon Bridge for UMC',
+                 entity:'聯電', chipName:'UMC' };
+      }
+      var trimmed = text.length > 60 ? text.slice(0, 60) : text;
+      return { title:'Research brief: ' + trimmed, entity:null, chipName:null };
+    }
+
+    // Render query text with the resolved entity underlined + numbered superscript
+    function renderResolvedQuery(text, entity){
+      resolvedQuery.textContent = '';
+      entityChips.textContent = '';
+      var idx = entity ? text.toLowerCase().indexOf(entity.toLowerCase()) : -1;
+      if(idx === -1){
+        resolvedQuery.textContent = text;
+        return false;
+      }
+      resolvedQuery.appendChild(document.createTextNode(text.slice(0, idx)));
+      var span = document.createElement('span');
+      span.className = 'na-w1-entity';
+      span.appendChild(document.createTextNode(text.slice(idx, idx + entity.length)));
+      var sup = document.createElement('sup');
+      sup.textContent = '1';
+      span.appendChild(sup);
+      resolvedQuery.appendChild(span);
+      resolvedQuery.appendChild(document.createTextNode(text.slice(idx + entity.length)));
+      return true;
+    }
+
+    function renderEntityChip(chipName){
+      var chip = document.createElement('span');
+      chip.className = 'na-w1-entity-chip';
+      var num = document.createElement('span');
+      num.className = 'na-w1-entity-num';
+      num.textContent = '1';
+      var name = document.createElement('span');
+      name.className = 'na-w1-entity-name';
+      name.textContent = chipName;
+      chip.appendChild(num);
+      chip.appendChild(name);
+      entityChips.appendChild(chip);
+    }
+
+    function submitQuery(){
+      var value = input.value.trim();
+      if(!value) return;
+      var r = resolve(value);
+      var wrapped = renderResolvedQuery(value, r.entity);
+      if(wrapped && r.chipName){
+        renderEntityChip(r.chipName);
+        entityChips.style.display = '';
+      } else {
+        entityChips.style.display = 'none';
+      }
+      resolvedTitle.textContent = r.title;
+      card.classList.add('is-resolved');
+      card.classList.remove('is-focused');
+      askAnotherBtn.focus();
+      // Composer is hidden behind .is-resolved now, but collapse it back to
+      // one line so it doesn't reopen mid-height on "Ask another".
+      input.style.height = '';
+      autoGrowInput();
+    }
+
+    function resetToEmpty(){
+      card.classList.remove('is-resolved');
+      input.value = '';
+      updateSubmitState();
+      autoGrowInput();
+      input.focus();
+    }
+
+    input.addEventListener('input', function(){
+      updateSubmitState();
+      autoGrowInput();
+    });
+
+    // Enter submits (same path as the submit button); Shift+Enter inserts a
+    // newline (textarea default). Guard IME composition (e.g. 注音/拼音)
+    // so an Enter that confirms a candidate doesn't also submit.
+    input.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter' || e.shiftKey) return;
+      if(e.isComposing || e.keyCode === 229) return;
+      e.preventDefault();
+      submitQuery();
+    });
+
+    // The input no longer stretches over the card's empty area, so clicks on
+    // that dead space should still land in the field.
+    form.addEventListener('click', function(e){
+      if(e.target === form) input.focus();
+    });
+
+    card.addEventListener('focusin', function(){
+      if(!card.classList.contains('is-resolved')){
+        card.classList.add('is-focused');
+      }
+    });
+    card.addEventListener('focusout', function(){
+      window.setTimeout(function(){
+        if(!card.contains(document.activeElement)){
+          card.classList.remove('is-focused');
+        }
+      }, 0);
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      submitQuery();
+    });
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        input.value = chip.getAttribute('data-query');
+        updateSubmitState();
+        autoGrowInput();
+        input.focus();
+      });
+    });
+
+    askAnotherBtn.addEventListener('click', resetToEmpty);
+
+    updateSubmitState();
+    autoGrowInput();
+  })();
+  </script>
+</section>
+<section class="sol-widget" id="na-w2" data-ask-ignore="true">
+  <style>
+    #na-w2{
+      --d-primary:#132B24; --d-primary-container:#001610;
+      --d-tertiary:#c5642d; --d-tertiary-container:#c76b36; --d-on-tertiary-container:#ffeadd;
+      --d-text:#191c1d; --d-sub:#717182;
+      --d-surface:#f8f9fa; --d-surface-low:#f3f4f5; --d-white:#ffffff; --d-surface-high:#e1e3e4;
+      --d-ghost:rgba(194,200,196,0.35);
+      --d-error:#d4183d;
+      --d-font:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --d-ease:cubic-bezier(0.22,1,0.36,1);
+      --d-fast:160ms; --d-base:240ms; --d-slow:420ms;
+      --d-r-sm:6px; --d-r-md:8px; --d-r-pill:100px;
+
+      background:var(--d-surface);
+      border-radius:8px;
+      padding:28px;
+      font-family:var(--d-font);
+      color:var(--d-text);
+      box-sizing:border-box;
+    }
+    #na-w2 *{ box-sizing:border-box; font-family:var(--d-font); }
+    #na-w2 .na-w2-inner{ max-width:600px; margin:0 auto; }
+
+    /* THE search card: everything lives inside it */
+    #na-w2 .na-w2-card{
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:16px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.07);
+      padding:18px 20px 16px;
+      position:relative;
+    }
+
+    /* Query line with entity footnotes */
+    #na-w2 .na-w2-query{
+      margin:0;
+      font-size:14.5px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-text);
+    }
+    #na-w2 .na-w2-entity{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+      text-decoration-color:rgba(25,28,29,.45);
+      transition:text-decoration-color var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-entity.is-off{ text-decoration-color:transparent; }
+    #na-w2 .na-w2-query sup{
+      font-size:9px;
+      font-weight:600;
+      line-height:0;
+      vertical-align:super;
+      color:var(--d-text);
+      transition:opacity var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-query sup.is-off{ opacity:0; }
+    #na-w2 .na-w2-query sup.na-w2-fn2{
+      opacity:0;
+      transition:opacity var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-query sup.na-w2-fn2.is-on{ opacity:1; }
+    #na-w2 .na-w2-market{
+      text-decoration:underline;
+      text-decoration-thickness:1px;
+      text-underline-offset:3px;
+      text-decoration-color:transparent;
+      transition:text-decoration-color var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-market.is-on{ text-decoration-color:rgba(25,28,29,.45); }
+
+    /* Footnote chips (resolved entities) */
+    #na-w2 .na-w2-footnotes{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:8px;
+    }
+    #na-w2 .na-w2-fnchip{
+      display:inline-flex;
+      align-items:center;
+      background:var(--d-surface-low);
+      border-radius:var(--d-r-sm);
+      padding:4px 9px;
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      line-height:1.3;
+      color:var(--d-text);
+      transition:opacity var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-fnchip .na-w2-fnnum{
+      font-weight:600;
+      color:#66666f;
+      margin-right:6px;
+    }
+    #na-w2 .na-w2-fnchip.is-leaving{ opacity:0; pointer-events:none; }
+    /* Close button: trails the label, grows in on hover. Full-height hit
+       target extends into the chip padding so it stays easy to click. */
+    #na-w2 .na-w2-fnx{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      align-self:stretch;
+      border:0;
+      background:none;
+      cursor:pointer;
+      color:#66666f;
+      width:0;
+      padding:0;
+      margin:-5px 0;
+      overflow:hidden;
+      opacity:0;
+      transform:scale(.6);
+      transition:width var(--d-fast) var(--d-ease), margin var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease), transform var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-fnx svg{ flex-shrink:0; }
+    #na-w2 .na-w2-fnchip:hover .na-w2-fnx,
+    #na-w2 .na-w2-fnchip:focus-within .na-w2-fnx{
+      width:24px;
+      margin-left:3px;
+      margin-right:-7px;
+      opacity:1;
+      transform:none;
+    }
+    #na-w2 .na-w2-fnx:hover{ color:var(--d-text); }
+    @media (hover: none){
+      #na-w2 .na-w2-fnx{
+        width:24px;
+        margin-left:2px;
+        margin-right:-7px;
+        opacity:.55;
+        transform:none;
+        position:relative;
+      }
+      /* Only on touch, where the button is actually visible. Forcing 44px on
+         the button itself would be shrunk by the chip's flex row and would
+         blow out the chip, so expand the hit area instead. Gated to
+         hover:none so the invisible resting state never becomes tappable. */
+      #na-w2 .na-w2-fnx::before{
+        content:"";
+        position:absolute;
+        left:50%;
+        top:50%;
+        width:44px;
+        height:44px;
+        transform:translate(-50%,-50%);
+      }
+    }
+    #na-w2 .na-w2-fnx:focus-visible{
+      outline:1.5px solid var(--d-text);
+      outline-offset:-2px;
+      border-radius:4px;
+    }
+    #na-w2 .na-w2-fnchip[hidden]{ display:none; }
+
+    /* Clarification question */
+    #na-w2 .na-w2-question{
+      margin:18px 0 10px;
+      font-size:13px;
+      font-weight:400;
+      line-height:1.5;
+      color:var(--d-sub);
+    }
+
+    /* Bottom row: choice chips left, arrow submit right */
+    #na-w2 .na-w2-bottom{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #na-w2 .na-w2-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    #na-w2 .na-w2-chip{
+      appearance:none;
+      background:var(--d-white);
+      border:1px solid var(--d-ghost);
+      border-radius:8px;
+      color:var(--d-text);
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      padding:6px 13px;
+      cursor:pointer;
+      transition:border-color var(--d-fast) var(--d-ease),
+                 color var(--d-fast) var(--d-ease),
+                 background var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-chip:hover{ background:var(--d-surface-low); }
+    #na-w2 .na-w2-chip[aria-checked="true"]{
+      border-color:var(--d-primary);
+      color:var(--d-primary);
+      font-weight:600;
+      background:var(--d-white);
+    }
+    #na-w2 .na-w2-chip:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Dashed ghost chip: "I'll rewrite" */
+    #na-w2 .na-w2-rewrite{
+      appearance:none;
+      background:var(--d-white);
+      border:1px dashed var(--d-ghost);
+      border-radius:8px;
+      color:var(--d-sub);
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      padding:6px 13px;
+      cursor:pointer;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-rewrite:hover{ background:var(--d-surface-low); }
+    #na-w2 .na-w2-rewrite:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Arrow submit: the card's only CTA */
+    #na-w2 .na-w2-submit{
+      appearance:none;
+      border:none;
+      flex:none;
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--d-surface-high);
+      color:var(--d-sub);
+      cursor:default;
+      transition:background var(--d-fast) var(--d-ease), color var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-submit svg{ width:16px; height:16px; }
+    #na-w2 .na-w2-submit.is-armed{
+      background:var(--d-primary);
+      color:var(--d-white);
+      cursor:pointer;
+    }
+    #na-w2 .na-w2-submit.is-armed:hover{ background:var(--d-primary-container); }
+    #na-w2 .na-w2-submit:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Queued row (post-submit swap) */
+    #na-w2 .na-w2-queued{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:12px;
+      padding:4px 0 2px;
+    }
+    #na-w2 .na-w2-queued-text{
+      margin:0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+    #na-w2 .na-w2-queued-text strong{
+      font-weight:600;
+      color:var(--d-text);
+    }
+    #na-w2 .na-w2-queued-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #na-w2 .na-w2-notify{
+      appearance:none;
+      background:transparent;
+      border:1px solid var(--d-primary);
+      color:var(--d-primary);
+      font-family:inherit;
+      font-size:12px;
+      font-weight:500;
+      padding:6px 10px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease), opacity var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-notify:hover{ background:var(--d-surface-low); }
+    #na-w2 .na-w2-notify[disabled]{ opacity:.55; cursor:default; }
+    #na-w2 .na-w2-view{
+      appearance:none;
+      border:none;
+      background:var(--d-primary);
+      color:var(--d-white);
+      font-family:inherit;
+      font-size:12px;
+      font-weight:500;
+      padding:6px 10px;
+      border-radius:var(--d-r-sm);
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background var(--d-fast) var(--d-ease);
+    }
+    #na-w2 .na-w2-view:hover{ background:var(--d-primary-container); }
+    #na-w2 .na-w2-notify:focus-visible,
+    #na-w2 .na-w2-view:focus-visible{
+      outline:1px solid var(--d-primary);
+      outline-offset:2px;
+    }
+
+    /* Panel swap */
+    #na-w2 .na-w2-panel{
+      transition:opacity var(--d-base) var(--d-ease), transform var(--d-base) var(--d-ease);
+    }
+    #na-w2 .na-w2-panel[hidden]{ display:none; }
+    #na-w2 .na-w2-panel.na-w2-enter{
+      opacity:0;
+      transform:translateY(4px);
+    }
+
+    /* Caption */
+    #na-w2 .na-w2-caption{
+      margin:16px 0 0;
+      font-size:12px;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--d-sub);
+    }
+
+    #na-w2 .na-w2-sr-status{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    }
+
+    /* Must stay after the base control rules above — same specificity, so
+       source order decides. */
+    @media (max-width:560px){
+      #na-w2 .na-w2-chip{ min-height:44px; display:inline-flex; align-items:center; }
+      #na-w2 .na-w2-rewrite{ min-height:44px; }
+      #na-w2 .na-w2-submit{ width:44px; height:44px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #na-w2 *{
+        transition:none !important;
+        animation:none !important;
+      }
+      #na-w2 .na-w2-panel.na-w2-enter{
+        opacity:1;
+        transform:none;
+      }
+    }
+  </style>
+
+  <div class="na-w2-inner">
+    <div class="na-w2-card">
+      <div class="na-w2-panel" id="na-w2-clarify">
+        <p class="na-w2-query"><span class="na-w2-entity" id="na-w2-entity">arm</span><sup id="na-w2-fn1" aria-hidden="true">1</sup> robotics <span class="na-w2-market" id="na-w2-market">market</span><sup class="na-w2-fn2" id="na-w2-fn2" aria-hidden="true">2</sup></p>
+        <div class="na-w2-footnotes" aria-live="polite">
+          <span class="na-w2-fnchip" id="na-w2-fnchip1"><span class="na-w2-fnnum">1</span> Arm Holdings<button type="button" class="na-w2-fnx" id="na-w2-fnx1" aria-label="Remove Arm Holdings clarification"><svg viewBox="0 0 8 8" width="8" height="8" fill="none" aria-hidden="true"><path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></span>
+          <span class="na-w2-fnchip" id="na-w2-fnchip2" hidden><span class="na-w2-fnnum">2</span> <span id="na-w2-fnchip2-label"></span><button type="button" class="na-w2-fnx" id="na-w2-fnx2" aria-label="Remove focus clarification"><svg viewBox="0 0 8 8" width="8" height="8" fill="none" aria-hidden="true"><path d="M1 1l6 6M7 1L1 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></span>
+        </div>
+        <span class="na-w2-sr-status" id="na-w2-status" role="status"></span>
+
+        <p class="na-w2-question" id="na-w2-question">Focus the report on…?</p>
+
+        <div class="na-w2-bottom">
+          <div class="na-w2-chips" role="radiogroup" aria-labelledby="na-w2-question">
+            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="0" data-focus="Market landscape">Market landscape</button>
+            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Commercial adoption">Commercial adoption</button>
+            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Top companies">Top companies</button>
+            <button type="button" class="na-w2-rewrite" id="na-w2-rewrite" aria-label="I'll rewrite the question instead; clears the selected focus">I'll rewrite</button>
+          </div>
+          <button type="button" class="na-w2-submit" id="na-w2-submit" disabled aria-disabled="true" aria-label="Generate report">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8h11M9 3.5L13.5 8 9 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="na-w2-panel na-w2-queued" id="na-w2-queued" hidden>
+        <p class="na-w2-queued-text" role="status" id="na-w2-queued-text">Your report is queued &mdash; notify me when ready?</p>
+        <div class="na-w2-queued-actions">
+          <button type="button" class="na-w2-notify" id="na-w2-notify">Notify me</button>
+          <button type="button" class="na-w2-view" id="na-w2-view" aria-label="View generation progress; resets this prototype">View progress</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="na-w2-caption">Interactive recreation: same topic, three different reports.</p>
+  </div>
+
+  <script>
+  (function(){
+    var root = document.getElementById('na-w2');
+    if (!root) return;
+
+    var chips = Array.prototype.slice.call(root.querySelectorAll('.na-w2-chip'));
+    var rewriteBtn = root.querySelector('#na-w2-rewrite');
+    var submit = root.querySelector('#na-w2-submit');
+    var clarifyPanel = root.querySelector('#na-w2-clarify');
+    var queuedPanel = root.querySelector('#na-w2-queued');
+    var fn2 = root.querySelector('#na-w2-fn2');
+    var fn1 = root.querySelector('#na-w2-fn1');
+    var entity = root.querySelector('#na-w2-entity');
+    var fnchip1 = root.querySelector('#na-w2-fnchip1');
+    var fnx1 = root.querySelector('#na-w2-fnx1');
+    var fnx2 = root.querySelector('#na-w2-fnx2');
+    var marketWord = root.querySelector('#na-w2-market');
+    var fnchip2 = root.querySelector('#na-w2-fnchip2');
+    var fnchip2Label = root.querySelector('#na-w2-fnchip2-label');
+    var notifyBtn = root.querySelector('#na-w2-notify');
+    var viewBtn = root.querySelector('#na-w2-view');
+    var queuedText = root.querySelector('#na-w2-queued-text');
+    var statusNode = root.querySelector('#na-w2-status');
+    var FAST = parseFloat(getComputedStyle(root).getPropertyValue('--d-fast')) || 160;
+
+    var selected = null;
+    var chip2HideTimer = null;
+
+    function selectChip(chip, moveFocus){
+      selected = chip;
+      chips.forEach(function(c){
+        var isSelected = c === chip;
+        c.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+        c.tabIndex = isSelected ? 0 : -1;
+      });
+      if (moveFocus) chip.focus();
+      // Second footnote: query gains superscript 2 + "2 <focus>" chip
+      window.clearTimeout(chip2HideTimer);
+      fnchip2.classList.remove('is-leaving');
+      fn2.classList.add('is-on');
+      fnchip2Label.textContent = chip.getAttribute('data-focus');
+      fnchip2.hidden = false;
+      marketWord.classList.add('is-on');
+      armSubmit(true);
+    }
+
+    function clearSelection(){
+      selected = null;
+      chips.forEach(function(c, i){
+        c.setAttribute('aria-checked', 'false');
+        c.tabIndex = i === 0 ? 0 : -1;
+      });
+      fn2.classList.remove('is-on');
+      marketWord.classList.remove('is-on');
+      // Fade the focus chip out the same way chip 1 leaves, then hide it
+      fnchip2.classList.add('is-leaving');
+      window.clearTimeout(chip2HideTimer);
+      chip2HideTimer = window.setTimeout(function(){
+        fnchip2.hidden = true;
+        fnchip2.classList.remove('is-leaving');
+        fnchip2Label.textContent = '';
+      }, FAST);
+      armSubmit(false);
+    }
+
+    function armSubmit(armed){
+      if (armed){
+        submit.disabled = false;
+        submit.removeAttribute('aria-disabled');
+        submit.classList.add('is-armed');
+      } else {
+        submit.disabled = true;
+        submit.setAttribute('aria-disabled', 'true');
+        submit.classList.remove('is-armed');
+      }
+    }
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        selectChip(chip, false);
+      });
+      chip.addEventListener('keydown', function(e){
+        var idx = chips.indexOf(chip);
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+          next = chips[(idx + 1) % chips.length];
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+          next = chips[(idx - 1 + chips.length) % chips.length];
+        } else if (e.key === ' ' || e.key === 'Enter'){
+          e.preventDefault();
+          selectChip(chip, false);
+          return;
+        }
+        if (next){
+          e.preventDefault();
+          selectChip(next, true);
+        }
+      });
+    });
+
+    rewriteBtn.addEventListener('click', clearSelection);
+
+    // Remove the entity clarification: chip, superscript, and underline fade together
+    fnx1.addEventListener('click', function(){
+      fnchip1.classList.add('is-leaving');
+      fn1.classList.add('is-off');
+      entity.classList.add('is-off');
+      window.setTimeout(function(){ fnchip1.hidden = true; fnchip1.classList.remove('is-leaving'); fn1.style.display = 'none'; }, FAST);
+      statusNode.textContent = 'Arm Holdings clarification removed';
+      if (!fnchip2.hidden && !fnchip2.classList.contains('is-leaving')) { fnx2.focus(); } else { chips[0].focus(); }
+    });
+
+    // Remove the focus clarification: same reset as "I'll rewrite"
+    fnx2.addEventListener('click', function(){
+      clearSelection();
+      statusNode.textContent = 'Focus clarification removed';
+      if (!fnchip1.hidden) { fnx1.focus(); } else { chips[0].focus(); }
+    });
+
+    function swapPanels(fromEl, toEl, afterShow){
+      fromEl.classList.add('na-w2-enter');
+      window.requestAnimationFrame(function(){
+        fromEl.hidden = true;
+        toEl.hidden = false;
+        toEl.classList.add('na-w2-enter');
+        window.requestAnimationFrame(function(){
+          toEl.classList.remove('na-w2-enter');
+          if (afterShow) afterShow();
+        });
+      });
+    }
+
+    submit.addEventListener('click', function(){
+      if (!selected) return;
+      swapPanels(clarifyPanel, queuedPanel, function(){
+        notifyBtn.focus();
+      });
+    });
+
+    notifyBtn.addEventListener('click', function(){
+      queuedText.textContent = "We'll notify you when it's ready.";
+      notifyBtn.disabled = true;
+    });
+
+    // In the clone there is no generating panel to walk to; "View progress"
+    // just resets the prototype so it can be replayed.
+    viewBtn.addEventListener('click', function(){
+      window.setTimeout(function(){
+        queuedText.textContent = 'Your report is queued — notify me when ready?';
+        notifyBtn.disabled = false;
+        swapPanels(queuedPanel, clarifyPanel);
+      }, 600);
+    });
+  })();
+  </script>
+</section>
+      </div>
+    </article>
+
+    <article class="act" id="ns-outcome" aria-labelledby="sol-b-outcome">
       <div class="act-head"><p class="eyebrow">Outcome</p><h3 id="sol-b-outcome">Researchers trusted what came back.</h3></div>
       <div class="outcome-grid">
 <div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
         <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask: within two weeks of launch, 70% of live queries were real questions instead of keywords &mdash; the behavior the redesign was built to earn.</p></div>
       </div>
+      <figure class="na-flip">
+        <figcaption class="na-fl-eyebrow">Natural language became the default</figcaption>
+        <div class="na-fl-figure">
+          <div class="na-fl-bar-row na-fl-row-1">
+            <div class="na-fl-row-head"><span class="na-fl-row-title">Before launch</span></div>
+            <div class="na-fl-track" role="img" aria-label="Before launch: 87 percent keyword, 13 percent natural-language"><div class="na-fl-seg na-fl-seg-kw" style="width:87%"></div><div class="na-fl-seg na-fl-seg-nl" style="width:13%"></div></div>
+            <div class="na-fl-legend"><span class="na-fl-legend-item"><span class="na-fl-dot na-fl-dot-kw"></span><span class="na-fl-legend-name">Keyword</span><span class="na-fl-legend-val">87%</span></span><span class="na-fl-legend-item"><span class="na-fl-dot na-fl-dot-nl"></span><span class="na-fl-legend-name">Natural-language</span><span class="na-fl-legend-val">13%</span></span></div>
+          </div>
+          <div class="na-fl-bar-row na-fl-row-2">
+            <div class="na-fl-row-head"><span class="na-fl-row-title">After launch</span></div>
+            <div class="na-fl-track" role="img" aria-label="After launch: 30 percent keyword, 70 percent natural-language"><div class="na-fl-seg na-fl-seg-kw" style="width:30%"></div><div class="na-fl-seg na-fl-seg-nl" style="width:70%"></div></div>
+            <div class="na-fl-legend"><span class="na-fl-legend-item"><span class="na-fl-dot na-fl-dot-kw"></span><span class="na-fl-legend-name">Keyword</span><span class="na-fl-legend-val">30%</span></span><span class="na-fl-legend-item"><span class="na-fl-dot na-fl-dot-nl"></span><span class="na-fl-legend-name">Natural-language</span><span class="na-fl-legend-val">70%</span></span></div>
+          </div>
+        </div>
+      </figure>
     </article>
 
-    <article class="act" aria-labelledby="sol-b-method">
+    <article class="act" id="ns-method" aria-labelledby="sol-b-method">
   <style>
     .sol-b .sbm-grid{display:grid;grid-template-columns:1fr;gap:.8rem;margin-top:1.5rem}
     @media (min-width:760px){.sol-b .sbm-grid{grid-template-columns:repeat(3,1fr)}}
@@ -487,7 +1565,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   </div>
 </article>
 
-    <aside class="coda" aria-labelledby="sol-b-coda">
+    <aside class="coda" id="ns-postlaunch" aria-labelledby="sol-b-coda">
       <p class="stat tnum">28%<small>of queries were re-asks</small></p>
       <div>
         <h3 id="sol-b-coda" class="eyebrow" style="margin-bottom:.6rem;">Post-launch &middot; what we're still watching</h3>
@@ -601,22 +1679,22 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <div class="pr-canvas">
       <svg viewBox="0 0 480 320" role="img" aria-label="Three personas typing the same keyword all receive one identical templated report">
         <defs>
-          <marker id="pr-arrowhead-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker id="pr-arrowhead-a-og" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path>
           </marker>
         </defs>
         <text x="20" y="38" class="pr-lbl">Capacity planner</text>
         <rect x="20" y="46" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
         <text x="67" y="63" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
-        <path d="M114,63 Q250,63 320,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <path d="M114,63 Q250,63 320,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a-og)"></path>
         <text x="20" y="138" class="pr-lbl">Partnerships lead</text>
         <rect x="20" y="146" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
         <text x="67" y="163" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
-        <path d="M114,163 L318,163" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <path d="M114,163 L318,163" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a-og)"></path>
         <text x="20" y="238" class="pr-lbl">Competitive analyst</text>
         <rect x="20" y="246" width="94" height="34" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
         <text x="67" y="263" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
-        <path d="M114,263 Q250,263 320,186" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <path d="M114,263 Q250,263 320,186" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-a-og)"></path>
         <text x="390" y="90" text-anchor="middle" class="pr-tag-accent">Identical</text>
         <rect class="pr-node" x="320" y="100" width="140" height="120" rx="4" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"></rect>
         <text x="390" y="124" text-anchor="middle" class="pr-node-lbl">Report</text>
@@ -634,10 +1712,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <div class="pr-canvas">
       <svg viewBox="0 0 480 320" role="img" aria-label="A keyword enters a sealed, unexplainable process and a report comes out, with no visible sources or reasoning">
         <defs>
-          <marker id="pr-arrowhead-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <marker id="pr-arrowhead-b-og" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path>
           </marker>
-          <pattern id="pr-hatch-b" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <pattern id="pr-hatch-b-og" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="8" height="8" fill="var(--surface-subtle)"></rect>
             <line x1="0" y1="0" x2="0" y2="8" stroke="var(--hairline-faint)" stroke-width="2"></line>
           </pattern>
@@ -645,12 +1723,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <text x="70" y="100" text-anchor="middle" class="pr-lbl">Query</text>
         <rect x="20" y="115" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
         <text x="70" y="140" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
-        <path d="M120,140 L178,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
-        <rect class="pr-sealed" x="185" y="35" width="140" height="210" rx="4" fill="url(#pr-hatch-b)" stroke="var(--accent)" stroke-width="1.5"></rect>
+        <path d="M120,140 L178,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b-og)"></path>
+        <rect class="pr-sealed" x="185" y="35" width="140" height="210" rx="4" fill="url(#pr-hatch-b-og)" stroke="var(--accent)" stroke-width="1.5"></rect>
         <text x="255" y="152" text-anchor="middle" class="pr-q">?</text>
         <circle cx="317" cy="43" r="3" fill="var(--accent)" stroke="var(--canvas)" stroke-width="1.2"></circle>
         <text x="255" y="266" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
-        <path d="M325,140 L378,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <path d="M325,140 L378,140" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#pr-arrowhead-b-og)"></path>
         <text x="430" y="105" text-anchor="middle" class="pr-lbl">Report</text>
         <rect x="380" y="115" width="100" height="50" rx="4" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"></rect>
         <line x1="395" y1="135" x2="465" y2="135" stroke="var(--muted)" stroke-width="1" opacity=".55"></line>

@@ -150,6 +150,355 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </style>
 </head>
 <body id="top">
+<div id="cmp-bar" style="position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;background:#fff8f5;border-bottom:1px dashed #f44800;font-family:'JetBrains Mono',ui-monospace,monospace;">
+  <span style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#d63e00;">Preview &middot; story restructure</span>
+  <button type="button" id="cmp-after-btn" aria-pressed="true" style="font-family:inherit;font-size:.72rem;border:1px solid #111;background:#111;color:#fff;border-radius:2px;padding:.35rem .7rem;cursor:pointer;">New story</button>
+  <button type="button" id="cmp-before-btn" aria-pressed="false" style="font-family:inherit;font-size:.72rem;border:1px solid rgba(31,30,29,.4);background:#fff;color:#57534b;border-radius:2px;padding:.35rem .7rem;cursor:pointer;">Current page</button>
+</div>
+<div id="deeli-after">
+<section class="sol-b" aria-labelledby="sol-b-title">
+  <style>
+    .sol-b{
+      --paper:#ffffff; --raised:#f7f7f7;
+      --ink:#111111; --body:#141413; --muted:#57534b; --faint:#757169;
+      --line:rgba(31,30,29,0.12); --line-strong:rgba(31,30,29,0.28);
+      --accent:#f44800; --accent-deep:#d63e00; --accent-wash:rgba(244,72,0,0.08);
+      --serif:Georgia,"Times New Roman",serif;
+      --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+      --fbody:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.5;
+      padding:clamp(2.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem); -webkit-font-smoothing:antialiased;
+    }
+    .sol-b *{box-sizing:border-box;}
+    .sol-b .wrap{max-width:64rem;margin:0 auto;}
+    .sol-b .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;}
+    .sol-b .eyebrow .num{color:var(--ink);font-weight:600;}
+    .sol-b .measure{max-width:34em;}
+    .sol-b .tnum{font-variant-numeric:tabular-nums;}
+    .sol-b .masthead{border-bottom:1.5px solid var(--ink);padding-bottom:1.4rem;margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
+    .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.02;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);}
+    .sol-b h2 em{font-style:italic;}
+    .sol-b .masthead .dossier{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:right;line-height:1.7;}
+    .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.02rem;line-height:1.6;color:#57534b;max-width:62ch;margin:.35rem 0 0;}
+    .sol-b .act{display:grid;grid-template-columns:minmax(0,1fr);gap:1.4rem;padding:clamp(2rem,4.5vw,3.2rem) 0;border-top:1px solid var(--line);}
+    .sol-b .act:first-of-type{border-top:none;padding-top:0;}
+    .sol-b .act-head{display:grid;gap:.7rem;}
+    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:18em;color:var(--ink);}
+    .sol-b .act p{color:var(--muted);margin:0;}
+    .sol-b .setup-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem;align-items:start;}
+    @media (min-width:720px){.sol-b .setup-grid{grid-template-columns:1.05fr .95fr;gap:2.4rem;}}
+    .sol-b .move .exp-line{font-family:var(--serif);font-style:italic;font-size:.86rem;line-height:1.4;color:#57534b;margin:.35rem 0 .2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sol-b .prb-stack{display:grid;gap:18px;}
+    .sol-b .pr-lbl{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;fill:#757169;}
+    .sol-b .pr-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:20px;fill:#111111;}
+    .sol-b .pr-node-lbl{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;fill:#57534b;}
+    .sol-b .pr-tag-accent{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;fill:#f44800;}
+    .sol-b .pr-tag-muted{font-family:var(--mono);font-size:13px;letter-spacing:.05em;text-transform:uppercase;fill:#757169;}
+    .sol-b .pr-q{font-family:var(--mono);font-size:48px;font-weight:600;fill:#000000;}
+    .sol-b .pr-caption{font-family:var(--serif);font-style:italic;font-size:13.5px;line-height:1.55;color:#757169;text-align:center;margin:14px 0 0;max-width:440px;}
+    .sol-b .pr-fig{margin:0;display:flex;flex-direction:column;}
+    .sol-b .pr-eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#757169;margin-bottom:10px;}
+    .sol-b .pr-canvas{width:100%;aspect-ratio:3/2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:#f7f7f7;border-radius:4px;box-shadow:0 0 0 1px rgba(31,30,29,0.12);padding:14px 12px;}
+    .sol-b .pr-canvas svg{width:100%;height:100%;display:block;overflow:visible;}
+    /* hinge &mdash; dark ink pull-panel */
+    .sol-b .hinge{background:var(--ink);color:#f4f1ea;border-radius:var(--radius,4px);padding:clamp(1.6rem,4vw,2.6rem);display:grid;grid-template-columns:minmax(0,1fr);gap:1.8rem;align-items:center;}
+    @media (min-width:760px){.sol-b .hinge{grid-template-columns:1.15fr .85fr;gap:2.4rem;align-items:start;}}
+    .sol-b .hinge .eyebrow{color:#a8a29a;}
+    .sol-b .hinge .eyebrow .num{color:#fff;}
+    .sol-b .hinge h3{color:#fff;max-width:15em;}
+    .sol-b .hinge h3 em{font-style:italic;color:#e6ddd4;}
+    .sol-b .hinge p{color:#d6cdc4;}
+    .sol-b .hinge .turn{font-family:var(--serif);font-style:italic;font-size:1.06rem;color:#fff;border-left:2px solid var(--accent);padding-left:1rem;margin-top:1.1rem;}
+    .sol-b .hinge .turn b{font-style:normal;font-weight:600;}
+    /* moves */
+    .sol-b .moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius,4px);overflow:hidden;margin-top:.4rem;}
+    @media (min-width:900px){.sol-b .moves{grid-template-columns:repeat(4,minmax(0,1fr));}}
+    .sol-b .move{background:var(--paper);padding:1.3rem 1.15rem 1.4rem;display:grid;gap:.7rem;align-content:start;transition:background .25s ease;}
+    .sol-b .move:hover{background:var(--raised);}
+    .sol-b .move .mnum{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--faint);}
+    .sol-b .thumb{height:88px;border:1px solid var(--line-strong);border-radius:2px;background:var(--paper);overflow:hidden;}
+    .sol-b .thumb svg{display:block;width:100%;height:100%;}
+    .sol-b .move h4{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
+    .sol-b .move p{font-size:.86rem;color:var(--muted);margin:0;}
+    /* outcome */
+    .sol-b .outcome-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem 2.4rem;align-items:start;}
+    @media (min-width:760px){.sol-b .outcome-grid{grid-template-columns:1fr 1fr;}}
+    .sol-b .metric{border-top:2px solid var(--ink);padding-top:.9rem;}
+    .sol-b .metric .big{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(2.6rem,7vw,3.8rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
+    .sol-b .metric .lede{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:.55rem 0 0;}
+    .sol-b .metric p{margin:.5rem 0 0;font-size:.88rem;color:var(--muted);}
+    /* coda */
+    .sol-b .coda{margin-top:clamp(2.5rem,6vw,4rem);border-top:1.5px solid var(--ink);padding-top:1.8rem;display:grid;grid-template-columns:minmax(0,1fr);gap:1.2rem 2.4rem;}
+    @media (min-width:760px){.sol-b .coda{grid-template-columns:.55fr 1.45fr;}}
+    .sol-b .coda .stat{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(2.4rem,6vw,3.4rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
+    .sol-b .coda .stat small{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:.55rem;font-variant-numeric:normal;}
+    .sol-b .coda p{color:var(--muted);margin:0 0 .7rem;}
+    .sol-b .coda p:last-child{margin-bottom:0;}
+    .sol-b .coda .pledge{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:1.02rem;}
+    .sol-b a:focus-visible,.sol-b .move:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+    .sol-b .reveal{opacity:0;transform:translateY(12px);animation:sol-b-in .7s cubic-bezier(.22,1,.36,1) forwards;}
+    @keyframes sol-b-in{to{opacity:1;transform:none;}}
+    @media (prefers-reduced-motion:reduce){.sol-b .reveal{animation:none;opacity:1;transform:none;} .sol-b .move{transition:none;}}
+  </style>
+  <div class="wrap">
+    <header class="masthead">
+      <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I rebuilt its search as a research assistant that asks what you need.</h2>
+      <p class="dossier">Case Study&nbsp;/&nbsp;Deeli<br>Top-5 semiconductor foundry<br>Solo product designer &middot; 5-engineer build<br>Launched June 2026</p>
+<p class="mast-lede">Two weeks after launch, queries per active day were up <b>220%</b> and <b>70%</b> arrived as real questions instead of keywords &mdash; a change that started with one test the model couldn&rsquo;t pass.</p>
+    </header>
+
+    <article class="act" aria-labelledby="sol-b-act1">
+      <div class="setup-grid">
+        <div class="act-head"><p class="eyebrow">The problem</p><h3 id="sol-b-act1">Search answered the topic, not the question.</h3><p class="measure">The old search matched words. It never knew who was asking or what they needed &mdash; so every role got the same generic report, out of a process no one could inspect.</p></div>
+        <div class="prb-stack">
+<figure class="pr-fig">
+    <div class="pr-eyebrow">The black box</div>
+    <div class="pr-canvas">
+      <svg viewBox="0 0 480 320" role="img" aria-label="A keyword enters a sealed, unexplainable process and a report comes out, with no visible sources or reasoning">
+        <defs>
+          <marker id="pr-arrowhead-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#757169"></path>
+          </marker>
+          <pattern id="pr-hatch-b" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="8" height="8" fill="#f7f7f7"></rect>
+            <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(31,30,29,0.12)" stroke-width="2"></line>
+          </pattern>
+        </defs>
+        <text x="70" y="100" text-anchor="middle" class="pr-lbl">Query</text>
+        <rect x="20" y="115" width="100" height="50" rx="4" fill="#ffffff" stroke="rgba(31,30,29,0.4)" stroke-width="1"></rect>
+        <text x="70" y="140" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
+        <path d="M120,140 L178,140" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <rect class="pr-sealed" x="185" y="35" width="140" height="210" rx="4" fill="url(#pr-hatch-b)" stroke="#f44800" stroke-width="1.5"></rect>
+        <text x="255" y="152" text-anchor="middle" class="pr-q">?</text>
+        <circle cx="317" cy="43" r="3" fill="#f44800" stroke="#ffffff" stroke-width="1.2"></circle>
+        <text x="255" y="266" text-anchor="middle" class="pr-tag-muted">No sources &middot; no reasoning</text>
+        <path d="M325,140 L378,140" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-b)"></path>
+        <text x="430" y="105" text-anchor="middle" class="pr-lbl">Report</text>
+        <rect x="380" y="115" width="100" height="50" rx="4" fill="#ffffff" stroke="rgba(31,30,29,0.4)" stroke-width="1"></rect>
+        <line x1="395" y1="135" x2="465" y2="135" stroke="#757169" stroke-width="1" opacity=".55"></line>
+        <line x1="395" y1="149" x2="450" y2="149" stroke="#757169" stroke-width="1" opacity=".55"></line>
+      </svg>
+    </div>
+    <figcaption class="pr-caption">The output showed neither its sources nor its reasoning.</figcaption>
+  </figure>
+<figure class="pr-fig">
+    <div class="pr-eyebrow">The sameness failure</div>
+    <div class="pr-canvas">
+      <svg viewBox="0 0 480 320" role="img" aria-label="Three personas typing the same keyword all receive one identical templated report">
+        <defs>
+          <marker id="pr-arrowhead-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#757169"></path>
+          </marker>
+        </defs>
+        <text x="20" y="38" class="pr-lbl">Capacity planner</text>
+        <rect x="20" y="46" width="94" height="34" rx="4" fill="#ffffff" stroke="rgba(31,30,29,0.4)" stroke-width="1"></rect>
+        <text x="67" y="63" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
+        <path d="M114,63 Q250,63 320,140" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="20" y="138" class="pr-lbl">Partnerships lead</text>
+        <rect x="20" y="146" width="94" height="34" rx="4" fill="#ffffff" stroke="rgba(31,30,29,0.4)" stroke-width="1"></rect>
+        <text x="67" y="163" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
+        <path d="M114,163 L318,163" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="20" y="238" class="pr-lbl">Competitive analyst</text>
+        <rect x="20" y="246" width="94" height="34" rx="4" fill="#ffffff" stroke="rgba(31,30,29,0.4)" stroke-width="1"></rect>
+        <text x="67" y="263" text-anchor="middle" dominant-baseline="central" class="pr-val">HBM</text>
+        <path d="M114,263 Q250,263 320,186" fill="none" stroke="#757169" stroke-width="1" marker-end="url(#pr-arrowhead-a)"></path>
+        <text x="390" y="90" text-anchor="middle" class="pr-tag-accent">Identical</text>
+        <rect class="pr-node" x="320" y="100" width="140" height="120" rx="4" fill="rgba(244,72,0,0.08)" stroke="#f44800" stroke-width="1.5"></rect>
+        <text x="390" y="124" text-anchor="middle" class="pr-node-lbl">Report</text>
+        <line x1="345" y1="145" x2="445" y2="145" stroke="#757169" stroke-width="1" opacity=".55"></line>
+        <line x1="345" y1="163" x2="445" y2="163" stroke="#757169" stroke-width="1" opacity=".55"></line>
+        <line x1="345" y1="181" x2="420" y2="181" stroke="#757169" stroke-width="1" opacity=".55"></line>
+        <circle cx="454" cy="106" r="3" fill="#f44800" stroke="#ffffff" stroke-width="1.2"></circle>
+      </svg>
+    </div>
+    <figcaption class="pr-caption">Different research jobs went in. The same report came out.</figcaption>
+  </figure>
+</div>
+      </div>
+    </article>
+
+    <article class="act" aria-labelledby="sol-b-act2">
+      
+      
+      <div class="hinge reveal">
+        <div>
+          <p class="eyebrow">The research</p>
+          <h3 id="sol-b-act2">I put the model through the same research I put <em>people</em> through.</h3>
+<p class="measure">On the model: mock-real queries built from researcher interviews, watching where the model breaks. Before it answers, it decides who it&rsquo;s writing for. That call landed six times out of seven &mdash; the seventh question fit two different readers, and the model refused to guess. On people: what researchers expect from AI &mdash; to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
+          <p class="turn"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em> &mdash; the same first move a good support conversation makes.</p>
+        </div>
+        <div>
+        <figure class="mtr" aria-label="Trace of the model thinking through one query: it reads the domain and analysis type, cannot tell who the answer is for, and asks instead of guessing">
+  <style>
+    .sol-b .mtr {
+      margin: 0;
+      max-width: 420px;
+      width: 100%;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+    .sol-b .mtr-card {
+      background: #f7f7f7;
+      border-radius: 4px;
+      padding: 16px 18px 14px;
+    }
+    .sol-b .mtr-query {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid #dcd9d3;
+      border-radius: 3px;
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #111111;
+      margin-bottom: 12px;
+    }
+    .sol-b .mtr-prompt {
+      color: #a8a29a;
+      flex: none;
+    }
+    .sol-b .mtr-steps {
+      list-style: none;
+      margin: 0 0 0 4px;
+      padding: 0;
+    }
+    .sol-b .mtr-step {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
+      border-left: 1px solid #d6d2cb;
+      padding: 6px 6px 6px 14px;
+    }
+    .sol-b .mtr-label {
+      flex: none;
+      font-size: 10.5px;
+      letter-spacing: 0.01em;
+      color: #8a847a;
+    }
+    .sol-b .mtr-result {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #33302b;
+      text-align: right;
+    }
+    .sol-b .mtr-pass {
+      color: #57534b;
+      margin-left: 6px;
+    }
+    .sol-b .mtr-flag {
+      border-left: 2px solid #f44800;
+      padding-left: 13px;
+      background: rgba(244, 72, 0, 0.08);
+    }
+    .sol-b .mtr-flag .mtr-result {
+      color: #46423c;
+    }
+    .sol-b .mtr-mark {
+      color: #f44800;
+      margin-left: 6px;
+    }
+    .sol-b .mtr-final .mtr-result {
+      color: #111111;
+      font-weight: 600;
+    }
+    .sol-b .mtr-foot {
+      margin: 10px 0 0 4px;
+      font-size: 10px;
+      line-height: 1.4;
+      color: #97918a;
+    }
+  </style>
+  <div class="mtr-card">
+    <div class="mtr-query"><span class="mtr-prompt" aria-hidden="true">&gt;</span><span>Is HBM supply a risk for next year?</span></div>
+    <ol class="mtr-steps">
+      <li class="mtr-step">
+        <span class="mtr-label">reads the domain</span>
+        <span class="mtr-result">memory &middot; HBM<span class="mtr-pass" aria-hidden="true">&#10003;</span></span>
+      </li>
+      <li class="mtr-step">
+        <span class="mtr-label">picks the analysis type</span>
+        <span class="mtr-result">risk assessment<span class="mtr-pass" aria-hidden="true">&#10003;</span></span>
+      </li>
+      <li class="mtr-step mtr-flag">
+        <span class="mtr-label">names who it&rsquo;s for</span>
+        <span class="mtr-result">can&rsquo;t tell &mdash; supply chain, or chip design?<span class="mtr-mark" aria-hidden="true">?</span></span>
+      </li>
+      <li class="mtr-step mtr-final">
+        <span class="mtr-label">decision</span>
+        <span class="mtr-result">don&rsquo;t guess. Ask.</span>
+      </li>
+    </ol>
+  </div>
+  <figcaption class="mtr-foot">Pattern from the eval run&rsquo;s one flagged case &middot; 11 automated checks</figcaption>
+</figure>
+        </div>
+      </div>
+      
+      
+    </article>
+
+    <article class="act" aria-labelledby="sol-b-act3">
+      <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the steps below meet expectations researchers told us about &mdash; the second exists because of the one test the model couldn&rsquo;t pass.</p></div>
+      
+      <div class="moves">
+        <div class="move" tabindex="0"><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
+        <div class="move" tabindex="0"><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h4>Aim the report</h4><p>I made the product confirm who the report is for and what it should cover before researching.</p></div>
+        <div class="move" tabindex="0"><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h4>Show the agents</h4><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
+        <div class="move" tabindex="0"><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
+      </div>
+    </article>
+
+    <article class="act" aria-labelledby="sol-b-outcome">
+      <div class="act-head"><p class="eyebrow">Outcome</p><h3 id="sol-b-outcome">Researchers trusted what came back.</h3></div>
+      <div class="outcome-grid">
+<div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
+        <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask: within two weeks of launch, 70% of live queries were real questions instead of keywords &mdash; the behavior the redesign was built to earn.</p></div>
+      </div>
+    </article>
+
+    <article class="act" aria-labelledby="sol-b-method">
+  <style>
+    .sol-b .sbm-grid{display:grid;grid-template-columns:1fr;gap:.8rem;margin-top:1.5rem}
+    @media (min-width:760px){.sol-b .sbm-grid{grid-template-columns:repeat(3,1fr)}}
+    .sol-b .sbm-tile{background:#f7f7f7;border:1px solid rgba(31,30,29,0.28);border-radius:4px;padding:1.1rem;display:grid;gap:.55rem;align-content:start}
+    .sol-b .sbm-tile h4{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#d63e00;margin:0}
+    .sol-b .sbm-tile p{font-size:.9rem;line-height:1.55;color:#57534b;margin:0}
+  </style>
+  <div class="act-head">
+    <p class="eyebrow">Method &middot; How I worked with AI</p>
+    <h3 id="sol-b-method">The story above ran on a working method.</h3>
+    <p class="measure">Three habits carried this project from first measurement to shipped interface.</p>
+  </div>
+  <div class="sbm-grid">
+    <div class="sbm-tile">
+      <h4>persona.md &mdash; who we test for</h4>
+      <p>I build persona.md from interviews, user feedback, and usage data; it also feeds our product-prioritization flow. Upkeep that took 6+ hours a week now takes about one.</p>
+    </div>
+    <div class="sbm-tile">
+      <h4>Measured, not eyeballed</h4>
+      <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking which check failed &mdash; the flagged case above is one of its findings.</p>
+    </div>
+    <div class="sbm-tile">
+      <h4>Primitives the model can adapt</h4>
+      <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and the doc itself is the handoff &mdash; engineers read it, no meetings.</p>
+    </div>
+  </div>
+</article>
+
+    <aside class="coda" aria-labelledby="sol-b-coda">
+      <p class="stat tnum">28%<small>of queries were re-asks</small></p>
+      <div>
+        <h3 id="sol-b-coda" class="eyebrow" style="margin-bottom:.6rem;">Post-launch &middot; what we're still watching</h3>
+        <p class="measure">28% of queries were re-asks &mdash; what a support team would call repeat contacts. A re-ask can mean the answer missed, or the topic had a second angle. Those need opposite fixes, so the next move is research, not a feature.</p>
+        <p class="pledge measure">Shipped, still measuring &mdash; the log decides which one it is.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+</div>
+<div id="deeli-before" hidden>
 
 <div class="cs-shell">
 <div class="cs-rail-col">
@@ -3480,5 +3829,28 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <script type="module" src="/src/caseNav.ts"></script>
 
 <script type="module" src="/src/deeliChat.tsx"></script>
+</div>
+<script>
+(function(){
+  var after=document.getElementById('deeli-after');
+  var before=document.getElementById('deeli-before');
+  var btnA=document.getElementById('cmp-after-btn');
+  var btnB=document.getElementById('cmp-before-btn');
+  function paint(btn,on){
+    btn.setAttribute('aria-pressed',on?'true':'false');
+    btn.style.background=on?'#111':'#fff';
+    btn.style.color=on?'#fff':'#57534b';
+    btn.style.borderColor=on?'#111':'rgba(31,30,29,.4)';
+  }
+  function show(which){
+    after.hidden=which!=='after';
+    before.hidden=which!=='before';
+    paint(btnA,which==='after');
+    paint(btnB,which==='before');
+  }
+  btnA.addEventListener('click',function(){show('after');});
+  btnB.addEventListener('click',function(){show('before');});
+})();
+</script>
 </body>
 </html>

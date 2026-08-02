@@ -185,6 +185,18 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* ---------- real product shots ---------- */
   .sol-nyu .sn-figure{margin:26px 0 0;max-width:760px;}
   .sol-nyu .sn-figure img,.sol-nyu .sn-figure video{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
+  /* Media control cloned from the landing page's work-card thumbnails
+     (.work-media-control in src/index.css) so the same gesture works in both
+     places. The video autoplays muted and looping, so this is the pause
+     affordance required by WCAG 2.2.2. */
+  .sol-nyu .sn-video-wrap{position:relative;display:block;}
+  .sol-nyu .sn-media-control{position:absolute;right:12px;bottom:12px;display:grid;width:36px;height:36px;place-items:center;color:var(--white);background:var(--control-dark);border:0;border-radius:999px;cursor:pointer;opacity:0;transform:translateY(4px);transition:opacity 180ms var(--ease),transform 180ms var(--ease),background 180ms var(--ease);}
+  .sol-nyu .sn-media-control:hover{background:var(--control-dark-hover);}
+  .sol-nyu .sn-video-wrap:hover .sn-media-control,.sol-nyu .sn-video-wrap:focus-within .sn-media-control,.sol-nyu .sn-media-control:focus-visible{opacity:1;transform:translateY(0);}
+  .sol-nyu .sn-media-control svg{width:16px;height:16px;}
+  .sol-nyu .sn-media-control svg path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+  .sol-nyu .sn-media-control svg path[d="M8 5v14l11-7z"]{fill:currentColor;stroke:none;}
+  @media (prefers-reduced-motion:reduce){.sol-nyu .sn-media-control{transition:none;opacity:1;transform:none;}}
   .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
   .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;}
 
@@ -645,7 +657,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </div>
     <p class="sn-honest">Honest denominator: the ~33% comes from our own first-month post-launch analytics, not the deck. It&rsquo;s early and directional, but the plan behind it was set before we shipped.</p>
     <figure class="sn-figure">
-      <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline controls preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
+      <div class="sn-video-wrap">
+        <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
+        <button class="sn-media-control" type="button" aria-label="Pause preview" title="Pause preview">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14"/><path d="M16 5v14"/></svg>
+        </button>
+      </div>
       <figcaption>The shipped work-order flow, queue to dispatch, as staff use it. The measurement plan behind the stats above was set before launch.</figcaption>
     </figure>
   </section>
@@ -730,9 +747,25 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 })();
 (function(){
   var v=document.querySelector('.sn-figure-video');
-  if(v && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    v.removeAttribute('autoplay'); v.pause(); v.controls=true;
+  var btn=document.querySelector('.sn-media-control');
+  if(!v || !btn) return;
+  var PLAY='M8 5v14l11-7z';
+  var PAUSE='<path d="M8 5v14"/><path d="M16 5v14"/>';
+  function sync(){
+    var playing=!v.paused;
+    btn.setAttribute('aria-label', playing ? 'Pause preview' : 'Play preview');
+    btn.setAttribute('title', playing ? 'Pause preview' : 'Play preview');
+    btn.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24">'+(playing ? PAUSE : '<path d="'+PLAY+'"/>')+'</svg>';
   }
+  btn.addEventListener('click', function(){
+    if(v.paused){ v.play().catch(function(){}); } else { v.pause(); }
+  });
+  v.addEventListener('play', sync);
+  v.addEventListener('pause', sync);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    v.removeAttribute('autoplay'); v.pause();
+  }
+  sync();
 })();
 </script>
 </div>

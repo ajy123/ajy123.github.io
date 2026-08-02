@@ -39,6 +39,13 @@
   --measure-lede: 54ch; /* hero lede: larger type, fewer chars per line */
   --measure-caption: 44ch; /* figure captions */
   --measure-label: 24ch; /* micro label beside a stat */
+
+  /* Media play/pause control. Lives here rather than in index.css because both
+     the landing page's work cards and the case studies' figure videos use the
+     same control, and they load different stylesheets. */
+  --white: #ffffff; /* on-accent foreground text for keycap/pin labels */
+  --control-dark: rgba(17, 17, 17, 0.72);
+  --control-dark-hover: rgba(17, 17, 17, 0.9);
 }
 
 /* Responsive rhythm. The scale is redefined at the breakpoints rather than

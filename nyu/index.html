@@ -155,11 +155,11 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .ny-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
   .sol-nyu .ny-rail-col{position:relative;width:280px;flex-shrink:0;}
   .sol-nyu .ny-content{flex:1 1 auto;min-width:0;}
-  /* 18px top pad aligns the TOC ol (not the home link) with the 72px content
-     top: 72 − home-link outer 45 (21 line + 10 pad + 14 margin) − ol margin 4
-     − first-link pad 5 = 18. Keep in sync with RAIL_BASE in the compare-chrome
-     script at the foot of this page. */
-  .sol-nyu .ny-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:18px 48px 72px 0;}
+  /* 100px top pad aligns the home link's text with the title top: content
+     top 72 + kicker block ~33 (15px line + 18px margin) − the link's own 5px
+     top padding. Keep in sync with RAIL_BASE in the compare-chrome script at
+     the foot of this page. */
+  .sol-nyu .ny-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:100px 48px 72px 0;}
   .sol-nyu .ny-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--sn-ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
   .sol-nyu .ny-side-home:hover{color:var(--sn-deep);}
   .sol-nyu .ny-side ol{list-style:none;margin:4px 0 0;padding:0;}
@@ -1089,7 +1089,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
      content down but not the fixed rail, so add the bar's height onto the
      rail's padding-top. RAIL_BASE must equal the 18px padding-top on
      .sol-nyu .ny-side in the inline CSS (change both together). */
-  var RAIL_BASE=18; /* strip at ship */
+  var RAIL_BASE=100; /* strip at ship */
   function padRail(){ /* strip at ship */
     var bar=document.getElementById('cmp-bar');
     var rail=document.querySelector('#nyu-after .ny-side');

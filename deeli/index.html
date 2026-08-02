@@ -178,10 +178,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
     .sol-b .na-rail-col{position:relative;width:280px;flex-shrink:0;}
     .sol-b .na-content{flex:1 1 auto;min-width:0;}
-    /* 90px top pad aligns the home link's text with the title top: content
-       top 72 − the link's own 5px top padding. Keep in sync with RAIL_BASE in
-       the compare-chrome script at the foot of this page. */
-    .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:90px 48px 72px 0;}
+    /* 67px top pad aligns the home link's text with the content top: 72 − the
+       link's own 5px top padding. Keep in sync with RAIL_BASE in the
+       compare-chrome script at the foot of this page. */
+    .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:67px 48px 72px 0;}
     .sol-b .na-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
     .sol-b .na-side-home:hover{color:var(--accent-deep);}
     .sol-b .na-side ol{list-style:none;margin:4px 0 0;padding:0;}
@@ -6474,7 +6474,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
      content down but not the fixed rail, so add the bar's height onto the
      rail's padding-top. RAIL_BASE must equal the 18px padding-top on
      .sol-b .na-side in the inline CSS (change both together). */
-  var RAIL_BASE=90; /* strip at ship */
+  var RAIL_BASE=67; /* strip at ship */
   function padRail(){ /* strip at ship */
     var bar=document.getElementById('cmp-bar');
     var rail=document.querySelector('#deeli-after .na-side');

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From paper reports to live monitoring · Joanna Yen</title>
-<meta name="description" content="Product-design case study: a 0-to-1 device-status dashboard for Swiftly. Transit IT investigates failing devices themselves; device-issue inbound to Client Success fell 20%.">
+<meta name="description" content="A 0-to-1 device-status dashboard for Swiftly. Transit IT investigates failing devices themselves; device-issue inbound to Client Success fell 20%.">
 <script>
 /* Visiting a case study counts as knowing the site: set the landing page's
    intro-seen flag (read in src/main.tsx) so the back-link goes straight to
@@ -41,13 +41,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 .gal-copy{padding:0;}
 .gal-copy-inner{max-width:var(--measure-prose);}
 .gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
-.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);text-wrap:balance;color:var(--ink);}
+.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);color:var(--ink);}
 .gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;text-wrap:pretty;}
 .gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
 .gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
 .gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
 .gal-copy li b{color:var(--ink);font-weight:600;}
-.gal-copy .gal-kick{font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin:6px 0 20px;padding:16px 20px;background:var(--surface-warm);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);text-wrap:balance;}
+.gal-copy .gal-kick{font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin:6px 0 20px;padding:16px 20px;background:var(--surface-warm);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
 .gal-copy .gal-pm{font-size:15px;line-height:1.6;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:16px;margin:16px 0 24px;font-style:italic;}
 
 /* ---- figures: real slide crops from Joanna's Swiftly deck ---- */
@@ -94,164 +94,678 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </style>
 </head>
 <body id="top">
+<div id="swiftly-after">
+<section class="sol-sw" aria-labelledby="sol-sw-title">
+<style>
+  .sol-sw{
+    /* Local --ssw-* names, shared values. Single source of truth for every
+     * value below is :root in /src/case-study.css. */
+    --ssw-canvas:var(--canvas);
+    --ssw-panel:var(--surface-subtle);
+    --ssw-ink:var(--ink);
+    --ssw-body:var(--body);
+    --ssw-mid:var(--muted-strong);
+    --ssw-faint:var(--muted);
+    --ssw-hair:var(--hairline-faint);
+    --ssw-hair2:var(--hairline-strong);
+    --ssw-accent:var(--accent);
+    --ssw-deep:var(--accent-deep);
+    --ssw-wash:var(--accent-wash);
+    --ssw-r:var(--radius);
+    --ssw-serif:var(--font-serif);
+    --ssw-mono:var(--font-mono);
+    --ssw-sans:var(--font-body);
+    background:var(--ssw-canvas);
+    color:var(--ssw-body);
+    font-family:var(--ssw-sans);
+    line-height:1.6;
+    padding:72px 24px 88px;
+  }
+  .sol-sw *,.sol-sw *::before,.sol-sw *::after{box-sizing:border-box;}
+  .sol-sw p{margin:0 0 14px;font-size:16px;color:var(--ssw-body);text-wrap:pretty;}
+  .sol-sw a{color:var(--ssw-ink);}
+  .sol-sw a:focus-visible,.sol-sw [tabindex]:focus-visible{outline:2px solid var(--ssw-accent);outline-offset:3px;border-radius:2px;}
 
-<div class="cs-shell">
-<div class="cs-rail-col">
-<nav class="cs-side" aria-label="Sections">
-  <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
+  /* ---------- left rail (same numbers as the NYU sibling: 280px rail,
+     64px gap, 1200px cap, fixed rail via the static-position trick,
+     67px rail padding-top aligns the home link with the eyebrow.) ---------- */
+  .sol-sw .sw-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
+  .sol-sw .sw-rail-col{position:relative;width:280px;flex-shrink:0;}
+  .sol-sw .sw-content{flex:1 1 auto;min-width:0;}
+  .sol-sw .sw-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:67px 48px 72px 0;}
+  .sol-sw .sw-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ssw-ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
+  .sol-sw .sw-side-home:hover{color:var(--ssw-deep);}
+  .sol-sw .sw-side ol{list-style:none;margin:4px 0 0;padding:0;}
+  .sol-sw .sw-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--ssw-faint);text-decoration:none;padding:5px 0;transition:color .15s ease;}
+  .sol-sw .sw-side ol a:hover{color:var(--ssw-ink);}
+  .sol-sw .sw-side ol a[aria-current="location"]{color:var(--ssw-ink);font-weight:600;}
+  .sol-sw .sw-side a:focus-visible{outline:1px solid var(--ssw-accent);outline-offset:2px;}
+  @media(prefers-reduced-motion:reduce){.sol-sw .sw-side ol a{transition:none;}}
+  @media(max-width:999px){.sol-sw .sw-rail-col{display:none;}.sol-sw .sw-shell{display:block;}}
+  @media(min-width:1000px) and (max-width:1100px){.sol-sw .sw-rail-col,.sol-sw .sw-side{width:240px;}.sol-sw .sw-shell{gap:40px;}}
+  .sol-sw #sw-problem,.sol-sw #sw-insight,.sol-sw #sw-moves,.sol-sw #sw-outcome,.sol-sw #sw-postlaunch{scroll-margin-top:3.5rem;}
+
+  /* ---------- masthead ---------- */
+  .sol-sw .sw-eyebrow{font-family:var(--ssw-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 18px;}
+  .sol-sw .sw-eyebrow b{color:var(--ssw-ink);font-weight:600;}
+  .sol-sw #sol-sw-title{font-family:var(--ssw-serif);font-size:clamp(30px,4.4vw,44px);line-height:1.12;letter-spacing:-0.01em;font-weight:400;color:var(--ssw-ink);margin:0 0 20px;}
+  .sol-sw .sw-dek{font-size:18px;line-height:1.55;color:var(--ssw-body);margin:0 0 34px;}
+  .sol-sw .sw-dossier{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ssw-hair2);border-bottom:1px solid var(--ssw-hair);margin:0 0 8px;}
+  .sol-sw .sw-dossier>div{padding:16px 18px 18px;border-left:1px solid var(--ssw-hair);}
+  .sol-sw .sw-dossier>div:first-child{border-left:0;padding-left:0;}
+  .sol-sw .sw-dossier dt{font-family:var(--ssw-mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 7px;}
+  .sol-sw .sw-dossier dd{font-size:13.5px;line-height:1.5;color:var(--ssw-ink);font-weight:600;margin:0;}
+  .sol-sw .sw-doss-sub{display:block;font-size:12.5px;line-height:1.5;color:var(--ssw-mid);font-weight:400;margin-top:2px;}
+  @media(max-width:700px){
+    .sol-sw .sw-dossier{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .sol-sw .sw-dossier>div:nth-child(3){border-left:0;padding-left:0;}
+    .sol-sw .sw-dossier>div:nth-child(n+3){border-top:1px solid var(--ssw-hair);}
+  }
+
+  /* ---------- act markers + headings ---------- */
+  .sol-sw .sw-act{display:flex;align-items:center;gap:14px;margin:64px 0 14px;}
+  .sol-sw .sw-act-tag{font-family:var(--ssw-mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ssw-accent);white-space:nowrap;}
+  .sol-sw .sw-act-rule{flex:1;height:1px;background:var(--ssw-hair);}
+  .sol-sw h3{font-family:var(--ssw-serif);font-size:clamp(22px,3vw,28px);line-height:1.2;font-weight:400;color:var(--ssw-ink);margin:0 0 16px;}
+
+  /* ---------- act I: quote + old-path flow ---------- */
+  .sol-sw .sw-quote{font-family:var(--ssw-serif);font-style:italic;font-size:15.5px;line-height:1.6;color:var(--ssw-mid);border-left:2px solid var(--ssw-hair2);padding-left:16px;margin:18px 0 22px;}
+  .sol-sw .sw-quote-src{display:block;font-family:var(--ssw-mono);font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ssw-faint);margin-top:8px;}
+  .sol-sw .sw-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:26px 0 6px;}
+  .sol-sw .sw-flow-step{flex:1 1 150px;min-width:140px;background:var(--ssw-panel);border-radius:var(--ssw-r);box-shadow:0 0 0 1px var(--ssw-hair);padding:12px 14px;}
+  .sol-sw .sw-flow-step p{margin:0;font-size:12.5px;line-height:1.45;color:var(--ssw-body);}
+  .sol-sw .sw-flow-step .sw-flow-n{font-family:var(--ssw-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ssw-faint);display:block;margin-bottom:5px;}
+  .sol-sw .sw-flow-step.sw-flow-end{background:var(--ssw-ink);box-shadow:none;}
+  .sol-sw .sw-flow-step.sw-flow-end p{color:#ffffff;}
+  .sol-sw .sw-flow-step.sw-flow-end .sw-flow-n{color:rgba(255,255,255,0.6);}
+  .sol-sw .sw-flow-step.sw-flow-end b{font-family:var(--ssw-mono);font-size:17px;font-variant-numeric:tabular-nums;}
+  .sol-sw .sw-figcap{font-family:var(--ssw-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--ssw-faint);margin:10px 0 0;}
+
+  /* ---------- figures: real product shots ---------- */
+  .sol-sw .sw-figure{margin:26px 0 0;}
+  .sol-sw .sw-figure img{display:block;width:100%;height:auto;border-radius:var(--ssw-r);box-shadow:0 0 0 1px var(--ssw-hair);background:var(--ssw-panel);}
+  .sol-sw .sw-figure figcaption{font-family:var(--ssw-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--ssw-faint);margin:10px 0 0;}
+  .sol-sw .sw-fig-eyebrow{font-family:var(--ssw-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 12px;}
+  .sol-sw .sw-fig-row{display:grid;gap:18px;align-items:start;margin:26px 0 0;}
+  @media(min-width:720px){.sol-sw .sw-fig-row{grid-template-columns:1fr 1fr;}}
+  .sol-sw .sw-fig-row .sw-figure{margin:0;}
+  .sol-sw .sw-fig-zoom{display:block;cursor:zoom-in;border-radius:var(--ssw-r);}
+  .sol-sw .sw-fig-zoom:focus-visible{outline:2px solid var(--ssw-accent);outline-offset:3px;}
+
+  /* ---------- act II: hinge panel ---------- */
+  .sol-sw .sw-hinge{background:var(--ssw-wash);border-left:3px solid var(--ssw-accent);border-radius:var(--ssw-r);padding:26px 28px 20px;margin:8px 0 10px;}
+  .sol-sw .sw-hinge p{font-size:15.5px;}
+  .sol-sw .sw-hinge .sw-hinge-lab{font-family:var(--ssw-mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ssw-deep);margin:0 0 12px;}
+  .sol-sw .sw-hinge ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .sol-sw .sw-hinge li{font-size:15px;line-height:1.55;color:var(--ssw-body);padding-left:18px;position:relative;}
+  .sol-sw .sw-hinge li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--ssw-accent);}
+  .sol-sw .sw-hinge li b{color:var(--ssw-ink);font-weight:600;}
+  .sol-sw .sw-hyp{font-size:17px;font-weight:600;line-height:1.45;color:var(--ssw-ink);margin:0;}
+
+  /* ---------- act III: moves strip ---------- */
+  .sol-sw .sw-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0 8px;}
+  @media(max-width:640px){.sol-sw .sw-moves{grid-template-columns:1fr;}}
+  .sol-sw .sw-move{background:var(--ssw-panel);border-radius:var(--ssw-r);box-shadow:0 0 0 1px var(--ssw-hair);padding:18px 18px 20px;}
+  @media(prefers-reduced-motion:no-preference){
+    .sol-sw .sw-move{transition:box-shadow .15s ease;}
+    .sol-sw .sw-move:hover{box-shadow:0 0 0 1px var(--ssw-hair2);}
+  }
+  .sol-sw .sw-move-viz{height:64px;display:flex;align-items:center;margin:0 0 14px;}
+  .sol-sw .sw-move-t{font-size:15px;font-weight:700;color:var(--ssw-ink);margin:0 0 5px;}
+  .sol-sw .sw-move p{font-size:13.5px;line-height:1.5;color:var(--ssw-mid);margin:0;}
+  /* status dots (grayscale on purpose: accent is reserved for the hinge, act markers, one number) */
+  .sol-sw .sw-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .sol-sw .sw-dot-ok{background:var(--ssw-hair);}
+  .sol-sw .sw-dot-warn{background:var(--ssw-faint);}
+  .sol-sw .sw-dot-down{background:var(--ssw-ink);}
+  .sol-sw .sw-viz-table{display:flex;flex-direction:column;gap:8px;width:100%;}
+  .sol-sw .sw-viz-row{display:flex;align-items:center;gap:10px;}
+  .sol-sw .sw-viz-veh{width:44px;height:8px;border-radius:2px;background:var(--ssw-hair2);}
+  .sol-sw .sw-viz-cols{display:flex;align-items:flex-end;gap:8px;height:52px;}
+  .sol-sw .sw-viz-col{width:22px;border-radius:2px 2px 0 0;background:transparent;box-shadow:inset 0 0 0 1px var(--ssw-hair2);height:38px;}
+  .sol-sw .sw-viz-col.sw-first{background:var(--ssw-ink);box-shadow:none;height:52px;}
+  .sol-sw .sw-viz-caret{font-family:var(--ssw-mono);font-size:10px;color:var(--ssw-ink);margin-right:2px;align-self:flex-start;}
+  .sol-sw .sw-viz-legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+  .sol-sw .sw-viz-key{display:flex;align-items:center;gap:6px;font-family:var(--ssw-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ssw-mid);}
+  .sol-sw .sw-viz-hc{display:flex;gap:18px;align-items:center;}
+  .sol-sw .sw-viz-bubble{position:relative;background:#ffffff;box-shadow:0 0 0 1px var(--ssw-hair2);border-radius:var(--ssw-r);padding:5px 9px;font-family:var(--ssw-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ssw-ink);}
+  .sol-sw .sw-viz-pair{display:flex;flex-direction:column;align-items:center;gap:7px;}
+
+  /* ---------- outcome ---------- */
+  .sol-sw .sw-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:26px 0 24px;box-shadow:inset 0 1px 0 var(--ssw-hair2),inset 0 -1px 0 var(--ssw-hair);max-width:780px;}
+  .sol-sw .sw-stat{padding:22px 20px 24px 0;}
+  @media(min-width:681px){
+    .sol-sw .sw-stat{box-shadow:inset 1px 0 0 var(--ssw-hair);padding-left:20px;}
+    .sol-sw .sw-stat:first-child{box-shadow:none;padding-left:0;}
+  }
+  @media(max-width:680px){
+    .sol-sw .sw-stats{grid-template-columns:1fr;}
+    .sol-sw .sw-stat{box-shadow:inset 0 1px 0 var(--ssw-hair);padding:18px 0;}
+    .sol-sw .sw-stat:first-child{box-shadow:none;}
+  }
+  .sol-sw .sw-stat-tag{font-family:var(--ssw-mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 10px;}
+  .sol-sw .sw-stat-num{font-family:var(--ssw-mono);font-size:clamp(28px,3.6vw,38px);line-height:1;font-weight:600;color:var(--ssw-ink);font-variant-numeric:tabular-nums;margin:0 0 10px;}
+  .sol-sw .sw-stat-num.sw-key{color:var(--ssw-accent);}
+  .sol-sw .sw-stat p{font-size:13px;line-height:1.5;color:var(--ssw-mid);margin:0;}
+
+  /* ---------- coda ---------- */
+  .sol-sw .sw-coda{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 22px;padding:22px;background:var(--ssw-panel);border-radius:var(--ssw-r);box-shadow:0 0 0 1px var(--ssw-hair);}
+  @media(max-width:680px){.sol-sw .sw-coda{grid-template-columns:1fr;}}
+  .sol-sw .sw-coda-item b{display:block;font-size:13.5px;color:var(--ssw-ink);margin-bottom:4px;}
+  .sol-sw .sw-coda-item p{font-size:12.5px;line-height:1.5;color:var(--ssw-mid);margin:0;}
+  .sol-sw .sw-open{font-family:var(--ssw-serif);font-size:18px;line-height:1.5;color:var(--ssw-ink);margin:0;}
+</style>
+<div class="sw-shell">
+<div class="sw-rail-col">
+<nav class="sw-side" aria-label="Story sections">
+  <a class="sw-side-home" href="/">&larr; Joanna Yen</a>
   <ol>
-    <li><a href="#sec-problem">Problem</a></li>
-    <li><a href="#sec-process">Process</a></li>
-    <li><a href="#sec-solution">Solution</a></li>
-    <li><a href="#sec-impact">Impact</a></li>
-    <li><a href="#sec-learnings">Learnings</a></li>
+    <li><a href="#sw-problem">The problem</a></li>
+    <li><a href="#sw-insight">The insight</a></li>
+    <li><a href="#sw-moves">Design decisions</a></li>
+    <li><a href="#sw-outcome">Outcome</a></li>
+    <li><a href="#sw-postlaunch">Post-launch</a></li>
   </ol>
 </nav>
 </div>
-<div class="cs-content">
+<div class="sw-content">
+<div class="sw-wrap">
 
-<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On Swiftly, Joanna was product designer on a cross-functional team of 5 (PM, TPM, eng manager, engineer), May–June 2022. Validated through crit and internal design review, not usability testing." data-ask-prompts='["What was Joanna&#39;s role on Swiftly?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, TPM, eng manager, and engineer?", "did this ship as a 0-to-1 MVP?", "did the project run May–June 2022?"]'>
-  <p class="cs-hero-eyebrow">Swiftly &middot; Product design</p>
-  <h1 class="cs-hero-title">From paper reports to live monitoring.</h1>
-  <p class="cs-hero-lede">I designed a 0-to-1 device-status dashboard that let transit IT find and investigate failing in-vehicle devices themselves, instead of routing that work through our Client Success team.</p>
-  <div class="cs-hero-meta">
-    <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Product designer</p><p class="cs-hero-meta-val">Data Monitor Team</p></div>
-    <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 5</p><p class="cs-hero-meta-val">PM, TPM, eng manager, engineer</p></div>
-    <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">May&ndash;June 2022</p><p class="cs-hero-meta-val">Shipped as a 0-to-1 MVP</p></div>
-  </div>
-  <div class="cs-proof-strip" aria-label="Launch evidence">
-    <div class="cs-proof-item"><span class="cs-proof-tag">Investigation time</span><span class="cs-proof-value">12&ndash;24 hrs</span><span class="cs-proof-label">down from 30+ hours per device issue</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">Support inbound</span><span class="cs-proof-value">&minus;20%</span><span class="cs-proof-label">device-issue inbound to Client Success</span></div>
-  </div>
-  <p class="cs-hero-honest">The internal goal was under 12 hours. The miss, and what it taught, is covered in Impact.</p>
-</header>
+  <!-- ================= MASTHEAD ================= -->
+  <header class="sw-masthead">
+    <p class="sw-eyebrow"><b>Swiftly</b> &middot; Device monitoring &middot; 2022</p>
+    <h1 id="sol-sw-title">Transit IT couldn&rsquo;t see which of their bus devices were failing. I designed Swiftly&rsquo;s first live view of every device on every vehicle.</h1>
+    <p class="sw-dek">Swiftly is a transit-data platform for U.S. and European transit agencies. After the live view shipped, a device investigation fell from <b>30+ hours to 12&ndash;24</b>, and device-issue inbound to Client Success dropped <b>20%</b>.</p>
+    <dl class="sw-dossier" aria-label="Project facts">
+      <div>
+        <dt>Role</dt>
+        <dd>Product designer<span class="sw-doss-sub">Research + design, end to end &middot; Data Monitor Team</span></dd>
+      </div>
+      <div>
+        <dt>Team</dt>
+        <dd>Cross-functional team of 5<span class="sw-doss-sub">PM, TPM, eng manager, engineer + me</span></dd>
+      </div>
+      <div>
+        <dt>Timeline</dt>
+        <dd>May&ndash;June 2022<span class="sw-doss-sub">Shipped as a 0-to-1 MVP</span></dd>
+      </div>
+      <div>
+        <dt>Used by</dt>
+        <dd>Transit-agency IT teams<span class="sw-doss-sub">Agencies like CapMetro, Austin&rsquo;s transit authority</span></dd>
+      </div>
+    </dl>
+  </header>
 
-<nav class="cs-rail" aria-label="Case study summary">
-  <p class="cs-rail-title">The case in fifteen seconds</p>
-  <ol>
-    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> One daily paper report, filled out by hand, was IT&rsquo;s only signal that a device had failed.</a></li>
-    <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Agency size varied widely, and back-end diagnostics couldn&rsquo;t explain why a device failed.</a></li>
-    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> A live, color-coded, hover-first status view replaced the report.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Investigation time fell to 12&ndash;24 hrs, short of the goal, which taught us the metric was wrong.</a></li>
-  </ol>
-</nav>
-
-<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
-<div class="gal-block" data-ask-hint="Ask what made the paper report unreliable" data-ask-kind="project" data-ask-prompts='["What made the daily paper report unreliable?", "Why did small and medium agencies have no formal report at all?"]' data-ask-follow-up-prompts='["did small and medium agencies rely on word of mouth for outages?", "did investigating one device issue take over 30 hours?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">One report, filled out by hand, was the whole signal.</h2>
-    <p class="gal-lede-p">Transit agencies had no reliable way to see which in-service vehicle devices were failing. IT depended on bus operators submitting a daily maintenance report, and monitoring was spread across multiple platforms.</p>
-    <p>For many small and medium agencies there wasn&rsquo;t even a formal report. Outages on GPS trackers or headsigns got reported by word of mouth. The cost landed on Swiftly&rsquo;s own Client Success team: almost 40% of their time went to fielding inbound about device issues. Investigating a single device issue took 30+ hours.</p>
-    <p class="gal-pm">&ldquo;As an IT at Capmetro, I want to feel confident that I know which in-service vehicle devices require my attention so that we can troubleshoot quickly without interrupting services and have better data for future prediction (e.g. arrival time).&rdquo;</p>
-  </div></div>
-
-  <div class="cs-figure-row">
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">Existing experience</p>
-      <img class="cs-figure-img" src="assets/existing-experience.png" alt="Diagram of a transit bus with its eight in-service devices labeled: trackers, routers, headsign, security camera, automatic passenger counter, automated fare collection, mobile data terminal and next-stop annunciator." loading="lazy" width="1180" height="900">
-      <figcaption class="cs-figure-cap">Before: eight-plus devices per vehicle to keep alive, and the only failure signal was a hand-filled daily report.</figcaption>
+  <!-- ================= ACT I ================= -->
+  <section id="sw-problem" aria-label="The problem">
+    <div class="sw-act"><span class="sw-act-tag">The problem</span><span class="sw-act-rule"></span></div>
+    <h3>The failure signal was a form filled out by hand, when agencies had one at all.</h3>
+    <div class="sw-prose">
+      <p>Every bus carries eight or more devices that must stay alive. When one failed, IT&rsquo;s only signal was a paper form and scattered monitoring platforms.</p>
+      <p>Many small and medium agencies had no formal report at all; failures traveled by word of mouth. Almost 40% of Client Success&rsquo;s time went to device questions, and one investigation took 30+ hours.</p>
+      <blockquote class="sw-quote">
+        &ldquo;As an IT at CapMetro, I want to feel confident that I know which in-service vehicle devices require my attention so that we can troubleshoot quickly without interrupting services and have better data for future prediction (e.g. arrival time).&rdquo;
+        <span class="sw-quote-src">User story, from research with CapMetro IT</span>
+      </blockquote>
+    </div>
+    <figure style="margin:0;">
+      <div class="sw-flow" role="img" aria-label="The old path for one device failure: a bus operator fills a paper form, the report may or may not reach IT, IT calls Swiftly Client Success, and one investigation takes more than 30 hours.">
+        <div class="sw-flow-step"><span class="sw-flow-n">Step 1</span><p>Bus operator fills out a paper maintenance form</p></div>
+        <div class="sw-flow-step"><span class="sw-flow-n">Step 2</span><p>Report may or may not reach agency IT</p></div>
+        <div class="sw-flow-step"><span class="sw-flow-n">Step 3</span><p>IT routes the question to Swiftly Client Success</p></div>
+        <div class="sw-flow-step sw-flow-end"><span class="sw-flow-n">Cost</span><p><b>30+ hrs</b> to investigate one device issue</p></div>
+      </div>
+      <figcaption class="sw-figcap">The escalation path one failure took before the dashboard; Client Success sat at the end of every one.</figcaption>
     </figure>
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">After: live monitoring</p>
-      <img class="cs-figure-img" src="assets/live-monitoring.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device column showing each device&rsquo;s status at a glance." loading="lazy" width="1300" height="880">
-      <figcaption class="cs-figure-cap">After: a live Data Health device-status view replaced the daily report: device state per vehicle, in one place.</figcaption>
+    <div class="sw-fig-row">
+      <figure class="sw-figure">
+        <p class="sw-fig-eyebrow">Existing experience</p>
+        <img src="assets/existing-experience.png" alt="Diagram of a transit bus with its eight in-service devices labeled: trackers, routers, headsign, security camera, automatic passenger counter, automated fare collection, mobile data terminal and next-stop annunciator." loading="lazy" width="1180" height="900">
+        <figcaption>Before: eight-plus devices per vehicle, and the only failure signal was a hand-filled daily report.</figcaption>
+      </figure>
+      <figure class="sw-figure">
+        <p class="sw-fig-eyebrow">The daily report</p>
+        <img src="assets/daily-report.jpg" alt="A pink carbon-copy paper Bus Maintenance Report form, filled out by hand." loading="lazy" width="932" height="658">
+        <figcaption>The failure signal itself: a carbon-copy form, one per bus, per day.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= ACT II: HINGE ================= -->
+  <section id="sw-insight" aria-label="The insight">
+    <div class="sw-act"><span class="sw-act-tag">The insight</span><span class="sw-act-rule"></span></div>
+    <h3>I stopped trying to improve the report.</h3>
+    <div class="sw-prose">
+      <p>Before sketching, I mapped a full agency day, bus operator to dispatcher to Client Success. Two findings reframed the brief:</p>
+    </div>
+    <div class="sw-hinge">
+      <p class="sw-hinge-lab">The reframe</p>
+      <ul>
+        <li><b>There was often no report to improve.</b> Many small and medium agencies had none. A better daily report would miss them entirely.</li>
+        <li><b>The data could say <i>that</i> a device failed, not <i>why</i>.</b> The back end had too little diagnostic depth to promise automated diagnosis.</li>
+      </ul>
+      <p>So instead of a better report, I scoped a live, triage-first view: one that shows which vehicles need attention now and claims nothing the data cannot back up.</p>
+      <p class="sw-hyp">If IT can see device status in one place, they will investigate with confidence instead of routing the work through Client Success.</p>
+    </div>
+    <figure class="sw-figure">
+      <p class="sw-fig-eyebrow">System thinking</p>
+      <a class="sw-fig-zoom" href="assets/system-map-full.png" target="_blank" rel="noopener" aria-label="Open the full-size journey map in a new tab">
+        <img src="assets/system-map.png" alt="A service blueprint laying out a day at a transit agency in swimlanes (rider, operator, onboard hardware, dispatcher, OCC manager, planner, IT, customer service), tracing how device-related data moves between roles over time." loading="lazy" width="1600" height="900">
+      </a>
+      <figcaption>Mapping a full agency day, operator to Client Success, showed where device reporting broke down. Opens full size.</figcaption>
     </figure>
+  </section>
+
+  <!-- ================= ACT III: MOVES ================= -->
+  <section id="sw-moves" aria-label="Design decisions">
+    <div class="sw-act"><span class="sw-act-tag">Design decisions</span><span class="sw-act-rule"></span></div>
+    <h3>Four decisions I shipped.</h3>
+    <div class="sw-moves">
+      <div class="sw-move">
+        <div class="sw-move-viz">
+          <div class="sw-viz-table" role="img" aria-label="A miniature status table: three vehicle rows, each with a row of status dots, one dark dot marking a down device.">
+            <div class="sw-viz-row"><span class="sw-viz-veh"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-down"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span></div>
+            <div class="sw-viz-row"><span class="sw-viz-veh"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-warn"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span></div>
+            <div class="sw-viz-row"><span class="sw-viz-veh"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-ok"></span><span class="sw-dot sw-dot-warn"></span></div>
+          </div>
+        </div>
+        <p class="sw-move-t">Replace the report</p>
+        <p>One live view replaced the form and the scattered platforms: every device on every vehicle, in one place.</p>
+      </div>
+      <div class="sw-move">
+        <div class="sw-move-viz">
+          <div class="sw-viz-cols" role="img" aria-label="Four table columns; the first is filled solid and taller, marking where the eye lands first.">
+            <span class="sw-viz-caret" aria-hidden="true">&#9660;</span>
+            <span class="sw-viz-col sw-first"></span><span class="sw-viz-col"></span><span class="sw-viz-col"></span><span class="sw-viz-col"></span>
+          </div>
+        </div>
+        <p class="sw-move-t">Lead with triage</p>
+        <p>In-service status leads: it is the one thing IT scans for, and readers read the left edge first.</p>
+      </div>
+      <div class="sw-move">
+        <div class="sw-move-viz">
+          <div class="sw-viz-legend" role="img" aria-label="A labeled legend: three dots marked OK, Check, and Down.">
+            <span class="sw-viz-key"><span class="sw-dot sw-dot-ok"></span>OK</span>
+            <span class="sw-viz-key"><span class="sw-dot sw-dot-warn"></span>Check</span>
+            <span class="sw-viz-key"><span class="sw-dot sw-dot-down"></span>Down</span>
+          </div>
+        </div>
+        <p class="sw-move-t">Choose color over icons</p>
+        <p>I chose a labeled color legend over icons because it is legible on first use, with no icon vocabulary to learn.</p>
+      </div>
+      <div class="sw-move">
+        <div class="sw-move-viz">
+          <div class="sw-viz-hc" role="img" aria-label="Two interactions side by side: hovering a dot shows a small status bubble; clicking it opens a detail panel.">
+            <span class="sw-viz-pair"><span class="sw-viz-bubble">Hover &middot; status</span><span class="sw-dot sw-dot-down"></span></span>
+            <span class="sw-viz-pair"><span class="sw-viz-bubble">Click &middot; detail</span><span class="sw-dot sw-dot-warn"></span></span>
+          </div>
+        </div>
+        <p class="sw-move-t">Hover to monitor, click to investigate</p>
+        <p>Glancing stays the default; opening a device for detail is a choice rather than a forced navigation.</p>
+      </div>
+    </div>
+    <div class="sw-fig-row">
+      <figure class="sw-figure">
+        <p class="sw-fig-eyebrow">Considered: all vehicles</p>
+        <img src="assets/table-considered.png" alt="Device table keyed on vehicles, listing device status and devices requiring attention." loading="lazy" width="1373" height="843">
+        <figcaption>Every vehicle, every device, equal weight.</figcaption>
+      </figure>
+      <figure class="sw-figure">
+        <p class="sw-fig-eyebrow">Shipped: in-service first</p>
+        <img src="assets/table-shipped.png" alt="The shipped device table: in-service vehicles first, one color dot per device." loading="lazy" width="1384" height="844">
+        <figcaption>In-service status leads the first column: triage before diagnosis.</figcaption>
+      </figure>
+    </div>
+<section class="sw-proto" id="sw-w1" data-ask-ignore="true">
+  <style>
+    .sw-proto{
+      --sw-ink:#111111; --sw-muted:#57534b; --sw-line:rgba(31,30,29,0.12); --sw-line-strong:rgba(31,30,29,0.28);
+      --sw-accent:#f44800;
+      --sw-ok:#1fa97a; --sw-warn:#d99114; --sw-down:#d64545; --sw-off:#c9c5bc;
+      --sw-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+      --sw-body:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      position:relative; display:block; background:#ffffff; border:1px solid var(--sw-line);
+      border-radius:6px; padding:22px 24px 24px; box-sizing:border-box;
+      font-family:var(--sw-body); color:var(--sw-ink);
+    }
+    .sw-proto *{box-sizing:border-box;}
+    .sw-proto .sw-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin:0 0 16px;}
+    .sw-proto .sw-eyebrow{font-family:var(--sw-mono); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--sw-muted); margin:0;}
+    .sw-proto .sw-eyebrow b{color:var(--sw-accent); font-weight:600;}
+    .sw-proto .sw-hint{font-size:13px; color:var(--sw-muted); margin:0;}
+    .sw-proto .sw-table-wrap{overflow-x:auto; border:1px solid var(--sw-line); border-radius:6px;}
+    .sw-proto table{width:100%; min-width:560px; border-collapse:collapse; font-variant-numeric:tabular-nums;}
+    .sw-proto th,.sw-proto td{border-bottom:1px solid var(--sw-line); border-right:1px solid var(--sw-line); padding:0; text-align:center;}
+    .sw-proto th:last-child,.sw-proto td:last-child{border-right:none;}
+    .sw-proto tr:last-child td{border-bottom:none;}
+    .sw-proto th{font-family:var(--sw-mono); font-size:10.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--sw-muted); padding:10px 8px; white-space:nowrap;}
+    .sw-proto th.sw-vcol,.sw-proto td.sw-vcol{text-align:left; padding-left:14px; min-width:132px;}
+    .sw-proto td.sw-vcol{padding-top:8px; padding-bottom:8px; white-space:nowrap;}
+    .sw-proto .sw-svc{font-size:12.5px; color:var(--sw-muted); margin-right:10px;}
+    .sw-proto .sw-vid{font-family:var(--sw-mono); font-size:13px; font-weight:600; color:var(--sw-ink);}
+    .sw-proto tr.sw-oos .sw-vid{color:var(--sw-muted); font-weight:500;}
+    .sw-proto .sw-dot{appearance:none; border:none; background:transparent; width:32px; height:32px; margin:2px auto;
+      display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; padding:0;}
+    .sw-proto .sw-dot::before{content:""; width:13px; height:13px; border-radius:50%; background:var(--sw-off); transition:transform 140ms ease;}
+    .sw-proto .sw-dot:hover::before{transform:scale(1.25);}
+    .sw-proto .sw-dot:focus-visible{outline:2px solid var(--sw-ink); outline-offset:2px;}
+    .sw-proto .sw-dot.is-open::before{box-shadow:0 0 0 3px rgba(244,72,0,0.25);}
+    .sw-proto .sw-dot[data-state="o"]::before{background:var(--sw-ok);}
+    .sw-proto .sw-dot[data-state="a"]::before{background:var(--sw-warn);}
+    .sw-proto .sw-dot[data-state="d"]::before{background:var(--sw-down);}
+    .sw-proto .sw-dot[data-state="m"]::before{background:var(--sw-off);}
+    .sw-proto .sw-none{display:inline-block; width:32px; line-height:32px; font-family:var(--sw-mono); font-size:13px; color:var(--sw-line-strong); user-select:none;}
+    .sw-proto .sw-tip{position:absolute; z-index:5; max-width:250px; background:#262522; color:#ffffff; border-radius:6px;
+      padding:10px 12px; font-size:12px; line-height:1.45; text-align:left; pointer-events:none;
+      opacity:0; transform:translateY(3px); transition:opacity 120ms ease, transform 120ms ease;}
+    .sw-proto .sw-tip.is-on{opacity:1; transform:translateY(0);}
+    .sw-proto .sw-tip dl{display:grid; grid-template-columns:auto 1fr; gap:2px 10px; margin:0;}
+    .sw-proto .sw-tip dt{font-family:var(--sw-mono); font-size:10px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:rgba(255,255,255,0.6); padding-top:1px;}
+    .sw-proto .sw-tip dd{margin:0;}
+    .sw-proto .sw-panel{margin-top:14px; border:1px solid var(--sw-line); border-radius:6px; padding:16px 18px; outline:none;}
+    .sw-proto .sw-panel[hidden]{display:none;}
+    .sw-proto .sw-panel-head{display:flex; align-items:center; gap:10px; margin:0 0 12px;}
+    .sw-proto .sw-panel-title{font-size:15px; font-weight:600; margin:0;}
+    .sw-proto .sw-close{appearance:none; border:1px solid var(--sw-line); background:transparent; color:var(--sw-muted);
+      width:24px; height:24px; border-radius:50%; line-height:1; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0;}
+    .sw-proto .sw-close:hover{border-color:var(--sw-line-strong); color:var(--sw-ink);}
+    .sw-proto .sw-close:focus-visible{outline:2px solid var(--sw-ink); outline-offset:2px;}
+    .sw-proto .sw-panel-grid{display:grid; grid-template-columns:auto 1fr; gap:6px 18px; font-size:13.5px; margin:0 0 14px;}
+    .sw-proto .sw-panel-grid dt{font-family:var(--sw-mono); font-size:10.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--sw-muted); padding-top:2px;}
+    .sw-proto .sw-panel-grid dd{margin:0;}
+    .sw-proto .sw-spark-cap{font-family:var(--sw-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--sw-muted); margin:0 0 6px;}
+    .sw-proto .sw-spark{display:block; width:100%; max-width:340px; height:44px;}
+    .sw-proto .sw-foot{font-family:var(--sw-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--sw-line-strong); margin:12px 0 0;}
+    @media (prefers-reduced-motion: reduce){ .sw-proto *{transition:none !important;} }
+    @media (max-width:560px){ .sw-proto{padding:18px 14px 20px;} }
+  </style>
+
+  <div class="sw-head">
+    <p class="sw-eyebrow"><b>Try it</b> &middot; The shipped interaction</p>
+    <p class="sw-hint">Hover a dot for status. Click for the device panel.</p>
   </div>
-</div>
 
-<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
-<div class="gal-block" data-ask-hint="Ask what findings changed the direction" data-ask-kind="project" data-ask-prompts='["Which findings changed the design direction?", "Why didn&#39;t the design promise automated diagnosis?"]' data-ask-follow-up-prompts='["did agency size vary widely in reporting maturity?", "was back-end diagnostic depth limited?"]'>
+  <div class="sw-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="sw-vcol" scope="col">Vehicle</th>
+          <th scope="col">Trackers</th><th scope="col">Routers</th><th scope="col">APC Front</th>
+          <th scope="col">APC Back</th><th scope="col">Tablet</th><th scope="col">Headsign</th><th scope="col">OrbCAD</th>
+        </tr>
+      </thead>
+      <tbody id="sw-w1-body"></tbody>
+    </table>
+  </div>
 
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Two constraints reframed the direction.</h2>
-    <p class="gal-lede-p">Before designing, I mapped how device-related data actually traveled through an agency: what a day at a transit agency looks like end to end. That surfaced two constraints that reshaped the direction:</p>
-    <ul>
-      <li><b>Agency size varies widely.</b> Many small and medium agencies don&rsquo;t run a formal reporting process at all; outages travel by word of mouth. A design built only around &ldquo;make the daily report better&rdquo; would miss them.</li>
-      <li><b>Back-end diagnostic depth is limited.</b> The team didn&rsquo;t have rich data on why a device failed, only that it had, which ruled out a design that promised deep automated diagnosis.</li>
-    </ul>
-    <p>Together these pushed the solution away from &ldquo;a better report&rdquo; and toward a real-time, triage-first status view: show which vehicles need attention right now, and don&rsquo;t promise diagnosis the data can&rsquo;t support.</p>
-    <p class="gal-kick">If IT can see device status transparently in one place, they will investigate and troubleshoot with more confidence, and stop routing that work through Client Success.</p>
-  </div></div>
+  <div class="sw-tip" id="sw-w1-tip" role="tooltip" aria-hidden="true"></div>
 
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">System thinking</p>
-    <a class="cs-figure-zoom" href="assets/system-map-full.png" target="_blank" rel="noopener" aria-label="Open the full-size journey map in a new tab">
-      <img class="cs-figure-img" src="assets/system-map.png" alt="A service blueprint laying out a day at a transit agency in swimlanes (rider, operator, onboard hardware, dispatcher, OCC manager, planner, IT, customer service), tracing how device-related data moves between roles over time." loading="lazy" width="1600" height="900">
-    </a>
-    <figcaption class="cs-figure-cap">Mapping a full day at an agency, every role from operator to Client Success, surfaced where device reporting broke down. Opens full size.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow">Solution</span></div>
-<div class="gal-block" data-ask-hint="Ask why a color legend over icons" data-ask-kind="project" data-ask-prompts='["Why did you choose a color legend over icons?", "How does hover vs. click work in the device status view?"]' data-ask-follow-up-prompts='["why hover instead of click for the device status view?", "did a color legend replace icon-only status indicators?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Four shipped decisions.</h2>
-    <ul>
-      <li><b>One live view replacing the daily report.</b> Moved from a paper daily maintenance report across multiple platforms to immediate, in-product device troubleshooting.</li>
-      <li><b>Triage-first information hierarchy.</b> I leaned on the F-shaped reading pattern: the first column carries the vehicle&rsquo;s in-service status, the one thing IT scans for first, so triage comes before diagnosis.</li>
-    </ul>
-
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>Icon-only vs. a color legend for device status.</dd></div>
-        <div><dt>Chose</dt><dd>A color legend over icon-only status.</dd></div>
-        <div><dt>Because</dt><dd>Status stays legible to IT regardless of icon familiarity, weighed against how much visual complexity a fast-scanning ops audience could absorb.</dd></div>
-      </dl>
+  <div class="sw-panel" id="sw-w1-panel" tabindex="-1" hidden>
+    <div class="sw-panel-head">
+      <h4 class="sw-panel-title" id="sw-w1-panel-title">Vehicle</h4>
+      <button class="sw-close" type="button" id="sw-w1-close" aria-label="Close device panel">&times;</button>
     </div>
+    <dl class="sw-panel-grid">
+      <dt>Possible diagnosis</dt><dd id="sw-w1-diag"></dd>
+      <dt>Device ID</dt><dd id="sw-w1-did" style="font-family:var(--sw-mono);font-size:12.5px;"></dd>
+      <dt>Last report</dt><dd id="sw-w1-last"></dd>
+    </dl>
+    <p class="sw-spark-cap">Reporting latency &middot; last 14 checks</p>
+    <svg class="sw-spark" id="sw-w1-spark" viewBox="0 0 340 44" preserveAspectRatio="none" role="img" aria-label="Bar chart of recent reporting latency"></svg>
+  </div>
 
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize monitoring or investigating?&rdquo;</dd></div>
-        <div><dt>Chose</dt><dd>Hover to monitor, click to investigate.</dd></div>
-        <div><dt>Because</dt><dd>Glanceable status stays the default mode; going deeper into a device is optional, not a forced navigation.</dd></div>
-      </dl>
+  <p class="sw-foot">Demo data &middot; recreated interaction</p>
+
+  <script>
+  (function(){
+    var root = document.getElementById('sw-w1');
+    var body = document.getElementById('sw-w1-body');
+    var tip = document.getElementById('sw-w1-tip');
+    var panel = document.getElementById('sw-w1-panel');
+    var els = {
+      title: document.getElementById('sw-w1-panel-title'),
+      diag: document.getElementById('sw-w1-diag'),
+      did: document.getElementById('sw-w1-did'),
+      last: document.getElementById('sw-w1-last'),
+      spark: document.getElementById('sw-w1-spark'),
+      close: document.getElementById('sw-w1-close')
+    };
+    var COLS = [
+      ['Tracker','TR-T139U'], ['Router','SM-T547U'], ['APC Front','AP-C310F'], ['APC Back','AP-C310R'],
+      ['Tablet','TB-A8'], ['Headsign','HS-420'], ['OrbCAD','OC-900']
+    ];
+    var ST = {
+      o:{word:'healthy', issue:'Reporting normally. Last report 40 seconds ago.', diag:'None. Device is healthy.', last:'40 seconds ago'},
+      a:{word:'needs a check', issue:'Intermittent reports. 3 gaps in the past hour.', diag:'Weak cellular signal along this block.', last:'6 minutes ago'},
+      d:{word:'down', issue:'Has not reported in 2 hours.', diag:'Connection issue. Power or SIM fault likely.', last:'2 hours ago'},
+      m:{word:'paused', issue:'Vehicle is out of service. Monitoring paused.', diag:'None. Vehicle is out of service.', last:'Before the vehicle left service'}
+    };
+    var GRID = [
+      ['123', true,  'd,a,a,o,x,x,o'],
+      ['118', true,  'o,a,o,o,a,o,o'],
+      ['120', true,  'o,o,o,o,d,o,o'],
+      ['111', true,  'o,a,a,a,x,x,x'],
+      ['125', false, 'm,m,m,m,m,m,m']
+    ];
+    var openBtn = null;
+    var lastTouched = null;
+    var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+    var html = '';
+    GRID.forEach(function(row, r){
+      var states = row[2].split(',');
+      html += '<tr' + (row[1] ? '' : ' class="sw-oos"') + '><td class="sw-vcol">' +
+        (row[1] ? '<span class="sw-svc">In service</span>' : '<span class="sw-svc">Out of service</span>') +
+        '<span class="sw-vid">' + row[0] + '</span></td>';
+      states.forEach(function(s, c){
+        if (s === 'x'){ html += '<td><span class="sw-none" aria-hidden="true">+</span></td>'; return; }
+        var did = '109' + row[0] + '54' + (r + 2) + '' + (41 + c);
+        html += '<td><button type="button" class="sw-dot" data-state="' + s + '" data-v="' + row[0] +
+          '" data-c="' + c + '" data-did="' + did + '" aria-describedby="sw-w1-tip" aria-label="Vehicle ' +
+          row[0] + ' ' + COLS[c][0] + ', ' + ST[s].word + '"></button></td>';
+      });
+      html += '</tr>';
+    });
+    body.innerHTML = html;
+
+    function showTip(btn){
+      var st = ST[btn.dataset.state], col = COLS[+btn.dataset.c];
+      tip.innerHTML = '<dl><dt>Device ID</dt><dd>' + btn.dataset.did + '</dd>' +
+        '<dt>Model</dt><dd>' + col[1] + '</dd><dt>Issue</dt><dd>' + st.issue + '</dd></dl>';
+      var b = btn.getBoundingClientRect(), rt = root.getBoundingClientRect();
+      tip.style.left = Math.max(8, Math.min(b.left - rt.left - 12, rt.width - 262)) + 'px';
+      tip.style.top = (b.bottom - rt.top + 6) + 'px';
+      tip.classList.add('is-on');
+      tip.setAttribute('aria-hidden', 'false');
+    }
+    function hideTip(){ tip.classList.remove('is-on'); tip.setAttribute('aria-hidden', 'true'); }
+
+    function bars(state){
+      var out = '', n = 14;
+      for (var i = 0; i < n; i++){
+        var h = 8 + ((i * 7) % 10);
+        var miss = (state === 'd' && i > 9) || (state === 'a' && (i === 4 || i === 9)) || state === 'm';
+        if (miss) h = 3;
+        out += '<rect x="' + (i * 24.3) + '" y="' + (44 - h * 2) + '" width="14" height="' + (h * 2) +
+          '" rx="2" fill="' + (miss ? 'rgba(31,30,29,0.15)' : '#1fa97a') + '"></rect>';
+      }
+      return out;
+    }
+    function openPanel(btn){
+      if (openBtn) openBtn.classList.remove('is-open');
+      openBtn = btn;
+      btn.classList.add('is-open');
+      var st = ST[btn.dataset.state], col = COLS[+btn.dataset.c];
+      els.title.textContent = 'Vehicle ' + btn.dataset.v + ' · ' + col[0];
+      els.diag.textContent = st.diag;
+      els.did.textContent = btn.dataset.did + ' · ' + col[1];
+      els.last.textContent = st.last;
+      els.spark.innerHTML = bars(btn.dataset.state);
+      panel.hidden = false;
+      hideTip();
+      panel.focus({ preventScroll: false });
+    }
+    function closePanel(refocus){
+      if (panel.hidden) return;
+      panel.hidden = true;
+      if (openBtn){
+        openBtn.classList.remove('is-open');
+        if (refocus) openBtn.focus();
+      }
+      openBtn = null;
+    }
+
+    body.addEventListener('mouseover', function(e){
+      var btn = e.target.closest('.sw-dot');
+      if (btn) showTip(btn);
+    });
+    body.addEventListener('mouseout', function(e){
+      if (e.target.closest('.sw-dot')) hideTip();
+    });
+    body.addEventListener('focusin', function(e){
+      var btn = e.target.closest('.sw-dot');
+      if (btn) showTip(btn);
+    });
+    body.addEventListener('focusout', function(e){
+      if (e.target.closest('.sw-dot')) hideTip();
+    });
+    body.addEventListener('click', function(e){
+      var btn = e.target.closest('.sw-dot');
+      if (!btn) return;
+      if (coarse && lastTouched !== btn){
+        lastTouched = btn;
+        showTip(btn);
+        return;
+      }
+      lastTouched = btn;
+      if (btn === openBtn){ closePanel(true); } else { openPanel(btn); }
+    });
+    els.close.addEventListener('click', function(){ closePanel(true); });
+    root.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){ closePanel(true); hideTip(); }
+    });
+    document.addEventListener('click', function(e){
+      if (coarse && !e.target.closest('#sw-w1 .sw-dot')){ hideTip(); lastTouched = null; }
+    });
+  })();
+  </script>
+</section>
+    <figure class="sw-figure">
+      <p class="sw-fig-eyebrow">Shipped: click to investigate</p>
+      <img src="assets/investigate.png" alt="Vehicle health view for one vehicle: a possible-diagnosis row, a map with an Open in Live Operations link, and per-device cards with latency charts." loading="lazy" width="1444" height="988">
+      <figcaption>The click half of the model: one vehicle&rsquo;s health, a possible diagnosis, and the hand-off to Live Operations.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= OUTCOME ================= -->
+  <section id="sw-outcome" aria-label="Outcome">
+    <div class="sw-act"><span class="sw-act-tag">Outcome</span><span class="sw-act-rule"></span></div>
+    <h3>Investigation time fell. The internal goal was not met.</h3>
+    <div class="sw-stats" role="list" aria-label="MVP results">
+      <div class="sw-stat" role="listitem">
+        <p class="sw-stat-tag">Investigation time</p>
+        <p class="sw-stat-num sw-key">12&ndash;24 hrs</p>
+        <p>Per device issue, down from 30+ hours before the dashboard.</p>
+      </div>
+      <div class="sw-stat" role="listitem">
+        <p class="sw-stat-tag">Support inbound</p>
+        <p class="sw-stat-num">&minus;20%</p>
+        <p>Device-issue inbound to Client Success, the customer-facing team that had spent almost 40% of its time on device questions.</p>
+      </div>
+      <div class="sw-stat" role="listitem">
+        <p class="sw-stat-tag">Internal goal</p>
+        <p class="sw-stat-num">Not met</p>
+        <p>The target was under 12 hours per investigation.</p>
+      </div>
     </div>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">Shipped: information hierarchy</p>
-    <img class="cs-figure-img" src="assets/info-hierarchy.png" alt="Two versions of the device table side by side: one keyed on malfunctioned devices, the other on in-service vehicles, with legends beneath each." loading="lazy" width="1260" height="720">
-    <figcaption class="cs-figure-cap">Weighing an all-vehicles view against an in-service one: leading the first column with in-service status put triage before diagnosis, F-pattern first.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
-<div class="gal-block" data-ask-hint="Ask if investigation time dropped" data-ask-kind="project" data-ask-prompts='["Did investigation time drop from 30+ hrs to 12–24 hrs?", "Did the tool hit its under-12-hour goal?"]' data-ask-follow-up-prompts='["you missed your own 12-hour goal — what did that teach you?", "how did this project shift the team from engineering-led to design-led?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Investigation time fell. The goal wasn&rsquo;t met.</h2>
-    <div class="impact-findings" role="list" aria-label="MVP results">
-      <div class="impact-finding" role="listitem"><span class="impact-tag">Investigation time</span><b>12&ndash;24 hrs</b><span>down from 30+ hours per device issue</span></div>
-      <div class="impact-finding" role="listitem"><span class="impact-tag">Support inbound</span><b>&minus;20%</b><span>device-issue inbound to Client Success</span></div>
-      <div class="impact-finding" role="listitem"><span class="impact-tag">Internal goal</span><b>Not met</b><span>target was under 12 hours</span></div>
+    <div class="sw-prose">
+      <p>The miss was the most useful learning: IT teams triage differently by agency, so one investigation-time target measured the wrong thing.</p>
+      <p>Two results the numbers miss: monitoring now worked for agencies that never had a formal report, and the team credited it with shifting Swiftly&rsquo;s culture from engineering-led to design-led.</p>
     </div>
-    <p>Client Success had been spending almost 40% of its time on these issues, so the 20% drop came directly out of that load.</p>
-    <p>The internal goal of under 12 hours was not met. The miss produced the most useful learning of the project: IT teams triage differently, so a single investigation-time target measured the wrong thing.</p>
-    <p>Two things the numbers don&rsquo;t show: device monitoring now scaled across agencies of very different sizes, and the team credited the project with shifting its working culture from engineering-led to design-led.</p>
-  </div></div>
+    <figure class="sw-figure">
+      <p class="sw-fig-eyebrow">Shipped: live monitoring</p>
+      <img src="assets/live-monitoring-hover.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device, and a hover tooltip open on a failing tracker showing device ID, model, and the issue." loading="lazy" width="1442" height="1025">
+      <figcaption>The shipped Devices view: live status per vehicle, tooltip on hover.</figcaption>
+    </figure>
+  </section>
 
-</div>
-
-<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow">Learnings</span></div>
-<div class="gal-block" data-ask-hint="Ask what the missed goal taught" data-ask-kind="project" data-ask-prompts='["What did you learn from missing the goal?", "What would you change next time?"]' data-ask-follow-up-prompts='["did the project improve organizational scalability?", "did the team culture shift from engineering-led to design-led?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">What the miss taught.</h2>
-    <div class="cs-next-flow" role="img" aria-label="Three learnings from the Swiftly project">
-      <div class="cs-next-step"><b>Measure the right thing.</b><span>A one-size-fits-all investigation-time target hid real variation between agencies.</span></div>
-      <div class="cs-next-step"><b>Look beyond the existing interface.</b><span>Invest in micro-interactions, and hold the design to WCAG accessibility standards.</span></div>
-      <div class="cs-next-step"><b>Ask the consequence question.</b><span>What happens if we don&rsquo;t solve this right now.</span></div>
+  <!-- ================= CODA ================= -->
+  <section id="sw-postlaunch" aria-label="Post-launch: what I learned">
+    <div class="sw-act"><span class="sw-act-tag">Post-launch &middot; What I learned</span><span class="sw-act-rule"></span></div>
+    <div class="sw-coda">
+      <div class="sw-coda-item"><b>Measure the right thing.</b><p>One investigation-time target for every agency hid real variation between them.</p></div>
+      <div class="sw-coda-item"><b>The small interactions carried the trust.</b><p>The hover/click split and the labeled legend are what made the table glanceable in practice.</p></div>
+      <div class="sw-coda-item"><b>The biggest lever was the reframe.</b><p>A better report would have missed every agency that never had one. Mapping the full agency day is what surfaced them.</p></div>
     </div>
-  </div></div>
-</div>
+    <p class="sw-open">The question I would open a v2 with: what does &ldquo;fast enough&rdquo; mean at each agency? The dashboard could learn a per-agency triage target instead of one clock.</p>
+  </section>
 
 </div>
 </div>
-
-<!-- Side-TOC scroll spy shared by the case pages; see src/caseNav.ts. -->
-<script type="module" src="/src/caseNav.ts"></script>
+</div>
+</section>
+<script>
+(function(){
+  /* Rail scroll spy: reading-line logic scoped to the sw- rail. */
+  var railCol = document.querySelector('#swiftly-after .sw-rail-col');
+  var nav = document.querySelector('#swiftly-after .sw-side');
+  if(!railCol || !nav) return;
+  var sections = [];
+  Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#sw-"]'), function(link){
+    var el = document.getElementById((link.getAttribute('href') || '').slice(1));
+    if(el) sections.push({id: el.id, el: el, link: link});
+  });
+  if(!sections.length) return;
+  var activeId = null;
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id) s.link.setAttribute('aria-current', 'location');
+      else s.link.removeAttribute('aria-current');
+    });
+  }
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+    var readingLine = scrollY + viewportH * 0.375;
+    var current = null;
+    sections.forEach(function(s){
+      var top = s.el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine) current = s.id;
+    });
+    setActive(current);
+  }
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){ setActive(s.id); });
+  });
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
+  setTimeout(computeActive, 400);
+})();
+</script>
+</div>
 
 <script type="module" src="/src/swiftlyChat.tsx"></script>
 </body>

@@ -95,167 +95,680 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </style>
 </head>
 <body id="top">
+<div id="nyu-after">
+<section class="sol-nyu" aria-labelledby="sol-nyu-title">
+<style>
+  .sol-nyu{
+    /* Local --sn-* names, shared values. Single source of truth for every
+     * value below is :root in /src/case-study.css. */
+    --sn-canvas:var(--canvas);
+    --sn-panel:var(--surface-subtle);
+    --sn-ink:var(--ink);
+    --sn-body:var(--body);
+    --sn-mid:var(--muted-strong);
+    --sn-faint:var(--muted);
+    --sn-hairline:var(--hairline-faint);
+    --sn-hairline-strong:var(--hairline-strong);
+    --sn-accent:var(--accent);
+    --sn-deep:var(--accent-deep);
+    --sn-wash:var(--accent-wash);
+    --sn-radius:var(--radius);
+    --sn-serif:var(--font-serif);
+    --sn-mono:var(--font-mono);
+    --sn-sans:var(--font-body);
+    background:var(--sn-canvas);
+    color:var(--sn-body);
+    font-family:var(--sn-sans);
+    line-height:1.6;
+    padding:72px 24px 88px;
+  }
+  .sol-nyu *,.sol-nyu *::before,.sol-nyu *::after{box-sizing:border-box;}
+  /* No max-width: the column is already 856px (1200px shell - 280px rail -
+   * 64px gap), so any cap above that is dead. Swiftly's wrapper has none
+   * either; both pages land at the same measure. */
+  .sol-nyu .sn-wrap{margin:0 auto;}
+  .sol-nyu a{color:var(--sn-ink);}
+  .sol-nyu a:focus-visible,.sol-nyu [tabindex]:focus-visible{outline:2px solid var(--sn-accent);outline-offset:3px;border-radius:2px;}
 
-<div class="cs-shell">
-<div class="cs-rail-col">
-<nav class="cs-side" aria-label="Sections">
-  <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
+  /* ---------- masthead ---------- */
+  .sol-nyu .sn-kicker{font-family:var(--sn-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--sn-faint);margin:0 0 18px;}
+  .sol-nyu h1{text-wrap:balance;}
+  .sol-nyu #sol-nyu-title{font-family:var(--sn-serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-0.01em;color:var(--sn-ink);margin:0 0 18px;text-wrap:balance;}
+  .sol-nyu .sn-lede{font-size:18px;line-height:1.55;color:var(--sn-body);margin:0 0 34px;text-wrap:pretty;}
+  .sol-nyu .sn-dossier{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--sn-hairline-strong);border-bottom:1px solid var(--sn-hairline);margin:0 0 8px;}
+  .sol-nyu .sn-dossier>div{padding:16px 18px 18px 0;border-left:1px solid var(--sn-hairline);padding-left:18px;}
+  .sol-nyu .sn-dossier>div:first-child{border-left:none;padding-left:0;}
+  .sol-nyu .sn-dossier dt{font-family:var(--sn-mono);font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--sn-faint);margin:0 0 7px;}
+  .sol-nyu .sn-dossier dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--sn-ink);font-weight:600;}
+  .sol-nyu .sn-dossier dd small{display:block;font-size:12px;font-weight:400;color:var(--sn-mid);margin-top:2px;}
+  @media(max-width:720px){
+    .sol-nyu .sn-dossier{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .sol-nyu .sn-dossier>div:nth-child(3){border-left:none;padding-left:0;}
+    .sol-nyu .sn-dossier>div{border-top:1px solid var(--sn-hairline);}
+    .sol-nyu .sn-dossier>div:nth-child(-n+2){border-top:none;}
+  }
+
+  /* ---------- left rail (cloned from deeli's na-shell/na-side treatment;
+     ny- prefixed to keep this vocabulary separate from the shared .cs-*
+     chrome in src/case-study.css. Same numbers: 280px rail, 64px gap,
+     1200px cap, fixed rail via the static-position trick.) ---------- */
+  .sol-nyu .ny-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
+  .sol-nyu .ny-rail-col{position:relative;width:280px;flex-shrink:0;}
+  .sol-nyu .ny-content{flex:1 1 auto;min-width:0;}
+  /* 67px top pad aligns the home link's text with the kicker at the content
+     top: 72 − the link's own 5px top padding. */
+  .sol-nyu .ny-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:67px 48px 72px 0;}
+  .sol-nyu .ny-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--sn-ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
+  .sol-nyu .ny-side-home:hover{color:var(--sn-deep);}
+  .sol-nyu .ny-side ol{list-style:none;margin:4px 0 0;padding:0;}
+  .sol-nyu .ny-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--sn-faint);text-decoration:none;padding:5px 0;transition:color .15s ease;}
+  .sol-nyu .ny-side ol a:hover{color:var(--sn-ink);}
+  .sol-nyu .ny-side ol a[aria-current="location"]{color:var(--sn-ink);font-weight:600;}
+  .sol-nyu .ny-side a:focus-visible{outline:1px solid var(--sn-accent);outline-offset:2px;}
+  @media(prefers-reduced-motion:reduce){.sol-nyu .ny-side ol a{transition:none;}}
+  @media(max-width:999px){.sol-nyu .ny-rail-col{display:none;}.sol-nyu .ny-shell{display:block;}}
+  @media(min-width:1000px) and (max-width:1100px){.sol-nyu .ny-rail-col,.sol-nyu .ny-side{width:240px;}.sol-nyu .ny-shell{gap:40px;}}
+  .sol-nyu #ny-problem,.sol-nyu #ny-insight,.sol-nyu #ny-solution,.sol-nyu #ny-outcome,.sol-nyu #ny-postlaunch{scroll-margin-top:3.5rem;}
+
+  /* ---------- act structure ---------- */
+  .sol-nyu .sn-act{margin-top:64px;}
+  .sol-nyu .sn-act-mark{font-family:var(--sn-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sn-accent);margin:0 0 10px;}
+  /* Act heads read as stretched section headers: full row width; text fills
+     the column and wraps only at its edge — matches deeli's act-head
+     width:100% treatment. */
+  .sol-nyu .sn-act .sn-act-mark,.sol-nyu .sn-act h3{width:100%;}
+  .sol-nyu .sn-act h3{font-family:var(--sn-serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;color:var(--sn-ink);margin:0 0 16px;text-wrap:balance;}
+  .sol-nyu .sn-prose p{font-size:16px;line-height:1.65;margin:0 0 14px;color:var(--sn-body);text-wrap:pretty;}
+  .sol-nyu .sn-quote{font-family:var(--sn-serif);font-style:italic;font-size:15.5px;line-height:1.6;color:var(--sn-mid);border-left:2px solid var(--sn-hairline-strong);padding-left:16px;margin:20px 0 22px;}
+  .sol-nyu .sn-quote cite{display:block;font-family:var(--sn-mono);font-style:normal;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--sn-faint);margin-top:8px;}
+
+  /* ---------- real product shots ---------- */
+  .sol-nyu .sn-figure{margin:26px 0 0;max-width:760px;}
+  .sol-nyu .sn-figure img,.sol-nyu .sn-figure video{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
+  /* Media control cloned from the landing page's work-card thumbnails
+     (.work-media-control in src/index.css) so the same gesture works in both
+     places. The video autoplays muted and looping, so this is the pause
+     affordance required by WCAG 2.2.2. */
+  .sol-nyu .sn-video-wrap{position:relative;display:block;}
+  .sol-nyu .sn-media-control{position:absolute;right:12px;bottom:12px;display:grid;width:36px;height:36px;place-items:center;color:var(--white);background:var(--control-dark);border:0;border-radius:999px;cursor:pointer;opacity:0;transform:translateY(4px);transition:opacity 180ms var(--ease),transform 180ms var(--ease),background 180ms var(--ease);}
+  .sol-nyu .sn-media-control:hover{background:var(--control-dark-hover);}
+  .sol-nyu .sn-video-wrap:hover .sn-media-control,.sol-nyu .sn-video-wrap:focus-within .sn-media-control,.sol-nyu .sn-media-control:focus-visible{opacity:1;transform:translateY(0);}
+  .sol-nyu .sn-media-control svg{width:16px;height:16px;}
+  .sol-nyu .sn-media-control svg path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+  .sol-nyu .sn-media-control svg path[d="M8 5v14l11-7z"]{fill:currentColor;stroke:none;}
+  @media (prefers-reduced-motion:reduce){.sol-nyu .sn-media-control{transition:none;opacity:1;transform:none;}}
+  .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
+  .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;}
+
+  /* ---------- before caption (Act I visual; the old .sn-before/.ny-vert
+     vertical diagram was replaced by the nyv-b1 missing-hub visual below, and its
+     rules removed with it) ---------- */
+  .sol-nyu .sn-before-cap{font-size:12.5px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;}
+  /* Problem act: the two visual exhibits sit in a 2-up row wide, stacked
+     narrow — cloned from deeli's .prb-stack treatment. */
+  .sol-nyu .ny-prb-stack{display:grid;gap:18px;align-items:stretch;margin:24px 0 0;}
+  @media(min-width:1000px){.sol-nyu .ny-prb-stack{grid-template-columns:1fr 1fr;}}
+  .sol-nyu .ny-prb-stack .sn-figure{margin:0;max-width:none;}
+  .sol-nyu .ny-prb-left{display:flex;flex-direction:column;}
+
+  /* ---------- hinge panel ---------- */
+  .sol-nyu .sn-hinge{background:var(--sn-wash);border-left:3px solid var(--sn-accent);border-radius:var(--sn-radius);padding:28px 28px 24px;margin:64px 0 0;}
+  .sol-nyu .sn-hinge .sn-hinge-mark{font-family:var(--sn-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sn-deep);margin:0 0 12px;}
+  .sol-nyu .sn-hinge h3{font-family:var(--sn-serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.25;color:var(--sn-ink);margin:0 0 14px;text-wrap:balance;}
+  /* Child combinator on purpose: hinge prose p's are direct children, and the
+     nyv-jn-a swimlane nests its own <p> elements deeper in the figure —
+     a bare descendant `p` here would out-rank their (0,2,0) class rules. */
+  .sol-nyu .sn-hinge>p{font-size:15.5px;line-height:1.65;color:var(--sn-body);margin:0 0 12px;}
+  .sol-nyu .sn-hinge>p:last-of-type{margin-bottom:18px;}
+
+  /* ---------- moves strip (Act III) ---------- */
+  .sol-nyu .sn-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:26px 0 0;}
+  .sol-nyu .sn-move{background:var(--sn-panel);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);padding:20px 20px 18px;display:flex;flex-direction:column;gap:10px;}
+  .sol-nyu .sn-move h4{font-size:15px;font-weight:700;color:var(--sn-ink);margin:0;letter-spacing:-0.01em;}
+  .sol-nyu .sn-move h4 .sn-move-num{font-family:var(--sn-mono);font-size:11px;font-weight:600;color:var(--sn-faint);margin-right:8px;font-variant-numeric:tabular-nums;}
+  .sol-nyu .sn-move p{font-size:13.5px;line-height:1.55;color:var(--sn-mid);margin:0;flex:1;}
+  .sol-nyu .sn-move img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-canvas);margin-top:2px;}
+  /* Card 01's screenshot matches card 02's .nyv-fm-a height at equal card
+     widths. fm-a has no padding, so its height is W x (210/400) = 0.525W;
+     the img's aspect is 810/1248 = 0.649038, so its width must be
+     0.525 / 0.649038 = 0.808889 of the card content width -> 80.89%. */
+  .sol-nyu .sn-move img.sn-img-plain{width:80.89%;margin-left:auto;margin-right:auto;}
+  @media(max-width:640px){.sol-nyu .sn-moves{grid-template-columns:1fr;}}
+
+  /* ---------- outcome ---------- */
+  .sol-nyu .sn-outcome{margin-top:64px;border-top:1px solid var(--sn-hairline-strong);padding-top:34px;}
+  .sol-nyu .sn-stats{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:0;margin:24px 0 0;border-top:1px solid var(--sn-hairline);border-bottom:1px solid var(--sn-hairline);}
+  .sol-nyu .sn-stat{padding:22px 20px 22px 0;border-left:1px solid var(--sn-hairline);padding-left:20px;}
+  .sol-nyu .sn-stat:first-child{border-left:none;padding-left:0;}
+  .sol-nyu .sn-stat b{display:block;font-family:var(--sn-mono);font-weight:600;font-size:clamp(30px,4vw,40px);line-height:1;color:var(--sn-ink);font-variant-numeric:tabular-nums;margin-bottom:10px;}
+  .sol-nyu .sn-stat.sn-key b{color:var(--sn-accent);}
+  .sol-nyu .sn-stat span{display:block;font-size:12.5px;line-height:1.5;color:var(--sn-mid);max-width:32ch;}
+  .sol-nyu .sn-stat .sn-denom{display:block;font-family:var(--sn-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sn-faint);margin-top:8px;}
+  @media(max-width:720px){
+    .sol-nyu .sn-stats{grid-template-columns:1fr;}
+    .sol-nyu .sn-stat,.sol-nyu .sn-stat:first-child{border-left:none;padding-left:0;border-top:1px solid var(--sn-hairline);padding-top:18px;padding-bottom:18px;}
+    .sol-nyu .sn-stat:first-child{border-top:none;}
+  }
+  .sol-nyu .sn-honest{font-size:13px;line-height:1.6;color:var(--sn-faint);margin:16px 0 0;}
+
+  /* ---------- coda (standard act; the pledge line stays serif italic) ---------- */
+  .sol-nyu .sn-open-q{font-family:var(--sn-serif);font-style:italic;color:var(--sn-ink);}
+
+  @media(prefers-reduced-motion:no-preference){
+    .sol-nyu .sn-move{transition:box-shadow .18s ease;}
+    .sol-nyu .sn-move:hover{box-shadow:0 0 0 1px var(--sn-hairline-strong);}
+  }
+
+  /* ==================================================================
+     nyv-* visuals — all shipped, no A/B comparisons remain. nyv-b1 is
+     the missing hub; nyv-jn-a is the journey swimlane; nyv-fm is the
+     wireframe pair. Toggles, alternates, and compare-chrome are gone.
+     ================================================================== */
+
+  /* ---------- nyv-b1: the missing hub (shipped) ---------- */
+  .sol-nyu .nyv-b1-b{
+    flex:1 1 auto;display:flex;flex-direction:column;
+    justify-content:space-between;gap:20px;
+    background:var(--sn-panel);border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:22px 20px;
+  }
+  .sol-nyu .nyv-b1-chip{
+    font-family:var(--sn-mono);font-size:11.5px;font-weight:500;color:var(--sn-mid);
+    background:var(--sn-canvas);border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:7px 11px;white-space:nowrap;
+  }
+  .sol-nyu .nyv-b1-brow{display:flex;}
+  .sol-nyu .nyv-b1-btop{justify-content:space-between;gap:16px;}
+  .sol-nyu .nyv-b1-bbot{justify-content:center;}
+  .sol-nyu .nyv-b1-node{display:flex;flex-direction:column;align-items:flex-start;gap:7px;}
+  .sol-nyu .nyv-b1-node-end{align-items:flex-end;}
+  .sol-nyu .nyv-b1-node-mid{align-items:center;}
+  .sol-nyu .nyv-b1-note{
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:500;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--sn-faint);
+  }
+  .sol-nyu .nyv-b1-ghost{
+    align-self:center;text-align:center;max-width:100%;
+    border:1.5px dashed var(--sn-accent);border-radius:var(--sn-radius);
+    padding:16px 24px;
+  }
+  .sol-nyu .nyv-b1-ghost-label{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sn-deep);margin:0 0 8px;
+  }
+  .sol-nyu .nyv-b1-ghost-rec{
+    margin:0;font-family:var(--sn-mono);font-size:12.5px;line-height:1.5;
+    color:var(--sn-faint);font-variant-numeric:tabular-nums;
+  }
+  .sol-nyu .nyv-b1-ghost-sub{
+    font-family:var(--sn-serif);font-style:italic;font-size:12px;line-height:1.5;
+    color:var(--sn-faint);margin:4px 0 0;
+  }
+  @media(max-width:420px){
+    .sol-nyu .nyv-b1-btop{flex-direction:column;gap:14px;}
+    .sol-nyu .nyv-b1-node-end{align-items:flex-start;}
+    .sol-nyu .nyv-b1-ghost{padding:14px 16px;}
+  }
+
+  /* ---------- nyv-jn-a: journey swimlane (shipped) ----------
+     0px middle tracks hold the artifact chips; the chips center on the
+     lane boundary and ride the lanes' top edge (negative margins — keep
+     this out of any overflow:hidden parent). Sits on the hinge's warm
+     wash; lanes are canvas. */
+  .sol-nyu .nyv-jn-a{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 0px minmax(0,1fr) 0px minmax(0,1fr);
+    column-gap:16px;
+    margin:34px 0 0;
+  }
+  .sol-nyu .nyv-jn-a-lane{
+    position:relative;
+    display:flex;flex-direction:column;gap:9px;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);
+    padding:22px 18px 18px;
+    min-height:230px;
+  }
+  .sol-nyu .nyv-jn-a-focus{box-shadow:0 0 0 1.5px var(--sn-accent);}
+  .sol-nyu .nyv-jn-a-tag{
+    position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+    color:var(--sn-deep);background:var(--sn-canvas);
+    box-shadow:0 0 0 1.5px var(--sn-accent);border-radius:3px;
+    padding:3px 9px;
+  }
+  .sol-nyu .nyv-jn-a-head{
+    font-family:var(--sn-mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--sn-ink);
+    margin:0;padding-bottom:10px;border-bottom:1px solid var(--sn-hairline);
+  }
+  .sol-nyu .nyv-jn-a-micro{
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:500;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--sn-faint);
+    margin:5px 0 -3px;
+  }
+  .sol-nyu .nyv-jn-a-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .sol-nyu .nyv-jn-a-actor{
+    font-size:12px;line-height:1.3;color:var(--sn-mid);
+    background:var(--sn-panel);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:4px 9px;
+  }
+  .sol-nyu .nyv-jn-a-step{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--sn-ink);
+    background:var(--sn-canvas);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);padding:5px 9px;
+  }
+  .sol-nyu .nyv-jn-a-step-csc{background:var(--sn-wash);color:var(--sn-deep);}
+  .sol-nyu .nyv-jn-a-eg{
+    font-family:var(--sn-serif);font-style:italic;font-size:12.5px;
+    line-height:1.5;color:var(--sn-faint);margin:auto 0 0;padding-top:10px;
+  }
+  .sol-nyu .nyv-jn-a-hand{
+    justify-self:center;align-self:start;margin-top:-12px;z-index:1;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--sn-ink);
+    background:var(--sn-canvas);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);padding:4px 9px;
+  }
+  .sol-nyu .nyv-jn-a-hand-arr{color:var(--sn-faint);font-size:11px;}
+  @media(max-width:700px){
+    .sol-nyu .nyv-jn-a{grid-template-columns:1fr;margin-top:26px;}
+    .sol-nyu .nyv-jn-a-lane{min-height:0;}
+    .sol-nyu .nyv-jn-a-hand{margin:14px auto 22px;align-self:auto;}
+    .sol-nyu .nyv-jn-a-hand-arr{transform:rotate(90deg);}
+    .sol-nyu .nyv-jn-a-eg{margin-top:2px;}
+  }
+
+  /* ---------- nyv-fm: form-designs wireframe pair (shipped) ----------
+     Wrapper matches the .sn-move img treatment: white plate, radius,
+     hairline ring. Token fallbacks stripped — all --sn-* confirmed above. */
+  .sol-nyu .nyv-fm-a{
+    display:block;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);
+    margin-top:2px;
+  }
+  .sol-nyu .nyv-fm-a svg{display:block;width:100%;height:auto;}
+  /* wireframe vocabulary */
+  .sol-nyu .nyv-fm-scr{fill:var(--sn-panel);stroke:var(--sn-hairline);stroke-width:1;}
+  .sol-nyu .nyv-fm-bar{fill:var(--sn-hairline-strong);}
+  .sol-nyu .nyv-fm-div{stroke:var(--sn-hairline);stroke-width:1;}
+  .sol-nyu .nyv-fm-dot{fill:var(--sn-hairline-strong);}
+  .sol-nyu .nyv-fm-dot-on{fill:var(--sn-ink);}
+  /* type: mono uppercase micro-labels only */
+  .sol-nyu .nyv-fm-sec{
+    font-family:var(--sn-mono);
+    font-size:9px;font-weight:600;letter-spacing:.07em;
+    fill:var(--sn-mid);
+  }
+  /* accent reserved for the shipped/continuous side */
+  .sol-nyu .nyv-fm-ring{fill:none;stroke:var(--sn-accent);stroke-width:1.5;}
+  .sol-nyu .nyv-fm-tagbox{fill:var(--sn-accent);}
+  .sol-nyu .nyv-fm-tag{
+    font-family:var(--sn-mono);
+    font-size:8px;font-weight:600;letter-spacing:.1em;
+    fill:var(--sn-canvas);
+  }
+</style>
+<div class="ny-shell">
+<div class="ny-rail-col">
+<nav class="ny-side" aria-label="Story sections">
+  <a class="ny-side-home" href="/">&larr; Joanna Yen</a>
   <ol>
-    <li><a href="#sec-problem">Problem</a></li>
-    <li><a href="#sec-process">Process</a></li>
-    <li><a href="#sec-solution">Solution</a></li>
-    <li><a href="#sec-impact">Impact</a></li>
-    <li><a href="#sec-learnings">Learnings</a></li>
+    <li><a href="#ny-problem">The problem</a></li>
+    <li><a href="#ny-insight">The insight</a></li>
+    <li><a href="#ny-solution">The solution</a></li>
+    <li><a href="#ny-outcome">Outcome</a></li>
+    <li><a href="#ny-postlaunch">Post-launch</a></li>
   </ol>
 </nav>
 </div>
-<div class="cs-content">
+<div class="ny-content">
+<div class="sn-wrap">
 
-<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On NYU, Joanna was product designer on a cross-functional team of 6 (PM, 2 product owners, 2 engineers), Sept–Oct 2018. Validated through crit and internal design review, not usability testing. Outcome: average work-request turnaround fell ~33% in the first month post-launch (Joanna's own analytics, not a deck figure)." data-ask-prompts='["What was Joanna&#39;s role on the NYU project?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, two product owners, and two engineers?", "did this run Sept–Oct 2018?", "how was the ~33% turnaround improvement measured?"]'>
-  <p class="cs-hero-eyebrow">NYU &middot; Service design</p>
-  <h1 class="cs-hero-title">Unifying a campus maintenance workflow.</h1>
-  <p class="cs-hero-lede">I designed an internal work-order tool for NYU&rsquo;s Client Service staff, the team that fields campus maintenance requests, replacing CSV files and software-hopping with one unified platform.</p>
-  <div class="cs-hero-meta">
-    <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Product designer</p><p class="cs-hero-meta-val">Maintenance Team</p></div>
-    <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 6</p><p class="cs-hero-meta-val">PM, 2 product owners, 2 engineers</p></div>
-    <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">Sept&ndash;Oct 2018</p><p class="cs-hero-meta-val">Shipped as a unified work-order platform</p></div>
-  </div>
-  <div class="cs-proof-strip" aria-label="Launch evidence">
-    <div class="cs-proof-item"><span class="cs-proof-tag">Post-launch</span><span class="cs-proof-value">~33%</span><span class="cs-proof-label">lower average work-request turnaround time in the first month, tracked in our analytics</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">Shipped</span><span class="cs-proof-value">3 metrics</span><span class="cs-proof-label">instrumented day one: processing, training, and communication time</span></div>
-  </div>
-  <p class="cs-hero-honest">That ~33% is our own post-launch analytics over the first month, not a figure from the original deck. It is an early, directional read; the full picture is in Impact.</p>
-</header>
+  <!-- ================= MASTHEAD ================= -->
+  <header class="sn-masthead">
+    <p class="sn-kicker">NYU &middot; Internal tools &middot; Case study</p>
+    <h1 id="sol-nyu-title">Campus maintenance ran on CSVs and re-typing. I designed WorkLink to give every request one record.</h1>
+    <p class="sn-lede">One platform replaced the CSV files and the software-hopping for NYU&rsquo;s Client Service staff. In its first month, average work-request turnaround fell by about a third.</p>
+    <dl class="sn-dossier" aria-label="Project facts">
+      <div><dt>Role</dt><dd>Product designer<small>Maintenance Team</small></dd></div>
+      <div><dt>Team</dt><dd>Cross-functional<small>6 &middot; PM, 2 product owners, 2 engineers</small></dd></div>
+      <div><dt>Used by</dt><dd>Client Service staff<small>NYU campus maintenance requests</small></dd></div>
+      <div><dt>Timeline</dt><dd>Sept&ndash;Oct 2018<small>Shipped as a unified platform</small></dd></div>
+    </dl>
+  </header>
 
-<nav class="cs-rail" aria-label="Case study summary">
-  <p class="cs-rail-title">The case in fifteen seconds</p>
-  <ol>
-    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> Staff processed maintenance requests by hand across disconnected tools: CSVs and constant software-hopping.</a></li>
-    <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Requests were multi-step and crossed departments, so the record had to reflect the whole workflow.</a></li>
-    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> One continuous, unified work-order platform replaced the CSVs and the software-switching.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Average work-request turnaround fell ~33% in the first month, tracked against the metrics instrumented at launch.</a></li>
-  </ol>
-</nav>
-
-<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
-<div class="gal-block" data-ask-hint="Ask what staff used before this" data-ask-kind="project" data-ask-prompts='["What did staff use before the unified platform?", "Why were maintenance requests hard to track?"]' data-ask-follow-up-prompts='["did staff process requests by hand across disconnected tools?", "was Problem Code B801 a representative request example?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">No accurate, unified record to communicate from.</h2>
-    <p class="gal-lede-p">NYU Client Service staff processed campus maintenance requests by hand across disconnected tools. Data entry was manual and slow. Staff jumped between systems just to find a request&rsquo;s history or keep records current.</p>
-    <p>A representative request: Request Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund.&rdquo; Every request had the same underlying problem: no single accurate record to communicate from.</p>
-    <p>Many maintenance requests are multi-step and span multiple departments, so any fix had to represent a workflow rather than a static record.</p>
-    <p class="gal-pm">&ldquo;As a Client Service Staff at NYU, I want to have an accurate maintenance record so that we can communicate more effectively with departments and clients.&rdquo;</p>
-  </div></div>
-
-  <div class="cs-figure-row">
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">Existing experience</p>
-      <a class="cs-figure-zoom" href="assets/existing-experience-full.png" target="_blank" rel="noopener" aria-label="Open the full-size legacy-system screens in a new tab">
-        <img class="cs-figure-img" src="assets/existing-experience.png" alt="The legacy work-management system: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
-      </a>
-      <figcaption class="cs-figure-cap">Before: staff re-typed the same request (Problem Code B801, a campus-cash laundry refund) across a CSV and separate legacy systems. Opens full size.</figcaption>
-    </figure>
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">After: unified platform</p>
-      <img class="cs-figure-img" src="assets/unified-platform.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1300" height="870">
-      <figcaption class="cs-figure-cap">After: NYU WorkLink, one platform holding the whole request. No more CSVs or software-hopping.</figcaption>
-    </figure>
-  </div>
-</div>
-
-<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
-<div class="gal-block" data-ask-hint="Ask what changed the direction" data-ask-kind="project" data-ask-prompts='["What changed the project&#39;s direction?", "Why wasn&#39;t this just replace-the-CSV-with-a-form?"]' data-ask-follow-up-prompts='["did the mapping surface a multi-step, multi-department constraint?", "was this reframed from a form to a full workflow record?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">The record had to hold a workflow, not just data.</h2>
-    <p class="gal-lede-p">Early process work mapped how a request traveled from the person submitting it, through the Client Service Center, to the maintenance department, an information-architecture exercise framed as &ldquo;How might we help with facility request management?&rdquo; That mapping surfaced the multi-step, multi-department constraint.</p>
-    <p>It reframed the project from &ldquo;replace the CSV with a form&rdquo; to &ldquo;represent the full lifecycle of a request in one place&rdquo;: the platform had to carry the whole workflow.</p>
-    <p class="gal-kick">If staff work from one unified record instead of many disconnected tools, they will communicate more confidently, process requests faster, and train new employees more easily.</p>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">System thinking</p>
-    <img class="cs-figure-img" src="assets/work-request-journey.png" alt="A three-part diagram: submitters (student, faculty, campus staff) raise a work request, the Client Service Center (the project&rsquo;s focus) receives, reviews and approves it, and operators and supervisors then perform the work order." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">A request crosses submitter, Client Service Center, and maintenance; it is multi-step by nature, so the record had to hold the whole workflow.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow">Solution</span></div>
-<div class="gal-block" data-ask-hint="Ask why one form view over pagination" data-ask-kind="project" data-ask-prompts='["Why one form view instead of pagination?", "Who signed off before launch?"]' data-ask-follow-up-prompts='["how did you decide to keep the floating action button over the alternatives?", "did engineering review specs and edge cases separately from ops staff?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Four shipped decisions.</h2>
-    <ul>
-      <li><b>One unified work-order platform.</b> Replaced CSV files and multiple platforms outright, which closed the software-switching problem at the source.</li>
-    </ul>
-
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize lessening information overload or scannability when asking Client Service Staff to review each work request?&rdquo;</dd></div>
-        <div><dt>Chose</dt><dd>A single continuous form view over a paginated one.</dd></div>
-        <div><dt>Because</dt><dd>One continuous view keeps a multi-department request visible in a single pass.</dd></div>
-      </dl>
+  <!-- ================= ACT I ================= -->
+  <section class="sn-act" id="ny-problem" aria-label="The problem">
+    <p class="sn-act-mark">The problem</p>
+    <h3>Staff kept records by hand, across tools that never talked.</h3>
+    <div class="sn-prose">
+      <p>NYU Client Service staff processed maintenance requests by hand: a CSV here, a legacy screen there. Finding any request&rsquo;s history meant jumping between systems.</p>
+      <p>One representative request (Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund&rdquo;) had no single accurate record to communicate from. Neither did any other request.</p>
     </div>
-
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize action button visibility or minimizing distractions when asking Client Service Staff to review work requests?&rdquo;</dd></div>
-        <div><dt>Chose</dt><dd>Kept the floating action button.</dd></div>
-        <div><dt>Because</dt><dd>The primary action needed to stay reachable while staff reviewed dense request details.</dd></div>
-      </dl>
+    <div class="ny-prb-stack">
+      <div class="ny-prb-left">
+        <!-- "The missing hub": fragmentation as the message -->
+        <div class="nyv-b1-b" role="img" aria-label="Diagram: three disconnected tools (a CSV file, a legacy system, and an invoice screen), each holding its own hand-typed copy of request B801; at the center, a dashed empty outline marks the missing single record">
+          <div class="nyv-b1-brow nyv-b1-btop">
+            <div class="nyv-b1-node">
+              <span class="nyv-b1-chip">CSV file</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+            <div class="nyv-b1-node nyv-b1-node-end">
+              <span class="nyv-b1-chip">Legacy system</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+          </div>
+          <div class="nyv-b1-ghost">
+            <p class="nyv-b1-ghost-label">No single record</p>
+            <p class="nyv-b1-ghost-rec">B801 &middot; Campus cash &mdash; laundry refund</p>
+            <p class="nyv-b1-ghost-sub">Type: Campus Cash</p>
+          </div>
+          <div class="nyv-b1-brow nyv-b1-bbot">
+            <div class="nyv-b1-node nyv-b1-node-mid">
+              <span class="nyv-b1-chip">Invoice screen</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+          </div>
+        </div>
+        <p class="sn-before-cap">Request B801, a laundry refund, existed as three hand-typed copies. No tool held its full history.</p>
+      </div>
+      <figure class="sn-figure">
+        <img src="assets/existing-experience.png" alt="The legacy tools: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
+        <figcaption>The real thing: the problem-code CSV and the legacy invoice screen staff worked across, with request B801 called out.</figcaption>
+      </figure>
     </div>
+    <blockquote class="sn-quote">
+      &ldquo;As a Client Service Staff at NYU, I want to have an accurate maintenance record so that we can communicate more effectively with departments and clients.&rdquo;
+      <cite>User story from process work</cite>
+    </blockquote>
+  </section>
 
-    <ul>
-      <li><b>Two separate pre-launch review loops, not one.</b> High-fidelity prototypes went to Client Service Center staff and the maintenance department for sign-off on workflow and content, and separately to engineering for a walkthrough of specs and edge cases per request type. Splitting the review matched sign-off criteria to the right audience: workflow accuracy from ops staff, technical completeness from engineering. (The engineering loop also flagged keeping micro-interactions consistent across platforms, captured as follow-up work.)</li>
-    </ul>
-  </div></div>
+  <!-- ================= HINGE ================= -->
+  <section class="sn-hinge" id="ny-insight" aria-label="The insight: the pivotal finding">
+    <p class="sn-hinge-mark">The insight</p>
+    <h3>A request is a workflow, not a row of data.</h3>
+    <p>I mapped how a request travels, from submitter to Client Service Center to maintenance, and found that most requests are multi-step and cross departments.</p>
+    <p>That changed the brief from &ldquo;replace the CSV with a form&rdquo; to &ldquo;represent a request&rsquo;s full lifecycle in one place.&rdquo;</p>
+    <figure class="sn-figure">
+      <!-- Swimlane: three ownership lanes, artifact chips cross the boundaries -->
+      <div class="nyv-jn-a" role="img" aria-label="Swimlane diagram of the work-request journey in three lanes. Lane one, Submitters: students, faculty, and campus staff submit a work request, for example, &lsquo;The heater is not working.&rsquo; The work request passes to lane two, the Client Service Center, the project&rsquo;s focus, where Client Service staff receive, review, and approve it. Approved, it leaves as a work order and passes to lane three, Maintenance, where operators and supervisors receive and perform the work order.">
+        <div class="nyv-jn-a-lane">
+          <p class="nyv-jn-a-head">Submitters</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Student</span>
+            <span class="nyv-jn-a-actor">Faculty</span>
+            <span class="nyv-jn-a-actor">Campus staff</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step">Submit</span>
+          </div>
+          <p class="nyv-jn-a-eg">&ldquo;The heater is not working.&rdquo;</p>
+        </div>
+        <div class="nyv-jn-a-hand"><span class="nyv-jn-a-hand-name">Work request</span><span class="nyv-jn-a-hand-arr" aria-hidden="true">&rarr;</span></div>
+        <div class="nyv-jn-a-lane nyv-jn-a-focus">
+          <span class="nyv-jn-a-tag">Project focus</span>
+          <p class="nyv-jn-a-head">Client Service Center</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Client Service staff</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Receive</span>
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Review</span>
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Approve</span>
+          </div>
+        </div>
+        <div class="nyv-jn-a-hand"><span class="nyv-jn-a-hand-name">Work order</span><span class="nyv-jn-a-hand-arr" aria-hidden="true">&rarr;</span></div>
+        <div class="nyv-jn-a-lane">
+          <p class="nyv-jn-a-head">Maintenance</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Operators</span>
+            <span class="nyv-jn-a-actor">Supervisors</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step">Receive</span>
+            <span class="nyv-jn-a-step">Perform</span>
+          </div>
+        </div>
+      </div>
+      <figcaption>The request&rsquo;s path from submitters to the Client Service Center to maintenance, rebuilt from the process journey map.</figcaption>
+    </figure>
+  </section>
 
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">Shipped: form designs</p>
-    <img class="cs-figure-img" src="assets/form-designs.png" alt="Two form layouts side by side: a paginated view that steps through client, service location and service details, versus a single continuous view showing every section at once." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">Weighing a paginated form against one continuous view: the single view won. It cuts overload while keeping a multi-department request scannable in one pass.</figcaption>
-  </figure>
+  <!-- ================= ACT III ================= -->
+  <section class="sn-act" id="ny-solution" aria-label="Design decisions">
+    <p class="sn-act-mark">The solution</p>
+    <h3>Design decisions.</h3>
+    <div class="sn-prose">
+      <p>We stated the bet before we built: with one record, staff communicate confidently, process faster, and train new employees more easily.</p>
+    </div>
+    <div class="sn-moves">
+      <div class="sn-move">
+        <h4><span class="sn-move-num">01</span>Unify the platform</h4>
+        <p>I replaced the CSV files and multiple platforms with one work-order platform, so there was nothing left to switch between.</p>
+        <img class="sn-img-plain" src="assets/work-request-open.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1520" height="990">
+      </div>
+      <div class="sn-move">
+        <h4><span class="sn-move-num">02</span>Keep the form continuous</h4>
+        <p>I weighed overload against scannability and chose a continuous form over a paginated one: a multi-department request stays visible in one pass.</p>
+        <!-- Side-by-side wireframes: paginated route vs shipped continuous form -->
+        <div class="nyv-fm-a" role="img" aria-label="Two form layouts compared as wireframes: on the left, three paginated mini-screens with step dots, one screen each for client, service location and service details; on the right, one continuous form holding all three sections in a single column, ringed in orange and tagged shipped.">
+          <svg viewBox="0 0 400 210" aria-hidden="true" focusable="false">
+            <!-- paginated route: three stepped mini-screens -->
+            <g>
+              <rect class="nyv-fm-scr" x="14" y="26" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="24" y="41">CLIENT</text>
+              <rect class="nyv-fm-bar" x="24" y="48" width="76" height="4" rx="2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="72" cy="62" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="80" cy="62" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="88" cy="62" r="2.2"/>
+            </g>
+            <g>
+              <rect class="nyv-fm-scr" x="30" y="82" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="40" y="97">SERVICE LOCATION</text>
+              <rect class="nyv-fm-bar" x="40" y="104" width="86" height="4" rx="2"/>
+              <circle class="nyv-fm-dot" cx="88" cy="118" r="2.2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="96" cy="118" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="104" cy="118" r="2.2"/>
+            </g>
+            <g>
+              <rect class="nyv-fm-scr" x="46" y="138" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="56" y="153">SERVICE DETAILS</text>
+              <rect class="nyv-fm-bar" x="56" y="160" width="62" height="4" rx="2"/>
+              <circle class="nyv-fm-dot" cx="104" cy="174" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="112" cy="174" r="2.2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="120" cy="174" r="2.2"/>
+            </g>
+            <!-- continuous form: shipped -->
+            <rect class="nyv-fm-ring" x="234" y="16" width="148" height="178" rx="6"/>
+            <rect class="nyv-fm-scr" x="240" y="22" width="136" height="166" rx="3"/>
+            <line class="nyv-fm-div" x1="240" y1="77" x2="376" y2="77"/>
+            <line class="nyv-fm-div" x1="240" y1="133" x2="376" y2="133"/>
+            <text class="nyv-fm-sec" x="252" y="38">CLIENT</text>
+            <rect class="nyv-fm-bar" x="252" y="46" width="100" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="54" width="64" height="4" rx="2"/>
+            <text class="nyv-fm-sec" x="252" y="93">SERVICE LOCATION</text>
+            <rect class="nyv-fm-bar" x="252" y="101" width="88" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="109" width="52" height="4" rx="2"/>
+            <text class="nyv-fm-sec" x="252" y="149">SERVICE DETAILS</text>
+            <rect class="nyv-fm-bar" x="252" y="157" width="96" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="165" width="58" height="4" rx="2"/>
+            <rect class="nyv-fm-tagbox" x="318" y="9" width="58" height="15" rx="2"/>
+            <text class="nyv-fm-tag" x="347" y="20" text-anchor="middle">SHIPPED</text>
+          </svg>
+        </div>
+      </div>
+      <div class="sn-move">
+        <h4><span class="sn-move-num">03</span>Keep the action reachable</h4>
+        <p>I weighed button visibility against minimizing distraction and kept the floating action button so the primary action stays in reach while staff review dense request details.</p>
+        <img src="assets/fab-states.png" alt="Three states of the floating action button: collapsed, expanded actions, and the dispatch and submit bar." loading="lazy" width="1316" height="600">
+      </div>
+      <div class="sn-move">
+        <h4><span class="sn-move-num">04</span>Split the review</h4>
+        <p>I ran two pre-launch loops: Client Service and maintenance staff signed off on workflow; engineering walked specs and edge cases per request type.</p>
+      </div>
+    </div>
+    <figure class="sn-figure">
+      <img src="assets/sitemap.png" alt="Grayscale sitemap of the Work Order section annotated by role: Client Service aide, Client Service supervisor, facility, and shop." loading="lazy" width="1322" height="964">
+      <figcaption>The work-order section mapped per role. The structure under the screens above.</figcaption>
+    </figure>
+    <figure class="sn-figure">
+      <img src="assets/layout-sketches.jpg" alt="Graph-paper sketches of layout options for the work-order form and homepage." loading="lazy" width="900" height="616">
+      <figcaption>Where the layouts started: graph paper before wireframes.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= OUTCOME ================= -->
+  <section class="sn-outcome" id="ny-outcome" aria-label="Outcome">
+    <p class="sn-act-mark">Outcome</p>
+    <h3>We decided what to measure before we shipped. Then it reported back.</h3>
+    <div class="sn-prose">
+      <p>We set the measurement plan in the deck before launch and instrumented all three metrics on day one. The first to report back was average work-request turnaround.</p>
+    </div>
+    <div class="sn-stats">
+      <div class="sn-stat sn-key">
+        <b>~33%</b>
+        <span>lower average work-request turnaround</span>
+        <span class="sn-denom">First month post-launch &middot; our own analytics</span>
+      </div>
+      <div class="sn-stat">
+        <b>3</b>
+        <span>metrics instrumented at launch: processing, training, and communication time</span>
+        <span class="sn-denom">Measurement plan set pre-ship</span>
+      </div>
+      <div class="sn-stat">
+        <b>2</b>
+        <span>sign-off loops before launch: ops staff on workflow, engineering on specs</span>
+        <span class="sn-denom">Split review &middot; pre-launch</span>
+      </div>
+    </div>
+    <p class="sn-honest">Honest denominator: the ~33% comes from our own first-month post-launch analytics, not the deck. It&rsquo;s early and directional, but the plan behind it was set before we shipped.</p>
+    <figure class="sn-figure">
+      <div class="sn-video-wrap">
+        <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
+        <button class="sn-media-control" type="button" aria-label="Pause preview" title="Pause preview">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14"/><path d="M16 5v14"/></svg>
+        </button>
+      </div>
+      <figcaption>The shipped work-order flow, queue to dispatch, as staff use it. The measurement plan behind the stats above was set before launch.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= CODA ================= -->
+  <section class="sn-act" id="ny-postlaunch" aria-label="Where it goes next">
+    <p class="sn-act-mark">Post-launch</p>
+    <h3>Shipped, still measuring.</h3>
+    <div class="sn-prose">
+      <p>Pre-launch review flagged the next scope: search, and grouping multiple work orders. Next I&rsquo;d measure the overload-versus-scannability tradeoff directly, and track remaining email-heavy overhead.</p>
+      <p class="sn-open-q">The open question I still carry is how much of a service problem belongs in the digital tool, and how much in the physical space around it.</p>
+    </div>
+    <figure class="sn-figure">
+      <img src="assets/search-results.png" alt="WorkLink search results screen with a filter rail, column chooser, and saved-search toolbar." loading="lazy" width="1512" height="982">
+      <figcaption>Search, designed but not shipped: it stayed in the next scope at launch.</figcaption>
+    </figure>
+  </section>
+
 </div>
-
-<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
-<div class="gal-block" data-ask-hint="Ask about the post-launch result" data-ask-kind="project" data-ask-prompts='["What happened after launch?", "How was the ~33% turnaround improvement measured?"]' data-ask-follow-up-prompts='["was the ~33% from Joanna&#39;s own analytics over the first month?", "were three metrics instrumented at launch, with turnaround the first to report?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Average turnaround fell about a third in the first month.</h2>
-    <p class="gal-lede-p">We instrumented three metrics at launch. The first to report back: average work-request turnaround time dropped roughly 33% over the first month post-launch.</p>
-    <p>That figure is from our own post-launch analytics, tracked over the first month and revisited in follow-ups as we looked to improve the service design: an early, directional result, not a long-run study. It isn&rsquo;t in the original deck; the deck set the measurement plan, and this is what that plan returned:</p>
-    <p class="gal-pm">&ldquo;Post-launch, we will track both work request processing time, student employee training time, and communication time between client and Client Service Staff.&rdquo;</p>
-    <p>That number exists because we decided what to measure before we shipped.</p>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">What we shipped and measured</p>
-    <img class="cs-figure-img" src="assets/shipped.png" alt="The shipped NYU WorkLink work-order screen, captioned with the post-launch measurement plan: work-request processing time, student-employee training time, and client-to-staff communication time." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">The shipped platform, instrumented at launch for work-request processing, training, and communication time. Turnaround was the first to report back, down ~33% in month one.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow">Learnings</span></div>
-<div class="gal-block" data-ask-hint="Ask what would come next" data-ask-kind="project" data-ask-prompts='["What would you build next if you&#39;d kept working on this?", "What&#39;s the biggest open question from this project?"]' data-ask-follow-up-prompts='["did pre-launch review flag search functionality and grouping work orders as future scope?", "is the physical-space-versus-digital-tools question still open?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">What I would measure next.</h2>
-    <ul>
-      <li><b>Measure the tradeoff directly.</b> Compare staff accuracy and task time to balance visual clutter against information complexity.</li>
-      <li><b>Track email-heavy tasks.</b> Find where the workflow still creates communication overhead.</li>
-      <li><b>Design for upstream and downstream users differently</b> within the same request workflow.</li>
-      <li><b>Pre-launch review flagged future scope:</b> search functionality, and grouping multiple work orders.</li>
-    </ul>
-    <p class="gal-kick">The open question I still carry: how much of a service problem should be solved in the digital tool versus in the physical space around it.</p>
-  </div></div>
-</div>
-
 </div>
 </div>
-
-<!-- Side-TOC scroll spy shared by the case pages; see src/caseNav.ts. -->
-<script type="module" src="/src/caseNav.ts"></script>
+</section>
+<script>
+(function(){
+  /* Rail scroll spy: reading-line logic scoped to the ny- rail. */
+  var railCol = document.querySelector('#nyu-after .ny-rail-col');
+  var nav = document.querySelector('#nyu-after .ny-side');
+  if(!railCol || !nav) return;
+  var sections = [];
+  Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#ny-"]'), function(link){
+    var el = document.getElementById((link.getAttribute('href') || '').slice(1));
+    if(el) sections.push({id: el.id, el: el, link: link});
+  });
+  if(!sections.length) return;
+  var activeId = null;
+  function setActive(id){
+    if(id === activeId) return;
+    activeId = id;
+    sections.forEach(function(s){
+      if(s.id === id) s.link.setAttribute('aria-current', 'location');
+      else s.link.removeAttribute('aria-current');
+    });
+  }
+  function computeActive(){
+    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    var doc = document.documentElement;
+    var scrollY = window.pageYOffset || doc.scrollTop;
+    var viewportH = window.innerHeight;
+    var scrollHeight = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if(scrollY + viewportH >= scrollHeight - 2){
+      setActive(sections[sections.length - 1].id);
+      return;
+    }
+    var readingLine = scrollY + viewportH * 0.375;
+    var current = null;
+    sections.forEach(function(s){
+      var top = s.el.getBoundingClientRect().top + scrollY;
+      if(top <= readingLine) current = s.id;
+    });
+    setActive(current);
+  }
+  var ticking = false;
+  function onScrollOrResize(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      computeActive();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScrollOrResize, {passive:true});
+  window.addEventListener('resize', onScrollOrResize, {passive:true});
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ ticking = false; computeActive(); }
+  });
+  sections.forEach(function(s){
+    s.link.addEventListener('click', function(){ setActive(s.id); });
+  });
+  window.addEventListener('load', computeActive);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
+  setTimeout(computeActive, 400);
+})();
+(function(){
+  var v=document.querySelector('.sn-figure-video');
+  var btn=document.querySelector('.sn-media-control');
+  if(!v || !btn) return;
+  var PLAY='M8 5v14l11-7z';
+  var PAUSE='<path d="M8 5v14"/><path d="M16 5v14"/>';
+  function sync(){
+    var playing=!v.paused;
+    btn.setAttribute('aria-label', playing ? 'Pause preview' : 'Play preview');
+    btn.setAttribute('title', playing ? 'Pause preview' : 'Play preview');
+    btn.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24">'+(playing ? PAUSE : '<path d="'+PLAY+'"/>')+'</svg>';
+  }
+  btn.addEventListener('click', function(){
+    if(v.paused){ v.play().catch(function(){}); } else { v.pause(); }
+  });
+  v.addEventListener('play', sync);
+  v.addEventListener('pause', sync);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    v.removeAttribute('autoplay'); v.pause();
+  }
+  sync();
+})();
+</script>
+</div>
 
 <script type="module" src="/src/nyuChat.tsx"></script>
 </body>

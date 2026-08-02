@@ -308,8 +308,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
        page's #anchor-heatmap (+220% queries per active day) */
     .sol-b .na-usage{margin:0;display:flex;flex-direction:column;}
     .sol-b .na-us-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
-    .sol-b .na-us-panel{flex:1;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;}
-    .sol-b .na-us-delta{flex:1 1 140px;min-width:0;}
+    .sol-b .na-us-panel{flex:1;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:nowrap;gap:18px;align-items:flex-end;justify-content:space-between;}
+    .sol-b .na-us-delta{flex:0 0 150px;min-width:0;align-self:flex-start;}
     .sol-b .na-us-delta-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);margin:0 0 10px;}
     .sol-b .na-us-delta-label{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0;max-width:24ch;}
     .sol-b .na-us-cols{flex:0 0 auto;display:flex;gap:20px;align-items:flex-end;box-shadow:0 1px 0 var(--line-strong);}
@@ -330,6 +330,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-fl-row-title{font-family:var(--fbody);font-size:13px;font-weight:600;color:var(--ink);}
     .sol-b .na-fl-track{display:flex;height:32px;width:100%;border-radius:var(--radius,4px);overflow:hidden;box-shadow:0 0 0 1px var(--line);background:var(--raised);}
     .sol-b .na-fl-seg{height:100%;transform:scaleX(1);transform-origin:left center;animation:na-fl-grow 640ms cubic-bezier(0.23,1,0.32,1) both;}
+    .sol-b .na-fl-track .na-fl-seg:last-child{flex:1 1 auto;} /* absorb % rounding so the track always fills */
     .sol-b .na-fl-seg-kw{background:var(--muted);}
     .sol-b .na-fl-seg-nl{background:var(--accent);}
     .sol-b .na-fl-legend{display:flex;justify-content:space-between;margin-top:9px;}

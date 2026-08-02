@@ -154,13 +154,19 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <section class="sol-b" aria-labelledby="sol-b-title">
   <style>
     .sol-b{
-      --paper:#ffffff; --raised:#f7f7f7;
-      --ink:#111111; --body:#141413; --muted:#57534b; --faint:#757169;
-      --line:rgba(31,30,29,0.12); --line-strong:rgba(31,30,29,0.28);
-      --accent:#f44800; --accent-deep:#d63e00; --accent-wash:rgba(244,72,0,0.08);
-      --serif:Georgia,"Times New Roman",serif;
-      --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
-      --fbody:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      /* Local names, shared values. The single source of truth for all of
+       * these is :root in /src/case-study.css; only the local alias differs.
+       * --ink, --body, --accent, --accent-deep and --accent-wash are dropped
+       * entirely because :root already defines them at identical values. */
+      --paper:var(--canvas); --raised:var(--surface-subtle);
+      /* NOTE: this page's --muted is :root's --muted-strong, and this page's
+       * --faint is :root's --muted. The names are off by one against the
+       * shared scale; the values below preserve current rendering exactly. */
+      --muted:var(--muted-strong); --faint:#757169; /* = :root --muted; cannot alias, local --muted shadows it */
+      --line:var(--hairline-faint); --line-strong:var(--hairline-strong);
+      --serif:var(--font-serif);
+      --mono:var(--font-mono);
+      --fbody:var(--font-body);
       background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.5;
       padding:clamp(2.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem); -webkit-font-smoothing:antialiased;
     }

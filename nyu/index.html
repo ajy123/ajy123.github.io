@@ -99,21 +99,23 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <section class="sol-nyu" aria-labelledby="sol-nyu-title">
 <style>
   .sol-nyu{
-    --sn-canvas:#ffffff;
-    --sn-panel:#f7f7f7;
-    --sn-ink:#111111;
-    --sn-body:#141413;
-    --sn-mid:#57534b;
-    --sn-faint:#757169;
-    --sn-hairline:rgba(31,30,29,0.12);
-    --sn-hairline-strong:rgba(31,30,29,0.28);
-    --sn-accent:#f44800;
-    --sn-deep:#d63e00;
-    --sn-wash:rgba(244,72,0,0.08);
-    --sn-radius:4px;
-    --sn-serif:Georgia,"Times New Roman",serif;
-    --sn-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    --sn-sans:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    /* Local --sn-* names, shared values. Single source of truth for every
+     * value below is :root in /src/case-study.css. */
+    --sn-canvas:var(--canvas);
+    --sn-panel:var(--surface-subtle);
+    --sn-ink:var(--ink);
+    --sn-body:var(--body);
+    --sn-mid:var(--muted-strong);
+    --sn-faint:var(--muted);
+    --sn-hairline:var(--hairline-faint);
+    --sn-hairline-strong:var(--hairline-strong);
+    --sn-accent:var(--accent);
+    --sn-deep:var(--accent-deep);
+    --sn-wash:var(--accent-wash);
+    --sn-radius:var(--radius);
+    --sn-serif:var(--font-serif);
+    --sn-mono:var(--font-mono);
+    --sn-sans:var(--font-body);
     background:var(--sn-canvas);
     color:var(--sn-body);
     font-family:var(--sn-sans);

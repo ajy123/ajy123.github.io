@@ -237,7 +237,11 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   /* ---------- outcome ---------- */
   .sol-nyu .sn-outcome{margin-top:64px;border-top:1px solid var(--sn-hairline-strong);padding-top:34px;}
-  .sol-nyu .sn-stats{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:0;margin:24px 0 0;border-top:1px solid var(--sn-hairline);border-bottom:1px solid var(--sn-hairline);}
+  /* Equal thirds. The first column holds the shortest label of the three and
+     every label is capped at 32ch, so a wider first column was dead space
+     while columns two and three wrapped to three lines. The key stat is
+     emphasised by --sn-accent on the numeral, not by column width. */
+  .sol-nyu .sn-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:24px 0 0;border-top:1px solid var(--sn-hairline);border-bottom:1px solid var(--sn-hairline);}
   .sol-nyu .sn-stat{padding:22px 20px 22px 0;border-left:1px solid var(--sn-hairline);padding-left:20px;}
   .sol-nyu .sn-stat:first-child{border-left:none;padding-left:0;}
   .sol-nyu .sn-stat b{display:block;font-family:var(--sn-mono);font-weight:600;font-size:clamp(30px,4vw,40px);line-height:1;color:var(--sn-ink);font-variant-numeric:tabular-nums;margin-bottom:10px;}

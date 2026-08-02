@@ -299,7 +299,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .try-stack > .na-proto-off{display:none !important;}
     /* outcome charts &mdash; behavior flip + usage growth, side by side wide */
     .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:stretch;margin-top:.4rem;}
-    @media (min-width:1000px){.sol-b .na-charts{grid-template-columns:1fr 1fr;gap:1.6rem;}}
+    /* Two-up only from 1101px. Between 1000 and 1100 the rail is still 240px,
+       which leaves a 672px content column: less than the 716px the two charts
+       need side by side (258px behaviour chart + 25.6px gap + 432px usage
+       panel), so the row used to push the page 20px wider than the viewport.
+       1101 is where the rail returns to 280px and the column grows past 716. */
+    @media (min-width:1101px){.sol-b .na-charts{grid-template-columns:1fr 1fr;gap:1.6rem;}}
     /* na-flip &mdash; behavior-flip bar chart cloned from the current page's impact section */
     /* Both figures are flex columns whose chart panel grows, so the shorter
        flip chart matches the usage chart's height in the 2-up row. */
@@ -331,7 +336,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
        default to min-width:auto) lets the track shrink; the panel then wraps
        the delta onto its own line above the bars. Bar geometry (col 60, bar 40,
        zone 148, gap 20) is deliberately untouched at every width. */
-    @media (max-width:999px){
+    @media (max-width:1100px){
       .sol-b .na-charts{grid-template-columns:minmax(0,1fr);}
       .sol-b .na-flip,.sol-b .na-usage{min-width:0;}
       .sol-b .na-us-panel{flex-wrap:wrap;}

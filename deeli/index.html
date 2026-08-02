@@ -323,6 +323,20 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-us-caption{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--faint);text-align:center;line-height:1.55;margin:16px 0 0;}
     @keyframes na-us-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
     @media (prefers-reduced-motion:reduce){.sol-b .na-us-col-bar{animation:none !important;transform:none !important;}}
+    /* Phone/tablet reflow for the 2-up charts. A grid track sized `1fr` has an
+       automatic minimum of min-content, and the usage panel's min-content is
+       432px (150px delta + 18px gap + 220px of bars + 44px padding), so below
+       ~500px the track pushed past the viewport and the whole page scrolled
+       sideways. minmax(0,1fr) plus min-width:0 on the figures (grid items also
+       default to min-width:auto) lets the track shrink; the panel then wraps
+       the delta onto its own line above the bars. Bar geometry (col 60, bar 40,
+       zone 148, gap 20) is deliberately untouched at every width. */
+    @media (max-width:999px){
+      .sol-b .na-charts{grid-template-columns:minmax(0,1fr);}
+      .sol-b .na-flip,.sol-b .na-usage{min-width:0;}
+      .sol-b .na-us-panel{flex-wrap:wrap;}
+      .sol-b .na-us-delta{flex:1 1 100%;}
+    }
     .sol-b .na-fl-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
     .sol-b .na-fl-figure{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
     .sol-b .na-fl-bar-row + .na-fl-bar-row{margin-top:26px;}

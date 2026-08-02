@@ -154,15 +154,21 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <section class="sol-b" aria-labelledby="sol-b-title">
   <style>
     .sol-b{
-      --paper:#ffffff; --raised:#f7f7f7;
-      --ink:#111111; --body:#141413; --muted:#57534b; --faint:#757169;
-      --line:rgba(31,30,29,0.12); --line-strong:rgba(31,30,29,0.28);
-      --accent:#f44800; --accent-deep:#d63e00; --accent-wash:rgba(244,72,0,0.08);
-      --serif:Georgia,"Times New Roman",serif;
-      --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
-      --fbody:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-      background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.5;
-      padding:clamp(2.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem); -webkit-font-smoothing:antialiased;
+      /* Local names, shared values. The single source of truth for all of
+       * these is :root in /src/case-study.css; only the local alias differs.
+       * --ink, --body, --accent, --accent-deep and --accent-wash are dropped
+       * entirely because :root already defines them at identical values. */
+      --paper:var(--canvas); --raised:var(--surface-subtle);
+      /* NOTE: this page's --muted is :root's --muted-strong, and this page's
+       * --faint is :root's --muted. The names are off by one against the
+       * shared scale; the values below preserve current rendering exactly. */
+      --muted:var(--muted-strong); --faint:#757169; /* = :root --muted; cannot alias, local --muted shadows it */
+      --line:var(--hairline-faint); --line-strong:var(--hairline-strong);
+      --serif:var(--font-serif);
+      --mono:var(--font-mono);
+      --fbody:var(--font-body);
+      background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.6;
+      padding:72px 24px 88px; -webkit-font-smoothing:antialiased;
     }
     .sol-b *{box-sizing:border-box;}
     .sol-b .wrap{max-width:none;margin:0;}
@@ -187,12 +193,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     @media (max-width:999px){.sol-b .na-rail-col{display:none;}.sol-b .na-shell{display:block;}}
     @media (min-width:1000px) and (max-width:1100px){.sol-b .na-rail-col,.sol-b .na-side{width:240px;}.sol-b .na-shell{gap:40px;}}
     .sol-b .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;}
-    .sol-b .measure{max-width:65ch;}
+    /* Shared reading measure, same as NYU and Swiftly (src/tokens.css). */
+    .sol-b .measure{max-width:var(--measure-prose);}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
     .sol-b .masthead{margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
-    .sol-b #sol-b-title{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
+    .sol-b #sol-b-title{font-family:var(--serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-.01em;margin:0;color:var(--ink);text-wrap:balance;}
     .sol-b #sol-b-title em{font-style:italic;}
-    .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.6;color:#57534b;max-width:none;margin:.35rem 0 0;}
+    .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.55;color:var(--muted);max-width:none;margin:.35rem 0 0;}
     /* dossier strip — mirrors the NYU page's .sn-dossier fact grid, on Deeli tokens */
     .sol-b .na-dossier{flex-basis:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);margin:1.1rem 0 0;}
     .sol-b .na-dossier>div{padding:16px 18px 18px 0;border-left:1px solid var(--line);padding-left:18px;}
@@ -211,7 +218,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     /* Act heads read as stretched section headers: full column width, wide
        serif measure — not narrow stacked fragments. */
     .sol-b .act-head{display:grid;gap:.7rem;width:100%;}
-    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:30ch;color:var(--ink);}
+    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0;color:var(--ink);}
     /* These two heads measure ~32ch and ~37ch in Georgia; 40ch lets each sit on
        one line at desktop widths without touching the other act heads. */
     .sol-b #sol-b-act1,.sol-b #sol-b-coda{max-width:40ch;}

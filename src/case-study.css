@@ -34,6 +34,10 @@
   --ink:#111111;
   --ink-strong:#000000;
   --hairline:rgba(31,30,29,0.4);
+  /* The mid weight the three story pages use for dossier and section rules.
+   * Previously duplicated per page as --line-strong / --sn-hairline-strong /
+   * --ssw-hair2, all at the same value. */
+  --hairline-strong:rgba(31,30,29,0.28);
   --hairline-faint:rgba(31,30,29,0.12);
   --accent:#f44800;
   --accent-deep:#d63e00;

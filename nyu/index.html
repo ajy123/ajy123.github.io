@@ -127,7 +127,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   /* ---------- masthead ---------- */
   .sol-nyu .sn-kicker{font-family:var(--sn-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--sn-faint);margin:0 0 18px;}
-  .sol-nyu h2{text-wrap:balance;}
+  .sol-nyu h1{text-wrap:balance;}
   .sol-nyu #sol-nyu-title{font-family:var(--sn-serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-0.01em;color:var(--sn-ink);margin:0 0 18px;text-wrap:balance;}
   .sol-nyu .sn-lede{font-size:18px;line-height:1.55;color:var(--sn-body);margin:0 0 34px;text-wrap:pretty;}
   .sol-nyu .sn-dossier{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--sn-hairline-strong);border-bottom:1px solid var(--sn-hairline);margin:0 0 8px;}
@@ -417,7 +417,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <!-- ================= MASTHEAD ================= -->
   <header class="sn-masthead">
     <p class="sn-kicker">NYU &middot; Internal tools &middot; Case study</p>
-    <h2 id="sol-nyu-title">Campus maintenance ran on CSVs and re-typing. I designed WorkLink to give every request one record.</h2>
+    <h1 id="sol-nyu-title">Campus maintenance ran on CSVs and re-typing. I designed WorkLink to give every request one record.</h1>
     <p class="sn-lede">One platform replaced the CSV files and the software-hopping for NYU&rsquo;s Client Service staff. In its first month, average work-request turnaround fell by about a third.</p>
     <dl class="sn-dossier" aria-label="Project facts">
       <div><dt>Role</dt><dd>Product designer<small>Maintenance Team</small></dd></div>
@@ -438,7 +438,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <div class="ny-prb-stack">
       <div class="ny-prb-left">
         <!-- "The missing hub": fragmentation as the message -->
-        <div class="nyv-b1-b" role="img" aria-label="Diagram: three disconnected tools &mdash; a CSV file, a legacy system, and an invoice screen &mdash; each holding its own hand-typed copy of request B801; at the center, a dashed empty outline marks the missing single record">
+        <div class="nyv-b1-b" role="img" aria-label="Diagram: three disconnected tools (a CSV file, a legacy system, and an invoice screen), each holding its own hand-typed copy of request B801; at the center, a dashed empty outline marks the missing single record">
           <div class="nyv-b1-brow nyv-b1-btop">
             <div class="nyv-b1-node">
               <span class="nyv-b1-chip">CSV file</span>
@@ -482,7 +482,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <p>That changed the brief from &ldquo;replace the CSV with a form&rdquo; to &ldquo;represent a request&rsquo;s full lifecycle in one place.&rdquo;</p>
     <figure class="sn-figure">
       <!-- Swimlane: three ownership lanes, artifact chips cross the boundaries -->
-      <div class="nyv-jn-a" role="img" aria-label="Swimlane diagram of the work-request journey in three lanes. Lane one, Submitters: students, faculty, and campus staff submit a work request &mdash; for example, &lsquo;The heater is not working.&rsquo; The work request passes to lane two, the Client Service Center, the project&rsquo;s focus, where Client Service staff receive, review, and approve it. Approved, it leaves as a work order and passes to lane three, Maintenance, where operators and supervisors receive and perform the work order.">
+      <div class="nyv-jn-a" role="img" aria-label="Swimlane diagram of the work-request journey in three lanes. Lane one, Submitters: students, faculty, and campus staff submit a work request, for example, &lsquo;The heater is not working.&rsquo; The work request passes to lane two, the Client Service Center, the project&rsquo;s focus, where Client Service staff receive, review, and approve it. Approved, it leaves as a work order and passes to lane three, Maintenance, where operators and supervisors receive and perform the work order.">
         <div class="nyv-jn-a-lane">
           <p class="nyv-jn-a-head">Submitters</p>
           <p class="nyv-jn-a-micro">Who</p>
@@ -640,7 +640,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </div>
     <p class="sn-honest">Honest denominator: the ~33% comes from our own first-month post-launch analytics, not the deck. It&rsquo;s early and directional, but the plan behind it was set before we shipped.</p>
     <figure class="sn-figure">
-      <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
+      <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline controls preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
       <figcaption>The shipped work-order flow, queue to dispatch, as staff use it. The measurement plan behind the stats above was set before launch.</figcaption>
     </figure>
   </section>

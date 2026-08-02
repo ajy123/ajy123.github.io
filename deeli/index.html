@@ -190,8 +190,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .measure{max-width:65ch;}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
     .sol-b .masthead{margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
-    .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
-    .sol-b h2 em{font-style:italic;}
+    .sol-b #sol-b-title{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
+    .sol-b #sol-b-title em{font-style:italic;}
     .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.6;color:#57534b;max-width:none;margin:.35rem 0 0;}
     /* dossier strip — mirrors the NYU page's .sn-dossier fact grid, on Deeli tokens */
     .sol-b .na-dossier{flex-basis:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);margin:1.1rem 0 0;}
@@ -357,7 +357,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="na-content">
   <div class="wrap">
     <header class="masthead">
-      <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h2>
+      <h1 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h1>
 <p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. The change started with one test the model couldn&rsquo;t pass.</p>
       <dl class="na-dossier" aria-label="Project facts">
         <div><dt>Product</dt><dd>Deeli<small>Top-5 semiconductor foundry</small></dd></div>
@@ -541,7 +541,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </li>
       <li class="mtr-step mtr-flag">
         <span class="mtr-label">names who it&rsquo;s for</span>
-        <span class="mtr-result">can&rsquo;t tell &mdash; supply chain, or chip design?<span class="mtr-mark" aria-hidden="true">?</span></span>
+        <span class="mtr-result">can&rsquo;t tell: supply chain, or chip design?<span class="mtr-mark" aria-hidden="true">?</span></span>
       </li>
       <li class="mtr-step mtr-final">
         <span class="mtr-label">decision</span>
@@ -1420,7 +1420,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </div>
 
       <div class="na-w2-panel na-w2-queued" id="na-w2-queued" hidden>
-        <p class="na-w2-queued-text" role="status" id="na-w2-queued-text">Your report is queued &mdash; notify me when ready?</p>
+        <p class="na-w2-queued-text" role="status" id="na-w2-queued-text">Your report is queued, notify me when ready?</p>
         <div class="na-w2-queued-actions">
           <button type="button" class="na-w2-notify" id="na-w2-notify">Notify me</button>
           <button type="button" class="na-w2-view" id="na-w2-view" aria-label="View generation progress; resets this prototype">View progress</button>
@@ -1579,7 +1579,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     // just resets the prototype so it can be replayed.
     viewBtn.addEventListener('click', function(){
       window.setTimeout(function(){
-        queuedText.textContent = 'Your report is queued — notify me when ready?';
+        queuedText.textContent = 'Your report is queued, notify me when ready?';
         notifyBtn.disabled = false;
         swapPanels(queuedPanel, clarifyPanel);
       }, 600);
@@ -2000,7 +2000,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     function announce(el, text){
       if (!srStatus || !text) return;
       var name = el.querySelector('.w3-agent-name');
-      srStatus.textContent = (name ? name.textContent + ' — ' : '') + text;
+      srStatus.textContent = (name ? name.textContent + ': ' : '') + text;
     }
 
     function buildSequence(){
@@ -2026,7 +2026,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
           el.classList.remove('is-active');
           el.classList.add('is-done');
           setStatus(el, doneText);
-          announce(el, isLast ? doneText + ' — Completed' : doneText);
+          announce(el, isLast ? doneText + ': Completed' : doneText);
         }});
       });
       seq.push({ d: END_MS, fn: function(){
@@ -2065,7 +2065,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         var doneText = el.querySelector('.w3-agent-status').getAttribute('data-done');
         el.classList.add('is-done');
         setStatus(el, doneText);
-        announce(el, i === agentEls.length - 1 ? doneText + ' — Completed' : doneText);
+        announce(el, i === agentEls.length - 1 ? doneText + ': Completed' : doneText);
         Array.prototype.slice.call(el.querySelectorAll('.w3-sub')).forEach(function(sub){
           sub.classList.add('is-in');
         });

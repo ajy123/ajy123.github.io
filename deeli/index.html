@@ -287,10 +287,15 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     /* Try-it stage lives inside the solution act: the sub-head reads as a stage
        label under the cards, not a second act head. The act grid's 1.4rem gap
        plus this .2rem top margin puts ~1.6rem between the cards and the stage. */
-    .sol-b .try-head{display:grid;gap:.35rem;margin-top:.2rem;}
+    .sol-b .try-head{display:grid;gap:.35rem;margin-top:.2rem;text-align:center;}
     .sol-b .try-sub{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.15rem;line-height:1.3;letter-spacing:0;margin:0;max-width:none;color:var(--ink);}
-    .sol-b .try-head .measure{font-size:.86rem;}
-    .sol-b .try-stack{display:grid;gap:1.5rem;max-width:680px;margin-top:.4rem;}
+    /* the shared 65ch .measure cap would pin the caption to the left edge;
+       auto side margins keep it centered under the centered sub-head */
+    .sol-b .try-head .measure{font-size:.86rem;margin-left:auto;margin-right:auto;}
+    /* Stage spans the full content column (same width as the .moves grid);
+       each widget centers its own inner content, so no 680px cap here. */
+    .sol-b .try-stack{display:grid;gap:1.5rem;margin-top:.4rem;}
+    .sol-b .try-stack > .sol-widget{width:100%;max-width:none;}
     .sol-b .try-stack > .na-proto-off{display:none !important;}
     /* outcome charts &mdash; behavior flip + usage growth, side by side wide */
     .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:stretch;margin-top:.4rem;}

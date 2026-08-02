@@ -120,7 +120,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     padding:72px 24px 88px;
   }
   .sol-sw *,.sol-sw *::before,.sol-sw *::after{box-sizing:border-box;}
-  .sol-sw .sw-wrap{max-width:920px;margin:0 auto;}
   .sol-sw p{margin:0 0 14px;font-size:16px;color:var(--ssw-body);text-wrap:pretty;}
   .sol-sw a{color:var(--ssw-ink);}
   .sol-sw a:focus-visible,.sol-sw [tabindex]:focus-visible{outline:2px solid var(--ssw-accent);outline-offset:3px;border-radius:2px;}
@@ -147,7 +146,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* ---------- masthead ---------- */
   .sol-sw .sw-eyebrow{font-family:var(--ssw-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 18px;}
   .sol-sw .sw-eyebrow b{color:var(--ssw-ink);font-weight:600;}
-  .sol-sw #sol-sw-title{font-family:var(--ssw-serif);font-size:clamp(30px,4.4vw,44px);line-height:1.12;letter-spacing:-0.01em;font-weight:400;color:var(--ssw-ink);margin:0 0 20px;text-wrap:balance;}
+  .sol-sw #sol-sw-title{font-family:var(--ssw-serif);font-size:clamp(30px,4.4vw,44px);line-height:1.12;letter-spacing:-0.01em;font-weight:400;color:var(--ssw-ink);margin:0 0 20px;}
   .sol-sw .sw-dek{font-size:18px;line-height:1.55;color:var(--ssw-body);margin:0 0 34px;}
   .sol-sw .sw-dossier{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ssw-hair2);border-bottom:1px solid var(--ssw-hair);margin:0 0 8px;}
   .sol-sw .sw-dossier>div{padding:16px 18px 18px;border-left:1px solid var(--ssw-hair);}
@@ -165,7 +164,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-sw .sw-act{display:flex;align-items:center;gap:14px;margin:64px 0 14px;}
   .sol-sw .sw-act-tag{font-family:var(--ssw-mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ssw-accent);white-space:nowrap;}
   .sol-sw .sw-act-rule{flex:1;height:1px;background:var(--ssw-hair);}
-  .sol-sw h3{font-family:var(--ssw-serif);font-size:clamp(22px,3vw,28px);line-height:1.2;font-weight:400;color:var(--ssw-ink);margin:0 0 16px;text-wrap:balance;}
+  .sol-sw h3{font-family:var(--ssw-serif);font-size:clamp(22px,3vw,28px);line-height:1.2;font-weight:400;color:var(--ssw-ink);margin:0 0 16px;}
 
   /* ---------- act I: quote + old-path flow ---------- */
   .sol-sw .sw-quote{font-family:var(--ssw-serif);font-style:italic;font-size:15.5px;line-height:1.6;color:var(--ssw-mid);border-left:2px solid var(--ssw-hair2);padding-left:16px;margin:18px 0 22px;}
@@ -178,7 +177,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-sw .sw-flow-step.sw-flow-end p{color:#ffffff;}
   .sol-sw .sw-flow-step.sw-flow-end .sw-flow-n{color:rgba(255,255,255,0.6);}
   .sol-sw .sw-flow-step.sw-flow-end b{font-family:var(--ssw-mono);font-size:17px;font-variant-numeric:tabular-nums;}
-  .sol-sw .sw-flow-arrow{align-self:center;color:var(--ssw-hair2);font-size:15px;flex:0 0 auto;}
   .sol-sw .sw-figcap{font-family:var(--ssw-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--ssw-faint);margin:10px 0 0;}
 
   /* ---------- figures: real product shots ---------- */
@@ -200,7 +198,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-sw .sw-hinge li{font-size:15px;line-height:1.55;color:var(--ssw-body);padding-left:18px;position:relative;}
   .sol-sw .sw-hinge li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--ssw-accent);}
   .sol-sw .sw-hinge li b{color:var(--ssw-ink);font-weight:600;}
-  .sol-sw .sw-hyp{font-size:17px;font-weight:600;line-height:1.45;color:var(--ssw-ink);margin:0;text-wrap:balance;}
+  .sol-sw .sw-hyp{font-size:17px;font-weight:600;line-height:1.45;color:var(--ssw-ink);margin:0;}
 
   /* ---------- act III: moves strip ---------- */
   .sol-sw .sw-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0 8px;}
@@ -301,8 +299,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <div class="sw-act"><span class="sw-act-tag">The problem</span><span class="sw-act-rule"></span></div>
     <h3>The failure signal was a form filled out by hand, when agencies had one at all.</h3>
     <div class="sw-prose">
-      <p>Every bus carries eight or more devices that must stay alive: GPS tracker, router, headsign, cameras, passenger counters, fare boxes. When one failed, IT&rsquo;s only signal was a paper form and scattered monitoring platforms.</p>
-      <p>Many small and medium agencies had no formal report; failures traveled by word of mouth. The cost landed on Swiftly: almost 40% of Client Success&rsquo;s time went to device questions, and a device investigation took 30+ hours.</p>
+      <p>Every bus carries eight or more devices that must stay alive. When one failed, IT&rsquo;s only signal was a paper form and scattered monitoring platforms.</p>
+      <p>Many small and medium agencies had no formal report at all; failures traveled by word of mouth. Almost 40% of Client Success&rsquo;s time went to device questions, and one investigation took 30+ hours.</p>
       <blockquote class="sw-quote">
         &ldquo;As an IT at CapMetro, I want to feel confident that I know which in-service vehicle devices require my attention so that we can troubleshoot quickly without interrupting services and have better data for future prediction (e.g. arrival time).&rdquo;
         <span class="sw-quote-src">User story, from research with CapMetro IT</span>
@@ -311,11 +309,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <figure style="margin:0;">
       <div class="sw-flow" role="img" aria-label="The old path for one device failure: a bus operator fills a paper form, the report may or may not reach IT, IT calls Swiftly Client Success, and one investigation takes more than 30 hours.">
         <div class="sw-flow-step"><span class="sw-flow-n">Step 1</span><p>Bus operator fills out a paper maintenance form</p></div>
-        <span class="sw-flow-arrow" aria-hidden="true">&rarr;</span>
         <div class="sw-flow-step"><span class="sw-flow-n">Step 2</span><p>Report may or may not reach agency IT</p></div>
-        <span class="sw-flow-arrow" aria-hidden="true">&rarr;</span>
         <div class="sw-flow-step"><span class="sw-flow-n">Step 3</span><p>IT routes the question to Swiftly Client Success</p></div>
-        <span class="sw-flow-arrow" aria-hidden="true">&rarr;</span>
         <div class="sw-flow-step sw-flow-end"><span class="sw-flow-n">Cost</span><p><b>30+ hrs</b> to investigate one device issue</p></div>
       </div>
       <figcaption class="sw-figcap">The escalation path one failure took before the dashboard; Client Success sat at the end of every one.</figcaption>

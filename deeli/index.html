@@ -192,17 +192,32 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;}
     .sol-b .measure{max-width:65ch;}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
-    .sol-b .masthead{border-bottom:1.5px solid var(--ink);padding-bottom:1.4rem;margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
+    .sol-b .masthead{margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
     .sol-b h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
     .sol-b h2 em{font-style:italic;}
-    .sol-b .masthead .dossier{margin-left:auto;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:right;line-height:1.7;}
     .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.6;color:#57534b;max-width:62ch;margin:.35rem 0 0;}
+    /* dossier strip — mirrors the NYU page's .sn-dossier fact grid, on Deeli tokens */
+    .sol-b .na-dossier{flex-basis:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);margin:1.1rem 0 0;}
+    .sol-b .na-dossier>div{padding:16px 18px 18px 0;border-left:1px solid var(--line);padding-left:18px;}
+    .sol-b .na-dossier>div:first-child{border-left:none;padding-left:0;}
+    .sol-b .na-dossier dt{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);margin:0 0 7px;}
+    .sol-b .na-dossier dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink);font-weight:600;}
+    .sol-b .na-dossier dd small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px;}
+    @media (max-width:700px){
+      .sol-b .na-dossier{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .sol-b .na-dossier>div:nth-child(3){border-left:none;padding-left:0;}
+      .sol-b .na-dossier>div{border-top:1px solid var(--line);}
+      .sol-b .na-dossier>div:nth-child(-n+2){border-top:none;}
+    }
     .sol-b .act{display:grid;grid-template-columns:minmax(0,1fr);gap:1.4rem;padding:clamp(2rem,4.5vw,3.2rem) 0;border-top:1px solid var(--line);}
     .sol-b .act:first-of-type{border-top:none;padding-top:0;}
     /* Act heads read as stretched section headers: full column width, wide
        serif measure — not narrow stacked fragments. */
     .sol-b .act-head{display:grid;gap:.7rem;width:100%;}
     .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:30ch;color:var(--ink);}
+    /* These two heads measure ~32ch and ~37ch in Georgia; 40ch lets each sit on
+       one line at desktop widths without touching the other act heads. */
+    .sol-b #sol-b-act1,.sol-b #sol-b-coda{max-width:40ch;}
     .sol-b .act p{color:var(--muted);margin:0;}
     /* Problem act: text block full width first, figures in a 2-up row below. */
     .sol-b .setup-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem;align-items:start;}
@@ -229,7 +244,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .hinge p{color:#d6cdc4;}
     /* turn — the bridge line, pulled out of the dark panel as a standalone
        full-column callout between the research and the solution acts */
-    .sol-b .turn-callout{background:var(--raised);border-left:2px solid var(--accent);border-radius:0 var(--radius,4px) var(--radius,4px) 0;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,1.15rem+.5vw,1.45rem);line-height:1.5;color:var(--ink);padding:1.4rem 1.6rem;max-width:62ch;margin:0 0 clamp(2rem,4.5vw,3.2rem);}
+    .sol-b .turn-callout{background:var(--raised);border-radius:var(--radius,4px);font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,1.15rem+.5vw,1.45rem);line-height:1.5;color:var(--ink);padding:1.4rem 1.6rem;max-width:62ch;margin:0 0 clamp(2rem,4.5vw,3.2rem);}
     .sol-b .turn-callout b{font-style:normal;font-weight:600;}
     /* moves — the four cards double as prototype selectors for the Try-it area */
     .sol-b .moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius,4px);overflow:hidden;margin-top:.4rem;}
@@ -241,6 +256,23 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .move .mnum{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--faint);}
     .sol-b .thumb{height:88px;border:1px solid var(--line-strong);border-radius:2px;background:var(--paper);overflow:hidden;}
     .sol-b .thumb svg{display:block;width:100%;height:100%;}
+    /* compare-chrome: thumb palette A/B toggle — strip at ship */
+    .sol-b .tvb{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin-top:.4rem;}
+    .sol-b .tvb-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);}
+    .sol-b .tvb-btn{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:.25rem .6rem;cursor:pointer;}
+    .sol-b .tvb-btn:hover{color:var(--ink);}
+    .sol-b .tvb-btn:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
+    .sol-b .tvb-btn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+    .sol-b .tvb-legend{font-family:var(--mono);font-size:.68rem;color:var(--faint);display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin:.6rem 0 0;}
+    .sol-b .tvb-legend span{display:inline-flex;align-items:center;gap:.4rem;}
+    .sol-b .tvb-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;border:1px solid var(--line);}
+    .sol-b .moves[data-thumbs="b"] ~ .tvb-legend{display:none;}
+    /* Variant B: two-tone — gray context shapes remapped to ink tints; accent (#f44800/#d63e00), pure ink, and the #fff citation digit untouched */
+    .sol-b .moves[data-thumbs="b"] .thumb svg [fill="#e0e0e0"]{fill:#111111;opacity:.13;}
+    .sol-b .moves[data-thumbs="b"] .thumb svg [fill="#57534b"]{fill:#111111;opacity:.5;}
+    .sol-b .moves[data-thumbs="b"] .thumb svg [stroke="#e0e0e0"]{stroke:#111111;opacity:.13;}
+    .sol-b .moves[data-thumbs="b"] .thumb svg [stroke="#d0cabc"]{stroke:#111111;opacity:.2;}
+    .sol-b .moves[data-thumbs="b"] .thumb svg [stroke="#8f8a7d"]{stroke:#111111;opacity:.45;}
     .sol-b .move h4{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
     .sol-b .move p{font-size:.86rem;color:var(--muted);margin:0;}
     /* outcome */
@@ -250,8 +282,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .metric .big{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(2.4rem,6vw,3.4rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
     .sol-b .metric .lede{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:.55rem 0 0;}
     .sol-b .metric p{margin:.5rem 0 0;font-size:.88rem;color:var(--muted);}
-    /* post-launch closing line (the coda now uses the standard .act pattern) */
-    .sol-b .pledge{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:1.02rem;}
     .sol-b a:focus-visible,.sol-b .move:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
     .sol-b .reveal{opacity:0;transform:translateY(12px);animation:sol-b-in .7s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes sol-b-in{to{opacity:1;transform:none;}}
@@ -262,15 +292,17 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .try-stack{display:grid;gap:1.5rem;max-width:680px;margin-top:.4rem;}
     .sol-b .try-stack > .na-proto-off{display:none !important;}
     /* outcome charts &mdash; behavior flip + usage growth, side by side wide */
-    .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:start;margin-top:.4rem;}
+    .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:stretch;margin-top:.4rem;}
     @media (min-width:1000px){.sol-b .na-charts{grid-template-columns:1fr 1fr;gap:1.6rem;}}
     /* na-flip &mdash; behavior-flip bar chart cloned from the current page's impact section */
-    .sol-b .na-flip{margin:0;}
+    /* Both figures are flex columns whose chart panel grows, so the shorter
+       flip chart matches the usage chart's height in the 2-up row. */
+    .sol-b .na-flip{margin:0;display:flex;flex-direction:column;}
     /* na-usage &mdash; week-over-week usage columns cloned from the current
        page's #anchor-heatmap (+220% queries per active day) */
-    .sol-b .na-usage{margin:0;}
+    .sol-b .na-usage{margin:0;display:flex;flex-direction:column;}
     .sol-b .na-us-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
-    .sol-b .na-us-panel{background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;}
+    .sol-b .na-us-panel{flex:1;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;}
     .sol-b .na-us-delta{flex:1 1 140px;min-width:0;}
     .sol-b .na-us-delta-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);margin:0 0 10px;}
     .sol-b .na-us-delta-label{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0;max-width:24ch;}
@@ -286,7 +318,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     @keyframes na-us-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
     @media (prefers-reduced-motion:reduce){.sol-b .na-us-col-bar{animation:none !important;transform:none !important;}}
     .sol-b .na-fl-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
-    .sol-b .na-fl-figure{background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
+    .sol-b .na-fl-figure{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
     .sol-b .na-fl-bar-row + .na-fl-bar-row{margin-top:26px;}
     .sol-b .na-fl-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
     .sol-b .na-fl-row-title{font-family:var(--fbody);font-size:13px;font-weight:600;color:var(--ink);}
@@ -326,8 +358,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="wrap">
     <header class="masthead">
       <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h2>
-      <p class="dossier">Case Study&nbsp;/&nbsp;Deeli<br>Top-5 semiconductor foundry<br>Solo product designer &middot; 5-engineer build<br>Launched June 2026</p>
 <p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords &mdash; a change that started with one test the model couldn&rsquo;t pass.</p>
+      <dl class="na-dossier" aria-label="Project facts">
+        <div><dt>Client</dt><dd>Deeli<small>Top-5 semiconductor foundry</small></dd></div>
+        <div><dt>Role</dt><dd>Solo product designer</dd></div>
+        <div><dt>Team</dt><dd>5-engineer build</dd></div>
+        <div><dt>Shipped</dt><dd>June 2026</dd></div>
+      </dl>
     </header>
 
     <article class="act" id="ns-problem" aria-labelledby="sol-b-act1">
@@ -405,8 +442,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <div>
           <p class="eyebrow">The research</p>
           <h3 id="sol-b-act2">I put the model through the same research I put <em>people</em> through.</h3>
-<p class="measure">On the model: mock-real queries from researcher interviews, watching where it breaks. Before answering, it decides who it&rsquo;s writing for &mdash; right six times out of seven. The seventh fit two different readers, and the model refused to guess.</p>
-          <p class="measure">On people: what researchers expect from AI &mdash; to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
+<p class="measure">On the model: mock-real queries from researcher interviews. Before answering, it picks who it&rsquo;s writing for &mdash; right six times out of seven. The seventh fit two readers, and the model refused to guess.</p>
+          <p class="measure">On people: researchers wanted to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
         </div>
         <div>
         <figure class="mtr" aria-label="Trace of the model thinking through one query: it reads the domain and analysis type, cannot tell who the answer is for, and asks instead of guessing">
@@ -524,13 +561,17 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
     <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
       <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the steps below meet expectations researchers told us about &mdash; the second exists because of the one test the model couldn&rsquo;t pass.</p></div>
-      
-      <div class="moves">
+
+      <!-- compare-chrome: thumb palette A/B toggle — strip at ship -->
+      <div class="tvb" role="group" aria-label="Thumb palette variant"><span class="tvb-label">Thumb palette</span><button type="button" class="tvb-btn" aria-pressed="true" data-tvb="a">A &middot; legend</button><button type="button" class="tvb-btn" aria-pressed="false" data-tvb="b">B &middot; two-tone</button></div>
+      <div class="moves" data-thumbs="a">
         <div class="move" tabindex="0" role="button" aria-pressed="true" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
         <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h4>Aim the report</h4><p>I made the product confirm who the report is for and what it should cover before researching.</p></div>
         <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h4>Show the agents</h4><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
         <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
       </div>
+      <!-- compare-chrome: variant-A legend, sibling of .moves so the [data-thumbs="b"] ~ selector can hide it -->
+      <p class="tvb-legend"><span><i style="background:#e0e0e0"></i>The old flow</span><span><i style="background:#111111"></i>The researcher&rsquo;s content</span><span><i style="background:#f44800"></i>What the decision shipped</span></p>
     </article>
 
     <article class="act" aria-labelledby="sol-b-try">
@@ -2982,8 +3023,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="act-head">
         <p class="eyebrow">Post-launch</p>
         <h3 id="sol-b-coda">28% of queries were re-asks. We&rsquo;re finding out why.</h3>
-        <p class="measure">Re-asks are what a support team would call repeat contacts. A re-ask can mean the answer missed, or the topic had a second angle &mdash; those need opposite fixes, so the next move is research, not a feature.</p>
-        <p class="pledge measure">Shipped, still measuring &mdash; the log decides which one it is.</p>
+        <p class="measure">Each re-ask raises one question &mdash; did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature.</p>
       </div>
     </article>
   </div>
@@ -3015,6 +3055,18 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       }
     });
   });
+
+  /* compare-chrome: thumb palette A/B toggle — strip at ship */
+  var tvbMoves = document.querySelector('#deeli-after .moves[data-thumbs]');
+  var tvbBtns = Array.prototype.slice.call(document.querySelectorAll('#deeli-after .tvb-btn[data-tvb]'));
+  if(tvbMoves && tvbBtns.length){
+    tvbBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        tvbMoves.setAttribute('data-thumbs', btn.getAttribute('data-tvb'));
+        tvbBtns.forEach(function(b){ b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      });
+    });
+  }
 
   /* Rail scroll spy: same reading-line logic as src/caseNav.ts, scoped to the
      na- rail so caseNav keeps binding to the old page's .cs-side untouched. */

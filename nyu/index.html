@@ -95,11 +95,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </style>
 </head>
 <body id="top">
-<div id="cmp-bar" style="position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;background:#fff8f5;border-bottom:1px dashed #f44800;font-family:'JetBrains Mono',ui-monospace,monospace;">
-  <span style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#d63e00;">Preview &middot; story restructure</span>
-  <button type="button" id="cmp-after-btn" aria-pressed="true" style="font-family:inherit;font-size:.72rem;border:1px solid #111;background:#111;color:#fff;border-radius:2px;padding:.35rem .7rem;cursor:pointer;">New story</button>
-  <button type="button" id="cmp-before-btn" aria-pressed="false" style="font-family:inherit;font-size:.72rem;border:1px solid rgba(31,30,29,.4);background:#fff;color:#57534b;border-radius:2px;padding:.35rem .7rem;cursor:pointer;">Current page</button>
-</div>
 <div id="nyu-after">
 <section class="sol-nyu" aria-labelledby="sol-nyu-title">
 <style>
@@ -149,15 +144,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   }
 
   /* ---------- left rail (cloned from deeli's na-shell/na-side treatment;
-     ny- prefixed so caseNav.ts keeps binding to the old page's .cs-side
-     untouched. Same numbers: 280px rail, 64px gap, 1200px cap, fixed rail
-     via the static-position trick.) ---------- */
+     ny- prefixed to keep this vocabulary separate from the shared .cs-*
+     chrome in src/case-study.css. Same numbers: 280px rail, 64px gap,
+     1200px cap, fixed rail via the static-position trick.) ---------- */
   .sol-nyu .ny-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
   .sol-nyu .ny-rail-col{position:relative;width:280px;flex-shrink:0;}
   .sol-nyu .ny-content{flex:1 1 auto;min-width:0;}
   /* 67px top pad aligns the home link's text with the kicker at the content
-     top: 72 − the link's own 5px top padding. Keep in sync with RAIL_BASE in
-     the compare-chrome script at the foot of this page. */
+     top: 72 − the link's own 5px top padding. */
   .sol-nyu .ny-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:67px 48px 72px 0;}
   .sol-nyu .ny-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--sn-ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
   .sol-nyu .ny-side-home:hover{color:var(--sn-deep);}
@@ -658,8 +652,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </section>
 <script>
 (function(){
-  /* Rail scroll spy: same reading-line logic as src/caseNav.ts, scoped to the
-     ny- rail so caseNav keeps binding to the old page's .cs-side untouched. */
+  /* Rail scroll spy: reading-line logic scoped to the ny- rail. */
   var railCol = document.querySelector('#nyu-after .ny-rail-col');
   var nav = document.querySelector('#nyu-after .ny-side');
   if(!railCol || !nav) return;
@@ -719,207 +712,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 })();
 </script>
 </div>
-<div id="nyu-before" hidden>
-
-<div class="cs-shell">
-<div class="cs-rail-col">
-<nav class="cs-side" aria-label="Sections">
-  <a class="cs-side-home" href="/">&larr; Joanna Yen</a>
-  <ol>
-    <li><a href="#sec-problem">Problem</a></li>
-    <li><a href="#sec-process">Process</a></li>
-    <li><a href="#sec-solution">Solution</a></li>
-    <li><a href="#sec-impact">Impact</a></li>
-    <li><a href="#sec-learnings">Learnings</a></li>
-  </ol>
-</nav>
-</div>
-<div class="cs-content">
-
-<header class="cs-hero" data-ask-hint="Ask what my role was" data-ask-kind="profile" data-ask-context="On NYU, Joanna was product designer on a cross-functional team of 6 (PM, 2 product owners, 2 engineers), Sept–Oct 2018. Validated through crit and internal design review, not usability testing. Outcome: average work-request turnaround fell ~33% in the first month post-launch (Joanna's own analytics, not a deck figure)." data-ask-prompts='["What was Joanna&#39;s role on the NYU project?", "How big was the team?"]' data-ask-follow-up-prompts='["does the page say the team included a PM, two product owners, and two engineers?", "did this run Sept–Oct 2018?", "how was the ~33% turnaround improvement measured?"]'>
-  <p class="cs-hero-eyebrow">NYU &middot; Service design</p>
-  <h1 class="cs-hero-title">Unifying a campus maintenance workflow.</h1>
-  <p class="cs-hero-lede">I designed an internal work-order tool for NYU&rsquo;s Client Service staff, the team that fields campus maintenance requests, replacing CSV files and software-hopping with one unified platform.</p>
-  <div class="cs-hero-meta">
-    <div><p class="cs-hero-meta-label">Ownership</p><p class="cs-hero-meta-val">Product designer</p><p class="cs-hero-meta-val">Maintenance Team</p></div>
-    <div><p class="cs-hero-meta-label">Team</p><p class="cs-hero-meta-val">Cross-functional team of 6</p><p class="cs-hero-meta-val">PM, 2 product owners, 2 engineers</p></div>
-    <div><p class="cs-hero-meta-label">Timeline</p><p class="cs-hero-meta-val">Sept&ndash;Oct 2018</p><p class="cs-hero-meta-val">Shipped as a unified work-order platform</p></div>
-  </div>
-  <div class="cs-proof-strip" aria-label="Launch evidence">
-    <div class="cs-proof-item"><span class="cs-proof-tag">Post-launch</span><span class="cs-proof-value">~33%</span><span class="cs-proof-label">lower average work-request turnaround time in the first month, tracked in our analytics</span></div>
-    <div class="cs-proof-item"><span class="cs-proof-tag">Shipped</span><span class="cs-proof-value">3 metrics</span><span class="cs-proof-label">instrumented day one: processing, training, and communication time</span></div>
-  </div>
-  <p class="cs-hero-honest">That ~33% is our own post-launch analytics over the first month, not a figure from the original deck. It is an early, directional read; the full picture is in Impact.</p>
-</header>
-
-<nav class="cs-rail" aria-label="Case study summary">
-  <p class="cs-rail-title">The case in fifteen seconds</p>
-  <ol>
-    <li><a href="#sec-problem"><span class="cs-rail-num">Problem</span> Staff processed maintenance requests by hand across disconnected tools: CSVs and constant software-hopping.</a></li>
-    <li><a href="#sec-process"><span class="cs-rail-num">Findings</span> Requests were multi-step and crossed departments, so the record had to reflect the whole workflow.</a></li>
-    <li><a href="#sec-solution"><span class="cs-rail-num">Shipped</span> One continuous, unified work-order platform replaced the CSVs and the software-switching.</a></li>
-    <li><a href="#sec-impact"><span class="cs-rail-num">Impact</span> Average work-request turnaround fell ~33% in the first month, tracked against the metrics instrumented at launch.</a></li>
-  </ol>
-</nav>
-
-<div class="cs-sechead" id="sec-problem"><span class="cs-sec-eyebrow">Problem</span></div>
-<div class="gal-block" data-ask-hint="Ask what staff used before this" data-ask-kind="project" data-ask-prompts='["What did staff use before the unified platform?", "Why were maintenance requests hard to track?"]' data-ask-follow-up-prompts='["did staff process requests by hand across disconnected tools?", "was Problem Code B801 a representative request example?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">No accurate, unified record to communicate from.</h2>
-    <p class="gal-lede-p">NYU Client Service staff processed campus maintenance requests by hand across disconnected tools. Data entry was manual and slow. Staff jumped between systems just to find a request&rsquo;s history or keep records current.</p>
-    <p>A representative request: Request Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund.&rdquo; Every request had the same underlying problem: no single accurate record to communicate from.</p>
-    <p>Many maintenance requests are multi-step and span multiple departments, so any fix had to represent a workflow rather than a static record.</p>
-    <p class="gal-pm">&ldquo;As a Client Service Staff at NYU, I want to have an accurate maintenance record so that we can communicate more effectively with departments and clients.&rdquo;</p>
-  </div></div>
-
-  <div class="cs-figure-row">
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">Existing experience</p>
-      <a class="cs-figure-zoom" href="assets/existing-experience-full.png" target="_blank" rel="noopener" aria-label="Open the full-size legacy-system screens in a new tab">
-        <img class="cs-figure-img" src="assets/existing-experience.png" alt="The legacy work-management system: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
-      </a>
-      <figcaption class="cs-figure-cap">Before: staff re-typed the same request (Problem Code B801, a campus-cash laundry refund) across a CSV and separate legacy systems. Opens full size.</figcaption>
-    </figure>
-    <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">After: unified platform</p>
-      <img class="cs-figure-img" src="assets/unified-platform.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1300" height="870">
-      <figcaption class="cs-figure-cap">After: NYU WorkLink, one platform holding the whole request. No more CSVs or software-hopping.</figcaption>
-    </figure>
-  </div>
-</div>
-
-<div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
-<div class="gal-block" data-ask-hint="Ask what changed the direction" data-ask-kind="project" data-ask-prompts='["What changed the project&#39;s direction?", "Why wasn&#39;t this just replace-the-CSV-with-a-form?"]' data-ask-follow-up-prompts='["did the mapping surface a multi-step, multi-department constraint?", "was this reframed from a form to a full workflow record?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">The record had to hold a workflow, not just data.</h2>
-    <p class="gal-lede-p">Early process work mapped how a request traveled from the person submitting it, through the Client Service Center, to the maintenance department, an information-architecture exercise framed as &ldquo;How might we help with facility request management?&rdquo; That mapping surfaced the multi-step, multi-department constraint.</p>
-    <p>It reframed the project from &ldquo;replace the CSV with a form&rdquo; to &ldquo;represent the full lifecycle of a request in one place&rdquo;: the platform had to carry the whole workflow.</p>
-    <p class="gal-kick">If staff work from one unified record instead of many disconnected tools, they will communicate more confidently, process requests faster, and train new employees more easily.</p>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">System thinking</p>
-    <img class="cs-figure-img" src="assets/work-request-journey.png" alt="A three-part diagram: submitters (student, faculty, campus staff) raise a work request, the Client Service Center (the project&rsquo;s focus) receives, reviews and approves it, and operators and supervisors then perform the work order." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">A request crosses submitter, Client Service Center, and maintenance; it is multi-step by nature, so the record had to hold the whole workflow.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-solution"><span class="cs-sec-eyebrow">Solution</span></div>
-<div class="gal-block" data-ask-hint="Ask why one form view over pagination" data-ask-kind="project" data-ask-prompts='["Why one form view instead of pagination?", "Who signed off before launch?"]' data-ask-follow-up-prompts='["how did you decide to keep the floating action button over the alternatives?", "did engineering review specs and edge cases separately from ops staff?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Four shipped decisions.</h2>
-    <ul>
-      <li><b>One unified work-order platform.</b> Replaced CSV files and multiple platforms outright, which closed the software-switching problem at the source.</li>
-    </ul>
-
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize lessening information overload or scannability when asking Client Service Staff to review each work request?&rdquo;</dd></div>
-        <div><dt>Chose</dt><dd>A single continuous form view over a paginated one.</dd></div>
-        <div><dt>Because</dt><dd>One continuous view keeps a multi-department request visible in a single pass.</dd></div>
-      </dl>
-    </div>
-
-    <div class="cs-decision">
-      <dl>
-        <div><dt>Considered</dt><dd>&ldquo;Should we prioritize action button visibility or minimizing distractions when asking Client Service Staff to review work requests?&rdquo;</dd></div>
-        <div><dt>Chose</dt><dd>Kept the floating action button.</dd></div>
-        <div><dt>Because</dt><dd>The primary action needed to stay reachable while staff reviewed dense request details.</dd></div>
-      </dl>
-    </div>
-
-    <ul>
-      <li><b>Two separate pre-launch review loops, not one.</b> High-fidelity prototypes went to Client Service Center staff and the maintenance department for sign-off on workflow and content, and separately to engineering for a walkthrough of specs and edge cases per request type. Splitting the review matched sign-off criteria to the right audience: workflow accuracy from ops staff, technical completeness from engineering. (The engineering loop also flagged keeping micro-interactions consistent across platforms, captured as follow-up work.)</li>
-    </ul>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">Shipped: form designs</p>
-    <img class="cs-figure-img" src="assets/form-designs.png" alt="Two form layouts side by side: a paginated view that steps through client, service location and service details, versus a single continuous view showing every section at once." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">Weighing a paginated form against one continuous view: the single view won. It cuts overload while keeping a multi-department request scannable in one pass.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-impact"><span class="cs-sec-eyebrow">Impact</span></div>
-<div class="gal-block" data-ask-hint="Ask about the post-launch result" data-ask-kind="project" data-ask-prompts='["What happened after launch?", "How was the ~33% turnaround improvement measured?"]' data-ask-follow-up-prompts='["was the ~33% from Joanna&#39;s own analytics over the first month?", "were three metrics instrumented at launch, with turnaround the first to report?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">Average turnaround fell about a third in the first month.</h2>
-    <p class="gal-lede-p">We instrumented three metrics at launch. The first to report back: average work-request turnaround time dropped roughly 33% over the first month post-launch.</p>
-    <p>That figure is from our own post-launch analytics, tracked over the first month and revisited in follow-ups as we looked to improve the service design: an early, directional result, not a long-run study. It isn&rsquo;t in the original deck; the deck set the measurement plan, and this is what that plan returned:</p>
-    <p class="gal-pm">&ldquo;Post-launch, we will track both work request processing time, student employee training time, and communication time between client and Client Service Staff.&rdquo;</p>
-    <p>That number exists because we decided what to measure before we shipped.</p>
-  </div></div>
-
-  <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">What we shipped and measured</p>
-    <img class="cs-figure-img" src="assets/shipped.png" alt="The shipped NYU WorkLink work-order screen, captioned with the post-launch measurement plan: work-request processing time, student-employee training time, and client-to-staff communication time." loading="lazy" width="1600" height="900">
-    <figcaption class="cs-figure-cap">The shipped platform, instrumented at launch for work-request processing, training, and communication time. Turnaround was the first to report back, down ~33% in month one.</figcaption>
-  </figure>
-</div>
-
-<div class="cs-sechead" id="sec-learnings"><span class="cs-sec-eyebrow">Learnings</span></div>
-<div class="gal-block" data-ask-hint="Ask what would come next" data-ask-kind="project" data-ask-prompts='["What would you build next if you&#39;d kept working on this?", "What&#39;s the biggest open question from this project?"]' data-ask-follow-up-prompts='["did pre-launch review flag search functionality and grouping work orders as future scope?", "is the physical-space-versus-digital-tools question still open?"]'>
-
-  <div class="gal-copy"><div class="gal-copy-inner">
-    <h2 class="gal-headline">What I would measure next.</h2>
-    <ul>
-      <li><b>Measure the tradeoff directly.</b> Compare staff accuracy and task time to balance visual clutter against information complexity.</li>
-      <li><b>Track email-heavy tasks.</b> Find where the workflow still creates communication overhead.</li>
-      <li><b>Design for upstream and downstream users differently</b> within the same request workflow.</li>
-      <li><b>Pre-launch review flagged future scope:</b> search functionality, and grouping multiple work orders.</li>
-    </ul>
-    <p class="gal-kick">The open question I still carry: how much of a service problem should be solved in the digital tool versus in the physical space around it.</p>
-  </div></div>
-</div>
-
-</div>
-</div>
-
-<!-- Side-TOC scroll spy shared by the case pages; see src/caseNav.ts. -->
-<script type="module" src="/src/caseNav.ts"></script>
 
 <script type="module" src="/src/nyuChat.tsx"></script>
-</div>
-<script>
-(function(){
-  var after=document.getElementById('nyu-after');
-  var before=document.getElementById('nyu-before');
-  var btnA=document.getElementById('cmp-after-btn');
-  var btnB=document.getElementById('cmp-before-btn');
-  function paint(btn,on){
-    btn.setAttribute('aria-pressed',on?'true':'false');
-    btn.style.background=on?'#111':'#fff';
-    btn.style.color=on?'#fff':'#57534b';
-    btn.style.borderColor=on?'#111':'rgba(31,30,29,.4)';
-  }
-  function show(which){
-    after.hidden=which!=='after';
-    before.hidden=which!=='before';
-    paint(btnA,which==='after');
-    paint(btnB,which==='before');
-  }
-  btnA.addEventListener('click',function(){show('after');});
-  btnB.addEventListener('click',function(){show('before');});
-
-  /* compare-chrome: strip at ship — the sticky #cmp-bar pushes the flowed
-     content down but not the fixed rail, so add the bar's height onto the
-     rail's padding-top. RAIL_BASE must equal the 18px padding-top on
-     .sol-nyu .ny-side in the inline CSS (change both together). */
-  var RAIL_BASE=67; /* strip at ship */
-  function padRail(){ /* strip at ship */
-    var bar=document.getElementById('cmp-bar');
-    var rail=document.querySelector('#nyu-after .ny-side');
-    if(!bar||!rail) return;
-    rail.style.paddingTop=(RAIL_BASE+bar.offsetHeight)+'px';
-  }
-  window.addEventListener('load',padRail); /* strip at ship */
-  window.addEventListener('resize',padRail); /* strip at ship */
-  padRail(); /* strip at ship */
-})();
-</script>
 </body>
 </html>

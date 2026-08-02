@@ -179,7 +179,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   /* ---------- real product shots ---------- */
   .sol-nyu .sn-figure{margin:26px 0 0;max-width:760px;}
-  .sol-nyu .sn-figure img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
+  .sol-nyu .sn-figure img,.sol-nyu .sn-figure video{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
   .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
   .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;}
 
@@ -542,7 +542,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-move">
         <h4><span class="sn-move-num">01</span>Unify the platform</h4>
         <p>I replaced the CSV files and multiple platforms with one work-order platform, so there was nothing left to switch between.</p>
-        <img class="sn-img-plain" src="assets/unified-platform-tight.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1248" height="810">
+        <img class="sn-img-plain" src="assets/work-request-open.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1520" height="990">
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">02</span>Keep the form continuous</h4>
@@ -631,8 +631,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </div>
     <p class="sn-honest">Honest denominator: the ~33% comes from our own first-month post-launch analytics, not the deck. It&rsquo;s early and directional, but the plan behind it was set before we shipped.</p>
     <figure class="sn-figure">
-      <img src="assets/shipped.png" alt="Deck slide: the shipped WorkLink work-order screen beside the pre-launch measurement plan &mdash; work-request processing time, student-employee training time, and client-to-staff communication time." loading="lazy" width="1600" height="900">
-      <figcaption>The measurement plan, stated in the deck before launch, beside the shipped screen it instrumented.</figcaption>
+      <video class="sn-figure-video" src="assets/worklink-flow.mp4" poster="assets/worklink-flow-poster.png" autoplay muted loop playsinline preload="metadata" width="1600" height="1036" aria-label="Screen recording of the shipped WorkLink work-order flow: opening a request from the queue, reviewing the form, and dispatching it."></video>
+      <figcaption>The shipped work-order flow, queue to dispatch, as staff use it. The measurement plan behind the stats above was set before launch.</figcaption>
     </figure>
   </section>
 
@@ -709,6 +709,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   window.addEventListener('load', computeActive);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
   setTimeout(computeActive, 400);
+})();
+(function(){
+  var v=document.querySelector('.sn-figure-video');
+  if(v && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    v.removeAttribute('autoplay'); v.pause(); v.controls=true;
+  }
 })();
 </script>
 </div>

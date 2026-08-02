@@ -178,7 +178,11 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
     .sol-b .na-rail-col{position:relative;width:280px;flex-shrink:0;}
     .sol-b .na-content{flex:1 1 auto;min-width:0;}
-    .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
+    /* 18px top pad aligns the TOC ol (not the home link) with the 72px content
+       top: 72 − home-link outer 45 (21 line + 10 pad + 14 margin) − ol margin 4
+       − first-link pad 5 = 18. Keep in sync with RAIL_BASE in the compare-chrome
+       script at the foot of this page. */
+    .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:18px 48px 72px 0;}
     .sol-b .na-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
     .sol-b .na-side-home:hover{color:var(--accent-deep);}
     .sol-b .na-side ol{list-style:none;margin:4px 0 0;padding:0;}
@@ -355,7 +359,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="wrap">
     <header class="masthead">
       <h2 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h2>
-<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords &mdash; a change that started with one test the model couldn&rsquo;t pass.</p>
+<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. The change started with one test the model couldn&rsquo;t pass.</p>
       <dl class="na-dossier" aria-label="Project facts">
         <div><dt>Product</dt><dd>Deeli<small>Top-5 semiconductor foundry</small></dd></div>
         <div><dt>Role</dt><dd>Solo product designer</dd></div>
@@ -366,7 +370,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
     <article class="act" id="ns-problem" aria-labelledby="sol-b-act1">
       <div class="setup-grid">
-        <div class="act-head"><p class="eyebrow">The problem</p><h3 id="sol-b-act1">Search answered the topic, not the question.</h3><p class="measure">The old search matched words. It never knew who was asking or what they needed &mdash; so every role got the same generic report, out of a process no one could inspect.</p></div>
+        <div class="act-head"><p class="eyebrow">The problem</p><h3 id="sol-b-act1">Search answered the topic, not the question.</h3><p class="measure">The old search matched words. It never knew who was asking or what they needed, so every role got the same generic report from a process no one could inspect.</p></div>
         <div class="prb-stack">
 <figure class="pr-fig">
     <div class="pr-eyebrow">The black box</div>
@@ -554,10 +558,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       
     </article>
 
-    <p class="turn-callout"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em> &mdash; the same first move a good support conversation makes.</p>
+    <p class="turn-callout"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em>. A good support conversation makes the same first move.</p>
 
     <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
-      <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the steps below meet expectations researchers told us about &mdash; the second exists because of the one test the model couldn&rsquo;t pass.</p></div>
+      <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the four steps meet expectations researchers told us about. The second exists because of the one test the model couldn&rsquo;t pass.</p></div>
 
       <div class="moves">
         <div class="move" tabindex="0" role="button" aria-pressed="true" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
@@ -566,7 +570,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
       </div>
 
-      <div class="try-head"><h3 class="try-sub" id="sol-b-try">The question input, live.</h3><p class="measure">Pick a step above &mdash; each card loads its working prototype here.</p></div>
+      <div class="try-head"><h3 class="try-sub" id="sol-b-try">The question input, live.</h3><p class="measure">Pick a step above to load its working prototype here.</p></div>
       <div class="try-stack">
 <section class="sol-widget" id="na-w1" data-ask-ignore="true">
   <style>
@@ -2927,7 +2931,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="act-head"><p class="eyebrow">Outcome</p><h3 id="sol-b-outcome">Researchers trusted what came back.</h3></div>
       <div class="outcome-grid">
 <div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
-        <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask: within two weeks of launch, 70% of live queries were real questions instead of keywords &mdash; the behavior the redesign was built to earn.</p></div>
+        <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask. Within two weeks of launch, 70% of live queries were real questions instead of keywords. That&rsquo;s the behavior the redesign was built to earn.</p></div>
       </div>
       <div class="na-charts">
       <figure class="na-flip">
@@ -2996,16 +3000,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   </div>
   <div class="sbm-grid">
     <div class="sbm-tile">
-      <h4>persona.md &mdash; who we test for</h4>
+      <h4>persona.md &middot; who we test for</h4>
       <p>I build persona.md from interviews, user feedback, and usage data; it also feeds our product-prioritization flow. Upkeep that took <b>6+ hours a week now takes about one</b>.</p>
     </div>
     <div class="sbm-tile">
       <h4>Measured, not eyeballed</h4>
-      <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking <b>which check failed</b> &mdash; the flagged case above is one of its findings.</p>
+      <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking <b>which check failed</b>. The flagged case above is one of its findings.</p>
     </div>
     <div class="sbm-tile">
       <h4>Primitives the model can adapt</h4>
-      <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and <b>the doc itself is the handoff &mdash; engineers read it, no meetings</b>.</p>
+      <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and <b>the doc itself is the handoff: engineers read it instead of meeting</b>.</p>
     </div>
   </div>
 </article>
@@ -3014,7 +3018,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="act-head">
         <p class="eyebrow">Post-launch</p>
         <h3 id="sol-b-coda">28% of queries were re-asks. We&rsquo;re finding out why.</h3>
-        <p class="measure">Each re-ask raises one question &mdash; did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature.</p>
+        <p class="measure">Each re-ask raises one question: did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature.</p>
       </div>
     </article>
   </div>
@@ -6460,6 +6464,21 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   }
   btnA.addEventListener('click',function(){show('after');});
   btnB.addEventListener('click',function(){show('before');});
+
+  /* compare-chrome: strip at ship — the sticky #cmp-bar pushes the flowed
+     content down but not the fixed rail, so add the bar's height onto the
+     rail's padding-top. RAIL_BASE must equal the 18px padding-top on
+     .sol-b .na-side in the inline CSS (change both together). */
+  var RAIL_BASE=18; /* strip at ship */
+  function padRail(){ /* strip at ship */
+    var bar=document.getElementById('cmp-bar');
+    var rail=document.querySelector('#deeli-after .na-side');
+    if(!bar||!rail) return;
+    rail.style.paddingTop=(RAIL_BASE+bar.offsetHeight)+'px';
+  }
+  window.addEventListener('load',padRail); /* strip at ship */
+  window.addEventListener('resize',padRail); /* strip at ship */
+  padRail(); /* strip at ship */
 })();
 </script>
 </body>

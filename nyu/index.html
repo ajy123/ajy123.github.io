@@ -123,7 +123,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     padding:72px 24px 88px;
   }
   .sol-nyu *,.sol-nyu *::before,.sol-nyu *::after{box-sizing:border-box;}
-  .sol-nyu .sn-wrap{max-width:920px;margin:0 auto;}
+  /* No max-width: the column is already 856px (1200px shell - 280px rail -
+   * 64px gap), so any cap above that is dead. Swiftly's wrapper has none
+   * either; both pages land at the same measure. */
+  .sol-nyu .sn-wrap{margin:0 auto;}
   .sol-nyu a{color:var(--sn-ink);}
   .sol-nyu a:focus-visible,.sol-nyu [tabindex]:focus-visible{outline:2px solid var(--sn-accent);outline-offset:3px;border-radius:2px;}
 

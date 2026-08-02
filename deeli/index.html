@@ -167,8 +167,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       --serif:var(--font-serif);
       --mono:var(--font-mono);
       --fbody:var(--font-body);
-      background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.5;
-      padding:clamp(2.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem); -webkit-font-smoothing:antialiased;
+      background:var(--paper); color:var(--body); font-family:var(--fbody); line-height:1.6;
+      padding:72px 24px 88px; -webkit-font-smoothing:antialiased;
     }
     .sol-b *{box-sizing:border-box;}
     .sol-b .wrap{max-width:none;margin:0;}
@@ -196,9 +196,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .measure{max-width:65ch;}
     .sol-b .tnum{font-variant-numeric:tabular-nums;}
     .sol-b .masthead{margin-bottom:clamp(2.5rem,6vw,4.5rem);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;}
-    .sol-b #sol-b-title{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;letter-spacing:-.01em;margin:0;max-width:15em;color:var(--ink);text-wrap:balance;}
+    .sol-b #sol-b-title{font-family:var(--serif);font-weight:400;font-size:clamp(30px,4.6vw,44px);line-height:1.12;letter-spacing:-.01em;margin:0;color:var(--ink);text-wrap:balance;}
     .sol-b #sol-b-title em{font-style:italic;}
-    .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.6;color:#57534b;max-width:none;margin:.35rem 0 0;}
+    .sol-b .masthead .mast-lede{flex-basis:100%;font-size:1.125rem;line-height:1.55;color:var(--muted);max-width:none;margin:.35rem 0 0;}
     /* dossier strip — mirrors the NYU page's .sn-dossier fact grid, on Deeli tokens */
     .sol-b .na-dossier{flex-basis:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);margin:1.1rem 0 0;}
     .sol-b .na-dossier>div{padding:16px 18px 18px 0;border-left:1px solid var(--line);padding-left:18px;}
@@ -217,7 +217,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     /* Act heads read as stretched section headers: full column width, wide
        serif measure — not narrow stacked fragments. */
     .sol-b .act-head{display:grid;gap:.7rem;width:100%;}
-    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.4vw,2.15rem);line-height:1.1;letter-spacing:-.005em;margin:0;max-width:30ch;color:var(--ink);}
+    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0;color:var(--ink);}
     /* These two heads measure ~32ch and ~37ch in Georgia; 40ch lets each sit on
        one line at desktop widths without touching the other act heads. */
     .sol-b #sol-b-act1,.sol-b #sol-b-coda{max-width:40ch;}

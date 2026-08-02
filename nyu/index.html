@@ -186,29 +186,26 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
   .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;max-width:60ch;}
 
-  /* ---------- before strip (Act I visual) ---------- */
-  .sol-nyu .sn-before{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--sn-panel);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);padding:18px 20px;margin:24px 0 8px;max-width:640px;}
-  .sol-nyu .sn-before-chip{font-family:var(--sn-mono);font-size:11.5px;font-weight:500;color:var(--sn-mid);background:var(--sn-canvas);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);padding:8px 12px;font-variant-numeric:tabular-nums;}
-  .sol-nyu .sn-before-hop{font-family:var(--sn-mono);font-size:12px;color:var(--sn-faint);}
+  /* ---------- before caption (Act I visual; the old .sn-before/.ny-vert
+     vertical diagram was replaced by the nyv-b1 A/B variants below, and its
+     rules removed with it) ---------- */
   .sol-nyu .sn-before-cap{font-size:12.5px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;max-width:60ch;}
   /* Problem act: the two visual exhibits sit in a 2-up row wide, stacked
      narrow — cloned from deeli's .prb-stack treatment. */
   .sol-nyu .ny-prb-stack{display:grid;gap:18px;align-items:stretch;margin:24px 0 0;}
   @media(min-width:1000px){.sol-nyu .ny-prb-stack{grid-template-columns:1fr 1fr;}}
-  .sol-nyu .ny-prb-stack .sn-before{margin:0;max-width:none;}
   .sol-nyu .ny-prb-stack .sn-figure{margin:0;max-width:none;}
   .sol-nyu .ny-prb-left{display:flex;flex-direction:column;}
-  .sol-nyu .sn-before.ny-vert{flex:1;flex-direction:column;align-items:stretch;justify-content:space-between;flex-wrap:nowrap;gap:8px;}
-  .sol-nyu .ny-vert .sn-before-hop{text-align:center;}
-  .sol-nyu .ny-vnode{display:flex;align-items:baseline;gap:10px;}
-  .sol-nyu .ny-vnote{font-size:12.5px;color:var(--sn-faint);}
 
   /* ---------- hinge panel ---------- */
   .sol-nyu .sn-hinge{background:var(--sn-wash);border-left:3px solid var(--sn-accent);border-radius:var(--sn-radius);padding:28px 28px 24px;margin:64px 0 0;}
   .sol-nyu .sn-hinge .sn-hinge-mark{font-family:var(--sn-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sn-deep);margin:0 0 12px;}
   .sol-nyu .sn-hinge h3{font-family:var(--sn-serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.25;color:var(--sn-ink);margin:0 0 14px;max-width:30ch;text-wrap:balance;}
-  .sol-nyu .sn-hinge p{font-size:15.5px;line-height:1.65;color:var(--sn-body);margin:0 0 12px;max-width:62ch;}
-  .sol-nyu .sn-hinge p:last-of-type{margin-bottom:18px;}
+  /* Child combinator on purpose: hinge prose p's are direct children, and the
+     nyv-jn journey variants nest their own <p> elements deeper in the figure —
+     a bare descendant `p` here would out-rank their (0,2,0) class rules. */
+  .sol-nyu .sn-hinge>p{font-size:15.5px;line-height:1.65;color:var(--sn-body);margin:0 0 12px;max-width:62ch;}
+  .sol-nyu .sn-hinge>p:last-of-type{margin-bottom:18px;}
   .sol-nyu .sn-journey{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:6px;}
   .sol-nyu .sn-journey-node{background:var(--sn-canvas);border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline-strong);padding:12px 16px;min-width:150px;flex:1;}
   .sol-nyu .sn-journey-node.sn-focus{box-shadow:0 0 0 1.5px var(--sn-accent);}
@@ -252,6 +249,312 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-nyu .sn-move{transition:box-shadow .18s ease;}
     .sol-nyu .sn-move:hover{box-shadow:0 0 0 1px var(--sn-hairline-strong);}
   }
+
+  /* ==================================================================
+     A/B visual variants (nyv-*) — three independent comparisons:
+     nyv-b1 (problem act), nyv-jn (insight hinge), nyv-fm (solution card).
+     ================================================================== */
+
+  /* ---------- compare-chrome: A/B toggle pills — STRIP AT SHIP,
+     together with the .nyv-tg markup, data-nyv attrs, per-section
+     visibility rules, and the compare-chrome script IIFE ---------- */
+  .sol-nyu .nyv-tg{display:flex;align-items:center;gap:8px;}
+  .sol-nyu .nyv-tg-right{justify-content:flex-end;}
+  .sol-nyu .nyv-tg-label{font-family:var(--sn-mono);font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--sn-faint);margin-right:2px;}
+  .sol-nyu .nyv-btn{font-family:var(--sn-mono);font-size:10.5px;font-weight:600;line-height:1;color:var(--sn-mid);background:var(--sn-canvas);border:0;box-shadow:0 0 0 1px var(--sn-hairline-strong);border-radius:999px;padding:5px 11px;cursor:pointer;}
+  .sol-nyu .nyv-btn[aria-pressed="true"]{color:var(--sn-canvas);background:var(--sn-ink);box-shadow:0 0 0 1px var(--sn-ink);}
+  .sol-nyu .nyv-btn:focus-visible{outline:2px solid var(--sn-accent);outline-offset:2px;}
+  .sol-nyu .nyv-tg-sm .nyv-tg-label{font-size:9.5px;}
+  .sol-nyu .nyv-tg-sm .nyv-btn{font-size:9.5px;padding:4px 9px;}
+  .sol-nyu .ny-prb-left>.nyv-tg{margin:0 0 12px;}
+  .sol-nyu .sn-figure>.nyv-tg{margin:0 0 2px;}
+  /* per-section visibility, keyed on the wrapper's data-nyv */
+  .sol-nyu [data-nyv="a"] .nyv-b1-b,.sol-nyu [data-nyv="b"] .nyv-b1-a,
+  .sol-nyu [data-nyv="a"] .nyv-jn-b,.sol-nyu [data-nyv="b"] .nyv-jn-a,
+  .sol-nyu [data-nyv="a"] .nyv-fm-b,.sol-nyu [data-nyv="b"] .nyv-fm-a{display:none;}
+
+  /* ---------- nyv-b1 shared: panel shell + chips (site vocabulary) ---------- */
+  .sol-nyu .nyv-b1-a,.sol-nyu .nyv-b1-b{
+    flex:1 1 auto;display:flex;flex-direction:column;
+    background:var(--sn-panel);border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:18px 20px;
+  }
+  .sol-nyu .nyv-b1-chip{
+    font-family:var(--sn-mono);font-size:11.5px;font-weight:500;color:var(--sn-mid);
+    background:var(--sn-canvas);border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:7px 11px;white-space:nowrap;
+  }
+  .sol-nyu .nyv-b1-micro{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--sn-faint);margin:0;
+  }
+  /* nyv-b1 Option A: the ledger */
+  .sol-nyu .nyv-b1-a{justify-content:space-between;gap:14px;}
+  .sol-nyu .nyv-b1-rows{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-evenly;gap:10px;}
+  .sol-nyu .nyv-b1-row{
+    background:var(--sn-canvas);border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:11px 14px 12px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .sol-nyu .nyv-b1-rowtop{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .sol-nyu .nyv-b1-count{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--sn-faint);font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .sol-nyu .nyv-b1-rec{
+    margin:0;font-family:var(--sn-mono);font-size:12.5px;line-height:1.5;
+    color:var(--sn-ink);font-variant-numeric:tabular-nums;
+  }
+  .sol-nyu .nyv-b1-foot{align-self:flex-start;}
+  /* nyv-b1 Option B: the missing hub */
+  .sol-nyu .nyv-b1-b{justify-content:space-between;gap:20px;padding:22px 20px;}
+  .sol-nyu .nyv-b1-brow{display:flex;}
+  .sol-nyu .nyv-b1-btop{justify-content:space-between;gap:16px;}
+  .sol-nyu .nyv-b1-bbot{justify-content:center;}
+  .sol-nyu .nyv-b1-node{display:flex;flex-direction:column;align-items:flex-start;gap:7px;}
+  .sol-nyu .nyv-b1-node-end{align-items:flex-end;}
+  .sol-nyu .nyv-b1-node-mid{align-items:center;}
+  .sol-nyu .nyv-b1-note{
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:500;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--sn-faint);
+  }
+  .sol-nyu .nyv-b1-ghost{
+    align-self:center;text-align:center;max-width:100%;
+    border:1.5px dashed var(--sn-accent);border-radius:var(--sn-radius);
+    padding:16px 24px;
+  }
+  .sol-nyu .nyv-b1-ghost-label{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sn-deep);margin:0 0 8px;
+  }
+  .sol-nyu .nyv-b1-ghost-rec{
+    margin:0;font-family:var(--sn-mono);font-size:12.5px;line-height:1.5;
+    color:var(--sn-faint);font-variant-numeric:tabular-nums;
+  }
+  .sol-nyu .nyv-b1-ghost-sub{
+    font-family:var(--sn-serif);font-style:italic;font-size:12px;line-height:1.5;
+    color:var(--sn-faint);margin:4px 0 0;
+  }
+  @media(max-width:420px){
+    .sol-nyu .nyv-b1-btop{flex-direction:column;gap:14px;}
+    .sol-nyu .nyv-b1-node-end{align-items:flex-start;}
+    .sol-nyu .nyv-b1-ghost{padding:14px 16px;}
+  }
+
+  /* ---------- nyv-jn Option A: swimlane ----------
+     0px middle tracks hold the artifact chips; the chips center on the
+     lane boundary and ride the lanes' top edge (negative margins — keep
+     this out of any overflow:hidden parent). Sits on the hinge's warm
+     wash; lanes are canvas. */
+  .sol-nyu .nyv-jn-a{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 0px minmax(0,1fr) 0px minmax(0,1fr);
+    column-gap:16px;
+    margin:34px 0 0;
+  }
+  .sol-nyu .nyv-jn-a-lane{
+    position:relative;
+    display:flex;flex-direction:column;gap:9px;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);
+    padding:22px 18px 18px;
+    min-height:230px;
+  }
+  .sol-nyu .nyv-jn-a-focus{box-shadow:0 0 0 1.5px var(--sn-accent);}
+  .sol-nyu .nyv-jn-a-tag{
+    position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+    color:var(--sn-deep);background:var(--sn-canvas);
+    box-shadow:0 0 0 1.5px var(--sn-accent);border-radius:3px;
+    padding:3px 9px;
+  }
+  .sol-nyu .nyv-jn-a-head{
+    font-family:var(--sn-mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--sn-ink);
+    margin:0;padding-bottom:10px;border-bottom:1px solid var(--sn-hairline);
+  }
+  .sol-nyu .nyv-jn-a-micro{
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:500;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--sn-faint);
+    margin:5px 0 -3px;
+  }
+  .sol-nyu .nyv-jn-a-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .sol-nyu .nyv-jn-a-actor{
+    font-size:12px;line-height:1.3;color:var(--sn-mid);
+    background:var(--sn-panel);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:4px 9px;
+  }
+  .sol-nyu .nyv-jn-a-step{
+    font-family:var(--sn-mono);font-size:10px;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--sn-ink);
+    background:var(--sn-canvas);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);padding:5px 9px;
+  }
+  .sol-nyu .nyv-jn-a-step-csc{background:var(--sn-wash);color:var(--sn-deep);}
+  .sol-nyu .nyv-jn-a-eg{
+    font-family:var(--sn-serif);font-style:italic;font-size:12.5px;
+    line-height:1.5;color:var(--sn-faint);margin:auto 0 0;padding-top:10px;
+  }
+  .sol-nyu .nyv-jn-a-hand{
+    justify-self:center;align-self:start;margin-top:-12px;z-index:1;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--sn-ink);
+    background:var(--sn-canvas);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline-strong);padding:4px 9px;
+  }
+  .sol-nyu .nyv-jn-a-hand-arr{color:var(--sn-faint);font-size:11px;}
+  @media(max-width:700px){
+    .sol-nyu .nyv-jn-a{grid-template-columns:1fr;margin-top:26px;}
+    .sol-nyu .nyv-jn-a-lane{min-height:0;}
+    .sol-nyu .nyv-jn-a-hand{margin:14px auto 22px;align-self:auto;}
+    .sol-nyu .nyv-jn-a-hand-arr{transform:rotate(90deg);}
+    .sol-nyu .nyv-jn-a-eg{margin-top:2px;}
+  }
+
+  /* ---------- nyv-jn Option B: step rail ----------
+     Canvas panel for contrast against the warm wash; below ~640px of
+     available width the rail scrolls sideways instead of stacking. */
+  .sol-nyu .nyv-jn-b{
+    margin:26px 0 0;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);
+    padding:26px 28px 28px;
+  }
+  .sol-nyu .nyv-jn-b-scroll{overflow-x:auto;}
+  .sol-nyu .nyv-jn-b-grid{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    grid-template-rows:auto auto auto auto;
+    min-width:600px;
+  }
+  /* row 1: artifact labels, centered on the boundary where the name changes */
+  .sol-nyu .nyv-jn-b-art{position:relative;grid-row:1;justify-self:center;padding-bottom:12px;}
+  .sol-nyu .nyv-jn-b-art-req{grid-column:1/3;}
+  .sol-nyu .nyv-jn-b-art-ord{grid-column:4/6;}
+  .sol-nyu .nyv-jn-b-art::after{
+    content:"";position:absolute;bottom:0;left:50%;width:1px;height:9px;
+    background:var(--sn-hairline-strong);
+  }
+  .sol-nyu .nyv-jn-b-art-chip{
+    display:inline-block;white-space:nowrap;
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--sn-ink);
+    background:var(--sn-panel);border-radius:3px;
+    box-shadow:0 0 0 1px var(--sn-hairline);padding:4px 9px;
+  }
+  .sol-nyu .nyv-jn-b-art-arr{color:var(--sn-faint);}
+  /* row 2: the rail. Hairline base line per cell; the CSC span overlays
+     an accent segment running tick-to-tick (Receive to Approve). */
+  .sol-nyu .nyv-jn-b-cell{grid-row:2;position:relative;height:20px;}
+  .sol-nyu .nyv-jn-b-cell::before{
+    content:"";position:absolute;left:0;right:0;top:50%;
+    transform:translateY(-50%);height:1.5px;
+    background:var(--sn-hairline-strong);
+  }
+  .sol-nyu .nyv-jn-b-cell-first::before{left:50%;}
+  .sol-nyu .nyv-jn-b-cell-last::before{right:50%;}
+  .sol-nyu .nyv-jn-b-cell-csc::after{
+    content:"";position:absolute;left:0;right:0;top:50%;
+    transform:translateY(-50%);height:2.5px;
+    background:var(--sn-accent);
+  }
+  .sol-nyu .nyv-jn-b-cell-csc-in::after{left:50%;}
+  .sol-nyu .nyv-jn-b-cell-csc-out::after{right:50%;}
+  .sol-nyu .nyv-jn-b-dot{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:9px;height:9px;border-radius:50%;z-index:1;
+    background:var(--sn-canvas);border:1.5px solid var(--sn-ink);
+  }
+  .sol-nyu .nyv-jn-b-dot-csc{border-color:var(--sn-accent);}
+  /* row 3: step verbs */
+  .sol-nyu .nyv-jn-b-verb{
+    grid-row:3;text-align:center;margin-top:10px;
+    font-family:var(--sn-mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--sn-ink);
+  }
+  .sol-nyu .nyv-jn-b-v1{grid-column:1;}
+  .sol-nyu .nyv-jn-b-v2{grid-column:2;}
+  .sol-nyu .nyv-jn-b-v3{grid-column:3;}
+  .sol-nyu .nyv-jn-b-v4{grid-column:4;}
+  .sol-nyu .nyv-jn-b-v5{grid-column:5;}
+  /* row 4: actor spans under the steps they own */
+  .sol-nyu .nyv-jn-b-who{grid-row:4;text-align:center;margin-top:22px;padding:0 8px;}
+  .sol-nyu .nyv-jn-b-who b{display:block;font-size:12.5px;font-weight:700;color:var(--sn-ink);margin-bottom:2px;}
+  .sol-nyu .nyv-jn-b-who>span{display:block;font-size:11.5px;line-height:1.4;color:var(--sn-mid);}
+  .sol-nyu .nyv-jn-b-who-sub{grid-column:1;}
+  .sol-nyu .nyv-jn-b-who-mnt{grid-column:5;}
+  /* CSC span: an accent bracket embracing Receive-Approve (margins of
+     16.66% pull the bracket ends in to the outer tick centers). */
+  .sol-nyu .nyv-jn-b-who-csc{
+    grid-column:2/5;position:relative;
+    margin-left:16.66%;margin-right:16.66%;
+    padding-top:16px;
+  }
+  .sol-nyu .nyv-jn-b-who-csc::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:7px;
+    border:2px solid var(--sn-accent);border-bottom:none;
+    border-radius:2px 2px 0 0;
+  }
+  .sol-nyu .nyv-jn-b-tag{
+    display:inline-block;
+    font-family:var(--sn-mono);font-size:9.5px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--sn-deep);
+    margin-bottom:6px;
+  }
+  .sol-nyu .nyv-jn-b-eg{
+    display:block;font-family:var(--sn-serif);font-style:italic;
+    font-size:12px;line-height:1.5;color:var(--sn-faint);
+    margin-top:8px;font-weight:400;
+  }
+  @media(max-width:700px){
+    .sol-nyu .nyv-jn-b{padding:20px 18px 22px;}
+  }
+
+  /* ---------- nyv-fm: form-designs A/B (SVG wireframes) ----------
+     Wrappers match the .sn-move img treatment: white plate, radius,
+     hairline ring. Token fallbacks stripped — all --sn-* confirmed above. */
+  .sol-nyu .nyv-fm-a,.sol-nyu .nyv-fm-b{
+    display:block;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);
+    margin-top:2px;
+  }
+  .sol-nyu .nyv-fm-a svg,.sol-nyu .nyv-fm-b svg{display:block;width:100%;height:auto;}
+  /* wireframe vocabulary */
+  .sol-nyu .nyv-fm-scr{fill:var(--sn-panel);stroke:var(--sn-hairline);stroke-width:1;}
+  .sol-nyu .nyv-fm-bar{fill:var(--sn-hairline-strong);}
+  .sol-nyu .nyv-fm-div{stroke:var(--sn-hairline);stroke-width:1;}
+  .sol-nyu .nyv-fm-dot{fill:var(--sn-hairline-strong);}
+  .sol-nyu .nyv-fm-dot-on{fill:var(--sn-ink);}
+  /* type: mono uppercase micro-labels only */
+  .sol-nyu .nyv-fm-sec{
+    font-family:var(--sn-mono);
+    font-size:9px;font-weight:600;letter-spacing:.07em;
+    fill:var(--sn-mid);
+  }
+  .sol-nyu .nyv-fm-lab{
+    font-family:var(--sn-mono);
+    font-size:9.5px;font-weight:600;letter-spacing:.12em;
+    fill:var(--sn-faint);
+  }
+  /* accent reserved for the shipped/continuous side */
+  .sol-nyu .nyv-fm-ring{fill:none;stroke:var(--sn-accent);stroke-width:1.5;}
+  .sol-nyu .nyv-fm-tagbox{fill:var(--sn-accent);}
+  .sol-nyu .nyv-fm-tag{
+    font-family:var(--sn-mono);
+    font-size:8px;font-weight:600;letter-spacing:.1em;
+    fill:var(--sn-canvas);
+  }
+  /* option B reading lines: broken path stays gray, unbroken path takes accent */
+  .sol-nyu .nyv-fm-path-b{stroke:var(--sn-mid);stroke-width:2;stroke-linecap:round;fill:none;}
+  .sol-nyu .nyv-fm-node-b{fill:var(--sn-mid);}
+  .sol-nyu .nyv-fm-path-c{stroke:var(--sn-accent);stroke-width:2.25;stroke-linecap:round;fill:none;}
+  .sol-nyu .nyv-fm-node-c{fill:var(--sn-accent);}
 </style>
 <div class="ny-shell">
 <div class="ny-rail-col">
@@ -291,13 +594,60 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <p>A representative request &mdash; Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund&rdquo; &mdash; had no single accurate record to communicate from. Neither did any other request.</p>
     </div>
     <div class="ny-prb-stack">
-      <div class="ny-prb-left">
-        <div class="sn-before ny-vert" role="img" aria-label="Diagram: request B801, a laundry refund, typed by hand into a CSV file, then a legacy system, then an invoice screen">
-          <div class="ny-vnode"><span class="sn-before-chip">CSV file</span><span class="ny-vnote">B801 typed in</span></div>
-          <span class="sn-before-hop" aria-hidden="true">&darr;</span>
-          <div class="ny-vnode"><span class="sn-before-chip">Legacy system</span><span class="ny-vnote">B801 typed in again</span></div>
-          <span class="sn-before-hop" aria-hidden="true">&darr;</span>
-          <div class="ny-vnode"><span class="sn-before-chip">Invoice screen</span><span class="ny-vnote">B801 typed in a third time</span></div>
+      <div class="ny-prb-left" data-nyv="a">
+        <!-- compare-chrome (strip at ship): A/B visual toggle -->
+        <div class="nyv-tg" role="group" aria-label="Visual option"><span class="nyv-tg-label">Visual</span><button type="button" class="nyv-btn" data-v="a" aria-pressed="true">A</button><button type="button" class="nyv-btn" data-v="b" aria-pressed="false">B</button></div>
+        <!-- Variant A — "the ledger": repetition as the message -->
+        <div class="nyv-b1-a" role="img" aria-label="Ledger diagram: the same record &mdash; B801, Campus cash, laundry refund &mdash; hand-typed three separate times, into a CSV file, a legacy system, and an invoice screen; no tool held the full record">
+          <p class="nyv-b1-micro">One request &middot; Type: Campus Cash</p>
+          <div class="nyv-b1-rows">
+            <div class="nyv-b1-row">
+              <div class="nyv-b1-rowtop">
+                <span class="nyv-b1-chip">CSV file</span>
+                <span class="nyv-b1-count">Entry 1 of 3</span>
+              </div>
+              <p class="nyv-b1-rec">B801 &middot; Campus cash &mdash; laundry refund</p>
+            </div>
+            <div class="nyv-b1-row">
+              <div class="nyv-b1-rowtop">
+                <span class="nyv-b1-chip">Legacy system</span>
+                <span class="nyv-b1-count">Entry 2 of 3</span>
+              </div>
+              <p class="nyv-b1-rec">B801 &middot; Campus cash &mdash; laundry refund</p>
+            </div>
+            <div class="nyv-b1-row">
+              <div class="nyv-b1-rowtop">
+                <span class="nyv-b1-chip">Invoice screen</span>
+                <span class="nyv-b1-count">Entry 3 of 3</span>
+              </div>
+              <p class="nyv-b1-rec">B801 &middot; Campus cash &mdash; laundry refund</p>
+            </div>
+          </div>
+          <p class="nyv-b1-micro nyv-b1-foot">Typed by hand each time &middot; no tool held the full record</p>
+        </div>
+        <!-- Variant B — "the missing hub": fragmentation as the message -->
+        <div class="nyv-b1-b" role="img" aria-label="Diagram: three disconnected tools &mdash; a CSV file, a legacy system, and an invoice screen &mdash; each holding its own hand-typed copy of request B801; at the center, a dashed empty outline marks the missing single record">
+          <div class="nyv-b1-brow nyv-b1-btop">
+            <div class="nyv-b1-node">
+              <span class="nyv-b1-chip">CSV file</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+            <div class="nyv-b1-node nyv-b1-node-end">
+              <span class="nyv-b1-chip">Legacy system</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+          </div>
+          <div class="nyv-b1-ghost">
+            <p class="nyv-b1-ghost-label">No single record</p>
+            <p class="nyv-b1-ghost-rec">B801 &middot; Campus cash &mdash; laundry refund</p>
+            <p class="nyv-b1-ghost-sub">Type: Campus Cash</p>
+          </div>
+          <div class="nyv-b1-brow nyv-b1-bbot">
+            <div class="nyv-b1-node nyv-b1-node-mid">
+              <span class="nyv-b1-chip">Invoice screen</span>
+              <span class="nyv-b1-note">Hand-typed copy</span>
+            </div>
+          </div>
         </div>
         <p class="sn-before-cap">Request B801 &mdash; a laundry refund &mdash; existed as three hand-typed copies. No tool held its full history.</p>
       </div>
@@ -325,9 +675,89 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-journey-arrow" aria-hidden="true">&rarr;</div>
       <div class="sn-journey-node"><b>Maintenance</b><span>Operators and supervisors perform the work order</span></div>
     </div>
-    <figure class="sn-figure">
-      <img class="sn-img-plain" src="assets/work-request-journey-tight.png" alt="Journey diagram from process work: submitters (student, faculty, campus staff) raise a work request, the Client Service Center receives, reviews and approves it, and operators and supervisors perform the work order." loading="lazy" width="751" height="305">
-      <figcaption>The journey map from process work: a request crosses submitter, Client Service Center, and maintenance.</figcaption>
+    <figure class="sn-figure" data-nyv="a">
+      <!-- compare-chrome (strip at ship): A/B visual toggle -->
+      <div class="nyv-tg nyv-tg-right" role="group" aria-label="Visual option"><span class="nyv-tg-label">Visual</span><button type="button" class="nyv-btn" data-v="a" aria-pressed="true">A</button><button type="button" class="nyv-btn" data-v="b" aria-pressed="false">B</button></div>
+      <!-- Variant A — swimlane: three ownership lanes, artifact chips cross the boundaries -->
+      <div class="nyv-jn-a" role="img" aria-label="Swimlane diagram of the work-request journey in three lanes. Lane one, Submitters: students, faculty, and campus staff submit a work request &mdash; for example, &lsquo;The heater is not working.&rsquo; The work request passes to lane two, the Client Service Center, the project&rsquo;s focus, where Client Service staff receive, review, and approve it. Approved, it leaves as a work order and passes to lane three, Maintenance, where operators and supervisors receive and perform the work order.">
+        <div class="nyv-jn-a-lane">
+          <p class="nyv-jn-a-head">Submitters</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Student</span>
+            <span class="nyv-jn-a-actor">Faculty</span>
+            <span class="nyv-jn-a-actor">Campus staff</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step">Submit</span>
+          </div>
+          <p class="nyv-jn-a-eg">&ldquo;The heater is not working.&rdquo;</p>
+        </div>
+        <div class="nyv-jn-a-hand"><span class="nyv-jn-a-hand-name">Work request</span><span class="nyv-jn-a-hand-arr" aria-hidden="true">&rarr;</span></div>
+        <div class="nyv-jn-a-lane nyv-jn-a-focus">
+          <span class="nyv-jn-a-tag">Project focus</span>
+          <p class="nyv-jn-a-head">Client Service Center</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Client Service staff</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Receive</span>
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Review</span>
+            <span class="nyv-jn-a-step nyv-jn-a-step-csc">Approve</span>
+          </div>
+        </div>
+        <div class="nyv-jn-a-hand"><span class="nyv-jn-a-hand-name">Work order</span><span class="nyv-jn-a-hand-arr" aria-hidden="true">&rarr;</span></div>
+        <div class="nyv-jn-a-lane">
+          <p class="nyv-jn-a-head">Maintenance</p>
+          <p class="nyv-jn-a-micro">Who</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-actor">Operators</span>
+            <span class="nyv-jn-a-actor">Supervisors</span>
+          </div>
+          <p class="nyv-jn-a-micro">Does</p>
+          <div class="nyv-jn-a-chips">
+            <span class="nyv-jn-a-step">Receive</span>
+            <span class="nyv-jn-a-step">Perform</span>
+          </div>
+        </div>
+      </div>
+      <!-- Variant B — step rail: one line, five ticks, CSC span carries the accent -->
+      <div class="nyv-jn-b" role="img" aria-label="Step rail of the work-request journey: five steps on one line &mdash; Submit, Receive, Review, Approve, Perform. Students, faculty, and campus staff submit a work request, for example &lsquo;The heater is not working.&rsquo; The work request enters the Client Service Center &mdash; the project&rsquo;s focus &mdash; which receives, reviews, and approves it. The work order then leaves to Maintenance, where operators and supervisors perform it.">
+        <div class="nyv-jn-b-scroll">
+          <div class="nyv-jn-b-grid">
+            <span class="nyv-jn-b-art nyv-jn-b-art-req"><span class="nyv-jn-b-art-chip">Work request <span class="nyv-jn-b-art-arr" aria-hidden="true">&rarr;</span></span></span>
+            <span class="nyv-jn-b-art nyv-jn-b-art-ord"><span class="nyv-jn-b-art-chip">Work order <span class="nyv-jn-b-art-arr" aria-hidden="true">&rarr;</span></span></span>
+            <span class="nyv-jn-b-cell nyv-jn-b-cell-first"><i class="nyv-jn-b-dot"></i></span>
+            <span class="nyv-jn-b-cell nyv-jn-b-cell-csc nyv-jn-b-cell-csc-in"><i class="nyv-jn-b-dot nyv-jn-b-dot-csc"></i></span>
+            <span class="nyv-jn-b-cell nyv-jn-b-cell-csc"><i class="nyv-jn-b-dot nyv-jn-b-dot-csc"></i></span>
+            <span class="nyv-jn-b-cell nyv-jn-b-cell-csc nyv-jn-b-cell-csc-out"><i class="nyv-jn-b-dot nyv-jn-b-dot-csc"></i></span>
+            <span class="nyv-jn-b-cell nyv-jn-b-cell-last"><i class="nyv-jn-b-dot"></i></span>
+            <span class="nyv-jn-b-verb nyv-jn-b-v1">Submit</span>
+            <span class="nyv-jn-b-verb nyv-jn-b-v2">Receive</span>
+            <span class="nyv-jn-b-verb nyv-jn-b-v3">Review</span>
+            <span class="nyv-jn-b-verb nyv-jn-b-v4">Approve</span>
+            <span class="nyv-jn-b-verb nyv-jn-b-v5">Perform</span>
+            <span class="nyv-jn-b-who nyv-jn-b-who-sub">
+              <b>Submitters</b>
+              <span>Student &middot; Faculty &middot; Campus staff</span>
+              <i class="nyv-jn-b-eg">&ldquo;The heater is not working.&rdquo;</i>
+            </span>
+            <span class="nyv-jn-b-who nyv-jn-b-who-csc">
+              <span class="nyv-jn-b-tag">Project focus</span>
+              <b>Client Service Center</b>
+              <span>Client Service staff</span>
+            </span>
+            <span class="nyv-jn-b-who nyv-jn-b-who-mnt">
+              <b>Maintenance</b>
+              <span>Operators &middot; Supervisors</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <figcaption>The request&rsquo;s path &mdash; submitters to the Client Service Center to maintenance, rebuilt from the process journey map.</figcaption>
     </figure>
   </section>
 
@@ -344,10 +774,93 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <p>I replaced the CSV files and multiple platforms with one work-order platform, so there was nothing left to switch between.</p>
         <img class="sn-img-plain" src="assets/unified-platform-tight.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1248" height="810">
       </div>
-      <div class="sn-move">
+      <div class="sn-move" data-nyv="a">
         <h4><span class="sn-move-num">02</span>Keep the form continuous</h4>
         <p>I weighed overload against scannability and chose a continuous form over a paginated one: a multi-department request stays visible in one pass.</p>
-        <img src="assets/form-designs.png" alt="Two form layouts side by side: a paginated view that steps through client, service location and service details, versus the single continuous view that shipped." loading="lazy" width="1600" height="900">
+        <!-- compare-chrome (strip at ship): A/B visual toggle -->
+        <div class="nyv-tg nyv-tg-right nyv-tg-sm" role="group" aria-label="Visual option"><span class="nyv-tg-label">Visual</span><button type="button" class="nyv-btn" data-v="a" aria-pressed="true">A</button><button type="button" class="nyv-btn" data-v="b" aria-pressed="false">B</button></div>
+        <!-- Variant A — side-by-side wireframes: paginated route vs shipped continuous form -->
+        <div class="nyv-fm-a" role="img" aria-label="Two form layouts compared as wireframes: on the left, three paginated mini-screens with step dots, one screen each for client, service location and service details; on the right, one continuous form holding all three sections in a single column, ringed in orange and tagged shipped.">
+          <svg viewBox="0 0 400 210" aria-hidden="true" focusable="false">
+            <!-- paginated route: three stepped mini-screens -->
+            <g>
+              <rect class="nyv-fm-scr" x="14" y="26" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="24" y="41">CLIENT</text>
+              <rect class="nyv-fm-bar" x="24" y="48" width="76" height="4" rx="2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="72" cy="62" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="80" cy="62" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="88" cy="62" r="2.2"/>
+            </g>
+            <g>
+              <rect class="nyv-fm-scr" x="30" y="82" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="40" y="97">SERVICE LOCATION</text>
+              <rect class="nyv-fm-bar" x="40" y="104" width="86" height="4" rx="2"/>
+              <circle class="nyv-fm-dot" cx="88" cy="118" r="2.2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="96" cy="118" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="104" cy="118" r="2.2"/>
+            </g>
+            <g>
+              <rect class="nyv-fm-scr" x="46" y="138" width="132" height="46" rx="3"/>
+              <text class="nyv-fm-sec" x="56" y="153">SERVICE DETAILS</text>
+              <rect class="nyv-fm-bar" x="56" y="160" width="62" height="4" rx="2"/>
+              <circle class="nyv-fm-dot" cx="104" cy="174" r="2.2"/>
+              <circle class="nyv-fm-dot" cx="112" cy="174" r="2.2"/>
+              <circle class="nyv-fm-dot nyv-fm-dot-on" cx="120" cy="174" r="2.2"/>
+            </g>
+            <!-- continuous form: shipped -->
+            <rect class="nyv-fm-ring" x="234" y="16" width="148" height="178" rx="6"/>
+            <rect class="nyv-fm-scr" x="240" y="22" width="136" height="166" rx="3"/>
+            <line class="nyv-fm-div" x1="240" y1="77" x2="376" y2="77"/>
+            <line class="nyv-fm-div" x1="240" y1="133" x2="376" y2="133"/>
+            <text class="nyv-fm-sec" x="252" y="38">CLIENT</text>
+            <rect class="nyv-fm-bar" x="252" y="46" width="100" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="54" width="64" height="4" rx="2"/>
+            <text class="nyv-fm-sec" x="252" y="93">SERVICE LOCATION</text>
+            <rect class="nyv-fm-bar" x="252" y="101" width="88" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="109" width="52" height="4" rx="2"/>
+            <text class="nyv-fm-sec" x="252" y="149">SERVICE DETAILS</text>
+            <rect class="nyv-fm-bar" x="252" y="157" width="96" height="4" rx="2"/>
+            <rect class="nyv-fm-bar" x="252" y="165" width="58" height="4" rx="2"/>
+            <rect class="nyv-fm-tagbox" x="318" y="9" width="58" height="15" rx="2"/>
+            <text class="nyv-fm-tag" x="347" y="20" text-anchor="middle">SHIPPED</text>
+          </svg>
+        </div>
+        <!-- Variant B — the reading line: broken across three screens vs one unbroken pass -->
+        <div class="nyv-fm-b" role="img" aria-label="The same two form structures reduced to a reading line: across three paginated screens, labelled three screens, the line breaks and restarts at each screen; through the continuous form, labelled one pass, a single unbroken orange line runs top to bottom.">
+          <svg viewBox="0 0 400 200" aria-hidden="true" focusable="false">
+            <!-- paginated: broken line, restarts each screen -->
+            <text class="nyv-fm-lab" x="16" y="17">THREE SCREENS</text>
+            <rect class="nyv-fm-scr" x="16" y="30" width="132" height="42" rx="3"/>
+            <rect class="nyv-fm-scr" x="16" y="82" width="132" height="42" rx="3"/>
+            <rect class="nyv-fm-scr" x="16" y="134" width="132" height="42" rx="3"/>
+            <rect class="nyv-fm-bar" x="42" y="41" width="62" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="42" y="50" width="42" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="42" y="93" width="72" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="42" y="102" width="50" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="42" y="145" width="56" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="42" y="154" width="36" height="3.5" rx="1.75"/>
+            <circle class="nyv-fm-node-b" cx="30" cy="38" r="2.5"/>
+            <line class="nyv-fm-path-b" x1="30" y1="38" x2="30" y2="64"/>
+            <circle class="nyv-fm-node-b" cx="30" cy="90" r="2.5"/>
+            <line class="nyv-fm-path-b" x1="30" y1="90" x2="30" y2="116"/>
+            <circle class="nyv-fm-node-b" cx="30" cy="142" r="2.5"/>
+            <line class="nyv-fm-path-b" x1="30" y1="142" x2="30" y2="168"/>
+            <!-- continuous: one unbroken accent stroke -->
+            <text class="nyv-fm-lab" x="252" y="17">ONE PASS</text>
+            <rect class="nyv-fm-scr" x="252" y="30" width="132" height="146" rx="3"/>
+            <line class="nyv-fm-div" x1="252" y1="79" x2="384" y2="79"/>
+            <line class="nyv-fm-div" x1="252" y1="128" x2="384" y2="128"/>
+            <rect class="nyv-fm-bar" x="278" y="41" width="64" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="278" y="50" width="44" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="278" y="90" width="72" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="278" y="99" width="48" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="278" y="139" width="58" height="3.5" rx="1.75"/>
+            <rect class="nyv-fm-bar" x="278" y="148" width="40" height="3.5" rx="1.75"/>
+            <circle class="nyv-fm-node-c" cx="266" cy="38" r="2.5"/>
+            <line class="nyv-fm-path-c" x1="266" y1="38" x2="266" y2="160"/>
+            <path class="nyv-fm-node-c" d="M262,160 L270,160 L266,168 Z"/>
+          </svg>
+        </div>
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">03</span>Keep the action reachable</h4>
@@ -465,6 +978,24 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   window.addEventListener('load', computeActive);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(computeActive);
   setTimeout(computeActive, 400);
+})();
+(function(){
+  /* compare-chrome (STRIP AT SHIP, with the .nyv-tg markup, data-nyv attrs,
+     and nyv-tg/nyv-btn CSS): three independent A/B visual toggles. Each
+     .nyv-btn sits inside a .nyv-tg group inside a [data-nyv] wrapper; a click
+     sets that wrapper's variant and flips the group's aria-pressed states. */
+  var btns = document.querySelectorAll('#nyu-after .nyv-btn');
+  Array.prototype.forEach.call(btns, function(btn){
+    btn.addEventListener('click', function(){
+      var wrap = btn.closest('[data-nyv]');
+      var group = btn.closest('.nyv-tg');
+      if(!wrap || !group) return;
+      wrap.setAttribute('data-nyv', btn.getAttribute('data-v'));
+      Array.prototype.forEach.call(group.querySelectorAll('.nyv-btn'), function(b){
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+    });
+  });
 })();
 </script>
 </div>

@@ -153,11 +153,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <figcaption class="cs-figure-cap">Before: eight-plus devices per vehicle, and the only failure signal was a hand-filled daily report.</figcaption>
     </figure>
     <figure class="cs-figure">
-      <p class="cs-figure-eyebrow">After: live monitoring</p>
-      <img class="cs-figure-img" src="assets/live-monitoring-hover.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device, and a hover tooltip open on a failing tracker showing device ID, model, and the issue." loading="lazy" width="1442" height="1025">
-      <figcaption class="cs-figure-cap">After: a live Data Health view replaced the daily report. Device state per vehicle, in one place.</figcaption>
+      <p class="cs-figure-eyebrow">The daily report</p>
+      <img class="cs-figure-img" src="assets/daily-report.jpg" alt="A pink carbon-copy paper Bus Maintenance Report form, filled out by hand." loading="lazy" width="932" height="658">
+      <figcaption class="cs-figure-cap">The failure signal itself: a carbon-copy form, one per bus, per day.</figcaption>
     </figure>
   </div>
+  <figure class="cs-figure">
+    <p class="cs-figure-eyebrow">After: live monitoring</p>
+    <img class="cs-figure-img" src="assets/live-monitoring-hover.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device, and a hover tooltip open on a failing tracker showing device ID, model, and the issue." loading="lazy" width="1442" height="1025">
+    <figcaption class="cs-figure-cap">After: a live Data Health view replaced the daily report. Device state per vehicle, in one place.</figcaption>
+  </figure>
 </div>
 
 <div class="cs-sechead" id="sec-process"><span class="cs-sec-eyebrow">Process</span></div>
@@ -210,10 +215,22 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </div>
   </div></div>
 
+  <div class="cs-figure-row">
+    <figure class="cs-figure">
+      <p class="cs-figure-eyebrow">Considered: all vehicles</p>
+      <img class="cs-figure-img" src="assets/table-considered.png" alt="Device table keyed on vehicles, listing device status and devices requiring attention." loading="lazy" width="1373" height="843">
+      <figcaption class="cs-figure-cap">Every vehicle, every device, equal weight.</figcaption>
+    </figure>
+    <figure class="cs-figure">
+      <p class="cs-figure-eyebrow">Shipped: in-service first</p>
+      <img class="cs-figure-img" src="assets/table-shipped.png" alt="The shipped device table: in-service vehicles first, one color dot per device." loading="lazy" width="1384" height="844">
+      <figcaption class="cs-figure-cap">In-service status leads the first column: triage before diagnosis.</figcaption>
+    </figure>
+  </div>
   <figure class="cs-figure">
-    <p class="cs-figure-eyebrow">Shipped: information hierarchy</p>
-    <img class="cs-figure-img" src="assets/info-hierarchy.png" alt="Two versions of the device table side by side: one keyed on malfunctioned devices, the other on in-service vehicles, with legends beneath each." loading="lazy" width="1260" height="720">
-    <figcaption class="cs-figure-cap">All vehicles vs. in-service, weighed side by side. In-service status in the first column put triage before diagnosis.</figcaption>
+    <p class="cs-figure-eyebrow">Shipped: click to investigate</p>
+    <img class="cs-figure-img" src="assets/investigate.png" alt="Vehicle health view for one vehicle: a possible-diagnosis row, a map with an Open in Live Operations link, and per-device cards with latency charts." loading="lazy" width="1444" height="988">
+    <figcaption class="cs-figure-cap">The click half of the model: one vehicle&rsquo;s health, a possible diagnosis, and the hand-off to Live Operations.</figcaption>
   </figure>
 </div>
 

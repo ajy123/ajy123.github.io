@@ -183,6 +183,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* ---------- real product shots ---------- */
   .sol-nyu .sn-figure{margin:26px 0 0;max-width:760px;}
   .sol-nyu .sn-figure img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
+  .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
   .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;max-width:60ch;}
 
   /* ---------- before strip (Act I visual) ---------- */
@@ -192,10 +193,15 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-before-cap{font-size:12.5px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;max-width:60ch;}
   /* Problem act: the two visual exhibits sit in a 2-up row wide, stacked
      narrow — cloned from deeli's .prb-stack treatment. */
-  .sol-nyu .ny-prb-stack{display:grid;gap:18px;align-items:start;margin:24px 0 0;}
+  .sol-nyu .ny-prb-stack{display:grid;gap:18px;align-items:stretch;margin:24px 0 0;}
   @media(min-width:1000px){.sol-nyu .ny-prb-stack{grid-template-columns:1fr 1fr;}}
   .sol-nyu .ny-prb-stack .sn-before{margin:0;max-width:none;}
   .sol-nyu .ny-prb-stack .sn-figure{margin:0;max-width:none;}
+  .sol-nyu .ny-prb-left{display:flex;flex-direction:column;}
+  .sol-nyu .sn-before.ny-vert{flex:1;flex-direction:column;align-items:stretch;justify-content:space-between;flex-wrap:nowrap;gap:8px;}
+  .sol-nyu .ny-vert .sn-before-hop{text-align:center;}
+  .sol-nyu .ny-vnode{display:flex;align-items:baseline;gap:10px;}
+  .sol-nyu .ny-vnote{font-size:12.5px;color:var(--sn-faint);}
 
   /* ---------- hinge panel ---------- */
   .sol-nyu .sn-hinge{background:var(--sn-wash);border-left:3px solid var(--sn-accent);border-radius:var(--sn-radius);padding:28px 28px 24px;margin:64px 0 0;}
@@ -220,7 +226,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-move h4{font-size:15px;font-weight:700;color:var(--sn-ink);margin:0;letter-spacing:-0.01em;}
   .sol-nyu .sn-move h4 .sn-move-num{font-family:var(--sn-mono);font-size:11px;font-weight:600;color:var(--sn-faint);margin-right:8px;font-variant-numeric:tabular-nums;}
   .sol-nyu .sn-move p{font-size:13.5px;line-height:1.55;color:var(--sn-mid);margin:0;flex:1;}
-  .sol-nyu .sn-move svg{display:block;width:100%;height:auto;max-width:220px;color:var(--sn-mid);margin-top:2px;}
   .sol-nyu .sn-move img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-canvas);margin-top:2px;}
   @media(max-width:640px){.sol-nyu .sn-moves{grid-template-columns:1fr;}}
 
@@ -286,15 +291,15 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <p>A representative request &mdash; Type &ldquo;Campus Cash,&rdquo; Problem Code B801, &ldquo;Campus cash &mdash; laundry refund&rdquo; &mdash; had no single accurate record to communicate from. Neither did any other request.</p>
     </div>
     <div class="ny-prb-stack">
-      <div>
-        <div class="sn-before" role="img" aria-label="Diagram: one request, Problem Code B801, re-typed across a CSV file and two separate legacy systems">
-          <span class="sn-before-chip">B801 &middot; CSV file</span>
-          <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
-          <span class="sn-before-chip">B801 &middot; Legacy system</span>
-          <span class="sn-before-hop" aria-hidden="true">&rarr;</span>
-          <span class="sn-before-chip">B801 &middot; Invoice screen</span>
+      <div class="ny-prb-left">
+        <div class="sn-before ny-vert" role="img" aria-label="Diagram: request B801, a laundry refund, typed by hand into a CSV file, then a legacy system, then an invoice screen">
+          <div class="ny-vnode"><span class="sn-before-chip">CSV file</span><span class="ny-vnote">B801 typed in</span></div>
+          <span class="sn-before-hop" aria-hidden="true">&darr;</span>
+          <div class="ny-vnode"><span class="sn-before-chip">Legacy system</span><span class="ny-vnote">B801 typed in again</span></div>
+          <span class="sn-before-hop" aria-hidden="true">&darr;</span>
+          <div class="ny-vnode"><span class="sn-before-chip">Invoice screen</span><span class="ny-vnote">B801 typed in a third time</span></div>
         </div>
-        <p class="sn-before-cap">The same request, re-typed into each tool. Nothing carried over.</p>
+        <p class="sn-before-cap">Request B801 &mdash; a laundry refund &mdash; existed as three hand-typed copies. No tool held its full history.</p>
       </div>
       <figure class="sn-figure">
         <img src="assets/existing-experience.png" alt="The legacy tools: a dense CSV of problem codes beside a separate invoice-entry screen, with a callout for Request Type &lsquo;Campus Cash,&rsquo; Problem Code B801, &lsquo;Campus cash &mdash; laundry refund.&rsquo;" loading="lazy" width="1180" height="900">
@@ -321,7 +326,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-journey-node"><b>Maintenance</b><span>Operators and supervisors perform the work order</span></div>
     </div>
     <figure class="sn-figure">
-      <img src="assets/work-request-journey.png" alt="Journey diagram from process work: submitters (student, faculty, campus staff) raise a work request, the Client Service Center receives, reviews and approves it, and operators and supervisors perform the work order." loading="lazy" width="1600" height="900">
+      <img class="sn-img-plain" src="assets/work-request-journey-tight.png" alt="Journey diagram from process work: submitters (student, faculty, campus staff) raise a work request, the Client Service Center receives, reviews and approves it, and operators and supervisors perform the work order." loading="lazy" width="751" height="305">
       <figcaption>The journey map from process work: a request crosses submitter, Client Service Center, and maintenance.</figcaption>
     </figure>
   </section>
@@ -329,7 +334,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <!-- ================= ACT III ================= -->
   <section class="sn-act" id="ny-solution" aria-label="Design decisions">
     <p class="sn-act-mark">The solution</p>
-    <h3>Four shipped decisions.</h3>
+    <h3>Design decisions.</h3>
     <div class="sn-prose">
       <p>We stated the bet before we built: with one record, staff communicate confidently, process faster, and train new employees more easily.</p>
     </div>
@@ -337,7 +342,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-move">
         <h4><span class="sn-move-num">01</span>Unify the platform</h4>
         <p>I replaced the CSV files and multiple platforms with one work-order platform, so there was nothing left to switch between.</p>
-        <img src="assets/unified-platform.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1300" height="870">
+        <img class="sn-img-plain" src="assets/unified-platform-tight.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1248" height="810">
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">02</span>Keep the form continuous</h4>
@@ -347,12 +352,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-move">
         <h4><span class="sn-move-num">03</span>Keep the action reachable</h4>
         <p>I weighed button visibility against minimizing distraction and kept the floating action button &mdash; the primary action stays in reach while staff review dense request details.</p>
-        <svg viewBox="0 0 220 56" fill="none" aria-hidden="true"><rect x="60" y="4" width="100" height="48" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M70 15h60M70 23h72M70 31h52M70 39h64" stroke="currentColor" stroke-width="1.5" opacity=".45"/><circle cx="146" cy="41" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M146 37.5v7M142.5 41h7" stroke="currentColor" stroke-width="1.5"/></svg>
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">04</span>Split the review</h4>
         <p>I ran two pre-launch loops: Client Service and maintenance staff signed off on workflow; engineering walked specs and edge cases per request type.</p>
-        <svg viewBox="0 0 220 56" fill="none" aria-hidden="true"><rect x="4" y="18" width="56" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M68 26c14 0 22-10 36-10m-36 14c14 0 22 10 36 10" stroke="currentColor" stroke-width="1.5"/><rect x="112" y="4" width="102" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="112" y="32" width="102" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M120 14h56" stroke="currentColor" stroke-width="1.5" opacity=".45"/><path d="M120 42h68" stroke="currentColor" stroke-width="1.5" opacity=".45"/></svg>
       </div>
     </div>
   </section>

@@ -7,3 +7,4 @@ dist/
 PRODUCT.md
 design.md
 .tmp/
+tmp-scaffold/

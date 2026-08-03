@@ -21,78 +21,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
 <!-- Shared case-study chrome (:root palette, hero, proof strip, rail, side
-     TOC, shell geometry). Page-specific vocabulary stays in the inline
-     <style> below, which loads later and therefore wins ties. -->
+     TOC, shell geometry). Page-specific vocabulary lives in the single
+     <style> block inside <body>, which loads later and therefore wins ties.
+     (There used to be a second block here in <head>; every selector in it
+     was dead and it was removed.) -->
 <link rel="stylesheet" href="/src/case-study.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* Page-specific vocabulary only — the shared chrome (:root palette, hero,
-   proof strip, sechead, rail, side TOC, shell) lives in /src/case-study.css. */
-
-/* .gal-block owns the 40px page gutter; children must NOT add their own
-   horizontal padding. Trimmed from deeli/index.html: kept only the prose,
-   proof-strip, decision-row and next-flow vocabulary this simpler,
-   text+placeholder page actually uses. */
-.gal-block{padding:var(--space-block) var(--gutter);}
-.gal-block-head{margin:0 0 30px;}
-
-.gal-copy{padding:0;}
-.gal-copy-inner{max-width:var(--measure-prose);}
-.gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
-.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);text-wrap:balance;color:var(--ink);}
-.gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;text-wrap:pretty;}
-.gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
-.gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
-.gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
-.gal-copy li b{color:var(--ink);font-weight:600;}
-.gal-copy .gal-kick{font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin:6px 0 20px;padding:16px 20px;background:var(--surface-warm);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);text-wrap:balance;}
-.gal-copy .gal-pm{font-size:15px;line-height:1.6;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:16px;margin:16px 0 24px;font-style:italic;}
-
-/* ---- figures: real slide crops from Joanna's NYU deck ---- */
-.cs-figure{margin:0 0 var(--space-figure);}
-.cs-figure-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
-.cs-figure-img{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);background:var(--surface-subtle);}
-.cs-figure-zoom{display:block;cursor:zoom-in;border-radius:var(--radius);}
-.cs-figure-zoom:focus-visible{outline:1px solid var(--accent);outline-offset:3px;}
-.cs-figure-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px auto 0;max-width:var(--measure-caption);}
-.cs-figure-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
-@media(max-width:720px){.cs-figure-row{grid-template-columns:1fr;}}
-
-/* ---- decision rows: considered / chose / because ---- */
-.cs-decision{margin:14px 0 24px;}
-.cs-decision dl{max-width:var(--measure-prose);margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
-.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
-.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
-.cs-decision dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--body);}
-.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
-@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
-
-/* ---- impact stat grid ---- */
-.impact-findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-.gal-copy-inner > .impact-findings:last-child{margin-bottom:var(--space-block);}
-.impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-.impact-finding:first-child{padding-left:0;box-shadow:none;}
-.impact-finding b{display:block;font-family:var(--font-mono);font-size:22px;line-height:1;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;}
-.impact-finding span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:680px){
-  .impact-findings{grid-template-columns:1fr;}
-  .impact-finding,.impact-finding:first-child{padding:16px 0;box-shadow:inset 0 1px 0 var(--hairline-faint);}
-  .impact-finding:first-child{box-shadow:none;}
-}
-
-/* ---- learnings takeaway grid ---- */
-.cs-next-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:12px;margin-top:8px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
-.cs-next-step b{display:block;font-size:13px;color:var(--ink);margin-bottom:4px;}
-.cs-next-step span{display:block;font-size:12px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:680px){.cs-next-flow{grid-template-columns:1fr;}}
-
-.gal-block + .gal-block{border-top:none;}
-
-
-.cs-sechead,#sec-problem,#sec-process,#sec-solution,#sec-impact,#sec-learnings{scroll-margin-top:24px;}
-</style>
 </head>
 <body id="top">
 <div id="nyu-after">
@@ -184,7 +120,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
   /* ---------- real product shots ---------- */
   .sol-nyu .sn-figure{margin:26px 0 0;max-width:760px;}
-  .sol-nyu .sn-figure img,.sol-nyu .sn-figure video{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
+  /* One frame for every imported asset on the page — figures, the flow video,
+     and the screenshots inside decision cards. Generated visuals (.nyv-*,
+     the card chrome itself) carry their own treatment and are not covered. */
+  .sol-nyu .sn-figure img,.sol-nyu .sn-figure video,.sol-nyu .sn-move img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-panel);}
   /* Media control cloned from the landing page's work-card thumbnails
      (.work-media-control in src/index.css) so the same gesture works in both
      places. The video autoplays muted and looping, so this is the pause
@@ -197,7 +136,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-media-control svg path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
   .sol-nyu .sn-media-control svg path[d="M8 5v14l11-7z"]{fill:currentColor;stroke:none;}
   @media (prefers-reduced-motion:reduce){.sol-nyu .sn-media-control{transition:none;opacity:1;transform:none;}}
-  .sol-nyu .sn-move img.sn-img-plain,.sol-nyu .sn-figure img.sn-img-plain{box-shadow:none;background:transparent;}
   .sol-nyu .sn-figure figcaption{font-family:var(--sn-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--sn-faint);margin:10px 0 0;}
 
   /* ---------- before caption (Act I visual; the old .sn-before/.ny-vert
@@ -227,12 +165,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .sn-move h4{font-size:15px;font-weight:700;color:var(--sn-ink);margin:0;letter-spacing:-0.01em;}
   .sol-nyu .sn-move h4 .sn-move-num{font-family:var(--sn-mono);font-size:11px;font-weight:600;color:var(--sn-faint);margin-right:8px;font-variant-numeric:tabular-nums;}
   .sol-nyu .sn-move p{font-size:13.5px;line-height:1.55;color:var(--sn-mid);margin:0;flex:1;}
-  .sol-nyu .sn-move img{display:block;width:100%;height:auto;border-radius:var(--sn-radius);box-shadow:0 0 0 1px var(--sn-hairline);background:var(--sn-canvas);margin-top:2px;}
-  /* Card 01's screenshot matches card 02's .nyv-fm-a height at equal card
-     widths. fm-a has no padding, so its height is W x (210/400) = 0.525W;
-     the img's aspect is 810/1248 = 0.649038, so its width must be
-     0.525 / 0.649038 = 0.808889 of the card content width -> 80.89%. */
-  .sol-nyu .sn-move img.sn-img-plain{width:80.89%;margin-left:auto;margin-right:auto;}
+  /* Framing comes from the shared imported-asset rule above; only the nudge
+     off the paragraph is card-specific. */
+  .sol-nyu .sn-move img{margin-top:2px;}
   @media(max-width:640px){.sol-nyu .sn-moves{grid-template-columns:1fr;}}
 
   /* ---------- outcome ---------- */
@@ -266,7 +201,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* ==================================================================
      nyv-* visuals — all shipped, no A/B comparisons remain. nyv-b1 is
      the missing hub; nyv-jn-a is the journey swimlane; nyv-fm is the
-     wireframe pair. Toggles, alternates, and compare-chrome are gone.
+     wireframe pair; nyv-rv is the pre-launch review loops. Toggles,
+     alternates, and compare-chrome are gone.
      ================================================================== */
 
   /* ---------- nyv-b1: the missing hub (shipped) ---------- */
@@ -388,8 +324,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   }
 
   /* ---------- nyv-fm: form-designs wireframe pair (shipped) ----------
-     Wrapper matches the .sn-move img treatment: white plate, radius,
-     hairline ring. Token fallbacks stripped — all --sn-* confirmed above. */
+     Borrows the radius and hairline ring from the imported-asset frame, but
+     the plate stays --sn-canvas and must: .nyv-fm-scr fills its mini-screens
+     with --sn-panel, the exact colour the imported-asset rule uses as its
+     plate, so a panel-grey wrapper would make the wireframe disappear into
+     its own background. Token fallbacks stripped — all --sn-* confirmed
+     above. Same constraint applies to nyv-rv below. */
   .sol-nyu .nyv-fm-a{
     display:block;
     background:var(--sn-canvas);
@@ -414,6 +354,46 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-nyu .nyv-fm-ring{fill:none;stroke:var(--sn-accent);stroke-width:1.5;}
   .sol-nyu .nyv-fm-tagbox{fill:var(--sn-accent);}
   .sol-nyu .nyv-fm-tag{
+    font-family:var(--sn-mono);
+    font-size:8px;font-weight:600;letter-spacing:.1em;
+    fill:var(--sn-canvas);
+  }
+
+  /* ---------- nyv-rv: the two pre-launch review loops ----------
+     Same plate/ring/vocabulary as nyv-fm above; separate prefix because the
+     two diagrams are independent and should be editable without coupling.
+     The cards themselves are already equal height (grid stretch), so what
+     the viewBox buys is that this diagram and card 03's screenshot TOP-align
+     — .sn-move p{flex:1} already bottom-aligns them, so matching the ratio
+     is what closes the gap at the top. An exact match would be
+     400 x 598/1314 = 182.04; 182 is the rounding, leaving 0.04px at the
+     rendered width. RE-CROP fab-states.png AND THIS viewBox MUST BE
+     RECOMPUTED — same fragility as .sw-fig-row-ratio. */
+  .sol-nyu .nyv-rv-a{
+    display:block;
+    background:var(--sn-canvas);
+    border-radius:var(--sn-radius);
+    box-shadow:0 0 0 1px var(--sn-hairline);
+    margin-top:2px;
+  }
+  .sol-nyu .nyv-rv-a svg{display:block;width:100%;height:auto;}
+  .sol-nyu .nyv-rv-lane{fill:var(--sn-panel);stroke:var(--sn-hairline);stroke-width:1;}
+  .sol-nyu .nyv-rv-node{fill:var(--sn-hairline-strong);}
+  .sol-nyu .nyv-rv-link{stroke:var(--sn-hairline-strong);stroke-width:1;}
+  .sol-nyu .nyv-rv-flow{fill:none;stroke:var(--sn-hairline-strong);stroke-width:1;}
+  .sol-nyu .nyv-rv-sec{
+    font-family:var(--sn-mono);
+    font-size:9px;font-weight:600;letter-spacing:.07em;
+    fill:var(--sn-mid);
+  }
+  .sol-nyu .nyv-rv-meta{
+    font-family:var(--sn-mono);
+    font-size:8px;font-weight:500;letter-spacing:.06em;
+    fill:var(--sn-faint);
+  }
+  /* accent reserved for the shipped end, same as nyv-fm */
+  .sol-nyu .nyv-rv-tagbox{fill:var(--sn-accent);}
+  .sol-nyu .nyv-rv-tag{
     font-family:var(--sn-mono);
     font-size:8px;font-weight:600;letter-spacing:.1em;
     fill:var(--sn-canvas);
@@ -563,14 +543,26 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-move">
         <h4><span class="sn-move-num">01</span>Unify the platform</h4>
         <p>I replaced the CSV files and multiple platforms with one work-order platform, so there was nothing left to switch between.</p>
-        <img class="sn-img-plain" src="assets/work-request-open.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1520" height="990">
+        <img src="assets/work-request-open.png" alt="NYU WorkLink: a single work-order screen with the queue on the left, one continuous request form (client, service location, service detail, assignment) in the center, and request history on the right." loading="lazy" width="1511" height="981">
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">02</span>Keep the form continuous</h4>
         <p>I weighed overload against scannability and chose a continuous form over a paginated one: a multi-department request stays visible in one pass.</p>
         <!-- Side-by-side wireframes: paginated route vs shipped continuous form -->
         <div class="nyv-fm-a" role="img" aria-label="Two form layouts compared as wireframes: on the left, three paginated mini-screens with step dots, one screen each for client, service location and service details; on the right, one continuous form holding all three sections in a single column, ringed in orange and tagged shipped.">
-          <svg viewBox="0 0 400 210" aria-hidden="true" focusable="false">
+          <!-- The art is drawn for 400x210. The box is widened to 259.70 =
+               400 x 981/1511, work-request-open.png's ratio, so this plate
+               stands exactly as tall as card 01's screenshot and the two
+               visuals in this row align top and bottom.
+               The y-origin centres the PAINTED art, which is not the same as
+               centring the nominal 0..210 frame: the art actually spans
+               y 8.5..194.75 (tagbox top to accent-ring bottom, stroke
+               included), so -28.22 = 8.5 - (259.70 - 186.25)/2 puts equal
+               space above and below. Splitting the frame instead leaves the
+               art sitting ~7 units high.
+               RE-CROP work-request-open.png AND THE HEIGHT MUST BE
+               RECOMPUTED; REDRAW THE ART AND SO MUST THE ORIGIN. -->
+          <svg viewBox="0 -28.22 400 259.70" aria-hidden="true" focusable="false">
             <!-- paginated route: three stepped mini-screens -->
             <g>
               <rect class="nyv-fm-scr" x="14" y="26" width="132" height="46" rx="3"/>
@@ -618,15 +610,52 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="sn-move">
         <h4><span class="sn-move-num">03</span>Keep the action reachable</h4>
         <p>I weighed button visibility against minimizing distraction and kept the floating action button so the primary action stays in reach while staff review dense request details.</p>
-        <img src="assets/fab-states.png" alt="Three states of the floating action button: collapsed, expanded actions, and the dispatch and submit bar." loading="lazy" width="1316" height="600">
+        <img src="assets/fab-states.png" alt="Three states of the floating action button: collapsed, expanded actions, and the dispatch and submit bar." loading="lazy" width="1314" height="598">
       </div>
       <div class="sn-move">
         <h4><span class="sn-move-num">04</span>Split the review</h4>
         <p>I ran two pre-launch loops: Client Service and maintenance staff signed off on workflow; engineering walked specs and edge cases per request type.</p>
+        <!-- The two pre-launch review loops the card describes, drawn as
+             lanes converging on launch. Caveat worth knowing before editing:
+             three discrete dots per lane WILL read as three passes, and the
+             card does not say how many passes either loop took. The
+             aria-label is deliberately number-free so the claim is not made
+             to screen readers, but the drawing still implies it. If that
+             matters, the dots should become a continuous run rather than a
+             countable set. -->
+        <div class="nyv-rv-a" role="img" aria-label="The two pre-launch review loops as lanes: the top lane is Client Service and maintenance staff signing off on workflow; the bottom lane is engineering walking specs and edge cases per request type. Both lanes lead to launch.">
+          <svg viewBox="0 0 400 182" aria-hidden="true" focusable="false">
+            <!-- lane A: staff sign-off on workflow -->
+            <rect class="nyv-rv-lane" x="14" y="18" width="232" height="58" rx="3"/>
+            <text class="nyv-rv-sec" x="28" y="38">CLIENT SERVICE + MAINT.</text>
+            <line class="nyv-rv-link" x1="32" y1="58" x2="112" y2="58"/>
+            <circle class="nyv-rv-node" cx="32" cy="58" r="2.2"/>
+            <circle class="nyv-rv-node" cx="72" cy="58" r="2.2"/>
+            <circle class="nyv-rv-node" cx="112" cy="58" r="2.2"/>
+            <text class="nyv-rv-meta" x="130" y="61">WORKFLOW SIGN-OFF</text>
+            <!-- lane B: engineering walks specs and edge cases -->
+            <rect class="nyv-rv-lane" x="14" y="106" width="232" height="58" rx="3"/>
+            <text class="nyv-rv-sec" x="28" y="126">ENGINEERING</text>
+            <line class="nyv-rv-link" x1="32" y1="146" x2="112" y2="146"/>
+            <circle class="nyv-rv-node" cx="32" cy="146" r="2.2"/>
+            <circle class="nyv-rv-node" cx="72" cy="146" r="2.2"/>
+            <circle class="nyv-rv-node" cx="112" cy="146" r="2.2"/>
+            <text class="nyv-rv-meta" x="130" y="149">SPECS + EDGE CASES</text>
+            <!-- Both lanes meet at the launch. Tag geometry is card 02's
+                 (58x15, rx 2, 8px mono) so the reserved accent carries the
+                 same weight in both diagrams; the word differs because on
+                 card 02 SHIPPED marks the chosen variant, whereas here the
+                 terminus is the launch itself. -->
+            <path class="nyv-rv-flow" d="M246 47 C 286 47, 296 91.5, 318 91.5"/>
+            <path class="nyv-rv-flow" d="M246 135 C 286 135, 296 91.5, 318 91.5"/>
+            <rect class="nyv-rv-tagbox" x="318" y="84" width="58" height="15" rx="2"/>
+            <text class="nyv-rv-tag" x="347" y="95" text-anchor="middle">LAUNCH</text>
+          </svg>
+        </div>
       </div>
     </div>
     <figure class="sn-figure">
-      <img src="assets/sitemap.png" alt="Grayscale sitemap of the Work Order section annotated by role: Client Service aide, Client Service supervisor, facility, and shop." loading="lazy" width="1322" height="964">
+      <img src="assets/sitemap.png" alt="Grayscale sitemap of the Work Order section annotated by role: Client Service aide, Client Service supervisor, facility, and shop." loading="lazy" width="1316" height="960">
       <figcaption>The work-order section mapped per role. The structure under the screens above.</figcaption>
     </figure>
     <figure class="sn-figure">

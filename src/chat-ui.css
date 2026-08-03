@@ -64,7 +64,7 @@
   z-index: 1002;
   display: inline-flex;
   max-width: min(
-    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 24px),
+    calc(var(--ask-hint-max-width, 280px) + var(--ask-pin-size, 20px) + 24px),
     calc(100vw - 32px)
   );
   align-items: center;
@@ -89,7 +89,7 @@
 .contextual-ask-surface {
   display: inline-flex;
   max-width: min(
-    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 24px),
+    calc(var(--ask-hint-max-width, 280px) + var(--ask-pin-size, 20px) + 24px),
     calc(100vw - 32px)
   );
   min-height: var(--ask-pin-size, 20px);
@@ -179,7 +179,7 @@
 
 .contextual-ask-copy {
   display: block;
-  max-width: var(--ask-hint-max-width, 220px);
+  max-width: var(--ask-hint-max-width, 280px);
   min-width: 0;
   padding: 0 10px;
   color: var(--ink);

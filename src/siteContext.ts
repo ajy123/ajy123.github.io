@@ -40,7 +40,7 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "A search redesign that narrows what a word like 'market' is actually asking before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
+        "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
     },
     {
       title: "Brand Identity",

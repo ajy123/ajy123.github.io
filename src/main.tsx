@@ -79,13 +79,23 @@ const workItems: WorkItem[] = [
       "did 70% of queries become real questions instead of keywords?",
       "why make it ask a question back before researching?",
     ],
+    // Follow-ups press on a published claim from each of the case study's three
+    // evidence areas: the eval miss (research), the re-ask rate (post-launch),
+    // and the headline growth number's baseline (outcome). The third slot used
+    // to ask what "the PM half" of Design + PM covered, on a 5-engineer build.
+    // Neither the team size nor a design/PM split is in SITE_CONTEXT or in this
+    // card's zone text, and DEELI_CASE_CONTEXT only loads on /deeli/, so on the
+    // homepage that chip could only be answered "I don't know". The baseline
+    // question replaces it: it escalates the 220% chip above the way Swiftly's
+    // follow-up escalates its own goal chip, and the page publishes the answer
+    // ("Internal pilot vs. launch week 2, same denominator.").
     askFollowUpPromptChips: [
       "The model got six of seven right. What happened to the seventh?",
       "How is 28% of queries coming back as re-asks not a failure?",
-      "Design + PM on a 5-engineer build. What did the PM half cover?",
+      "The 220% compares an internal pilot to launch week 2. What makes that comparable?",
     ],
     summary:
-      "A search redesign that narrows what a word like 'market' is actually asking before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
+      "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
     media: {
       type: "video",
       src: deeliCaseStudyVideoUrl,

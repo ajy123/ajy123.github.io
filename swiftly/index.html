@@ -230,7 +230,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <div class="sw-shell">
 <div class="sw-rail-col">
 <div class="sw-side">
-  <a class="sw-side-home" href="/">&larr; Joanna Yen</a>
+  <!-- The arrow is decoration, so it sits in an aria-hidden span and stays out
+       of the accessible name (same pattern as the end-of-page sign-off below);
+       otherwise VoiceOver reads "left arrow Joanna Yen". The separating space
+       lives INSIDE that span as a non-breaking space on purpose: under 1000px
+       this link becomes inline-flex, which would turn a plain space into
+       collapsible whitespace between two flex items and close the gap. -->
+  <a class="sw-side-home" href="/"><span aria-hidden="true">&larr;&nbsp;</span>Joanna Yen</a>
   <nav class="sw-side-toc" aria-label="Story sections">
   <ol>
     <li><a href="#sw-problem">The problem</a></li>

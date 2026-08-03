@@ -87,19 +87,26 @@ const HOME_PRODUCT_DESIGN_CHIPS = [
 const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";
 
 // ---------------------------------------------------------------------------
-// /deeli/ page default — grounded in deeli/index.html's published copy and
-// src/deeliCaseContext.ts (keyword search failing, design.md as the spec, the
-// intent-parser eval's persona_hint score, the 13%->70% NL-share flip, the
-// 28% re-asks). Matches the existing chip voice: lowercase, question form,
-// each one verifiable against the page.
+// /deeli/ page default — grounded in deeli/index.html's published copy (keyword
+// search failing, design.md, the six-of-seven persona result, the 13%->70%
+// NL-share flip, the 28% re-asks, the four named moves). Matches the existing
+// chip voice: lowercase, question form, each one verifiable against the page.
+// Chips must check PUBLISHED copy, not the private grounding in
+// src/deeliCaseContext.ts. Three chips here previously asked about the
+// persona_hint eval score, design.md as a pre-UI spec, and decisions named
+// "express, aim, observe, verify". None of those strings are on the page, so
+// each chip invited a page check that returned no. The page's own wording is
+// "it got six of seven right", "I write the interface as a few design
+// primitives in design.md", and the moves numbered 01 Ask / 02 Scope /
+// 03 Research / 04 Verify.
 // ---------------------------------------------------------------------------
 const DEELI_CHIPS = [
   "does the page say keyword search returned the same report for everyone?",
-  "was design.md written as the spec before any ui work?",
-  "did the intent-parser eval score 85.7% on persona_hint?",
+  "does the page say the interface was written as design primitives in design.md?",
+  "did the model get six of seven right on who the report was for?",
   "does the page say nl query share rose from 13% to 70%?",
-  "were 28% of live queries re-asks?",
-  "does the page name four decisions: express, aim, observe, verify?",
+  "were 28% of queries re-asks?",
+  "does the page name four moves: ask, scope, research, verify?",
 ];
 const DEELI_PLACEHOLDER = "or ask anything about how this shipped";
 

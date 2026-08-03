@@ -20,134 +20,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
-<!-- Shared case-study chrome (:root palette, hero, proof strip, rail, side
-     TOC, shell geometry). Page-specific vocabulary stays in the inline
-     <style> below, which loads later and therefore wins ties. -->
+<!-- Shared case-study stylesheet. This page uses only two things from it: the
+     :root palette/token block and the global body reset. None of the .cs-*
+     chrome (hero, proof strip, sechead, rail, side TOC, shell) is used here;
+     the story below ships its own .sol-b / .na-* vocabulary in section-local
+     <style> blocks. Keep the link: the :root tokens it defines are read by
+     those blocks (--ink, --accent, --hairline-faint, --font-serif, ...). -->
 <link rel="stylesheet" href="/src/case-study.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* Page-specific vocabulary only — the shared chrome (:root palette, hero,
-   proof strip, sechead, rail, side TOC, shell) lives in /src/case-study.css. */
-
-
-/* .gal-block owns the 40px page gutter; children (gal-copy, gal-widget-wrap,
-   cs-principles, cs-decision) must NOT add their own horizontal padding. */
-.gal-block{padding:var(--space-block) var(--gutter);}
-.gal-block + .gal-block{border-top:1px solid var(--hairline-faint);}
-.gal-block-head{margin:0 0 30px;}
-.gal-sec{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
-.gal-sec b{color:var(--accent-deep);}
-.gal-block-title{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 0;}
-
-/* product embed framing (SOLUTION) - Emil hairline figure */
-.gal-embeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
-.gal-embed{margin:0;display:flex;flex-direction:column;}
-.gal-embed-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
-.gal-embed-frame{background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:14px;overflow:hidden;}
-.gal-embed-frame img{display:block;width:100%;height:auto;border-radius:2px;box-shadow:0 0 0 1px var(--hairline-faint);}
-.gal-embed-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px 0 0;}
-@media(max-width:720px){.gal-embeds{grid-template-columns:1fr;}}
-
-/* ---- case-study prose (portfolio .essay-dialog vocabulary) ---- */
-.gal-copy{padding:0;}
-.gal-copy-inner{max-width:var(--measure-prose);}
-/* Copy blocks that end in a paragraph inherit its bottom margin; ones ending
-   in a component (.impact-findings, .cs-next-flow) had none, so the figure
-   below crowded them. Normalize the last child so every copy-to-figure gap
-   lands on the same rhythm. */
-.gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
-.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);text-wrap:balance;color:var(--ink);}
-.gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;}
-.gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
-.gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
-.gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
-.gal-copy li b{color:var(--ink);font-weight:600;}
-.gal-copy .gal-kick{font-size:16px;font-weight:600;color:var(--ink);margin-top:2px;}
-.gal-copy .gal-fork{font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--accent);margin:6px 0 2px;line-height:1.45;}
-.gal-copy .gal-pm{font-size:13.5px;line-height:1.55;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:14px;margin:16px 0 0;font-style:italic;}
-
-
-/* ---- interactive product-widget hosting (SOLUTION) ---- */
-.gal-widget-wrap{padding:6px 0 30px;}
-.gal-widget-wrap > .sol-widget{max-width:680px;}
-.gal-widget-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;max-width:680px;}
-.gal-move p{margin-bottom:6px;}
-.gal-move-title{font-size:21px;font-weight:700;letter-spacing:-.015em;line-height:1.2;color:var(--ink);margin:0 0 9px;text-wrap:balance;}
-/* Prose wrapping: `balance` is for short display lines and browsers cap it at
-   a few lines, so it does nothing for body copy. `pretty` is the one that
-   fixes multi-line rag -- it prevents orphaned last words and stops the
-   lopsided line breaks in the longer paragraphs. */
-.gal-copy-inner p,
-#anchor-process .pb-support{text-wrap:pretty;}
-.gal-move-summary{font-size:15.5px !important;line-height:1.55 !important;max-width:var(--measure-prose);}
-.gal-move-note,.gal-move-proof{font-size:13.5px !important;line-height:1.5 !important;color:var(--muted-strong) !important;}
-.gal-move-proof{font-family:var(--font-mono);color:var(--accent-deep) !important;margin-top:10px !important;}
-.cs-prototype{max-width:680px;margin:14px 0 28px;border-top:1px solid var(--hairline-faint);border-bottom:1px solid var(--hairline-faint);}
-.cs-prototype summary{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px 2px;cursor:pointer;list-style:none;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-strong);}
-.cs-prototype summary::-webkit-details-marker{display:none;}
-.cs-prototype summary::after{content:"View prototype +";font-size:10px;font-weight:500;color:var(--accent-deep);white-space:nowrap;}
-.cs-prototype[open] summary::after{content:"Close prototype -";}
-.cs-prototype .gal-widget-wrap{padding-top:10px;}
-.cs-prototype .gal-widget-eyebrow{display:none;}
-.impact-findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-/* The stat block is its own unit, not a caption on the lede. Give it a break
-   below roughly double the 24px gap above it so the figure that follows reads
-   as the next section rather than as part of the stats. */
-.gal-copy-inner > .impact-findings:last-child{margin-bottom:var(--space-block);}
-.impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-.impact-finding:first-child{padding-left:0;box-shadow:none;}
-.impact-finding b{display:block;font-family:var(--font-mono);font-size:25px;line-height:1;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;}
-.impact-finding span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-.cs-next-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:12px;margin-top:24px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
-.cs-next-step b{display:block;font-size:13px;color:var(--ink);margin-bottom:4px;}
-.cs-next-step span{display:block;font-size:12px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:680px){
-  .impact-findings{grid-template-columns:1fr;}
-  .impact-finding,.impact-finding:first-child{padding:16px 0;box-shadow:inset 0 1px 0 var(--hairline-faint);}
-  .impact-finding:first-child{box-shadow:none;}
-  .cs-next-flow{grid-template-columns:1fr;}
-}
-
-
-/* ---- final-page shell (page-specific parts; base chrome is shared) ---- */
-/* .impact-tag reuses the proof-strip tag look on the impact stat grid; the
-   shared file only styles .cs-proof-tag, so the alias lives here. */
-.impact-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
-.cs-hero-visual{margin:0;padding:4px var(--gutter) 30px;}
-.cs-hero-visual img,.cs-hero-visual video{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
-.cs-hero-visual figcaption{margin:12px 0 0;font-family:var(--font-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--muted);text-align:center;}
-.gal-block + .gal-block{border-top:none;}
-
-/* ---- FIX 4: five-decisions skim rail (deeli addition: per-item section
-   tag on the right edge; the rail itself is shared chrome) ---- */
-.cs-rail-sec{margin-left:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;padding-left:12px;}
-@media(max-width:560px){.cs-rail-sec{display:none;}}
-
-/* ---- FIX 6: unify anchor scroll offsets across sechead + skim-rail targets ---- */
-.cs-sechead,#the-fork,#move-1,#move-2,#move-3a,#move-3b{scroll-margin-top:24px;}
-
-
-/* ---- FIX 2: design-principles strip ---- */
-.cs-principles{margin:6px 0 26px;}
-.cs-principles-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
-.cs-principles-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--hairline-faint);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);overflow:hidden;max-width:760px;}
-.cs-principles-grid>div{background:var(--surface-warm);padding:14px 16px;}
-.cs-principles-grid b{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
-.cs-principles-grid span{font-size:13px;line-height:1.5;color:var(--muted-strong);}
-@media(max-width:640px){.cs-principles-grid{grid-template-columns:1fr;}}
-
-/* ---- FIX 1: considered/chose/because decision rows ---- */
-.cs-decision{margin:14px 0 4px;}
-.cs-decision dl{max-width:var(--measure-prose);margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
-.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
-.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
-.cs-decision dd{margin:0;font-size:13.5px;line-height:1.5;color:var(--body);}
-.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
-@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
-
-</style>
 </head>
 <body id="top">
 <div id="deeli-after">
@@ -190,8 +72,25 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
     .sol-b .na-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
     @media (prefers-reduced-motion:reduce){.sol-b .na-side ol a{transition:none;}}
-    @media (max-width:999px){.sol-b .na-rail-col{display:none;}.sol-b .na-shell{display:block;}}
+    @media (max-width:999px){
+      .sol-b .na-shell{display:block;}
+      /* display:contents, not display:none. The rail column stops generating a
+         layout box, so .na-side drops into normal flow at the top of the
+         article and the home link inside it survives. Hiding the column
+         outright is what left this page with no way back on a phone: the home
+         link is the only exit below 1000px, since the TOC stays hidden. */
+      .sol-b .na-rail-col{display:contents;}
+      .sol-b .na-side{position:static;width:auto;height:auto;padding:0;margin:0 0 28px;}
+      .sol-b .na-side-toc{display:none;}
+      .sol-b .na-side-home{display:inline-flex;align-items:center;min-height:44px;margin:0;}
+    }
     @media (min-width:1000px) and (max-width:1100px){.sol-b .na-rail-col,.sol-b .na-side{width:240px;}.sol-b .na-shell{gap:40px;}}
+    /* End-of-page sign-off: the second way out, shown at every width. The
+       hairline sits on the wrapper, the way .act draws its own rule, so the
+       link keeps a text-sized hit area instead of spanning the column. */
+    .sol-b .na-endnote-wrap{border-top:1px solid var(--line);margin-top:28px;padding-top:28px;}
+    .sol-b .na-endnote{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-decoration:none;}
+    .sol-b .na-endnote:hover{color:var(--ink);}
     .sol-b .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;}
     /* Shared reading measure, same as NYU and Swiftly (src/tokens.css). */
     .sol-b .measure{max-width:var(--measure-prose);}
@@ -218,7 +117,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     /* Act heads read as stretched section headers: full column width, wide
        serif measure — not narrow stacked fragments. */
     .sol-b .act-head{display:grid;gap:.7rem;width:100%;}
-    .sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0;color:var(--ink);}
+    /* Act heads are h2 (the page's real second level, one per rail entry);
+       h3 is kept in the selector so the try-it stage sub-head and the solution
+       move titles, which are h3 under their act, inherit the same base before
+       their own classes narrow it. Both levels look identical on purpose: the
+       outline is for assistive tech, the visual scale is set per component. */
+    .sol-b h2,.sol-b h3{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0;color:var(--ink);}
     /* These two heads measure ~32ch and ~37ch in Georgia; 40ch lets each sit on
        one line at desktop widths without touching the other act heads. */
     .sol-b #sol-b-act1,.sol-b #sol-b-coda{max-width:40ch;}
@@ -245,8 +149,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .hinge{background:var(--ink);color:#f4f1ea;border-radius:var(--radius,4px);padding:clamp(1.6rem,4vw,2.6rem);display:grid;grid-template-columns:minmax(0,1fr);gap:1.8rem;align-items:center;}
     @media (min-width:860px){.sol-b .hinge{grid-template-columns:1.15fr .85fr;gap:2.4rem;align-items:start;}}
     .sol-b .hinge .eyebrow{color:#a8a29a;}
-    .sol-b .hinge h3{color:#fff;max-width:15em;}
-    .sol-b .hinge h3 em{font-style:italic;color:#e6ddd4;}
+    .sol-b .hinge h2{color:#fff;max-width:15em;}
+    .sol-b .hinge h2 em{font-style:italic;color:#e6ddd4;}
     .sol-b .hinge p{color:#d6cdc4;}
     /* turn — the bridge line, pulled out of the dark panel as a standalone
        full-column callout between the research and the solution acts */
@@ -268,7 +172,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .thumb svg [stroke="#e0e0e0"]{stroke:#111111;opacity:.13;}
     .sol-b .thumb svg [stroke="#d0cabc"]{stroke:#111111;opacity:.2;}
     .sol-b .thumb svg [stroke="#8f8a7d"]{stroke:#111111;opacity:.45;}
-    .sol-b .move h4{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
+    .sol-b .move h3{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
     .sol-b .move p{font-size:.86rem;color:var(--muted);margin:0;}
     /* outcome */
     .sol-b .outcome-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem 2.4rem;align-items:start;}
@@ -299,19 +203,20 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .try-stack > .na-proto-off{display:none !important;}
     /* outcome charts &mdash; behavior flip + usage growth, side by side wide */
     .sol-b .na-charts{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:stretch;margin-top:.4rem;}
-    /* na-flip &mdash; behavior-flip bar chart cloned from the current page's impact section */
+    /* na-flip: stacked bar chart of how queries were phrased, keyword share
+       against natural-language share, before launch versus after. */
     /* Both figures are flex columns whose chart panel grows, so the shorter
        flip chart matches the usage chart's height in the 2-up row. */
     .sol-b .na-flip{margin:0;display:flex;flex-direction:column;}
-    /* na-usage &mdash; week-over-week usage columns cloned from the current
-       page's #anchor-heatmap (+220% queries per active day) */
+    /* na-usage: column chart of queries per active day across the pilot and
+       live weeks, headlined by the +220% delta. */
     .sol-b .na-usage{margin:0;display:flex;flex-direction:column;}
     .sol-b .na-us-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
-    .sol-b .na-us-panel{flex:1;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:nowrap;gap:18px;align-items:flex-end;justify-content:space-between;}
-    .sol-b .na-us-delta{flex:0 0 150px;min-width:0;align-self:flex-start;}
+    .sol-b .na-us-panel{flex:1;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:flex-start;}
+    .sol-b .na-us-delta{flex:1 1 100%;min-width:0;align-self:flex-start;}
     .sol-b .na-us-delta-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);margin:0 0 10px;}
     .sol-b .na-us-delta-label{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0;max-width:24ch;}
-    .sol-b .na-us-cols{flex:0 0 auto;display:flex;gap:20px;align-items:flex-end;box-shadow:0 1px 0 var(--line-strong);}
+    .sol-b .na-us-cols{flex:1 1 100%;display:flex;gap:20px;align-items:flex-end;justify-content:flex-end;box-shadow:0 1px 0 var(--line-strong);}
     .sol-b .na-us-col{display:flex;flex-direction:column;align-items:center;width:60px;}
     .sol-b .na-us-col-zone{height:148px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;}
     .sol-b .na-us-col-pct{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:700;color:var(--ink);}
@@ -323,18 +228,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     @keyframes na-us-grow{from{transform:scaleY(0);}to{transform:scaleY(1);}}
     @media (prefers-reduced-motion:reduce){.sol-b .na-us-col-bar{animation:none !important;transform:none !important;}}
     /* Phone/tablet reflow for the 2-up charts. A grid track sized `1fr` has an
-       automatic minimum of min-content, and the usage panel's min-content is
-       432px (150px delta + 18px gap + 220px of bars + 44px padding), so below
-       ~500px the track pushed past the viewport and the whole page scrolled
-       sideways. minmax(0,1fr) plus min-width:0 on the figures (grid items also
-       default to min-width:auto) lets the track shrink; the panel then wraps
-       the delta onto its own line above the bars. Bar geometry (col 60, bar 40,
-       zone 148, gap 20) is deliberately untouched at every width. */
+       automatic minimum of min-content, so below ~500px the track pushed past
+       the viewport and the whole page scrolled sideways. minmax(0,1fr) plus
+       min-width:0 on the figures (grid items also default to min-width:auto)
+       lets the track shrink. Bar geometry (col 60, bar 40, zone 148, gap 20)
+       is deliberately untouched at every width. */
     @media (max-width:1100px){
       .sol-b .na-charts{grid-template-columns:minmax(0,1fr);}
       .sol-b .na-flip,.sol-b .na-usage{min-width:0;}
-      .sol-b .na-us-panel{flex-wrap:wrap;}
-      .sol-b .na-us-delta{flex:1 1 100%;}
     }
     /* Two-up from 1101px, where the rail returns to 280px and the content
        column finally clears the pair's width. Below that they stack, because
@@ -342,17 +243,24 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
        short of the 716px the two cards need side by side.
        Equal tracks with a 2.4rem gap, both matching .outcome-grid above, so
        the two rows share one gutter instead of breaking the line 23px to the
-       left. The delta block flexes instead of holding 150px, so it sits
-       beside the bars on wide screens and drops below them once the card
-       tightens.
-       This block has to come after the .na-us-delta and .na-us-panel base
-       rules above: same specificity, so source order decides, and placed
-       before them the flex override silently lost. */
+       left.
+       The delta and the bar group each take a full flex line at every width
+       (both are flex:1 1 100%), and the group is justify-content:flex-end, so
+       the bars sit flush to the card's right content edge at every width.
+       They used to share one line up here, and justify-content:space-between
+       then pinned the fixed 220px bar cluster right only in this state, so the
+       bars jumped ~145px sideways between here and the wrapped one. The jump
+       also did not happen at 1101px: the delta only stopped wrapping once the
+       panel could hold 120 + 18 + 220, i.e. around a 1234px viewport, which
+       made the shift read as arbitrary. Giving the group the full width is
+       what makes the alignment hold: .na-us-cols carries the axis hairline, so
+       the baseline now spans the card instead of sliding with the bars, and
+       the bars anchor to a fixed edge rather than to a re-flowing sibling.
+       Same behaviour on mobile, no media query -- matching .na-fl-track, which
+       is width:100% and has never needed one. */
     @media (min-width:1101px){
       .sol-b .na-charts{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.4rem;}
       .sol-b .na-flip,.sol-b .na-usage{min-width:0;}
-      .sol-b .na-us-panel{flex-wrap:wrap;}
-      .sol-b .na-us-delta{flex:1 1 120px;}
     }
     .sol-b .na-fl-eyebrow{font-family:var(--fbody);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;}
     .sol-b .na-fl-figure{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;background:var(--paper);box-shadow:0 0 0 1px var(--line);border-radius:var(--radius,4px);padding:24px 22px;}
@@ -380,8 +288,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   </style>
   <div class="na-shell">
   <div class="na-rail-col">
-  <nav class="na-side" aria-label="Story sections">
+  <div class="na-side">
     <a class="na-side-home" href="/">&larr; Joanna Yen</a>
+    <nav class="na-side-toc" aria-label="Story sections">
     <ol>
       <li><a href="#ns-problem">The problem</a></li>
       <li><a href="#ns-research">The research</a></li>
@@ -390,16 +299,17 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <li><a href="#ns-method">How I work with AI</a></li>
       <li><a href="#ns-postlaunch">Post-launch</a></li>
     </ol>
-  </nav>
+    </nav>
+  </div>
   </div>
   <div class="na-content">
   <div class="wrap">
     <header class="masthead">
       <h1 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h1>
-<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. The change started with one test the model couldn&rsquo;t pass.</p>
+<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. I built it from what researchers asked for, and from one test the model couldn&rsquo;t pass.</p>
       <dl class="na-dossier" aria-label="Project facts">
         <div><dt>Product</dt><dd>Deeli<small>Top-5 semiconductor foundry</small></dd></div>
-        <div><dt>Role</dt><dd>Solo product designer</dd></div>
+        <div><dt>Role</dt><dd>Design + PM</dd></div>
         <div><dt>Team</dt><dd>5-engineer build</dd></div>
         <div><dt>Shipped</dt><dd>June 2026</dd></div>
       </dl>
@@ -407,7 +317,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
     <article class="act" id="ns-problem" aria-labelledby="sol-b-act1">
       <div class="setup-grid">
-        <div class="act-head"><p class="eyebrow">The problem</p><h3 id="sol-b-act1">Search answered the topic, not the question.</h3><p class="measure">The old search matched words. It never knew who was asking or what they needed, so every role got the same generic report from a process no one could inspect.</p></div>
+        <div class="act-head"><p class="eyebrow">The problem</p><h2 id="sol-b-act1">Search answered the topic, not the question.</h2><p class="measure">The old search matched words. It never knew who was asking or what they needed, so every role got the same generic report from a process no one could inspect.</p></div>
         <div class="prb-stack">
 <figure class="pr-fig">
     <div class="pr-eyebrow">The black box</div>
@@ -479,7 +389,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       <div class="hinge reveal">
         <div>
           <p class="eyebrow">The research</p>
-          <h3 id="sol-b-act2">I put the model through the same research I put <em>people</em> through.</h3>
+          <h2 id="sol-b-act2">I put the model through the same research I put <em>people</em> through.</h2>
 <p class="measure">On the model: mock-real queries from researcher interviews. Before answering, it picks who it&rsquo;s writing for, and it got six of seven right. The seventh question fit two readers at once, so it asked instead of guessing.</p>
           <p class="measure">On people: researchers wanted to ask in their own words, watch the research as it runs, and check where every claim came from.</p>
         </div>
@@ -598,13 +508,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <p class="turn-callout"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em>. A good support conversation makes the same first move.</p>
 
     <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
-      <div class="act-head"><p class="eyebrow">The solution</p><h3 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h3><p class="measure">I designed Deeli to behave like a research assistant. Three of the four steps meet expectations researchers told us about. The second exists because of the one test the model couldn&rsquo;t pass.</p></div>
+      <div class="act-head"><p class="eyebrow">The solution</p><h2 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h2><p class="measure">I designed Deeli to behave like a research assistant. Three of the four steps meet expectations researchers told us about. The second exists because of the one test the model couldn&rsquo;t pass.</p></div>
 
       <div class="moves">
-        <div class="move" tabindex="0" role="button" aria-pressed="true" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h4>Take the question, not the keyword</h4><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
-        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h4>Aim the report</h4><p>I made the product confirm who the report is for and what it should cover before researching.</p></div>
-        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h4>Show the agents</h4><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
-        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h4>Make claims inspectable</h4><p>I tied every statement back to its source, so the report survives the check.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="true" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A keyword swapped for a full question with an intent tag"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h3>Take the question, not the keyword</h3><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Concentric rings converging on a target center"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h3>Aim the report</h3><p>I made the product confirm what the question is actually asking before researching.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="Three agent nodes branching from a single query"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h3>Show the agents</h3><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
+        <div class="move" tabindex="0" role="button" aria-pressed="false" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" role="img" aria-label="A line of claim text linked to a cited source card"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h3>Make claims inspectable</h3><p>I tied every statement back to its source, so the report survives the check.</p></div>
       </div>
 
       <div class="try-head"><h3 class="try-sub" id="sol-b-try">The question input, live.</h3><p class="measure">Pick a step above to load its working prototype here.</p></div>
@@ -1250,6 +1160,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       flex-wrap:wrap;
       gap:8px;
     }
+    /* Semantic-only wrapper: it carries role="radiogroup" for the three focus
+       chips while generating no box, so the chips remain flex children of
+       .na-w2-chips and share one wrap context with "I'll rewrite". */
+    #na-w2 .na-w2-chipgroup{ display:contents; }
 
     #na-w2 .na-w2-chip{
       appearance:none;
@@ -1445,10 +1359,20 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <p class="na-w2-question" id="na-w2-question">Focus the report on…?</p>
 
         <div class="na-w2-bottom">
-          <div class="na-w2-chips" role="radiogroup" aria-labelledby="na-w2-question">
-            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="0" data-focus="Market landscape">Market landscape</button>
-            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Commercial adoption">Commercial adoption</button>
-            <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Top companies">Top companies</button>
+          <!-- The radiogroup owns only the three radios. "I'll rewrite" is not
+               one of the focus options, it clears them, so it must sit outside
+               the group: a radiogroup whose children are not all radios is
+               invalid ARIA, and it made the group announce a count of four.
+               The group wrapper is display:contents so the three chips stay
+               direct flex children of .na-w2-chips and the row wraps exactly as
+               before. The roving-tabindex JS queries '.na-w2-chip' inside the
+               widget root, so the extra element does not affect it. -->
+          <div class="na-w2-chips">
+            <div class="na-w2-chipgroup" role="radiogroup" aria-labelledby="na-w2-question">
+              <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="0" data-focus="Market landscape">Market landscape</button>
+              <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Commercial adoption">Commercial adoption</button>
+              <button type="button" class="na-w2-chip" role="radio" aria-checked="false" tabindex="-1" data-focus="Top companies">Top companies</button>
+            </div>
             <button type="button" class="na-w2-rewrite" id="na-w2-rewrite" aria-label="I'll rewrite the question instead; clears the selected focus">I'll rewrite</button>
           </div>
           <button type="button" class="na-w2-submit" id="na-w2-submit" disabled aria-disabled="true" aria-label="Generate report">
@@ -1461,12 +1385,16 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <p class="na-w2-queued-text" role="status" id="na-w2-queued-text">Your report is queued, notify me when ready?</p>
         <div class="na-w2-queued-actions">
           <button type="button" class="na-w2-notify" id="na-w2-notify">Notify me</button>
-          <button type="button" class="na-w2-view" id="na-w2-view" aria-label="View generation progress; resets this prototype">View progress</button>
+          <!-- The accessible name must open with the visible words verbatim
+               (WCAG 2.5.3 Label in Name) so speech input can target it; the
+               clause after it keeps the warning that this button restarts the
+               prototype rather than advancing it. -->
+          <button type="button" class="na-w2-view" id="na-w2-view" aria-label="View progress; resets this prototype">View progress</button>
         </div>
       </div>
     </div>
 
-    <p class="na-w2-caption">Interactive recreation: same topic, three different reports.</p>
+    <p class="na-w2-caption">Interactive recreation: one topic, three ways to scope it.</p>
   </div>
 
   <script>
@@ -1668,7 +1596,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       flex:1 1 auto;
       min-width:0;
     }
+    /* Declare the family explicitly. This title used to be an h3 and picked up
+       the page shell's `.sol-b h3{font-family:var(--serif)}` by cascade, so the
+       mock report title rendered in Georgia here while the identical title in
+       #na-w4 rendered in Inter. Naming --d-font pins it to the widget's own
+       type and stops the shell leaking in again. */
     #na-w3 .w3-title{
+      font-family:var(--d-font);
       margin:0 0 4px;
       font-size:20px;
       font-weight:600;
@@ -1879,7 +1813,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="w3-panel">
     <div class="w3-head">
       <div class="w3-head-text">
-        <h3 class="w3-title">TSMC Super Power Rail vs Intel PowerVia</h3>
+        <h4 class="w3-title">TSMC Super Power Rail vs Intel PowerVia</h4>
         <p class="w3-echo">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
       </div>
       <button type="button" class="w3-stop" aria-label="Stop generating">
@@ -2666,7 +2600,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="na-w4-card">
     <div class="na-w4-head">
       <div class="na-w4-head-main">
-        <h2 class="na-w4-title">TSMC Super Power Rail vs Intel PowerVia</h2>
+        <h4 class="na-w4-title">TSMC Super Power Rail vs Intel PowerVia</h4>
         <p class="na-w4-query">&ldquo;BSPDN includes Super Power Rail of TSMC, and PowerVia of Intel, what are&hellip;&rdquo;</p>
       </div>
       <div class="na-w4-head-actions">
@@ -2679,7 +2613,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 
     <p class="na-w4-sec-label">Power Delivery Architecture</p>
     <p class="na-w4-body">
-      Both approaches move <button type="button" class="na-w4-term" id="na-w4-term-bpd" aria-expanded="false" aria-controls="na-w4-drill" aria-label="Drill down on backside power delivery">power delivery to the wafer backside</button>, but they diverge on where the transition happens. Intel's PowerVia routes power through nano-TSVs beneath the transistor layer<button type="button" class="na-w4-cite" data-cite="1" aria-expanded="false" aria-controls="na-w4-pop-1" aria-label="Citation 1, view source">1</button>, while TSMC's Super Power Rail connects the backside network directly to source/drain contacts<button type="button" class="na-w4-cite" data-cite="2" aria-expanded="false" aria-controls="na-w4-pop-2" aria-label="Citation 2, view source">2</button>. The denser scheme trades manufacturing complexity for IR-drop headroom<button type="button" class="na-w4-cite" data-cite="3" aria-expanded="false" aria-controls="na-w4-pop-3" aria-label="Citation 3, view source">3</button>.
+      <!-- No aria-label on the inline term button. An aria-label here would
+           override the visible words as the accessible name, which both fails
+           WCAG 2.5.3 Label in Name (the visible string must be part of the
+           name) and swaps a chunk of the sentence for an out-of-context phrase
+           when the paragraph is read aloud. aria-expanded + aria-controls
+           already announce it as an expandable control, and the panel it opens
+           carries its own "Drill down on backside power delivery" label. -->
+      Both approaches move <button type="button" class="na-w4-term" id="na-w4-term-bpd" aria-expanded="false" aria-controls="na-w4-drill">power delivery to the wafer backside</button>, but they diverge on where the transition happens. Intel's PowerVia routes power through nano-TSVs beneath the transistor layer<button type="button" class="na-w4-cite" data-cite="1" aria-expanded="false" aria-controls="na-w4-pop-1" aria-label="Citation 1, view source">1</button>, while TSMC's Super Power Rail connects the backside network directly to source/drain contacts<button type="button" class="na-w4-cite" data-cite="2" aria-expanded="false" aria-controls="na-w4-pop-2" aria-label="Citation 2, view source">2</button>. The denser scheme trades manufacturing complexity for IR-drop headroom<button type="button" class="na-w4-cite" data-cite="3" aria-expanded="false" aria-controls="na-w4-pop-3" aria-label="Citation 3, view source">3</button>.
     </p>
 
     <div id="na-w4-pop-1" class="na-w4-pop" data-pop="1" role="tooltip" aria-hidden="true">
@@ -2965,7 +2906,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </article>
 
     <article class="act" id="ns-outcome" aria-labelledby="sol-b-outcome">
-      <div class="act-head"><p class="eyebrow">Outcome</p><h3 id="sol-b-outcome">Researchers trusted what came back.</h3></div>
+      <div class="act-head"><p class="eyebrow">Outcome</p><h2 id="sol-b-outcome">Researchers trusted what came back.</h2></div>
       <div class="outcome-grid">
 <div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
         <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask. Within two weeks of launch, 70% of live queries were real questions instead of keywords. That&rsquo;s the behavior the redesign was built to earn.</p></div>
@@ -3026,26 +2967,30 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .sbm-grid{display:grid;grid-template-columns:1fr;gap:.8rem;margin-top:.4rem}
     @media (min-width:760px){.sol-b .sbm-grid{grid-template-columns:repeat(3,1fr)}}
     .sol-b .sbm-tile{background:#f7f7f7;border:1px solid var(--line);border-radius:4px;padding:1.3rem 1.15rem;display:grid;gap:.55rem;align-content:start}
-    .sol-b .sbm-tile h4{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#757169;margin:0}
+    /* line-height is stated because these tile labels are h3 now: the shared
+       `.sol-b h2,.sol-b h3` base sets 1.2, and before the outline fix these
+       were h4s that simply inherited the section's 1.6. 1.6 keeps the label
+       block the same height it has always been. */
+    .sol-b .sbm-tile h3{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.68rem;font-weight:500;line-height:1.6;letter-spacing:.08em;text-transform:uppercase;color:#757169;margin:0}
     .sol-b .sbm-tile p{font-size:.9rem;line-height:1.55;color:#57534b;margin:0}
     .sol-b .sbm-tile p b{color:#111111;font-weight:600}
   </style>
   <div class="act-head">
     <p class="eyebrow">Method &middot; How I worked with AI</p>
-    <h3 id="sol-b-method">The story above ran on a working method.</h3>
+    <h2 id="sol-b-method">The story above ran on a working method.</h2>
     <p class="measure">Three habits carried this project from first measurement to shipped interface.</p>
   </div>
   <div class="sbm-grid">
     <div class="sbm-tile">
-      <h4>persona.md &middot; who we test for</h4>
+      <h3>persona.md &middot; who we test for</h3>
       <p>I build persona.md from interviews, user feedback, and usage data; it also feeds our product-prioritization flow. Upkeep that took <b>6+ hours a week now takes about one</b>.</p>
     </div>
     <div class="sbm-tile">
-      <h4>Measured, not eyeballed</h4>
+      <h3>Measured, not eyeballed</h3>
       <p>An AI judge grades every answer against the persona questions. Review stops arguing taste and starts asking <b>which check failed</b>. The flagged case above is one of its findings.</p>
     </div>
     <div class="sbm-tile">
-      <h4>Primitives the model can adapt</h4>
+      <h3>Primitives the model can adapt</h3>
       <p>I write the interface as a few design primitives in design.md. The AI adapts to cases we never drew, and <b>the doc itself is the handoff: engineers read it instead of meeting</b>.</p>
     </div>
   </div>
@@ -3054,10 +2999,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <article class="act" id="ns-postlaunch" aria-labelledby="sol-b-coda">
       <div class="act-head">
         <p class="eyebrow">Post-launch</p>
-        <h3 id="sol-b-coda">28% of queries were re-asks. We&rsquo;re finding out why.</h3>
+        <h2 id="sol-b-coda">28% of queries were re-asks. We&rsquo;re finding out why.</h2>
         <p class="measure">Each re-ask raises one question: did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature.</p>
       </div>
     </article>
+
+    <div class="na-endnote-wrap">
+      <a class="na-endnote" href="/"><span aria-hidden="true">&larr;</span> Back to all work</a>
+    </div>
   </div>
   </div>
   </div>
@@ -3089,9 +3038,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   });
 
   /* Rail scroll spy: reading-line logic scoped to the na- rail. */
-  var railCol = document.querySelector('#deeli-after .na-rail-col');
   var nav = document.querySelector('#deeli-after .na-side');
-  if(!railCol || !nav) return;
+  /* The TOC wrapper, not the rail column: below 1000px the column is
+     display:contents so the home link can survive, and .na-side-toc is the
+     element that actually carries display:none. */
+  var list = nav && nav.querySelector('.na-side-toc');
+  if(!nav || !list) return;
   var sections = [];
   Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#ns-"]'), function(link){
     var el = document.getElementById((link.getAttribute('href') || '').slice(1));
@@ -3108,7 +3060,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     });
   }
   function computeActive(){
-    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    if(getComputedStyle(list).display === 'none') return; /* TOC hidden (<1000px): nothing to mark */
     var doc = document.documentElement;
     var scrollY = window.pageYOffset || doc.scrollTop;
     var viewportH = window.innerHeight;

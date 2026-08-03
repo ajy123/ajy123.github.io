@@ -65,27 +65,27 @@ const DEFAULT_LINK_LABEL = "See it live";
 const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
-    title: "From search to a research assistant",
+    title: "From search box to research assistant",
     role: "Design + PM",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask how we turn a search into a research assistant",
+    askHint: "Ask how the search redesign shipped",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
-      "does the page title say from search to a research assistant?",
-      "does the page say time-to-report was cut 50%+?",
-      "does it pin down intent before answering?",
+      "did queries per active day rise 220% after launch?",
+      "did 70% of queries become real questions instead of keywords?",
+      "why make it ask a question back before researching?",
     ],
     askFollowUpPromptChips: [
-      "does the page say the chat shows its work as it builds?",
-      "does the page use the phrase consult-grade reports?",
-      "does the page list Joanna's role as led design + part PM, team of 5?",
+      "The model got six of seven right. What happened to the seventh?",
+      "How is 28% of queries coming back as re-asks not a failure?",
+      "Design + PM on a 5-engineer build. What did the PM half cover?",
     ],
     summary:
-      "A research assistant that pins down intent before it answers and shows its work as it builds. Keyword search became consult-grade reports, and time-to-report fell 50%+.",
+      "A search redesign that narrows what a word like 'market' is actually asking before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
     media: {
       type: "video",
       src: deeliCaseStudyVideoUrl,

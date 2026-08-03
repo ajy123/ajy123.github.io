@@ -78,8 +78,25 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-sw .sw-side ol a[aria-current="location"]{color:var(--ssw-ink);font-weight:600;}
   .sol-sw .sw-side a:focus-visible{outline:1px solid var(--ssw-accent);outline-offset:2px;}
   @media(prefers-reduced-motion:reduce){.sol-sw .sw-side ol a{transition:none;}}
-  @media(max-width:999px){.sol-sw .sw-rail-col{display:none;}.sol-sw .sw-shell{display:block;}}
+  @media(max-width:999px){
+    .sol-sw .sw-shell{display:block;}
+    /* display:contents, not display:none. The rail column stops generating a
+       layout box, so .sw-side drops into normal flow at the top of the article
+       and the home link inside it survives. Hiding the column outright is what
+       left this page with no way back on a phone: the home link is the only
+       exit below 1000px, since the TOC stays hidden. */
+    .sol-sw .sw-rail-col{display:contents;}
+    .sol-sw .sw-side{position:static;width:auto;height:auto;padding:0;margin:0 0 28px;}
+    .sol-sw .sw-side-toc{display:none;}
+    .sol-sw .sw-side-home{display:inline-flex;align-items:center;min-height:44px;margin:0;}
+  }
   @media(min-width:1000px) and (max-width:1100px){.sol-sw .sw-rail-col,.sol-sw .sw-side{width:240px;}.sol-sw .sw-shell{gap:40px;}}
+  /* End-of-page sign-off: the second way out, shown at every width. The
+     hairline sits on the wrapper so the link keeps a text-sized hit area
+     instead of spanning the whole column. */
+  .sol-sw .sw-endnote-wrap{border-top:1px solid var(--ssw-hair);margin-top:28px;padding-top:28px;}
+  .sol-sw .sw-endnote{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-family:var(--ssw-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ssw-faint);text-decoration:none;}
+  .sol-sw .sw-endnote:hover{color:var(--ssw-ink);}
   .sol-sw #sw-problem,.sol-sw #sw-insight,.sol-sw #sw-moves,.sol-sw #sw-outcome,.sol-sw #sw-postlaunch{scroll-margin-top:3.5rem;}
 
   /* ---------- masthead ---------- */
@@ -212,8 +229,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </style>
 <div class="sw-shell">
 <div class="sw-rail-col">
-<nav class="sw-side" aria-label="Story sections">
+<div class="sw-side">
   <a class="sw-side-home" href="/">&larr; Joanna Yen</a>
+  <nav class="sw-side-toc" aria-label="Story sections">
   <ol>
     <li><a href="#sw-problem">The problem</a></li>
     <li><a href="#sw-insight">The insight</a></li>
@@ -221,7 +239,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <li><a href="#sw-outcome">Outcome</a></li>
     <li><a href="#sw-postlaunch">Post-launch</a></li>
   </ol>
-</nav>
+  </nav>
+</div>
 </div>
 <div class="sw-content">
 <div class="sw-wrap">
@@ -659,6 +678,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <p class="sw-open">The question I would open a v2 with: what does &ldquo;fast enough&rdquo; mean at each agency? The dashboard could learn a per-agency triage target instead of one clock.</p>
   </section>
 
+  <div class="sw-endnote-wrap">
+    <a class="sw-endnote" href="/"><span aria-hidden="true">&larr;</span> Back to all work</a>
+  </div>
+
 </div>
 </div>
 </div>
@@ -666,9 +689,12 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <script>
 (function(){
   /* Rail scroll spy: reading-line logic scoped to the sw- rail. */
-  var railCol = document.querySelector('#swiftly-after .sw-rail-col');
   var nav = document.querySelector('#swiftly-after .sw-side');
-  if(!railCol || !nav) return;
+  /* The TOC wrapper, not the rail column: below 1000px the column is
+     display:contents so the home link can survive, and .sw-side-toc is the
+     element that actually carries display:none. */
+  var list = nav && nav.querySelector('.sw-side-toc');
+  if(!nav || !list) return;
   var sections = [];
   Array.prototype.forEach.call(nav.querySelectorAll('ol a[href^="#sw-"]'), function(link){
     var el = document.getElementById((link.getAttribute('href') || '').slice(1));
@@ -685,7 +711,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     });
   }
   function computeActive(){
-    if(getComputedStyle(railCol).display === 'none') return; /* rail hidden (<1000px or before-view): skip */
+    if(getComputedStyle(list).display === 'none') return; /* TOC hidden (<1000px): nothing to mark */
     var doc = document.documentElement;
     var scrollY = window.pageYOffset || doc.scrollTop;
     var viewportH = window.innerHeight;

@@ -131,7 +131,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .act p{color:var(--muted);margin:0;}
     /* Problem act: text block full width first, figures in a 2-up row below. */
     .sol-b .setup-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem;align-items:start;}
-    .sol-b .move .exp-line{font-family:var(--serif);font-style:italic;font-size:.86rem;line-height:1.4;color:#57534b;margin:.35rem 0 .2rem;min-height:2.8em;}
+    .sol-b .move .exp-line{display:block;font-family:var(--serif);font-style:italic;font-size:.86rem;line-height:1.4;color:#57534b;margin:.35rem 0 .2rem;min-height:2.8em;}
     .sol-b .prb-stack{display:grid;gap:18px;}
     @media (min-width:860px){.sol-b .prb-stack{grid-template-columns:1fr 1fr;}}
     .sol-b .pr-lbl{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;fill:#757169;}
@@ -159,15 +159,23 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     /* moves — the four cards double as prototype selectors for the Try-it area */
     .sol-b .moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius,4px);overflow:hidden;margin-top:.4rem;}
     @media (min-width:900px){.sol-b .moves{grid-template-columns:repeat(4,minmax(0,1fr));}}
-    .sol-b .move{background:var(--paper);padding:1.3rem 1.15rem 1.4rem;display:grid;gap:.7rem;align-content:start;transition:background .25s ease;cursor:pointer;}
+    /* The tile IS the tab, so it is a real <button>. Everything after the
+       background/padding/grid declarations undoes a UA button style that would
+       otherwise change how the tile paints: appearance and border strip the
+       native chrome, font and letter-spacing put the tile back on the page's
+       inherited type instead of the 13.333px Arial buttons default to,
+       text-align undoes the centering, and width:100% keeps the button
+       stretching to its grid track the way the old div did. */
+    .sol-b .move{background:var(--paper);padding:1.3rem 1.15rem 1.4rem;display:grid;gap:.7rem;align-content:start;transition:background .25s ease;cursor:pointer;appearance:none;-webkit-appearance:none;border:0;margin:0;width:100%;font:inherit;letter-spacing:inherit;color:inherit;text-align:left;}
     .sol-b .move:hover{background:var(--raised);}
-    /* Selected tile. Keyed off a class the selector JS writes rather than the
-       tab's aria-selected, because that attribute now lives on a button nested
-       two levels down and reading it from the tile would need :has(). */
+    /* Selected tile. Painted from the is-on class the selector JS writes. The
+       tile's own aria-selected would work as a selector now that the attribute
+       sits on the tile, but keeping one hook means the paint and the ARIA state
+       are written on the same line of select() and cannot drift apart. */
     .sol-b .move.is-on{box-shadow:inset 0 0 0 2px var(--accent);}
     .sol-b .move.is-on .mnum{color:var(--accent-deep);font-weight:600;}
     .sol-b .move .mnum{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--faint);}
-    .sol-b .thumb{height:88px;border:1px solid var(--line-strong);border-radius:2px;background:var(--paper);overflow:hidden;}
+    .sol-b .thumb{display:block;height:88px;border:1px solid var(--line-strong);border-radius:2px;background:var(--paper);overflow:hidden;}
     .sol-b .thumb svg{display:block;width:100%;height:100%;}
     /* Thumb palette: two-tone — gray context shapes remapped to ink tints; accent (#f44800/#d63e00), pure ink, and the #fff citation digit untouched */
     .sol-b .thumb svg [fill="#e0e0e0"]{fill:#111111;opacity:.13;}
@@ -175,12 +183,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .thumb svg [stroke="#e0e0e0"]{stroke:#111111;opacity:.13;}
     .sol-b .thumb svg [stroke="#d0cabc"]{stroke:#111111;opacity:.2;}
     .sol-b .thumb svg [stroke="#8f8a7d"]{stroke:#111111;opacity:.45;}
-    .sol-b .move h3{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
-    /* The tab control is the heading text. Stripped back to the h3's own type
-       so the tile looks exactly as it did when the h3 was inert, and stretched
-       to the tile's width so the hit area matches the line box, not the glyphs. */
-    .sol-b .move-tab{display:block;width:100%;margin:0;padding:0;border:0;background:none;font:inherit;letter-spacing:inherit;color:inherit;text-align:left;cursor:pointer;}
-    .sol-b .move p{font-size:.86rem;color:var(--muted);margin:0;}
+    /* The tile title used to be an h3 and carries the same type it did then.
+       It is a span now because the tile is the tab, and ARIA makes a tab's
+       descendants presentational, so a heading in here would be dropped from
+       the outline by any conformant reader. The span is what aria-labelledby
+       points at, which is how the tab's name stays the title alone instead of
+       swelling to the whole ~40-word tile. */
+    .sol-b .move .move-title{display:block;font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.15;margin:0;letter-spacing:-.005em;color:var(--ink);}
+    .sol-b .move .move-desc{display:block;font-size:.86rem;color:var(--muted);margin:0;}
     /* outcome */
     .sol-b .outcome-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.6rem 2.4rem;align-items:start;}
     @media (min-width:760px){.sol-b .outcome-grid{grid-template-columns:1fr 1fr;}}
@@ -188,8 +198,15 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .metric .big{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:clamp(2.4rem,6vw,3.4rem);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--ink);}
     .sol-b .metric .lede{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:.55rem 0 0;}
     .sol-b .metric p{margin:.5rem 0 0;font-size:.88rem;color:var(--muted);}
-    /* Focus now lands on the tab button inside the heading, not the tile. */
-    .sol-b a:focus-visible,.sol-b .move-tab:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+    .sol-b a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+    /* Focus lands on the whole tile now that the tile is the tab. The offset is
+       negative because .moves clips its overflow, so a ring drawn outside the
+       tile would be cut off along the grid's outer edges, and it is a full 6px
+       so the ring reads as a second concentric line rather than thickening the
+       selected tile's 2px inset border. Arrow keys select as they move, so the
+       focused tile is always the selected one and the two indicators would
+       otherwise be impossible to tell apart. */
+    .sol-b .move:focus-visible{outline:2px solid var(--accent);outline-offset:-6px;}
     .sol-b .reveal{opacity:0;transform:translateY(12px);animation:sol-b-in .7s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes sol-b-in{to{opacity:1;transform:none;}}
     @media (prefers-reduced-motion:reduce){.sol-b .reveal{animation:none;opacity:1;transform:none;} .sol-b .move{transition:none;}}
@@ -532,32 +549,34 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
            anti-pattern the .na-w2 chips were moved off: four controls that each
            announce their own pressed state when only one can ever be on, and no
            stated relationship to the panel they swap in.
-           Two structural notes. The tile stays role="presentation" and the
-           role="tab" lives on a button inside the h3, because ARIA makes the
-           children of a tab presentational: with the heading inside the tab,
-           conformant AT drops it from the outline (Chromium keeps it, WebKit
-           need not), and the tab's name swells to the whole tile, ~40 words.
-           Heading outside the tab, tab inside the heading, gives a stable
-           outline and a name that is just the move's title. Intervening
-           role="presentation" wrappers between a tablist and its tabs are the
-           standard allowance, same shape as an li role="presentation" in the
-           APG tabs example.
-           Clicks still land anywhere on the tile: the tile keeps a click
-           handler that forwards to the same select() the tab uses. -->
-      <!-- aria-owns, not DOM nesting: role="tab" sits on a button inside each
-           tile's h3 so the heading survives in the page outline (ARIA makes a
-           tab's children presentational, so a heading inside a tab is stripped).
-           But role="presentation" on .move only clears that one element, so
-           without aria-owns the tablist ends up owning the four h3 headings and
-           no tabs at all, and AT loses "tab N of 4" plus the arrow-key
-           affordance. Owning the buttons by id fixes the relationship in the
-           accessibility tree without moving anything in the DOM. -->
-      <div class="moves" role="tablist" aria-label="Prototype steps"
-           aria-owns="na-move-tab-1 na-move-tab-2 na-move-tab-3 na-move-tab-4">
-        <div class="move is-on" role="presentation" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum">01 &middot; Ask</span><p class="exp-line">Talk to it like a person.</p><div class="thumb"><svg viewBox="0 0 120 88" aria-hidden="true"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></div><h3><button type="button" class="move-tab" role="tab" id="na-move-tab-1" aria-controls="na-w1" aria-selected="true" tabindex="0">Take the question, not the keyword</button></h3><p>I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</p></div>
-        <div class="move" role="presentation" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum">02 &middot; Scope</span><p class="exp-line">Agree on the brief first.</p><div class="thumb"><svg viewBox="0 0 120 88" aria-hidden="true"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></div><h3><button type="button" class="move-tab" role="tab" id="na-move-tab-2" aria-controls="na-w2" aria-selected="false" tabindex="-1">Aim the report</button></h3><p>I made the product confirm what the question is actually asking before researching.</p></div>
-        <div class="move" role="presentation" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum">03 &middot; Research</span><p class="exp-line">Watch the research happen.</p><div class="thumb"><svg viewBox="0 0 120 88" aria-hidden="true"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></div><h3><button type="button" class="move-tab" role="tab" id="na-move-tab-3" aria-controls="na-w3" aria-selected="false" tabindex="-1">Show the agents</button></h3><p>I surfaced the multi-agent research as it runs, so the work is visible, not magic.</p></div>
-        <div class="move" role="presentation" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum">04 &middot; Verify</span><p class="exp-line">Check any claim&rsquo;s source.</p><div class="thumb"><svg viewBox="0 0 120 88" aria-hidden="true"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></div><h3><button type="button" class="move-tab" role="tab" id="na-move-tab-4" aria-controls="na-w4" aria-selected="false" tabindex="-1">Make claims inspectable</button></h3><p>I tied every statement back to its source, so the report survives the check.</p></div>
+           Structure is the plain APG shape: the tab is a direct child of the
+           tablist and the tile content sits inside the tab. Two earlier
+           attempts to also keep the tile title in the heading outline both
+           failed, and the two failures rule each other out. Title as an h3
+           wrapping the tab put four headings and zero tabs in the tablist;
+           title as an h3 inside the tab is stripped, because ARIA makes a
+           tab's descendants presentational; and reparenting the button out of
+           the h3 with aria-owns left every h3 with an empty accessible name,
+           which is a 1.3.1 / 2.4.6 failure of its own. A tile title cannot be
+           both a named heading and a tab's accessible name, so the headings go
+           and the titles stay as styled spans.
+           aria-labelledby points each tab at its own title span, which keeps
+           the tab's name to the title rather than reading out the whole ~40
+           word tile, and the thumbnail is aria-hidden so no part of the
+           decoration reaches the name either. Clicks still land anywhere on
+           the tile because the tile is the button.
+           The number, the kicker and the description are aria-hidden too, for
+           the panels' sake. Each .sol-widget is labelled by its tab, and name
+           computation does not follow a second aria-labelledby hop: it falls
+           back to the tab's text content, so without this the panel's own name
+           became the whole tile. Nothing is lost by hiding them, because a
+           tab's descendants are presentational anyway and that copy was
+           already unreachable the moment the tile became the tab. -->
+      <div class="moves" role="tablist" aria-label="Prototype steps">
+        <button type="button" class="move is-on" role="tab" id="na-move-tab-1" aria-controls="na-w1" aria-selected="true" tabindex="0" aria-labelledby="na-move-title-1" data-proto="na-w1" data-try-label="The question input, live."><span class="mnum tnum" aria-hidden="true">01 &middot; Ask</span><span class="exp-line" aria-hidden="true">Talk to it like a person.</span><span class="thumb" aria-hidden="true"><svg viewBox="0 0 120 88" aria-hidden="true"><rect x="12" y="20" width="60" height="10" rx="2" fill="#e0e0e0"/><rect x="12" y="38" width="96" height="7" rx="2" fill="#111111"/><rect x="12" y="50" width="72" height="7" rx="2" fill="#57534b"/><rect x="12" y="64" width="34" height="12" rx="6" fill="#f44800"/></svg></span><span class="move-title" id="na-move-title-1">Take the question, not the keyword</span><span class="move-desc" aria-hidden="true">I rebuilt the input to take the whole ask and its intent, not the words that happen to overlap.</span></button>
+        <button type="button" class="move" role="tab" id="na-move-tab-2" aria-controls="na-w2" aria-selected="false" tabindex="-1" aria-labelledby="na-move-title-2" data-proto="na-w2" data-try-label="The clarification flow, live."><span class="mnum tnum" aria-hidden="true">02 &middot; Scope</span><span class="exp-line" aria-hidden="true">Agree on the brief first.</span><span class="thumb" aria-hidden="true"><svg viewBox="0 0 120 88" aria-hidden="true"><circle cx="60" cy="44" r="30" fill="none" stroke="#d0cabc" stroke-width="2"/><circle cx="60" cy="44" r="19" fill="none" stroke="#8f8a7d" stroke-width="2"/><circle cx="60" cy="44" r="7" fill="#f44800"/><line x1="60" y1="4" x2="60" y2="84" stroke="#e0e0e0" stroke-width="1"/><line x1="20" y1="44" x2="100" y2="44" stroke="#e0e0e0" stroke-width="1"/></svg></span><span class="move-title" id="na-move-title-2">Aim the report</span><span class="move-desc" aria-hidden="true">I made the product confirm what the question is actually asking before researching.</span></button>
+        <button type="button" class="move" role="tab" id="na-move-tab-3" aria-controls="na-w3" aria-selected="false" tabindex="-1" aria-labelledby="na-move-title-3" data-proto="na-w3" data-try-label="The agent view, live."><span class="mnum tnum" aria-hidden="true">03 &middot; Research</span><span class="exp-line" aria-hidden="true">Watch the research happen.</span><span class="thumb" aria-hidden="true"><svg viewBox="0 0 120 88" aria-hidden="true"><line x1="20" y1="44" x2="52" y2="20" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="44" stroke="#8f8a7d" stroke-width="1.5"/><line x1="20" y1="44" x2="52" y2="68" stroke="#8f8a7d" stroke-width="1.5"/><circle cx="20" cy="44" r="6" fill="#111111"/><circle cx="58" cy="20" r="7" fill="#f44800"/><circle cx="58" cy="44" r="7" fill="#f44800"/><circle cx="58" cy="68" r="7" fill="#f44800"/><rect x="76" y="15" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="41" width="30" height="6" rx="2" fill="#e0e0e0"/><rect x="76" y="63" width="30" height="6" rx="2" fill="#e0e0e0"/></svg></span><span class="move-title" id="na-move-title-3">Show the agents</span><span class="move-desc" aria-hidden="true">I surfaced the multi-agent research as it runs, so the work is visible, not magic.</span></button>
+        <button type="button" class="move" role="tab" id="na-move-tab-4" aria-controls="na-w4" aria-selected="false" tabindex="-1" aria-labelledby="na-move-title-4" data-proto="na-w4" data-try-label="The citation check, live."><span class="mnum tnum" aria-hidden="true">04 &middot; Verify</span><span class="exp-line" aria-hidden="true">Check any claim&rsquo;s source.</span><span class="thumb" aria-hidden="true"><svg viewBox="0 0 120 88" aria-hidden="true"><rect x="12" y="22" width="58" height="7" rx="2" fill="#111111"/><rect x="12" y="34" width="44" height="7" rx="2" fill="#57534b"/><rect x="12" y="52" width="14" height="14" rx="3" fill="#f44800"/><text x="19" y="63" font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#fff" text-anchor="middle">1</text><line x1="40" y1="45" x2="40" y2="52" stroke="#d63e00" stroke-width="1.5" stroke-dasharray="2 2"/><rect x="32" y="54" width="76" height="5" rx="2" fill="#e0e0e0"/><rect x="32" y="62" width="60" height="5" rx="2" fill="#e0e0e0"/></svg></span><span class="move-title" id="na-move-title-4">Make claims inspectable</span><span class="move-desc" aria-hidden="true">I tied every statement back to its source, so the report survives the check.</span></button>
       </div>
 
       <div class="try-head"><h3 class="try-sub" id="sol-b-try">The question input, live.</h3><p class="measure">Pick a step above to load its working prototype here.</p></div>
@@ -3141,46 +3160,33 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   /* Prototype selector: the four solution cards swap which cloned widget is
      visible in the Try-it stack. Card 01 / na-w1 is the default.
      The cards are a tablist (see the markup comment above .moves). Each tile
-     is a presentational wrapper; the real control is the .move-tab button
-     inside the tile's h3, and the panel it controls is the matching
-     .sol-widget, now role="tabpanel".
+     is itself the tab: a <button role="tab"> holding the tile's own content,
+     controlling the matching .sol-widget, which is role="tabpanel".
      Roving tabindex with automatic activation: only the selected tab is in the
      Tab order, arrow keys move focus between tabs and select as they go. APG
      recommends automatic activation when the panel shows with no latency,
      which is the case here since every panel is already in the DOM and the
-     swap is one class toggle. Enter and Space need no handler now: the tab is
-     a real <button>, so both fire a click, which is the same path the mouse
-     takes. */
+     swap is one class toggle. Enter and Space need no handler: the tab is a
+     real <button>, so both fire a click, which is the same path the mouse
+     takes, and a click anywhere on the tile is a click on the button. */
   var cards = Array.prototype.slice.call(document.querySelectorAll('#deeli-after .moves .move[data-proto]'));
   var tryTitle = document.getElementById('sol-b-try');
-  function tabOf(card){ return card.querySelector('.move-tab'); }
   function select(card, moveFocus){
     cards.forEach(function(c){
       var on = c === card;
       c.classList.toggle('is-on', on);
-      var tab = tabOf(c);
-      if(tab){
-        tab.setAttribute('aria-selected', on ? 'true' : 'false');
-        tab.tabIndex = on ? 0 : -1;
-      }
+      c.setAttribute('aria-selected', on ? 'true' : 'false');
+      c.tabIndex = on ? 0 : -1;
       var w = document.getElementById(c.getAttribute('data-proto'));
       if(w) w.classList.toggle('na-proto-off', !on);
     });
-    if(moveFocus){
-      var target = tabOf(card);
-      if(target) target.focus();
-    }
+    if(moveFocus) card.focus();
     var label = card.getAttribute('data-try-label');
     if(tryTitle && label) tryTitle.textContent = label;
   }
   cards.forEach(function(card){
-    /* Whole-tile click, unchanged from the role="button" days. A click on the
-       tab button bubbles here too; select() is idempotent, so the double call
-       costs nothing. */
     card.addEventListener('click', function(){ select(card, false); });
-    var tab = tabOf(card);
-    if(!tab) return;
-    tab.addEventListener('keydown', function(e){
+    card.addEventListener('keydown', function(e){
       var idx = cards.indexOf(card);
       var next = null;
       /* Left/Right only. The tablist is horizontal, so Up/Down stay unbound and

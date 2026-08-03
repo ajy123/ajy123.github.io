@@ -35,12 +35,12 @@ const PROFILE: SiteProfile = {
   ],
   work: [
     {
-      title: "From search to a research assistant (Deeli)",
-      role: "Led design + part PM, team of 5",
+      title: "From search box to research assistant (Deeli)",
+      role: "Design + PM",
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "A research assistant that pins down intent before it answers and shows its work as it builds. Keyword search became consult-grade reports, and time-to-report fell 50%+.",
+        "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
     },
     {
       title: "Brand Identity",

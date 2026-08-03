@@ -21,77 +21,14 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
 <!-- Shared case-study chrome (:root palette, hero, proof strip, rail, side
-     TOC, shell geometry). Page-specific vocabulary stays in the inline
-     <style> below, which loads later and therefore wins ties. -->
+     TOC, shell geometry). Page-specific vocabulary lives in the single
+     <style> block inside <body>, which loads later and therefore wins ties.
+     (There used to be a second block here in <head>; every selector in it
+     was dead and it was removed.) -->
 <link rel="stylesheet" href="/src/case-study.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* Page-specific vocabulary only — the shared chrome (:root palette, hero,
-   proof strip, sechead, rail, side TOC, shell) lives in /src/case-study.css. */
-
-/* .gal-block owns the 40px page gutter; children must NOT add their own
-   horizontal padding. Trimmed from deeli/index.html: kept only the prose,
-   proof-strip, decision-row and next-flow vocabulary this simpler,
-   text+placeholder page actually uses. */
-.gal-block{padding:var(--space-block) var(--gutter);}
-.gal-block-head{margin:0 0 30px;}
-
-.gal-copy{padding:0;}
-.gal-copy-inner{max-width:var(--measure-prose);}
-.gal-copy-inner > *:last-child{margin-bottom:var(--space-figure);}
-.gal-headline{font-size:clamp(24px,3vw,30px);font-weight:700;letter-spacing:-0.02em;line-height:1.12;margin:0 0 var(--space-copy);color:var(--ink);}
-.gal-copy p{font-size:16px;line-height:1.65;color:var(--body);margin:0 0 14px;text-wrap:pretty;}
-.gal-copy p.gal-lede-p{font-size:18px;line-height:1.55;color:var(--ink);}
-.gal-copy ul{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:10px;}
-.gal-copy li{font-size:15.5px;line-height:1.55;color:var(--body);padding-left:2px;}
-.gal-copy li b{color:var(--ink);font-weight:600;}
-.gal-copy .gal-kick{font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin:6px 0 20px;padding:16px 20px;background:var(--surface-warm);border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);}
-.gal-copy .gal-pm{font-size:15px;line-height:1.6;color:var(--muted-strong);border-left:2px solid var(--hairline-faint);padding-left:16px;margin:16px 0 24px;font-style:italic;}
-
-/* ---- figures: real slide crops from Joanna's Swiftly deck ---- */
-.cs-figure{margin:0 0 var(--space-figure);}
-.cs-figure-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
-.cs-figure-img{display:block;width:100%;height:auto;border-radius:var(--radius);box-shadow:0 0 0 1px var(--hairline-faint);background:var(--surface-subtle);}
-.cs-figure-zoom{display:block;cursor:zoom-in;border-radius:var(--radius);}
-.cs-figure-zoom:focus-visible{outline:1px solid var(--accent);outline-offset:3px;}
-.cs-figure-cap{font-family:var(--font-serif);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--muted);text-align:center;margin:14px auto 0;max-width:var(--measure-caption);}
-.cs-figure-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-figure);}
-@media(max-width:720px){.cs-figure-row{grid-template-columns:1fr;}}
-
-/* ---- decision rows: considered / chose / because ---- */
-.cs-decision{margin:14px 0 24px;}
-.cs-decision dl{max-width:var(--measure-prose);margin:0;background:var(--surface-warm);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
-.cs-decision dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;}
-.cs-decision dt{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
-.cs-decision dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--body);}
-.cs-decision dl>div:nth-child(2) dd{color:var(--ink);font-weight:500;}
-@media(max-width:560px){.cs-decision dl>div{grid-template-columns:1fr;gap:2px;}}
-
-/* ---- impact stat grid ---- */
-.impact-findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:24px 0 4px;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-.gal-copy-inner > .impact-findings:last-child{margin-bottom:var(--space-block);}
-.impact-finding{padding:20px 18px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-.impact-finding:first-child{padding-left:0;box-shadow:none;}
-.impact-finding b{display:block;font-family:var(--font-mono);font-size:22px;line-height:1;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;}
-.impact-finding span{display:block;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:680px){
-  .impact-findings{grid-template-columns:1fr;}
-  .impact-finding,.impact-finding:first-child{padding:16px 0;box-shadow:inset 0 1px 0 var(--hairline-faint);}
-  .impact-finding:first-child{box-shadow:none;}
-}
-
-/* ---- learnings takeaway grid ---- */
-.cs-next-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:12px;margin-top:8px;padding:22px;background:var(--surface-subtle);box-shadow:0 0 0 1px var(--hairline-faint);border-radius:var(--radius);}
-.cs-next-step b{display:block;font-size:13px;color:var(--ink);margin-bottom:4px;}
-.cs-next-step span{display:block;font-size:12px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:680px){.cs-next-flow{grid-template-columns:1fr;}}
-
-.gal-block + .gal-block{border-top:none;}
-
-.cs-sechead,#sec-problem,#sec-process,#sec-solution,#sec-impact,#sec-learnings{scroll-margin-top:24px;}
-</style>
 </head>
 <body id="top">
 <div id="swiftly-after">
@@ -187,7 +124,22 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   .sol-sw .sw-figure figcaption{font-family:var(--ssw-serif);font-style:italic;font-size:13px;line-height:1.5;color:var(--ssw-faint);margin:10px 0 0;}
   .sol-sw .sw-fig-eyebrow{font-family:var(--ssw-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ssw-faint);margin:0 0 12px;}
   .sol-sw .sw-fig-row{display:grid;gap:18px;align-items:start;margin:26px 0 0;}
-  @media(min-width:720px){.sol-sw .sw-fig-row{grid-template-columns:1fr 1fr;}}
+  /* Equal-height pairing without cropping either photo. Column widths track
+     each image's aspect ratio, so both resolve to the same height: give column
+     i a share ar_i/(ar_1+ar_2) of the track T (the row minus its 18px gap),
+     and h_i = w_i/ar_i = T/(ar_1+ar_2) for both.
+     Each row sets its own pair as --ssw-fig-col-* so the ratios sit next to the
+     width/height attributes they are derived from, rather than 150 lines away
+     here where a future re-crop would not find them. The 1fr fallbacks are
+     load-bearing: a bare var() that resolves to nothing is invalid at computed
+     value time, which drops the track list to `none` and stacks the row — it
+     does NOT fall back to an earlier rule. A row that omits the properties
+     gets even columns, which is the sane default.
+     (calc(<number>*1fr) does not parse in a grid track, hence whole-value
+     custom properties rather than bare numbers.) */
+  @media(min-width:720px){
+    .sol-sw .sw-fig-row{grid-template-columns:var(--ssw-fig-col-1,1fr) var(--ssw-fig-col-2,1fr);}
+  }
   .sol-sw .sw-fig-row .sw-figure{margin:0;}
   .sol-sw .sw-fig-zoom{display:block;cursor:zoom-in;border-radius:var(--ssw-r);}
   .sol-sw .sw-fig-zoom:focus-visible{outline:2px solid var(--ssw-accent);outline-offset:3px;}
@@ -320,7 +272,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </div>
       <figcaption class="sw-figcap">The escalation path one failure took before the dashboard; Client Success sat at the end of every one.</figcaption>
     </figure>
-    <div class="sw-fig-row">
+    <!-- --ssw-fig-col-N is each image's w/h: 1180/900 and 920/645. Equalises
+         the two rendered heights; recompute if either asset is re-cropped. -->
+    <div class="sw-fig-row" style="--ssw-fig-col-1:1.31111fr;--ssw-fig-col-2:1.42636fr">
       <figure class="sw-figure">
         <p class="sw-fig-eyebrow">Existing experience</p>
         <img src="assets/existing-experience.png" alt="Diagram of a transit bus with its eight in-service devices labeled: trackers, routers, headsign, security camera, automatic passenger counter, automated fare collection, mobile data terminal and next-stop annunciator." loading="lazy" width="1180" height="900">
@@ -328,7 +282,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       </figure>
       <figure class="sw-figure">
         <p class="sw-fig-eyebrow">The daily report</p>
-        <img src="assets/daily-report.jpg" alt="A pink carbon-copy paper Bus Maintenance Report form, filled out by hand." loading="lazy" width="932" height="658">
+        <img src="assets/daily-report.jpg" alt="A pink carbon-copy paper Bus Maintenance Report form, filled out by hand." loading="lazy" width="920" height="645">
         <figcaption>The failure signal itself: a carbon-copy form, one per bus, per day.</figcaption>
       </figure>
     </div>
@@ -407,7 +361,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         <p>Glancing stays the default; opening a device for detail is a choice rather than a forced navigation.</p>
       </div>
     </div>
-    <div class="sw-fig-row">
+    <!-- --ssw-fig-col-N is each image's w/h: 1373/843 and 1384/844. Equalises
+         the two rendered heights; recompute if either asset is re-cropped. -->
+    <div class="sw-fig-row" style="--ssw-fig-col-1:1.62871fr;--ssw-fig-col-2:1.63981fr">
       <figure class="sw-figure">
         <p class="sw-fig-eyebrow">Considered: all vehicles</p>
         <img src="assets/table-considered.png" alt="Device table keyed on vehicles, listing device status and devices requiring attention." loading="lazy" width="1373" height="843">
@@ -655,7 +611,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 </section>
     <figure class="sw-figure">
       <p class="sw-fig-eyebrow">Shipped: click to investigate</p>
-      <img src="assets/investigate.png" alt="Vehicle health view for one vehicle: a possible-diagnosis row, a map with an Open in Live Operations link, and per-device cards with latency charts." loading="lazy" width="1444" height="988">
+      <img src="assets/investigate.png" alt="Vehicle health view for one vehicle: a possible-diagnosis row, a map with an Open in Live Operations link, and per-device cards with latency charts." loading="lazy" width="1440" height="982">
       <figcaption>The click half of the model: one vehicle&rsquo;s health, a possible diagnosis, and the hand-off to Live Operations.</figcaption>
     </figure>
   </section>
@@ -687,7 +643,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </div>
     <figure class="sw-figure">
       <p class="sw-fig-eyebrow">Shipped: live monitoring</p>
-      <img src="assets/live-monitoring-hover.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device, and a hover tooltip open on a failing tracker showing device ID, model, and the issue." loading="lazy" width="1442" height="1025">
+      <img src="assets/live-monitoring-hover.png" alt="The Data Health &ldquo;Devices&rdquo; view: a table of in-service vehicles with a color dot per device, and a hover tooltip open on a failing tracker showing device ID, model, and the issue." loading="lazy" width="1440" height="1024">
       <figcaption>The shipped Devices view: live status per vehicle, tooltip on hover.</figcaption>
     </figure>
   </section>

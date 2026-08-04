@@ -254,6 +254,15 @@ function distanceToRect(rect: DOMRect, x: number, y: number): number {
 // are not what the reader is looking at. Scope section resolution to the panel.
 const ESSAY_PANEL_SELECTOR = ".essay-dialog-panel";
 
+// A work card can deliberately ship with no ask zone (the Brand Identity card
+// keeps only its "DEELI.AI" live link and opts out of the ask surface). Its
+// fallback wrapper carries this marker instead of data-ask-hint. Without an
+// explicit opt-out, the viewport scan below would still treat "nearest zone
+// with chips" as a good enough answer and borrow a neighbouring card's chips
+// and context text, mislabeling the panel with a project the reader isn't
+// looking at.
+const NO_ASK_ZONE_SELECTOR = '[data-ask-zone="none"]';
+
 function findNearestSection(
   anchorElement: Element | null,
   anchorPoint?: { x: number; y: number },
@@ -273,6 +282,11 @@ function findNearestSection(
     if (hasChips(ancestor)) return ancestor;
     ancestor = ancestor.parentElement?.closest<HTMLElement>("[data-ask-hint]") ?? null;
   }
+
+  // Explicit opt-out: the anchor sits inside a de-zoned card. Bail before the
+  // nearest-section scan rather than letting proximity pick a neighbour's
+  // zone for it; resolveAskContext falls through to the page default.
+  if (anchorElement?.closest(NO_ASK_ZONE_SELECTOR)) return null;
 
   const point = anchorPoint ?? {
     x: window.innerWidth / 2,

@@ -195,6 +195,12 @@ const ContextualAskHintWithDials = import.meta.env.DEV
     )
   : null;
 
+// Shared by every tap-to-ask surface: a tap that lands on a real control
+// (link, button, the video toggle) should activate that control instead of
+// opening the composer.
+const ASK_TAP_IGNORED_TARGETS =
+  "a, button, input, textarea, select, option, label, video, audio, [role='button'], [role='link'], [role='switch'], [contenteditable='true']";
+
 // Touch entry point #2 of three: on a coarse pointer, tapping an askable zone
 // opens the chat the same way the hover badge does on desktop. Ignores taps
 // that land on real controls (links, buttons, the video toggle).
@@ -217,9 +223,7 @@ function handleAskableTap(
   if (!isCoarsePointer()) return;
   if (
     event.target instanceof Element &&
-    event.target.closest(
-      "a, button, input, textarea, select, option, label, video, audio, [role='button'], [role='link'], [role='switch'], [contenteditable='true']",
-    )
+    event.target.closest(ASK_TAP_IGNORED_TARGETS)
   ) {
     return;
   }
@@ -247,6 +251,29 @@ function handleAskableTap(
         return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
       })(),
     },
+  });
+}
+
+// Touch entry point for a card that deliberately carries no ask zone (the
+// Brand Identity card keeps only its "DEELI.AI" live link). It still needs a
+// way in on touch, since no pin shows and there is no "/" key there, but it
+// must not borrow a neighbouring card's chips or context: passing no
+// suggestedPrompts/zoneContext lets resolveAskContext fall through to the
+// page default, matching the data-ask-zone="none" opt-out in
+// findNearestSection (src/askContext.ts).
+function handleDezonedCardTap(event: ReactMouseEvent<HTMLElement>) {
+  if (!isCoarsePointer()) return;
+  if (
+    event.target instanceof Element &&
+    event.target.closest(ASK_TAP_IGNORED_TARGETS)
+  ) {
+    return;
+  }
+
+  requestCursorChatOpen({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    docked: true,
   });
 }
 
@@ -899,7 +926,22 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
         // Same layout classes, no ask attributes: .askable-region carries the
         // flex column that the card body depends on, and dropping
         // data-ask-hint is what keeps the pin and the zone resolver away.
-        <div className="askable-region work-card-askable">{cardBody}</div>
+        // data-ask-zone="none" is an explicit opt-out (see findNearestSection
+        // in src/askContext.ts): without it, a "/" press or tap here would
+        // resolve to whichever real zone sits nearest on screen and borrow
+        // its chips and context, misattributing the panel to that project.
+        // Tap is still wired so touch keeps an entry point (no pin, no "/"
+        // key there); it opens with page-default context, same as the fix
+        // above.
+        <div
+          className="askable-region work-card-askable"
+          data-ask-zone="none"
+          tabIndex={0}
+          aria-label={`Ask about Joanna's work. ${askActionSuffix()}`}
+          onClick={handleDezonedCardTap}
+        >
+          {cardBody}
+        </div>
       )}
     </Reveal>
   );

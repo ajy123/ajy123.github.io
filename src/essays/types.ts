@@ -19,11 +19,13 @@ export type WorkItem = {
   linkLabel?: string;
   /** Noun label for the card's flag link; defaults to "Live site". */
   flagLabel?: string;
-  askHint: string;
+  /** Omitted on cards that carry no ask zone (the reader gets the page-default
+   * chips there instead). WorkCard renders a plain wrapper when this is unset. */
+  askHint?: string;
   askKind: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
-  askPromptChips: string[];
-  askFollowUpPromptChips: string[];
+  askPromptChips?: string[];
+  askFollowUpPromptChips?: string[];
   media?: {
     type: "video";
     src: string;

@@ -108,19 +108,8 @@ const workItems: WorkItem[] = [
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
-    askHint: "Ask what shipped for Computex",
     askKind: "project",
     askAnchorPreference: "cursor",
-    askPromptChips: [
-      "did the identity include a brand site and sales kit?",
-      "were Deeli's brand site and sales kit built in a week?",
-      "does the page say the Deeli work was built for the Computex debut?",
-    ],
-    askFollowUpPromptChips: [
-      "was Joanna's role solo design and build?",
-      "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
-      "is the live site deeli.ai?",
-    ],
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     liveHref: "https://deeli.ai",
@@ -851,6 +840,31 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
 }
 
 function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+  const cardBody = (
+    <>
+      <h2 className="card-title">{item.title}</h2>
+      <div className="card-role-row">
+        <p className="card-role">{item.role}</p>
+        {item.liveHref ? (
+          <a
+            className="card-eyebrow-flag"
+            href={item.liveHref}
+            target={/^https?:\/\//.test(item.liveHref) ? "_blank" : undefined}
+            rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
+            <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
+          </a>
+        ) : item.status ? (
+          <p className="card-eyebrow-flag">{item.status}</p>
+        ) : null}
+      </div>
+      <WorkCardMedia item={item} />
+      {item.summary ? <p className="card-summary">{item.summary}</p> : null}
+    </>
+  );
+
   return (
     <Reveal
       as="article"
@@ -860,45 +874,33 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
       <p className="card-eyebrow">
         {item.year} · {item.eyebrow}
       </p>
-      <AskableRegion
-        className="work-card-askable"
-        hint={item.askHint}
-        kind={item.askKind}
-        anchorPreference={item.askAnchorPreference}
-        promptChips={item.askPromptChips}
-        followUpPromptChips={item.askFollowUpPromptChips}
-        contextText={[
-          item.title,
-          item.role,
-          item.year,
-          item.status,
-          item.summary,
-          item.liveHref ? `Live site: ${item.liveHref}` : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <h2 className="card-title">{item.title}</h2>
-        <div className="card-role-row">
-          <p className="card-role">{item.role}</p>
-          {item.liveHref ? (
-            <a
-              className="card-eyebrow-flag"
-              href={item.liveHref}
-              target={/^https?:\/\//.test(item.liveHref) ? "_blank" : undefined}
-              rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
-              onClick={(event) => event.stopPropagation()}
-            >
-              <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
-              <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
-            </a>
-          ) : item.status ? (
-            <p className="card-eyebrow-flag">{item.status}</p>
-          ) : null}
-        </div>
-        <WorkCardMedia item={item} />
-        {item.summary ? <p className="card-summary">{item.summary}</p> : null}
-      </AskableRegion>
+      {item.askHint ? (
+        <AskableRegion
+          className="work-card-askable"
+          hint={item.askHint}
+          kind={item.askKind}
+          anchorPreference={item.askAnchorPreference}
+          promptChips={item.askPromptChips}
+          followUpPromptChips={item.askFollowUpPromptChips}
+          contextText={[
+            item.title,
+            item.role,
+            item.year,
+            item.status,
+            item.summary,
+            item.liveHref ? `Live site: ${item.liveHref}` : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {cardBody}
+        </AskableRegion>
+      ) : (
+        // Same layout classes, no ask attributes: .askable-region carries the
+        // flex column that the card body depends on, and dropping
+        // data-ask-hint is what keeps the pin and the zone resolver away.
+        <div className="askable-region work-card-askable">{cardBody}</div>
+      )}
     </Reveal>
   );
 }

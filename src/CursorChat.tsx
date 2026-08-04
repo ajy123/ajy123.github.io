@@ -63,6 +63,18 @@ type ChatTurn = {
   response: string;
 };
 
+// Mirrors openComposer's argument shape. Declared at module scope (rather than
+// inferred from openComposer, which lives inside a mount-only effect and
+// isn't reachable from finishCloseActive) so a queued reopen can be typed.
+type OpenComposerOptions = {
+  anchorOverride?: { x: number; y: number };
+  suggestedPrompts?: SuggestedPrompt[];
+  followUpPrompts?: SuggestedPrompt[];
+  zoneContext?: CursorChatZoneContext;
+  docked?: boolean;
+  autoAsk?: string;
+};
+
 type Thread = {
   id: string;
   pageX: number;
@@ -83,6 +95,11 @@ type Thread = {
   promptPool?: SuggestedPrompt[];
   shownPromptIds: string[];
   zoneContext?: CursorChatZoneContext;
+  // Opened by a pin press / auto-ask, i.e. the zone's own hint was sent as the
+  // first question. Frozen at creation and read on every later turn: the hint
+  // is a full question now, so quoting it back at the model alongside a
+  // follow-up would read as a second, competing instruction. See buildMessages.
+  openedByAutoAsk?: boolean;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
   // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
@@ -411,6 +428,7 @@ function buildMessages(
   history: ChatTurn[] = [],
   zoneContext?: CursorChatZoneContext,
   extraContext?: string,
+  fromAutoAsk = false,
 ): ChatMessage[] {
   const audienceGuidance =
     context.audienceRole === "recruiter"
@@ -419,11 +437,26 @@ function buildMessages(
         ? "Audience role: product design. Tailor the answer toward design systems, product judgment, interaction design, prototyping, systems thinking, and craft. Do not claim personal knowledge of the visitor."
         : "";
 
+  // A pin ask sends its hint verbatim as the prompt, so hint and prompt are
+  // the same string on turn one — naming the prompt again would just tell the
+  // model its own question twice. From turn two the strings differ, but the
+  // hint is still a full question, so quoting it would hand the model a second
+  // instruction competing with the follow-up actually asked; fromAutoAsk keeps
+  // it suppressed for the whole life of such a thread. Only quote the hint when
+  // it adds information: a chip click or typed question in a thread that was
+  // not opened by a pin, where the hint names the zone rather than repeats the
+  // question. The rest of the sentence, which names the section, always stays.
+  const omitHintQuote =
+    fromAutoAsk ||
+    zoneContext?.hint.trim().toLowerCase() === prompt.trim().toLowerCase();
+
   const contextLines = [
     `Page title: ${context.title}`,
     context.audienceRole ? `Audience role: ${context.audienceRole}` : "",
     zoneContext
-      ? `The visitor opened this chat from the ${zoneContext.kind} section, invited by the prompt "${zoneContext.hint}". Answer with that focus.`
+      ? omitHintQuote
+        ? `The visitor opened this chat from the ${zoneContext.kind} section. Answer with that focus.`
+        : `The visitor opened this chat from the ${zoneContext.kind} section, invited by the prompt "${zoneContext.hint}". Answer with that focus.`
       : "",
     context.selectedText
       ? `Selected text (the visitor's primary focus): ${context.selectedText}`
@@ -562,6 +595,25 @@ export function CursorChat({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeIdRef = useRef<string | null>(null);
+  const pendingAutoAskRef = useRef<string | null>(null);
+  // A pin press that lands while a panel is already open can't append to the
+  // open thread (each thread freezes a different zone's context), so it
+  // queues here, closes the open thread, and reopens once the close settles.
+  const pendingOpenRef = useRef<OpenComposerOptions | null>(null);
+  // The pre-press focus, captured at QUEUE time while the pin that triggered
+  // the queued open still has focus. By the time the queue drains (up to
+  // LEAVE_MS later) that pin is long unmounted and document.activeElement
+  // has fallen back to <body>, so capturing there (as openComposer normally
+  // does) would make restoreFocus land on <body> instead of a sensible
+  // fallback. Applied onto previousFocusRef after the drained openComposer
+  // call returns, since that call overwrites previousFocusRef itself.
+  const pendingPreviousFocusRef = useRef<HTMLElement | null>(null);
+  // openComposer is defined inside the mount-only event-wiring effect below,
+  // out of reach for finishCloseActive; this ref is how the queued reopen
+  // calls back into it once the effect assigns it.
+  const openComposerRef = useRef<((options?: OpenComposerOptions) => void) | null>(
+    null,
+  );
   // One controller per thread: generations can overlap (a pinned thread keeps
   // streaming while another submits), so a shared controller would let one
   // thread's close/stop abort a different thread's request.
@@ -747,22 +799,34 @@ export function CursorChat({
 
     const handleScrollOrResize = () => setTick((value) => value + 1);
 
-    const openComposer = ({
-      anchorOverride,
-      suggestedPrompts,
-      followUpPrompts,
-      zoneContext,
-      docked,
-    }: {
-      anchorOverride?: { x: number; y: number };
-      suggestedPrompts?: SuggestedPrompt[];
-      followUpPrompts?: SuggestedPrompt[];
-      zoneContext?: CursorChatZoneContext;
-      docked?: boolean;
-    } = {}) => {
+    const openComposer = (options: OpenComposerOptions = {}) => {
+      const {
+        anchorOverride,
+        suggestedPrompts,
+        followUpPrompts,
+        zoneContext,
+        docked,
+        autoAsk,
+      } = options;
+
       if (suspendedRef.current) return;
 
       if (activeIdRef.current) {
+        // A pin's question must always land somewhere: a thread already open
+        // belongs to a different zone, so appending would answer the new
+        // question with the old section's context. Queue it, close the open
+        // thread, and finishCloseActive reopens it once the close settles.
+        if (autoAsk?.trim()) {
+          pendingOpenRef.current = options;
+          // Capture now, while the pin that sent this request still has
+          // focus — see pendingPreviousFocusRef.
+          pendingPreviousFocusRef.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
+          closeActive();
+          return;
+        }
         textareaRef.current?.focus();
         return;
       }
@@ -837,6 +901,7 @@ export function CursorChat({
             (prompt) => prompt.id,
           ),
           zoneContext: threadZoneContext,
+          openedByAutoAsk: Boolean(autoAsk?.trim()),
           docked: isDocked,
           draftPlaceholder: fromSelection
             ? "ask about what you selected"
@@ -844,6 +909,11 @@ export function CursorChat({
           contextLabel: askContext.label,
         },
       ]);
+      // Drained by the effect below submitThread, not called here: submitThread
+      // early-returns on !activeThread, and activeThread is derived from render
+      // state, so a call on this tick would silently no-op before React commits
+      // the thread just queued above.
+      pendingAutoAskRef.current = autoAsk?.trim() || null;
       setActiveId(id);
       window.dispatchEvent(
         new CustomEvent(CURSOR_CHAT_OPENED_EVENT, {
@@ -851,6 +921,7 @@ export function CursorChat({
         }),
       );
     };
+    openComposerRef.current = openComposer;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "/" && !isEditableTarget(event.target)) {
@@ -861,6 +932,13 @@ export function CursorChat({
 
       if (event.key === "Escape" && activeIdRef.current) {
         event.preventDefault();
+        // Escape is the universal "never mind". A pin press that landed while
+        // this panel was open is sitting in the queue waiting for the close to
+        // settle, and closeActive no-ops mid-leave, so without this the queued
+        // question would still be sent on the visitor's behalf after they
+        // cancelled. Outside that window both refs are already null.
+        pendingOpenRef.current = null;
+        pendingPreviousFocusRef.current = null;
         closeActive();
       }
     };
@@ -878,6 +956,7 @@ export function CursorChat({
         followUpPrompts: detail?.followUpPrompts,
         zoneContext: detail?.zoneContext,
         docked: detail?.docked,
+        autoAsk: detail?.autoAsk,
       });
     };
 
@@ -909,8 +988,21 @@ export function CursorChat({
     );
   }, [activeThread]);
 
+  // The composer is the right focus target for an ordinary open, and it stays
+  // mounted there. An auto-ask is different: the effect below submits as soon
+  // as this thread commits, and `loading` unmounts the textarea, so a deferred
+  // focus would either miss it or be dropped to <body> when it unmounts under
+  // the caret. The panel is role="dialog" and tabIndex={-1}, so focusing it
+  // instead lands the reader inside the panel with stop/close one Tab away,
+  // and it stays mounted for the whole exchange. Read the ref before the
+  // auto-ask effect clears it: effects run in declaration order and this one
+  // is declared first.
   useEffect(() => {
     if (!activeId) return;
+    if (pendingAutoAskRef.current && panelRef.current) {
+      panelRef.current.focus();
+      return;
+    }
     window.setTimeout(() => textareaRef.current?.focus(), 0);
   }, [activeId]);
 
@@ -1018,11 +1110,40 @@ export function CursorChat({
     beginLeave(id, () => finishCloseActive(id));
   };
 
+  // A pin pressed while a panel was open queues here instead of vanishing
+  // (see openComposer's queue branch). Shared by both close paths —
+  // finishCloseActive (the close button / Escape) and collapseActive's
+  // finish callback (the collapse/pin control) — so a press that lands
+  // during either kind of close animation is drained exactly once, never
+  // dropped and never replayed by a later, unrelated close. Nulls the refs
+  // BEFORE calling back in, so a re-entrant open triggered by that call
+  // can't replay the same request. Returns whether it drained anything, so
+  // callers know whether to fall back to restoreFocus() themselves.
+  const drainPendingOpen = () => {
+    const queued = pendingOpenRef.current;
+    if (!queued) return false;
+    pendingOpenRef.current = null;
+    const queuedFocus = pendingPreviousFocusRef.current;
+    pendingPreviousFocusRef.current = null;
+    openComposerRef.current?.(queued);
+    // openComposer just captured document.activeElement into
+    // previousFocusRef, but the pin that triggered this queued request has
+    // long since unmounted by now; the pre-press focus captured at queue
+    // time is the correct restore target, so it wins.
+    if (queuedFocus?.isConnected) {
+      previousFocusRef.current = queuedFocus;
+    }
+    return true;
+  };
+
   const finishCloseActive = (id: string) => {
     setThreads((current) => current.filter((item) => item.id !== id));
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
+
+    if (drainPendingOpen()) return;
+
     restoreFocus();
   };
 
@@ -1081,6 +1202,7 @@ export function CursorChat({
     history: ChatTurn[],
     zoneContext: CursorChatZoneContext | undefined,
     extraContext: string | undefined,
+    fromAutoAsk: boolean,
   ) => {
     const patch = (updater: (thread: Thread) => Thread) =>
       setThreads((current) =>
@@ -1099,6 +1221,7 @@ export function CursorChat({
         history,
         zoneContext,
         extraContext,
+        fromAutoAsk,
       );
       if (import.meta.env.DEV) {
         // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
@@ -1156,14 +1279,17 @@ export function CursorChat({
     }
   };
 
-  const submitThread = async (promptOverride?: string) => {
+  const submitThread = async (
+    promptOverride?: string,
+    sourceOverride?: ChatQuerySource,
+  ) => {
     if (!activeThread || leavingIdRef.current) return;
 
     const id = activeThread.id;
     // One precedence chain decides both what is sent and how it's classified,
     // so the analytics label can't drift from the submission logic.
     const [message, querySource]: [string, ChatQuerySource] = promptOverride?.trim()
-      ? [promptOverride.trim(), "suggested"]
+      ? [promptOverride.trim(), sourceOverride ?? "suggested"]
       : draft.trim()
         ? [draft.trim(), "typed"]
         : activeThread.status === "error"
@@ -1204,7 +1330,10 @@ export function CursorChat({
         setExitingSuggestions(null);
       }
     }
-    setAnnouncement("");
+    // Between here and the reply there is nothing on screen but a thinking
+    // line, and a pin ask sends on a single keypress, so without this a screen
+    // reader gets no confirmation that anything was sent at all.
+    setAnnouncement("Question sent. Generating a reply.");
     setDraft("");
 
     const patch = (updater: (thread: Thread) => Thread) =>
@@ -1222,8 +1351,27 @@ export function CursorChat({
       suggestedPrompts: undefined,
     }));
 
-    await runGeneration(id, message, context, history, zoneContext, extraContext);
+    await runGeneration(
+      id,
+      message,
+      context,
+      history,
+      zoneContext,
+      extraContext,
+      activeThread.openedByAutoAsk === true,
+    );
   };
+
+  // Sends the pin's question once the thread it belongs to exists. Keyed on the
+  // thread id rather than the thread object so it does not re-run on every
+  // draft -> loading -> streaming transition, and the ref is cleared before the
+  // await so a re-render cannot fire the same question twice.
+  useEffect(() => {
+    const pending = pendingAutoAskRef.current;
+    if (!pending || !activeThread || activeThread.status !== "draft") return;
+    pendingAutoAskRef.current = null;
+    void submitThread(pending, "ask_pin");
+  }, [activeThread?.id]);
 
   const collapseActive = () => {
     // Release the resolved section so a closed panel can't retain a
@@ -1241,6 +1389,13 @@ export function CursorChat({
       );
       activeIdRef.current = null;
       setActiveId(null);
+
+      // A pin pressed while this collapse animation was still running (see
+      // FINDING A) queues into pendingOpenRef via openComposer's queue
+      // branch, but closeActive no-ops during a leave in progress, so this
+      // is the only place that request gets drained.
+      if (drainPendingOpen()) return;
+
       restoreFocus();
     });
   };
@@ -1442,6 +1597,10 @@ export function CursorChat({
           }
           role="dialog"
           aria-label="Cursor chat"
+          // Programmatic focus target only (never in the Tab order). An
+          // auto-ask has no mounted composer to focus, so the dialog itself
+          // takes focus — see the open-focus effect.
+          tabIndex={-1}
         >
           {/* Intentionally non-modal: the page remains available for context. */}
           <div

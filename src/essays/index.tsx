@@ -25,7 +25,9 @@ const unlistedEssayItems: EssayItem[] = [
     title: "The eval is the spec",
     role: "Building with AI",
     year: "2026",
-    askHint: "Ask why evals became the spec",
+    // No askHint: this item is unlisted, so no card renders it and nothing
+    // reads a hint from it. The chips below are still live, reached through
+    // essaysById when a #essay/eval-is-the-spec deep link opens the modal.
     askKind: "essay",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -76,7 +78,7 @@ export const aiPracticeItems: EssayItem[] = [
     title: "Designing with a team of agents",
     role: "Building with AI",
     year: "2026",
-    askHint: "Ask how agents earned design time",
+    askHint: "How did agents earn design time?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —
@@ -143,7 +145,7 @@ export const aiPracticeItems: EssayItem[] = [
     title: "Use personas to build a golden dataset",
     role: "Building with AI",
     year: "2026",
-    askHint: "Ask why personas regenerate weekly",
+    askHint: "Why regenerate personas weekly?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —

@@ -22,6 +22,11 @@ export type CursorChatRequestOpenDetail = {
   // Touch entry points (FAB) ask the composer to open bottom-docked rather
   // than anchored at a point. Omitted = let the composer decide by viewport.
   docked?: boolean;
+  // When set, the composer opens and immediately sends this string as the
+  // reader's question. The contextual ask pin uses it so that pressing "/"
+  // asks the exact question the pin displayed, rather than opening a panel of
+  // chips that never included it. Absent means today's open-only behavior.
+  autoAsk?: string;
 };
 
 export function requestCursorChatOpen(detail: CursorChatRequestOpenDetail = {}) {

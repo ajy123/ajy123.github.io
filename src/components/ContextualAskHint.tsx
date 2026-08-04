@@ -34,6 +34,14 @@ export type ContextualAskHintDials = {
   scrambleSpeed: number;
 };
 
+// How the active hint was summoned. A pointer-summoned hint tracks the
+// pointer via the existing pointerout/pointermove wiring; a focus-summoned
+// hint has no pointer relationship to lose, so it needs its own retirement
+// rule (see the pointermove handler below). Left undefined for hints built
+// outside the show() path (e.g. the Enter-key handler's transient object),
+// which never linger long enough to need one.
+type ActivationSource = "pointer" | "focus";
+
 type ActiveHint = {
   element: HTMLElement;
   hint: string;
@@ -42,6 +50,7 @@ type ActiveHint = {
   suggestedPrompts: SuggestedPrompt[];
   followUpPrompts: SuggestedPrompt[];
   contextText: string;
+  source?: ActivationSource;
 };
 
 type HintStage = "expanded" | "exiting";
@@ -57,9 +66,11 @@ const DEFAULT_DIALS: ContextualAskHintDials = {
   offsetY: 10,
   pinSize: 20,
   expandDelayMs: 200,
-  // Sized to the longest authored hint ("Ask how the search redesign shipped",
-  // measured at 271px incl. the copy's 20px padding) so the single-line pin
-  // never clips against .contextual-ask-surface's clip-path.
+  // Sized above the longest authored hint ("How does she design what AI says?",
+  // 33 chars, measured at 257px incl. the copy's 20px padding) so the
+  // single-line pin never clips against .contextual-ask-surface's clip-path.
+  // The headroom is deliberate: the cap clips silently rather than wrapping,
+  // so a future hint of up to about 36 chars still fits.
   hintMaxWidth: 280,
   scrambleDurMs: 800,
   scrambleSpeed: 0.04,
@@ -355,15 +366,17 @@ export function ContextualAskHint({
     element: HTMLElement,
     {
       anchor = pointerRef.current,
+      source = "pointer",
     }: {
       anchor?: Point;
+      source?: ActivationSource;
     } = {},
   ) => {
     clearDwellTimer();
     clearExitTimer();
     pendingElementRef.current = null;
 
-    const next = readActiveHint(element);
+    const next: ActiveHint = { ...readActiveHint(element), source };
     clearZoneState(activeRef.current?.element ?? null);
     activeRef.current = next;
     visibleRef.current = true;
@@ -385,6 +398,11 @@ export function ContextualAskHint({
       clientY: anchor.y,
       suggestedPrompts: current.suggestedPrompts,
       followUpPrompts: current.followUpPrompts,
+      // The pin displays a question; pressing it asks that question. The
+      // suggested prompts survive as follow-ups under the answer: the opening
+      // chips are not pre-marked as shown for an auto-ask thread, precisely
+      // so they can still be offered once the answer lands.
+      autoAsk: current.hint,
       zoneContext: {
         hint: current.hint,
         kind: current.kind,
@@ -458,6 +476,19 @@ export function ContextualAskHint({
 
     const onPointerMove = (event: PointerEvent) => {
       pointerRef.current = { x: event.clientX, y: event.clientY };
+
+      // A focus-summoned hint has no pointer relationship to lose (unlike a
+      // pointer-summoned one, which retires via onPointerOut). Retire it the
+      // moment the pointer strays off both the focused zone and the pin
+      // itself, so "/" can't send a stale zone's question for wherever the
+      // reader's eyes actually are.
+      const current = activeRef.current;
+      if (current && visibleRef.current && current.source === "focus") {
+        const target = event.target;
+        const insideZone = target instanceof Node && current.element.contains(target);
+        const insidePin = target instanceof Node && labelRef.current?.contains(target);
+        if (!insideZone && !insidePin) hide();
+      }
     };
 
     const onPointerOut = (event: PointerEvent) => {
@@ -479,7 +510,7 @@ export function ContextualAskHint({
       if (!element) return;
       // Yield to the selection pill while text is selected.
       if (selectionActiveRef.current) return;
-      show(element, { anchor: getFocusAnchor(element) });
+      show(element, { anchor: getFocusAnchor(element), source: "focus" });
     };
 
     const onFocusOut = (event: FocusEvent) => {
@@ -504,7 +535,7 @@ export function ContextualAskHint({
           : null;
       const canOpenFromHint = current && visibleRef.current;
 
-      if (event.key === "/" && canOpenFromHint) {
+      if (event.key === "/" && canOpenFromHint && !isEditableTarget(event.target)) {
         event.preventDefault();
         event.stopImmediatePropagation();
         openActiveChat();
@@ -596,9 +627,7 @@ export function ContextualAskHint({
       data-kind={active.kind}
       data-stage={visualStage}
       type="button"
-      aria-label={
-        active.kind === "action" ? copy : `Open chat suggestions: ${copy}`
-      }
+      aria-label={active.kind === "action" ? copy : `Ask "${copy}"`}
       onMouseDown={(event) => event.preventDefault()}
       onClick={openActiveChat}
       onPointerLeave={(event) => {

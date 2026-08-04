@@ -71,7 +71,7 @@ const workItems: WorkItem[] = [
     liveHref: "/deeli/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask how the search redesign shipped",
+    askHint: "How does she design what AI says?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -108,19 +108,6 @@ const workItems: WorkItem[] = [
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
-    askHint: "Ask what shipped for Computex",
-    askKind: "project",
-    askAnchorPreference: "cursor",
-    askPromptChips: [
-      "did the identity include a brand site and sales kit?",
-      "were Deeli's brand site and sales kit built in a week?",
-      "does the page say the Deeli work was built for the Computex debut?",
-    ],
-    askFollowUpPromptChips: [
-      "was Joanna's role solo design and build?",
-      "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
-      "is the live site deeli.ai?",
-    ],
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     liveHref: "https://deeli.ai",
@@ -142,7 +129,7 @@ const workItems: WorkItem[] = [
     liveHref: "/swiftly/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask about the Swiftly work",
+    askHint: "What was the Swiftly work?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -169,7 +156,7 @@ const workItems: WorkItem[] = [
     liveHref: "/nyu/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask about the NYU work",
+    askHint: "What was the NYU work?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -206,6 +193,12 @@ const ContextualAskHintWithDials = import.meta.env.DEV
     )
   : null;
 
+// Shared by every tap-to-ask surface: a tap that lands on a real control
+// (link, button, the video toggle) should activate that control instead of
+// opening the composer.
+const ASK_TAP_IGNORED_TARGETS =
+  "a, button, input, textarea, select, option, label, video, audio, [role='button'], [role='link'], [role='switch'], [contenteditable='true']";
+
 // Touch entry point #2 of three: on a coarse pointer, tapping an askable zone
 // opens the chat the same way the hover badge does on desktop. Ignores taps
 // that land on real controls (links, buttons, the video toggle).
@@ -228,9 +221,7 @@ function handleAskableTap(
   if (!isCoarsePointer()) return;
   if (
     event.target instanceof Element &&
-    event.target.closest(
-      "a, button, input, textarea, select, option, label, video, audio, [role='button'], [role='link'], [role='switch'], [contenteditable='true']",
-    )
+    event.target.closest(ASK_TAP_IGNORED_TARGETS)
   ) {
     return;
   }
@@ -261,9 +252,34 @@ function handleAskableTap(
   });
 }
 
+// Touch entry point for a card that deliberately carries no ask zone (the
+// Brand Identity card keeps only its "DEELI.AI" live link). It still needs a
+// way in on touch, since no pin shows and there is no "/" key there, but it
+// must not borrow a neighbouring card's chips or context: passing no
+// suggestedPrompts/zoneContext lets resolveAskContext fall through to the
+// page default, matching the data-ask-zone="none" opt-out in
+// findNearestSection (src/askContext.ts).
+function handleDezonedCardTap(event: ReactMouseEvent<HTMLElement>) {
+  if (!isCoarsePointer()) return;
+  if (
+    event.target instanceof Element &&
+    event.target.closest(ASK_TAP_IGNORED_TARGETS)
+  ) {
+    return;
+  }
+
+  requestCursorChatOpen({
+    clientX: event.clientX,
+    clientY: event.clientY,
+  });
+}
+
 // Slash is a keyboard affordance; on touch the same zones respond to a tap.
 function askActionSuffix() {
-  return isCoarsePointer() ? "Tap to ask." : "Press slash to ask.";
+  // On touch no pin is shown and a tap opens suggested questions rather than
+  // sending one, so "Tap to ask." next to a question string would promise the
+  // same thing the pin used to break.
+  return isCoarsePointer() ? "Tap for related questions." : "Press slash to ask.";
 }
 
 function Reveal({
@@ -326,7 +342,7 @@ function Reveal({
             ),
             "data-ask-context": askContextText,
             tabIndex: 0,
-            "aria-label": `${askHint}. ${askActionSuffix()}`,
+            "aria-label": `${askHint} ${askActionSuffix()}`,
             onClick: (event: ReactMouseEvent<HTMLElement>) =>
               handleAskableTap(event, {
                 hint: askHint,
@@ -371,7 +387,7 @@ function AskableRegion({
       data-ask-follow-up-prompts={JSON.stringify(followUpPromptChips ?? [])}
       data-ask-context={contextText}
       tabIndex={0}
-      aria-label={`${hint}. ${askActionSuffix()}`}
+      aria-label={`${hint} ${askActionSuffix()}`}
       onClick={(event) =>
         handleAskableTap(event, {
           hint,
@@ -468,7 +484,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
         <Reveal
           as="div"
           className="profile-content"
-          askHint="Ask about Joanna's fit"
+          askHint="What kind of role fits Joanna?"
           askKind="profile"
           askAnchorPreference="margin"
           askPromptChips={[
@@ -752,9 +768,12 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           data-ask-anchor={item.askAnchorPreference}
           data-ask-hint={item.askHint}
           data-ask-kind={item.askKind}
-          data-ask-prompts={JSON.stringify(item.askPromptChips)}
+          // askKind is optional on WorkItem now, but every essay item sets
+          // both prompt chip lists; default to [] so the intent (a real
+          // zone always has prompts) stays explicit instead of incidental.
+          data-ask-prompts={JSON.stringify(item.askPromptChips ?? [])}
           data-ask-follow-up-prompts={JSON.stringify(
-            item.askFollowUpPromptChips,
+            item.askFollowUpPromptChips ?? [],
           )}
           data-ask-context={[
             item.title,
@@ -848,6 +867,31 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
 }
 
 function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+  const cardBody = (
+    <>
+      <h2 className="card-title">{item.title}</h2>
+      <div className="card-role-row">
+        <p className="card-role">{item.role}</p>
+        {item.liveHref ? (
+          <a
+            className="card-eyebrow-flag"
+            href={item.liveHref}
+            target={/^https?:\/\//.test(item.liveHref) ? "_blank" : undefined}
+            rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
+            <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
+          </a>
+        ) : item.status ? (
+          <p className="card-eyebrow-flag">{item.status}</p>
+        ) : null}
+      </div>
+      <WorkCardMedia item={item} />
+      {item.summary ? <p className="card-summary">{item.summary}</p> : null}
+    </>
+  );
+
   return (
     <Reveal
       as="article"
@@ -857,45 +901,56 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
       <p className="card-eyebrow">
         {item.year} · {item.eyebrow}
       </p>
-      <AskableRegion
-        className="work-card-askable"
-        hint={item.askHint}
-        kind={item.askKind}
-        anchorPreference={item.askAnchorPreference}
-        promptChips={item.askPromptChips}
-        followUpPromptChips={item.askFollowUpPromptChips}
-        contextText={[
-          item.title,
-          item.role,
-          item.year,
-          item.status,
-          item.summary,
-          item.liveHref ? `Live site: ${item.liveHref}` : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <h2 className="card-title">{item.title}</h2>
-        <div className="card-role-row">
-          <p className="card-role">{item.role}</p>
-          {item.liveHref ? (
-            <a
-              className="card-eyebrow-flag"
-              href={item.liveHref}
-              target={/^https?:\/\//.test(item.liveHref) ? "_blank" : undefined}
-              rel={/^https?:\/\//.test(item.liveHref) ? "noreferrer" : undefined}
-              onClick={(event) => event.stopPropagation()}
-            >
-              <span className="flag-noun">{item.flagLabel ?? "Live site"}</span>
-              <span className="flag-verb">{item.linkLabel ?? DEFAULT_LINK_LABEL}</span> ↗
-            </a>
-          ) : item.status ? (
-            <p className="card-eyebrow-flag">{item.status}</p>
-          ) : null}
+      {item.askHint ? (
+        <AskableRegion
+          className="work-card-askable"
+          hint={item.askHint}
+          // A zone with a hint always declares its kind, so this fallback is
+          // unreachable for a correctly configured zone; it exists only to
+          // satisfy AskableRegion's required AskableKind prop now that
+          // askKind is optional on WorkItem.
+          kind={item.askKind ?? "project"}
+          anchorPreference={item.askAnchorPreference}
+          promptChips={item.askPromptChips}
+          followUpPromptChips={item.askFollowUpPromptChips}
+          contextText={[
+            item.title,
+            item.role,
+            item.year,
+            item.status,
+            item.summary,
+            item.liveHref ? `Live site: ${item.liveHref}` : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {cardBody}
+        </AskableRegion>
+      ) : (
+        // Same layout classes, no ask attributes: .askable-region carries the
+        // flex column that the card body depends on, and dropping
+        // data-ask-hint is what keeps the pin and the zone resolver away.
+        // data-ask-zone="none" is an explicit opt-out (see findNearestSection
+        // in src/askContext.ts): without it, a "/" press or tap here would
+        // resolve to whichever real zone sits nearest on screen and borrow
+        // its chips and context, misattributing the panel to that project.
+        // Tap is still wired so touch keeps an entry point (no pin, no "/"
+        // key there); it opens with page-default context, same as the fix
+        // above.
+        // No tabIndex here: with no data-ask-hint there is nothing for the
+        // Enter path in ContextualAskHint to resolve, so a focus stop would
+        // announce an instruction and then do nothing. Desktop keyboard
+        // readers still reach the chat through the plain "/" shortcut and the
+        // rail ask card, and this card's own DEELI.AI link stays focusable
+        // inside cardBody.
+        <div
+          className="askable-region work-card-askable"
+          data-ask-zone="none"
+          onClick={handleDezonedCardTap}
+        >
+          {cardBody}
         </div>
-        <WorkCardMedia item={item} />
-        {item.summary ? <p className="card-summary">{item.summary}</p> : null}
-      </AskableRegion>
+      )}
     </Reveal>
   );
 }

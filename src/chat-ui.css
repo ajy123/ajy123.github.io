@@ -190,11 +190,12 @@
   letter-spacing: 0.05em;
   text-align: left;
   /* Sentence case everywhere — the source hint strings are already written
-     that way (e.g. "Ask how this became a chat"); this used to force them
-     uppercase, which was the odd one out among the 4 keycap affordances. */
+     that way (e.g. "How does she design what AI says?"); this used to force
+     them uppercase, which was the odd one out among the 4 keycap
+     affordances. */
   /* One line, always. A wrapped pin doubles in height mid-hover and shifts
-     under the cursor as the copy reflows; the max-width above is sized to the
-     longest authored hint (35 chars) so nothing clips. */
+     under the cursor as the copy reflows; the max-width above is sized above
+     the longest authored hint (33 chars) so nothing clips. */
   white-space: nowrap;
   transition:
     opacity 140ms var(--ease-out-strong) 40ms,
@@ -1106,7 +1107,16 @@
   .cursor-chat {
     width: min(var(--chat-width, 340px), calc(100vw - 28px));
   }
+}
 
+/* The pin is a hover affordance, and on a coarse pointer it also lies: whether
+   a zone auto-sends or opens chips is gated on the pointer type, not on width,
+   so a tablet in landscape (coarse, but wider than 860px) rendered a pin whose
+   zone still said "Tap for related questions". Width alone can't express that.
+   A touchscreen laptop with a mouse reports `pointer: fine` as its primary
+   pointer, so hybrids that can hover keep their pins. Same condition the FAB
+   and the touch layouts above use. */
+@media (pointer: coarse), (max-width: 860px) {
   .contextual-ask-hint {
     display: none;
   }

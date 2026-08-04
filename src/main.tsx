@@ -83,12 +83,12 @@ const workItems: WorkItem[] = [
     ],
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
-    // and the headline growth number's baseline (outcome). Every chip has to be
-    // answerable from SITE_CONTEXT alone, because DEELI_CASE_CONTEXT only loads
-    // on /deeli/ and anything outside both reads back on the homepage as "I
-    // don't know". The baseline chip escalates the 220% chip above it the way
-    // Swiftly's follow-up escalates its own goal chip, and the page publishes
-    // the answer ("Internal pilot vs. launch week 2, same denominator.").
+    // and the headline growth number's baseline (outcome). The baseline chip
+    // escalates the 220% chip above it the way Swiftly's follow-up escalates
+    // its own goal chip, and SITE_CONTEXT carries its answer ("Internal pilot
+    // vs. launch week 2, same denominator."), so it lands on the homepage as
+    // well as on /deeli/. The six-of-seven and 28% figures resolve only against
+    // DEELI_CASE_CONTEXT, which loads on /deeli/ alone.
     askFollowUpPromptChips: [
       "The model got six of seven right. What happened to the seventh?",
       "How is 28% of queries coming back as re-asks not a failure?",

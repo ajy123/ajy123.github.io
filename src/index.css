@@ -612,7 +612,7 @@ h1 span {
   row-gap: var(--space-major);
 }
 
-/* AI Practice reuses .work-grid, so essays align to the same two-column grid
+/* Designing with AI reuses .work-grid, so essays align to the same two-column grid
    (and single-column mobile collapse) as the case-study work cards above. */
 
 /* case-card: transparent, no border/shadow, eyebrow → title → meta → image. */

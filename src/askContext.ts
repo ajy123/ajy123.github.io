@@ -81,7 +81,7 @@ const HOME_PRODUCT_DESIGN_CHIPS = [
   "what was her role on the brand identity?",
   "does Joanna work across Figma and code?",
   "what did she build in a week?",
-  "does the page say the work opened enterprise pilots across semiconductors, aerospace, and industrial research?",
+  "does the page say enterprise pilot conversations started at computex?",
   "is Joanna a designer and engineer?",
 ];
 const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";

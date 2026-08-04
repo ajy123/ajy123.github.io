@@ -57,7 +57,10 @@ const DEFAULT_DIALS: ContextualAskHintDials = {
   offsetY: 10,
   pinSize: 20,
   expandDelayMs: 200,
-  hintMaxWidth: 220,
+  // Sized to the longest authored hint ("Ask how the search redesign shipped",
+  // measured at 271px incl. the copy's 20px padding) so the single-line pin
+  // never clips against .contextual-ask-surface's clip-path.
+  hintMaxWidth: 280,
   scrambleDurMs: 800,
   scrambleSpeed: 0.04,
 };

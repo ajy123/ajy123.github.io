@@ -64,7 +64,7 @@
   z-index: 1002;
   display: inline-flex;
   max-width: min(
-    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 24px),
+    calc(var(--ask-hint-max-width, 280px) + var(--ask-pin-size, 20px) + 24px),
     calc(100vw - 32px)
   );
   align-items: center;
@@ -89,7 +89,7 @@
 .contextual-ask-surface {
   display: inline-flex;
   max-width: min(
-    calc(var(--ask-hint-max-width, 220px) + var(--ask-pin-size, 20px) + 24px),
+    calc(var(--ask-hint-max-width, 280px) + var(--ask-pin-size, 20px) + 24px),
     calc(100vw - 32px)
   );
   min-height: var(--ask-pin-size, 20px);
@@ -179,7 +179,7 @@
 
 .contextual-ask-copy {
   display: block;
-  max-width: var(--ask-hint-max-width, 220px);
+  max-width: var(--ask-hint-max-width, 280px);
   min-width: 0;
   padding: 0 10px;
   color: var(--ink);
@@ -192,7 +192,10 @@
   /* Sentence case everywhere — the source hint strings are already written
      that way (e.g. "Ask how this became a chat"); this used to force them
      uppercase, which was the odd one out among the 4 keycap affordances. */
-  text-wrap: balance;
+  /* One line, always. A wrapped pin doubles in height mid-hover and shifts
+     under the cursor as the copy reflows; the max-width above is sized to the
+     longest authored hint (35 chars) so nothing clips. */
+  white-space: nowrap;
   transition:
     opacity 140ms var(--ease-out-strong) 40ms,
     filter 140ms var(--ease-out-strong) 40ms;

@@ -108,30 +108,72 @@ Add this line, authored by Joanna, to `SITE_CONTEXT.facts`:
 passes `autoAsk: current.hint` for non-action kinds.
 
 **Receiver.** `openComposer` in `src/CursorChat.tsx:750` creates the thread as
-it does now. It must not call `submitThread` directly: `openComposer` lives
-inside an effect, while `submitThread` is declared later in the component body
-(`src/CursorChat.tsx:1159`), so a direct call would capture that effect's
-first-render closure and send with stale state.
+it does now. It must not call `submitThread` directly, and the reason is a
+silent failure rather than a loud one: `submitThread` opens with
+`if (!activeThread || leavingIdRef.current) return` (line 1160), and
+`activeThread` is derived from render state (line 648,
+`threads.find((thread) => thread.id === activeId)`). A synchronous call from
+`openComposer` runs before React commits the new thread, so `activeThread` is
+null, the function returns, and nothing is sent or logged. The reader would
+press and get an empty panel.
 
 Instead `openComposer` stores the string in a `pendingAutoAskRef`, and a
-separate effect keyed on the active thread drains it exactly once: read the
-ref, clear it, then `void submitThread(question)`. Clearing before submitting
-matters so a re-render cannot fire the same question twice. This runs after
-`activeIdRef` and `setThreads` are set, so the thread the chips path expects
-already exists.
+separate effect drains it:
+
+```tsx
+const pendingAutoAskRef = useRef<string | null>(null);
+
+// in openComposer, right after setThreads(...):
+pendingAutoAskRef.current = autoAsk?.trim() || null;
+
+// component level, below submitThread:
+useEffect(() => {
+  const pending = pendingAutoAskRef.current;
+  if (!pending || !activeThread || activeThread.status !== "draft") return;
+  pendingAutoAskRef.current = null;   // clear BEFORE submitting
+  void submitThread(pending);
+}, [activeThread?.id]);
+```
+
+Three details carry the correctness:
+
+- Keyed on `activeThread?.id`, not the thread object, so the effect does not
+  re-run on every `draft -> loading -> streaming` transition.
+- The ref is cleared before the submit, so a re-render cannot fire the same
+  question twice.
+- The `status === "draft"` guard stops a pinned or resumed thread being
+  hijacked by a stale pending value.
+
+Rejected: holding `submitThread` in a ref and calling it from `openComposer`
+behind `requestAnimationFrame`. That only works if the commit happens to land
+first, which under React batching is a race that fails the same silent way.
+
+**Analytics.** `submitThread:1166` classifies any `promptOverride` as
+`"suggested"`, so pin auto-asks would land in the same bucket as chip clicks.
+Since the question this change asks is whether pins convert, that number must
+not be blended. Add `"pin"` to `ChatQuerySource` (`src/analytics.ts:63`) and
+pass it for auto-asks.
 
 **Copy and zones.** `src/main.tsx` work items (`askHint` at lines 74, 111, 145,
 172), the rail region (line 471), and `src/essays/index.tsx` (lines 28, 79,
 146). The brand item at line 111 loses its ask fields.
 
-**Accessibility.** Two labels currently describe opening, not asking, and both
-need to match the new behavior:
+**Accessibility.** Two labels describe opening, not asking, and both ship with
+the behavior rather than ahead of it, so they never describe something that
+does not happen yet.
 
 - `src/components/ContextualAskHint.tsx:597` — `Open chat suggestions: ${copy}`
-- `src/main.tsx:329` — `${askHint}. ${askActionSuffix()}`
+  becomes `Ask "${copy}"`. The action-pin branch (`kind === "action"`) keeps
+  returning `copy` unchanged.
+- `src/main.tsx:329` — `${askHint}. ${askActionSuffix()}` becomes
+  `${askHint} ${askActionSuffix()}`. The hints now end in a question mark, so
+  the template's own period produced "...what AI says?. Press slash to ask."
 
-`askActionSuffix` ("Press slash to ask." / "Tap to ask.") stays accurate for
-the pin and stays accurate for touch, which still opens chips.
+`askActionSuffix` (`src/main.tsx:266`) needs its coarse-pointer branch changed
+from "Tap to ask." to "Tap for related questions." On touch no pin is shown and
+tapping opens chips rather than sending, so "Tap to ask." next to a question
+string would recreate, for screen-reader touch users, the exact mismatch this
+change removes. The fine-pointer branch ("Press slash to ask.") stays correct.
 
 ## Verification
 

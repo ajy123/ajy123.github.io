@@ -374,7 +374,7 @@ function AskableRegion({
       data-ask-follow-up-prompts={JSON.stringify(followUpPromptChips ?? [])}
       data-ask-context={contextText}
       tabIndex={0}
-      aria-label={`${hint}. ${askActionSuffix()}`}
+      aria-label={`${hint} ${askActionSuffix()}`}
       onClick={(event) =>
         handleAskableTap(event, {
           hint,

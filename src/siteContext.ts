@@ -68,6 +68,7 @@ const PROFILE: SiteProfile = {
     },
   ],
   facts: [
+    "On Deeli's research assistant, I designed what the AI says and not just the UX and UI around it. I created response patterns the model could adapt to new situations, then tested its answers against expected outputs before shipping. That process taught me to treat model behavior as part of the product experience.",
     "Around 7 years of product design experience since 2015, across enterprise SaaS, governance analytics, transit data, and now AI-native products.",
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",

@@ -1,5 +1,5 @@
-// Essay copy + visuals — the single source of truth for the "AI practice"
-// essays. Moved out of main.tsx so the landing page and the /deeli/ chat
+// Essay copy + visuals — the single source of truth for the "Designing with
+// AI" essays. Moved out of main.tsx so the landing page and the /deeli/ chat
 // island can both render the same essay data through the same EssayDialog,
 // instead of each carrying its own copy.
 import { EssayEvalThumbnail } from "../components/EssayEvalThumbnail";

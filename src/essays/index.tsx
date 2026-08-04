@@ -25,7 +25,9 @@ const unlistedEssayItems: EssayItem[] = [
     title: "The eval is the spec",
     role: "Building with AI",
     year: "2026",
-    askHint: "Why did evals become the spec?",
+    // No askHint: this item is unlisted, so no card renders it and nothing
+    // reads a hint from it. The chips below are still live, reached through
+    // essaysById when a #essay/eval-is-the-spec deep link opens the modal.
     askKind: "essay",
     askAnchorPreference: "cursor",
     askPromptChips: [

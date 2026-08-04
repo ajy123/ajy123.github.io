@@ -272,9 +272,13 @@ function getSelectionAnchor() {
 // aria-keyshortcuts="/", so pressing "/" has to resolve the same zone that
 // activating the focused control would — which means anchoring on the focused
 // element, not on a cursor the reader never moved. Returns null when there is
-// nothing meaningfully focused (body/documentElement) or the focused element
-// has no box, so callers fall through to the pointer.
-function getFocusAnchor() {
+// nothing meaningfully focused (body/documentElement), the focused element has
+// no box, or focus has drifted off screen.
+//
+// Named for the element it reads, not for what it returns, because
+// ContextualAskHint has its own getFocusAnchor with a different contract (it
+// takes an element and offsets to the element's top-right).
+function getFocusedElementAnchor() {
   const active = document.activeElement;
   if (!(active instanceof HTMLElement)) return null;
   if (active === document.body || active === document.documentElement) return null;
@@ -282,9 +286,28 @@ function getFocusAnchor() {
   const rect = active.getBoundingClientRect();
   if (rect.width === 0 && rect.height === 0) return null;
 
+  // Focus can sit far outside the viewport: keyboard scrolling moves neither
+  // focus nor the pointer, so a reader can Tab to a card, page to the bottom,
+  // and press "/" with the focused element hundreds of pixels above the fold.
+  // Anchoring there resolves a section nobody is looking at (elementFromPoint
+  // returns null off screen, and the zone scan then picks by proximity to a
+  // point off screen). Treat fully off-screen focus as no signal at all and
+  // let the caller fall through to the pointer, which is what the reader is
+  // actually looking at.
+  if (
+    rect.bottom <= 0 ||
+    rect.top >= window.innerHeight ||
+    rect.right <= 0 ||
+    rect.left >= window.innerWidth
+  ) {
+    return null;
+  }
+
+  // Partially visible focus still anchors, clamped inside the viewport so the
+  // point always lands on something.
   return {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2,
+    x: Math.min(Math.max(rect.left + rect.width / 2, EDGE), window.innerWidth - EDGE),
+    y: Math.min(Math.max(rect.top + rect.height / 2, EDGE), window.innerHeight - EDGE),
   };
 }
 
@@ -588,7 +611,7 @@ export function CursorChat({
   // happens to sit mid-screen. This flag records whether a pointermove has
   // EVER fired, which is the only honest signal that the cursor position means
   // anything. openComposer uses it to gate the focus-derived anchor: see
-  // getFocusAnchor. Do not "simplify" it away — without it, "/" would start
+  // getFocusedElementAnchor. Do not "simplify" it away — without it, "/" would start
   // following focus for mouse users too, and a stale focus ring (a button
   // clicked minutes ago) would beat the cursor the reader is actually pointing
   // with.
@@ -841,7 +864,7 @@ export function CursorChat({
       // above this: explicit override, then selection.
       const focusAnchor =
         !anchorOverride && !selectionAnchor && !pointerMovedRef.current
-          ? getFocusAnchor()
+          ? getFocusedElementAnchor()
           : null;
       const anchor =
         anchorOverride ?? selectionAnchor ?? focusAnchor ?? pointerRef.current;

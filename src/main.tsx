@@ -54,6 +54,10 @@ type RevealProps = {
   askPromptChips?: string[];
   askFollowUpPromptChips?: string[];
   askContextText?: string;
+  /* Explicit "this region carries no ask zone" marker, the Reveal-level twin of
+   * the plain wrapper WorkCard renders for a card without an askHint. Only
+   * meaningful when askHint is absent; see the createElement branch below. */
+  askZone?: "none";
 };
 
 /* Shared verb-register default: the cursor pill and the touch flag must never
@@ -282,6 +286,7 @@ function Reveal({
   askPromptChips,
   askFollowUpPromptChips,
   askContextText,
+  askZone,
 }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -341,7 +346,23 @@ function Reveal({
                 contextText: askContextText,
               }),
           }
-        : {}),
+        : askZone === "none"
+          ? {
+              // Same opt-out the Brand Identity card uses (see WorkCard below
+              // and findNearestSection in src/askContext.ts): dropping
+              // data-ask-hint is what keeps the pin away, but without this
+              // marker a "/" press or tap inside this region would fall to the
+              // nearest zone with chips on screen and borrow a work card's
+              // prompts and context. With it, resolveAskContext falls through
+              // to the page default.
+              // Tap stays wired so touch keeps an entry point here; it opens
+              // with page-default context, and no tabIndex is added because
+              // with no data-ask-hint the Enter path in ContextualAskHint has
+              // nothing to resolve.
+              "data-ask-zone": "none",
+              onClick: handleDezonedCardTap,
+            }
+          : {}),
     },
     children,
   );
@@ -459,24 +480,21 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
   return (
     <aside className="profile-rail">
       <div className="profile-sticky">
-        <Reveal
-          as="div"
-          className="profile-content"
-          askHint="What kind of role fits Joanna?"
-          askKind="profile"
-          askAnchorPreference="margin"
-          askPromptChips={[
-            "what is Joanna's role?",
-            "what kind of products does she build?",
-            "does Joanna work across Figma and code?",
-          ]}
-          askFollowUpPromptChips={[
-            "what is her product focus?",
-            "did Joanna build Deeli's site in a week?",
-            "what is Joanna's email?",
-          ]}
-          askContextText="Joanna Yen is a designer and engineer whose work shrinks queues: maintenance tickets, device-issue reports, and searches people gave up on. Lately she does the same for Deeli AI's research assistant: designing what it says, testing the model's output, and planning for when it's wrong. She currently designs and ships at Deeli AI, with 7+ years of product design across enterprise SaaS, analytics, and transit data, previously at Swiftly, Diligent, NYU, and Blue Fountain Media. She is an avid long-distance runner working remotely in APAC. Her product focus includes data rigor, design quality, research, product systems, interface prototypes, and data workflows. She works across Figma and code. Contact: joannayen24@gmail.com."
-        >
+        {/*
+          The rail carries no ask zone: its pin question was retired with no
+          replacement, and the zone attributes are all-or-nothing on askHint,
+          so the chips and context text go with it rather than linger as dead
+          props. Nothing is lost by that. The zone's chips were already the
+          home page defaults in resolveAskContext ("what is Joanna's role?" is
+          verbatim the same; the rest ask the same things), and the context
+          text was a second biography of Joanna in third person, restating the
+          global profile in src/siteContext.ts that every system prompt already
+          carries. What stays specific to this region is the visible bio, which
+          getBoundedText still reads off the rail element.
+          The rail's own "Ask about my work" button is the affordance here, and
+          it is untouched.
+        */}
+        <Reveal as="div" className="profile-content" askZone="none">
           <div className="profile-identity">
             <h1>
               <span>Joanna Yen</span>

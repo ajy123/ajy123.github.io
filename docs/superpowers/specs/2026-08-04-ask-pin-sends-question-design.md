@@ -50,12 +50,18 @@ Rejected alternatives:
    early-returned in that case, so a press over a zone while a panel was open
    did nothing and the reader saw no response. Now a press over a zone always
    asks that zone's question: if a panel is open, its thread closes and a new
-   thread opens anchored at the pressed pin. It must be a new thread rather
-   than an appended turn, because a thread freezes its zone context when
-   created, so appending would answer the new question using the previous
-   section's context. A reader who wants a blank composer moves off the zone
-   and presses `/` on empty page, which the `handleKeyDown` window listener in
-   `src/CursorChat.tsx` already handles. One key, one meaning.
+   thread opens anchored at the pressed pin. Closing aborts any in-flight
+   generation and discards that thread, including a pinned thread the reader
+   had reopened. That is the real cost of one key, one meaning, and it belongs
+   in this document rather than left for a reader to discover. It must be a
+   new thread rather than an appended turn, because a thread freezes its zone
+   context when created, so appending would answer the new question using the
+   previous section's context. A reader who wants a blank composer moves off
+   the zone and presses `/` on empty page. The `handleKeyDown` window listener
+   in `src/CursorChat.tsx` opens a blank one there, but only when nothing is
+   already open: with a panel open, that same off-zone press does not open a
+   blank composer, because `openComposer` early-returns and focuses the
+   existing textarea instead. One key, one meaning.
 2. **Pin copy is the question.** Sent verbatim via `submitThread`.
 3. **Action pins are untouched.** `kind="action"` pins ("Read", "See it live")
    still navigate. Only `kind="project"` / `"essay"` / `"profile"` pins ask.
@@ -69,7 +75,9 @@ Rejected alternatives:
    borrowing a neighbouring card's chips.
 5. **The brand card loses its ask zone entirely.** `askHint`,
    `askPromptChips`, and `askFollowUpPromptChips` come off the Brand Identity
-   item. Only its `DEELI.AI` action pin remains.
+   item. Only its `DEELI.AI` action pin remains. (`askKind` and
+   `askAnchorPreference` stay on that item; they are dead data now, kept only
+   because `askKind` is a required field on the `WorkItem` type.)
 6. **No new teaching affordance in this round.** The pin is a `<button>`, so a
    reader who does not know the key can click it, and clicking now sends too.
    Auto-send makes the key less load-bearing, not more. Revisit only if it
@@ -181,6 +189,21 @@ Three details carry the correctness:
 Rejected: holding `submitThread` in a ref and calling it from `openComposer`
 behind `requestAnimationFrame`. That only works if the commit happens to land
 first, which under React batching is a race that fails the same silent way.
+
+**Queued reopen.** A pin press that arrives while a panel is already open
+cannot append to that open thread, because a thread freezes its own zone
+context at creation. So `openComposer`, in `src/CursorChat.tsx`, stores the
+whole options object it was called with in a `pendingOpenRef`, then runs the
+close path instead of opening directly. The close path's completion calls
+`drainPendingOpen`, which clears that ref and calls back into `openComposer`
+with the queued options. The ref is nulled before that callback runs, so a
+re-entrant open triggered by the drain itself cannot replay the same request.
+Every close path has to call `drainPendingOpen`, not just the obvious one: an
+early version only called it from `finishCloseActive` (the close button and
+Escape), so a pin press that landed while an open thread was mid-collapse
+into a pin marker was queued but never drained there, and its stale request
+surfaced later, on an unrelated close. `collapseActive`'s own finish callback
+now calls `drainPendingOpen` too.
 
 **Analytics.** `submitThread:1166` classifies any `promptOverride` as
 `"suggested"`, so pin auto-asks would land in the same bucket as chip clicks.

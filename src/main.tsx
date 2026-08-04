@@ -469,7 +469,6 @@ function PauseGlyph() {
 function ProfileRail({ suspended }: { suspended: boolean }) {
   const [copied, setCopied] = useState(false);
   const dials = useContext(FooterDialsContext);
-  const footerBodyRef = useRef<HTMLDivElement | null>(null);
 
   const copyEmail = async () => {
     await navigator.clipboard.writeText("joannayen24@gmail.com");
@@ -579,7 +578,6 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
           delay={dials.layout.revealDelay}
         >
           <div
-            ref={footerBodyRef}
             className="rail-footer-body"
             data-variant={dials.variant}
             data-brackets={dials.mono.brackets}

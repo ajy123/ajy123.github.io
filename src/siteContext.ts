@@ -76,7 +76,7 @@ const PROFILE: SiteProfile = {
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
     "Works across Figma and code (React, Vue).",
     "Her personas and research regenerate every week because there are user interviews and feedback tickets every week, and that is when the team learns something new about users.",
-    "LinkedIn: https://www.linkedin.com/in/joanna-yen. You can point a reader to that link, but you cannot open it, so never describe or quote what it contains.",
+    "LinkedIn profile, for a reader who wants more than this page carries: https://www.linkedin.com/in/joanna-yen (link only; its contents are not available here).",
     "APAC remote in Taipei; open to relocation.",
   ],
 };

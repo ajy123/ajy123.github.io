@@ -537,7 +537,7 @@ export function ContextualAskHint({
 
       if (event.key === "Enter" && focusedZone) {
         // Native activation must win: never swallow Enter for real controls
-        // (button / role=switch / links / the theme-toggle .site-logo) that
+        // (button / role=switch / links) that
         // happen to live inside or be a [data-ask-hint] zone.
         if (
           event.target instanceof Element &&

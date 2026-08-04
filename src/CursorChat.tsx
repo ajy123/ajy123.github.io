@@ -1329,7 +1329,6 @@ export function CursorChat({
     void submitThread(pending, "ask_pin");
   }, [activeThread?.id]);
 
-
   const retryActive = () => {
     if (!activeThread) return;
     void submitThread();

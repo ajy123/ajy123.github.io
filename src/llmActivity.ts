@@ -1,4 +1,3 @@
-
 /**
  * LLM activity store — one bit of "is the local model working right now?"
  * shared between CursorChat (the publisher) and ambient listeners (the

@@ -38,7 +38,7 @@ const STAGGER_MS = 30;
 // Naturally coalesces the flat gap phase to a single zero emit, not 9/frame.
 const EMIT_EPSILON = 1 / 256;
 
-export interface PulseParams {
+interface PulseParams {
   /** Blob bloom-in duration (seed→full, center-out stagger). */
   growMs: number;
   /** Full-brightness dwell. */
@@ -287,10 +287,8 @@ export function subscribePulse(cb: PulseCallback): () => void {
 }
 
 /**
- * Levels-selection helper — the single source of truth for WHICH CELLS levels
- * the mark shows, shared so GridLogo (and, by mirroring its DOM, the favicon)
- * can never drift. Live trailing GitHub window when it's present and carries
- * the identity; the designed fallback otherwise.
+ * The levels the favicon paints. This used to be a fallback for a live GitHub
+ * contribution window; with the header mark gone it is the only source.
  *
  * Density study for the 3×3 field: corners quiet (levels 1–2), a bright
  * center ridge through the middle row/cell (peaking at 4) — designed, not

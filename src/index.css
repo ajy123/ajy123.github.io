@@ -45,11 +45,6 @@
   /* --white, --control-dark and --control-dark-hover now live in tokens.css,
      which this file imports: the case-study figure videos use the same media
      control and do not load this stylesheet. */
-  --contrib-0: #ececec;
-  --contrib-1: #c2c2c0;
-  --contrib-2: #6d6d6d;
-  --contrib-3: #363634;
-  --contrib-4: #000000;
 
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
@@ -458,108 +453,6 @@ h1 span {
   line-height: 1;
 }
 
-/* GitHub contributions (last 30 days) — additive rail block, links to profile. */
-.contrib {
-  display: block;
-  width: 100%;
-  margin-bottom: var(--rl-gap, 12px);
-  color: var(--muted);
-}
-
-.contrib-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.contrib-label {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* The week tiles + the hover summary share one slot, right after the label. */
-.contrib-slot {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.contrib-weeks {
-  display: inline-flex;
-  gap: var(--rl-cell-gap, 3px);
-  transition: opacity 0.2s var(--ease);
-}
-
-/* Hovering the row crossfades the tiles to the active-days summary. Absolutely
-   positioned so the wider text never reflows the row or shoves the arrow. */
-.contrib-count {
-  position: absolute;
-  left: 0;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  color: var(--muted);
-  transition: opacity 0.2s var(--ease);
-}
-
-.contrib-head:hover .contrib-weeks {
-  opacity: 0;
-}
-
-.contrib-head:hover .contrib-count {
-  opacity: 1;
-}
-
-/* Only the arrow is the link — limited hit area, sits right after the title. */
-.contrib-link {
-  display: inline-flex;
-  color: var(--muted);
-  transition: color 0.35s var(--spring);
-}
-
-.contrib-link:hover {
-  color: var(--ink);
-}
-
-.contrib-head svg {
-  width: 12px;
-  height: 12px;
-}
-
-/* The .email-row stroke rules are scoped; restate them for this glyph. */
-.contrib-head svg path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.contrib-cell {
-  width: var(--rl-cell, 12.285px);
-  height: var(--rl-cell, 12.285px);
-  border-radius: var(--rl-cell-radius, 2px);
-  background: var(--contrib-0); /* level 0 — empty week, one step darker */
-}
-
-.contrib-cell[data-level="1"] {
-  background: var(--contrib-1);
-}
-
-.contrib-cell[data-level="2"] {
-  background: var(--contrib-2);
-}
-
-.contrib-cell[data-level="3"] {
-  background: var(--contrib-3);
-}
-
-.contrib-cell[data-level="4"] {
-  background: var(--contrib-4);
-}
-
 /* ===========================================================================
    Rail-footer design variants. The footer body carries data-variant + the
    DialKit-tuned CSS vars (set inline; the var() fallbacks below = baked
@@ -581,11 +474,6 @@ h1 span {
 .rail-footer-body[data-variant="divided"] .rail-link svg {
   margin-left: auto;
 }
-.rail-footer-body[data-variant="divided"] .contrib {
-  margin-bottom: 0;
-  padding-bottom: var(--rl-rowpad, 10px);
-  border-bottom: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
-}
 .rail-footer-body[data-variant="divided"] > p {
   margin-top: var(--rl-rowpad, 10px);
   padding-top: var(--rl-rowpad, 10px);
@@ -597,12 +485,10 @@ h1 span {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: var(--rl-mono-tracking, 0px);
 }
-.rail-footer-body[data-variant="mono"] .rail-link,
-.rail-footer-body[data-variant="mono"] .contrib-head {
+.rail-footer-body[data-variant="mono"] .rail-link {
   font-size: var(--rl-mono-size, 12px);
 }
-.rail-footer-body[data-variant="mono"] .rail-link-label,
-.rail-footer-body[data-variant="mono"] .contrib-label {
+.rail-footer-body[data-variant="mono"] .rail-link-label {
   text-transform: lowercase;
 }
 .rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::before {
@@ -611,8 +497,7 @@ h1 span {
 .rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::after {
   content: "]";
 }
-.rail-footer-body[data-variant="mono"] .rail-link svg,
-.rail-footer-body[data-variant="mono"] .contrib-link {
+.rail-footer-body[data-variant="mono"] .rail-link svg {
   display: none;
 }
 

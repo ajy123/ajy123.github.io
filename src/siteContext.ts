@@ -65,7 +65,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform and measured processing, training, and communication time from launch. First-month turnaround fell roughly 33%, from NYU's own first-month post-launch analytics; the number is early and directional, not an audited figure.",
+        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. Before it shipped she set the measurement plan and instrumented three metrics: processing, training, and communication time. The headline number is a separate measure: average turnaround on a maintenance ticket, taken from NYU's own post-launch analytics over the first month, which fell roughly 33%. NYU read it after she had left, so it is early and directional and not a figure she audited herself.",
     },
   ],
   facts: [
@@ -74,6 +74,7 @@ const PROFILE: SiteProfile = {
     "Currently designs and ships at Deeli AI, where she started in August 2025.",
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
     "On Swiftly, the internal goal of under 12 hours was not met. That honest miss taught the team that a single investigation-time target measured the wrong thing, because agencies triage differently.",
+    "Joanna's read on why staff took to WorkLink: it replaced the CSV files and the software-hopping with one record in one system, so nobody had to check several places to be sure a maintenance request reached the right team.",
     "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, processing, training, and communication time, on a measurement plan set before shipping.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
     "Works across Figma and code (React, Vue).",

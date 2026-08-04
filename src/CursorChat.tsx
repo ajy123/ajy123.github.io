@@ -268,6 +268,49 @@ function getSelectionAnchor() {
   };
 }
 
+// Where a keyboard-driven "/" should open. The rail button advertises
+// aria-keyshortcuts="/", so pressing "/" has to resolve the same zone that
+// activating the focused control would — which means anchoring on the focused
+// element, not on a cursor the reader never moved. Returns null when there is
+// nothing meaningfully focused (body/documentElement), the focused element has
+// no box, or focus has drifted off screen.
+//
+// Named for the element it reads, not for what it returns, because
+// ContextualAskHint has its own getFocusAnchor with a different contract (it
+// takes an element and offsets to the element's top-right).
+function getFocusedElementAnchor() {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement)) return null;
+  if (active === document.body || active === document.documentElement) return null;
+
+  const rect = active.getBoundingClientRect();
+  if (rect.width === 0 && rect.height === 0) return null;
+
+  // Focus can sit far outside the viewport: keyboard scrolling moves neither
+  // focus nor the pointer, so a reader can Tab to a card, page to the bottom,
+  // and press "/" with the focused element hundreds of pixels above the fold.
+  // Anchoring there resolves a section nobody is looking at (elementFromPoint
+  // returns null off screen, and the zone scan then picks by proximity to a
+  // point off screen). Treat fully off-screen focus as no signal at all and
+  // let the caller fall through to the pointer, which is what the reader is
+  // actually looking at.
+  if (
+    rect.bottom <= 0 ||
+    rect.top >= window.innerHeight ||
+    rect.right <= 0 ||
+    rect.left >= window.innerWidth
+  ) {
+    return null;
+  }
+
+  // Partially visible focus still anchors, clamped inside the viewport so the
+  // point always lands on something.
+  return {
+    x: Math.min(Math.max(rect.left + rect.width / 2, EDGE), window.innerWidth - EDGE),
+    y: Math.min(Math.max(rect.top + rect.height / 2, EDGE), window.innerHeight - EDGE),
+  };
+}
+
 function getViewportPoint(pageX: number, pageY: number) {
   return {
     x: pageX - window.scrollX,
@@ -563,6 +606,16 @@ export function CursorChat({
   const [threads, setThreads] = useState<Thread[]>([]);
   const [tick, setTick] = useState(0);
   const pointerRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  // pointerRef starts at viewport centre, which is a real coordinate, not
+  // "unknown" — so a session with no pointer at all still resolves whatever
+  // happens to sit mid-screen. This flag records whether a pointermove has
+  // EVER fired, which is the only honest signal that the cursor position means
+  // anything. openComposer uses it to gate the focus-derived anchor: see
+  // getFocusedElementAnchor. Do not "simplify" it away — without it, "/" would start
+  // following focus for mouse users too, and a stale focus ring (a button
+  // clicked minutes ago) would beat the cursor the reader is actually pointing
+  // with.
+  const pointerMovedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeIdRef = useRef<string | null>(null);
@@ -761,6 +814,9 @@ export function CursorChat({
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
       pointerRef.current = { x: event.clientX, y: event.clientY };
+      // From the first real pointer move on, the cursor is a genuine statement
+      // of intent and outranks focus forever after — see pointerMovedRef.
+      pointerMovedRef.current = true;
     };
 
     const handleScrollOrResize = () => setTick((value) => value + 1);
@@ -803,7 +859,15 @@ export function CursorChat({
           : null;
 
       const selectionAnchor = getSelectionAnchor();
-      const anchor = anchorOverride ?? selectionAnchor ?? pointerRef.current;
+      // Keyboard-only sessions (no pointermove ever) anchor on the focused
+      // element; everyone else keeps the pointer. Precedence is unchanged
+      // above this: explicit override, then selection.
+      const focusAnchor =
+        !anchorOverride && !selectionAnchor && !pointerMovedRef.current
+          ? getFocusedElementAnchor()
+          : null;
+      const anchor =
+        anchorOverride ?? selectionAnchor ?? focusAnchor ?? pointerRef.current;
       const fromSelection = !anchorOverride && selectionAnchor !== null;
       // Explicit request wins; otherwise the small-screen layout docks.
       const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;

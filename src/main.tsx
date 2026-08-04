@@ -83,12 +83,14 @@ const workItems: WorkItem[] = [
     ],
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
-    // and the headline growth number's baseline (outcome). The baseline chip
-    // escalates the 220% chip above it the way Swiftly's follow-up escalates
-    // its own goal chip, and SITE_CONTEXT carries its answer ("Internal pilot
-    // vs. launch week 2, same denominator."), so it lands on the homepage as
-    // well as on /deeli/. The six-of-seven and 28% figures resolve only against
-    // DEELI_CASE_CONTEXT, which loads on /deeli/ alone.
+    // and the headline growth number's baseline (outcome). Only the third one
+    // answers where these chips render. workItems is homepage-only (the map at
+    // the bottom of WorkCanvas is its one consumer), the homepage chat gets
+    // SITE_CONTEXT and no extraContext, and siteContext.ts carries the baseline
+    // in its own words. The six-of-seven and 28% figures live only in
+    // DEELI_CASE_CONTEXT, which deeliChatApp passes on /deeli/, where no card
+    // renders these chips — so the first two answer "I don't know" wherever a
+    // visitor can actually click them. Both need a rewrite against SITE_CONTEXT.
     askFollowUpPromptChips: [
       "The model got six of seven right. What happened to the seventh?",
       "How is 28% of queries coming back as re-asks not a failure?",

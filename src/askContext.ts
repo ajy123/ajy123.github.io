@@ -64,7 +64,10 @@ const ESSAY_LABEL = zoneKindLabel("essay"); // "ASKING ABOUT: THIS ESSAY" — fi
 // Home page defaults — copy reused verbatim from the old AUDIENCE_PROMPTS
 // (CursorChat.tsx:122-155), not re-authored: re-writing that copy is out of
 // scope. All three of its branches survive. recruiter and default shared one
-// chip array there and still do; only their placeholders differ.
+// chip array there and still do; only their placeholders differ. One chip has
+// since departed from that copy: the product-design set's brand question
+// page-checked "opened enterprise pilots", which the card stopped saying, so
+// it had to move or answer no against the site's own suggested question.
 const HOME_DEFAULT_CHIPS = [
   "what is Joanna's role?",
   "what did she build for Deeli?",
@@ -81,7 +84,7 @@ const HOME_PRODUCT_DESIGN_CHIPS = [
   "what was her role on the brand identity?",
   "does Joanna work across Figma and code?",
   "what did she build in a week?",
-  "does the page say enterprise pilot conversations started at computex?",
+  "does the page say enterprise pilot conversations started at Computex?",
   "is Joanna a designer and engineer?",
 ];
 const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";

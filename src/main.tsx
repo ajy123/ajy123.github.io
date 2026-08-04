@@ -140,7 +140,7 @@ const workItems: WorkItem[] = [
       "why did you choose a color legend over icons?",
     ],
     askFollowUpPromptChips: [
-      "You missed your own <12-hour goal — what did that teach you?",
+      "You missed your own <12-hour goal. What did that teach you?",
       "Why hover instead of click for the device status view?",
       "How did this project shift the team from engineering-led to design-led?",
     ],
@@ -498,17 +498,20 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <h1>
               <span>Joanna Yen</span>
             </h1>
-            <p className="profile-role-line">Senior product designer</p>
+            <p className="profile-role-line">
+              Senior product designer. AI and search, in complex B2B.
+            </p>
 
             <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue
-              reports, searches people gave up on. Lately I&apos;m doing the
-              same for{" "}
+              reports, searches people gave up on. Now the queue is research
+              itself. On{" "}
               <span className="bio-hl">
                 Deeli AI&apos;s research assistant
               </span>
-              : designing what they say, testing model&apos;s output, and
-              planning for when they&apos;re wrong.
+              , I design what it says, test its answers before they ship, and
+              plan for when it&apos;s wrong. I own it end to end, and I start
+              from the system.
             </p>
 
             {/*
@@ -550,22 +553,30 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, AI research
+                </span>
                 <span className="rail-ledger-yr">now</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Swiftly</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, transit data
+                </span>
                 <span className="rail-ledger-yr">&rsquo;22</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Diligent</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, news analytics
+                </span>
                 <span className="rail-ledger-yr">&rsquo;20</span>
               </li>
               <li>
                 <span className="rail-ledger-co">NYU</span>
-                <span className="rail-ledger-role">Service design</span>
+                <span className="rail-ledger-role">
+                  Product design, campus ops
+                </span>
                 <span className="rail-ledger-yr">&rsquo;18</span>
               </li>
             </ul>

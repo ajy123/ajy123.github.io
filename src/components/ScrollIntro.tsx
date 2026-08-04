@@ -63,17 +63,17 @@ export const DEFAULT_INTRO_DIALS: IntroDials = {
 };
 
 export const INTRO_FINAL_SENTENCE =
-  "I build AI-native products end to end — systems thinking down to the pixels.";
+  "I design AI and search products for complex B2B work, down to what the model says.";
 
 const INTRO_SENTENCE: IntroSentenceModel = {
   final: INTRO_FINAL_SENTENCE,
-  lead: "I build ",
+  lead: "I design ",
   groups: [
-    { text: "AI-native products" },
-    { text: "systems thinking" },
-    { text: "the pixels" },
+    { text: "AI and search products" },
+    { text: "complex B2B work" },
+    { text: "what the model says" },
   ],
-  scaffolds: [" end to end — ", " down to ", "."],
+  scaffolds: [" for ", ", down to ", "."],
 };
 
 type ScrollIntroProps = {

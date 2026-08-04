@@ -28,11 +28,11 @@ type SiteProfile = {
 
 const PROFILE: SiteProfile = {
   name: "Joanna Yen",
-  role: "Senior product designer",
+  role: "Senior product designer. AI and search, in complex B2B.",
   email: "joannayen24@gmail.com",
   focus: [
     "AI products that hold data rigor and design quality equally",
-    "Research, product systems, interface prototypes, and data workflows",
+    "Search and research tools for complex B2B work: research, product systems, interface prototypes, and data workflows",
   ],
   work: [
     {

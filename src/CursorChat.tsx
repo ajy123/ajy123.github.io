@@ -1285,7 +1285,7 @@ export function CursorChat({
       // A rate limit is the one failure where "retry now" is the wrong advice.
       const copy =
         status === 429
-          ? "You're sending messages quickly — give it a minute, then retry."
+          ? "You're sending messages quickly. Give it a minute, then retry."
           : "Could not get a response. Retry keeps your prompt.";
       patch((thread) => ({
         ...thread,

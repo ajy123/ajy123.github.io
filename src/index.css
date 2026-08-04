@@ -355,15 +355,21 @@ h1 span {
   white-space: nowrap;
 }
 
-/* Each label carries an engagement type and a domain ("Contract design, news
-   analytics"), which no longer fits the rail's 216px column on one line. It
-   wraps to a second line instead of clipping. `min-width: 0` is what makes that
-   possible: without it the row's min-content width is the full unbroken label,
-   and the flex row pushed the whole rail column out to 326px and cut the text
-   off mid-word. The row stays `align-items: baseline`, so the year keeps its
+/* Each label carries a discipline and a domain ("Product design, news
+   analytics"), too long for the rail on one line. The rail column is 216px at
+   the clamp floor and only 192px between 861px and 1100px, so dropping
+   `white-space: nowrap` is what fixes this: with it, the row could not break
+   the label, and the flex row grew the column past its own width and clipped
+   the bio and ask card mid-word. Measured at 1024px, the old rule pushed the
+   216px column to 270px.
+   No `min-width: 0` here on purpose. `overflow: hidden` on the old rule already
+   zeroed the automatic minimum size, so it was never what held the layout
+   together. `overflow-wrap` replaces the clipping that rule used to provide:
+   wrapping handles ordinary labels, and this catches a single token too long
+   for the column. The row stays `align-items: baseline`, so the year keeps its
    baseline on the label's first line. */
 .rail-ledger-role {
-  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--muted);
 }
 

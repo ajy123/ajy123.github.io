@@ -151,7 +151,7 @@ const workItems: WorkItem[] = [
   // Case-study page still to be built; card carries the coded thumbnail + status
   // flag until it ships. Copy locked against the résumé (real project facts).
   {
-    eyebrow: "Service design",
+    eyebrow: "Product design",
     title: "Unifying campus maintenance",
     role: "Maintenance Team",
     year: "2018",

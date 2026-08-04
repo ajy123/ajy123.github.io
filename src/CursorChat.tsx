@@ -586,10 +586,10 @@ export function CursorChat({
   const openComposerRef = useRef<((options?: OpenComposerOptions) => void) | null>(
     null,
   );
-  // One controller per thread. Only one thread is open at a time (openComposer
-  // returns early whenever activeIdRef is set), but a close begins by aborting
-  // the outgoing thread while a queued ask is about to open the next one, so
-  // keying by id keeps that abort from reaching across the handoff.
+  // Keyed by thread id so an abort can only ever cancel the request it belongs
+  // to. In practice the map holds at most one entry: openComposer returns early
+  // whenever activeIdRef is set, and finishCloseActive drops the outgoing
+  // thread, so only one thread exists at a time.
   const abortControllersRef = useRef(new Map<string, AbortController>());
   const abortThread = (id: string) => {
     abortControllersRef.current.get(id)?.abort();
@@ -680,8 +680,8 @@ export function CursorChat({
   }, [isGenerating, activeThread?.id]);
 
   // Publish "model is working" to ambient listeners (the logo's thinking
-  // shimmer). Any thread counts, not just the active one — background
-  // generation is still generation. No cleanup here: `threads` changes on
+  // shimmer). Scans `threads` rather than the active thread alone, which costs
+  // nothing now that only one thread is ever open. No cleanup here: `threads` changes on
   // every streamed token, and a per-change false→true flap would restart the
   // shimmer's CSS animation each chunk. The store dedupes same-value sets, so
   // this effect is cheap; a separate unmount-only cleanup clears the bit.

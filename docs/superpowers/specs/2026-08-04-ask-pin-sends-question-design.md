@@ -207,6 +207,12 @@ into a pin marker was queued but never drained there, and its stale request
 surfaced later, on an unrelated close. `collapseActive`'s own finish callback
 now calls `drainPendingOpen` too.
 
+> Superseded 2026-08-04: thread pinning was removed after this shipped (its
+> page marker was invisible — see the pin-removal commit). `collapseActive` is
+> gone, so `finishCloseActive` is once again the only drain site, and the hole
+> described above closes because there is now only one kind of leave. The
+> `"ask_pin"` analytics name below is unchanged and still correct.
+
 **Analytics.** `submitThread` classifies any `promptOverride` as `"suggested"`,
 so pin auto-asks would land in the same bucket as chip clicks. Since the
 question this change asks is whether pins convert, that number must not be

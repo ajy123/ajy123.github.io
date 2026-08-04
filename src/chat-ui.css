@@ -269,7 +269,7 @@
 
 /* Slim header strip: real drag handle + ghost window controls. */
 .cursor-chat-topbar {
-  /* Sticky against the panel's own scroll so pin/close stay reachable on
+  /* Sticky against the panel's own scroll so close stays reachable on
      long answers; -14px cancels the panel's vertical padding so the fill
      still keeps scrolled content from peeking around the controls. */
   position: sticky;
@@ -725,7 +725,6 @@
     min-height: 52px;
     padding-right: 56px;
   }
-
 }
 
 @keyframes cursorChatIn {

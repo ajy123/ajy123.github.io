@@ -93,13 +93,18 @@ function getAskableElement(target: EventTarget | null) {
 }
 
 // "action" zones don't converse — activating one performs the zone's own
-// navigation (the zone root if it is a link, else its first link).
+// navigation (the zone root if it is a link, else its first link, else the
+// link the zone sits inside). Returns false when no link resolves, so callers
+// can fall back instead of dead-ending on a pin that promised to navigate.
 function activateActionZone(hint: ActiveHint) {
   const link =
     hint.element instanceof HTMLAnchorElement
       ? hint.element
-      : hint.element.querySelector<HTMLAnchorElement>("a[href]");
-  link?.click();
+      : (hint.element.querySelector<HTMLAnchorElement>("a[href]") ??
+        hint.element.closest<HTMLAnchorElement>("a[href]"));
+  if (!link) return false;
+  link.click();
+  return true;
 }
 
 // Mirrors SelectionAskPill's test for a "live" selection so the two agree on
@@ -395,7 +400,10 @@ export function ContextualAskHint({
       // suggested prompts survive as follow-ups under the answer: the opening
       // chips are not pre-marked as shown for an auto-ask thread, precisely
       // so they can still be offered once the answer lands.
-      autoAsk: current.hint,
+      // An "action" zone only reaches this path when its navigation could not
+      // be resolved; its hint is a label, not a question, so open the composer
+      // on the zone's chips rather than sending the label as the ask.
+      autoAsk: current.kind === "action" ? "" : current.hint,
       zoneContext: {
         hint: current.hint,
         kind: current.kind,
@@ -408,8 +416,9 @@ export function ContextualAskHint({
     const current = activeRef.current;
     if (!current) return;
 
-    if (current.kind === "action") {
-      activateActionZone(current);
+    // Only take the navigation exit when there is something to navigate to;
+    // otherwise fall through so the press still opens something.
+    if (current.kind === "action" && activateActionZone(current)) {
       hide();
       return;
     }
@@ -552,9 +561,9 @@ export function ContextualAskHint({
             ? activeRef.current
             : readActiveHint(focusedZone);
         // Explicit action check — the a[href] exclusion above only covers
-        // zones whose root is itself a link.
-        if (focusedHint.kind === "action") {
-          activateActionZone(focusedHint);
+        // zones whose root is itself a link. Same rule as the pin press: take
+        // the navigation exit only when a link resolves, else fall through.
+        if (focusedHint.kind === "action" && activateActionZone(focusedHint)) {
           hide();
           return;
         }

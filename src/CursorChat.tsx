@@ -63,6 +63,18 @@ type ChatTurn = {
   response: string;
 };
 
+// Mirrors openComposer's argument shape. Declared at module scope (rather than
+// inferred from openComposer, which lives inside a mount-only effect and
+// isn't reachable from finishCloseActive) so a queued reopen can be typed.
+type OpenComposerOptions = {
+  anchorOverride?: { x: number; y: number };
+  suggestedPrompts?: SuggestedPrompt[];
+  followUpPrompts?: SuggestedPrompt[];
+  zoneContext?: CursorChatZoneContext;
+  docked?: boolean;
+  autoAsk?: string;
+};
+
 type Thread = {
   id: string;
   pageX: number;
@@ -563,6 +575,16 @@ export function CursorChat({
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const pendingAutoAskRef = useRef<string | null>(null);
+  // A pin press that lands while a panel is already open can't append to the
+  // open thread (each thread freezes a different zone's context), so it
+  // queues here, closes the open thread, and reopens once the close settles.
+  const pendingOpenRef = useRef<OpenComposerOptions | null>(null);
+  // openComposer is defined inside the mount-only event-wiring effect below,
+  // out of reach for finishCloseActive; this ref is how the queued reopen
+  // calls back into it once the effect assigns it.
+  const openComposerRef = useRef<((options?: OpenComposerOptions) => void) | null>(
+    null,
+  );
   // One controller per thread: generations can overlap (a pinned thread keeps
   // streaming while another submits), so a shared controller would let one
   // thread's close/stop abort a different thread's request.
@@ -748,24 +770,28 @@ export function CursorChat({
 
     const handleScrollOrResize = () => setTick((value) => value + 1);
 
-    const openComposer = ({
-      anchorOverride,
-      suggestedPrompts,
-      followUpPrompts,
-      zoneContext,
-      docked,
-      autoAsk,
-    }: {
-      anchorOverride?: { x: number; y: number };
-      suggestedPrompts?: SuggestedPrompt[];
-      followUpPrompts?: SuggestedPrompt[];
-      zoneContext?: CursorChatZoneContext;
-      docked?: boolean;
-      autoAsk?: string;
-    } = {}) => {
+    const openComposer = (options: OpenComposerOptions = {}) => {
+      const {
+        anchorOverride,
+        suggestedPrompts,
+        followUpPrompts,
+        zoneContext,
+        docked,
+        autoAsk,
+      } = options;
+
       if (suspendedRef.current) return;
 
       if (activeIdRef.current) {
+        // A pin's question must always land somewhere: a thread already open
+        // belongs to a different zone, so appending would answer the new
+        // question with the old section's context. Queue it, close the open
+        // thread, and finishCloseActive reopens it once the close settles.
+        if (autoAsk?.trim()) {
+          pendingOpenRef.current = options;
+          closeActive();
+          return;
+        }
         textareaRef.current?.focus();
         return;
       }
@@ -859,6 +885,7 @@ export function CursorChat({
         }),
       );
     };
+    openComposerRef.current = openComposer;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "/" && !isEditableTarget(event.target)) {
@@ -1032,6 +1059,18 @@ export function CursorChat({
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
+
+    // A pin pressed while a panel was open queues here instead of vanishing;
+    // drain it now that the close has actually settled. Null the ref before
+    // calling back in, so a re-entrant open (there isn't one today) can't
+    // replay the same request.
+    const queued = pendingOpenRef.current;
+    if (queued) {
+      pendingOpenRef.current = null;
+      openComposerRef.current?.(queued);
+      return;
+    }
+
     restoreFocus();
   };
 

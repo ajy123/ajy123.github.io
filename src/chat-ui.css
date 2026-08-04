@@ -679,150 +679,6 @@
   box-shadow: none;
 }
 
-/*
- * Pinned thread: the chat collapses back into the orange key it was born from.
- * Hover expands a marginalia label with the question, hint-badge style.
- */
-.cursor-chat-pin {
-  position: fixed;
-  z-index: 1102;
-  width: 4px;
-  height: 4px;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.cursor-chat-pin-anchor {
-  position: absolute;
-  inset: 0;
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--surface-warm);
-}
-
-.cursor-chat-pin-controls {
-  position: absolute;
-  top: var(--pin-control-y, -52px);
-  left: var(--pin-control-x, 8px);
-  display: inline-flex;
-  min-width: 44px;
-  height: 44px;
-  align-items: center;
-  overflow: visible;
-  pointer-events: auto;
-  background: var(--surface-warm);
-  border: 1px solid var(--hairline-faint);
-  border-radius: 2px;
-  box-shadow: 0 1px 6px var(--shadow-soft);
-}
-
-.cursor-chat-pin-open {
-  all: unset;
-  box-sizing: border-box;
-  display: inline-flex;
-  position: relative;
-  min-width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.cursor-chat-pin-key {
-  display: inline-flex;
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  color: var(--ink);
-  background: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.cursor-chat-pin-label {
-  position: absolute;
-  top: 11px;
-  left: 82px;
-  width: max-content;
-  max-width: min(200px, calc(100vw - 112px));
-  padding: 4px 8px;
-  overflow: hidden;
-  opacity: 0;
-  filter: blur(2px);
-  color: var(--ink);
-  background: var(--surface-warm);
-  border: 1px solid var(--hairline-faint);
-  border-left: 0;
-  border-radius: 0 2px 2px 0;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  clip-path: inset(0 100% 0 0);
-  transform-origin: left center;
-  pointer-events: none;
-  transition:
-    clip-path 200ms var(--ease-out-strong),
-    opacity 140ms var(--ease-out-strong) 40ms,
-    filter 140ms var(--ease-out-strong) 40ms;
-}
-
-.cursor-chat-pin[data-side="left"] .cursor-chat-pin-label,
-.cursor-chat-pin-controls[data-side="left"] .cursor-chat-pin-label {
-  right: 82px;
-  left: auto;
-  border-right: 0;
-  border-left: 1px solid var(--hairline-faint);
-  border-radius: 2px 0 0 2px;
-  clip-path: inset(0 0 0 100%);
-  transform-origin: right center;
-}
-
-.cursor-chat-pin-controls:hover .cursor-chat-pin-label,
-.cursor-chat-pin-controls:focus-within .cursor-chat-pin-label {
-  opacity: 1;
-  filter: blur(0);
-  clip-path: inset(0 0 0 0);
-}
-
-.cursor-chat-pin-remove {
-  all: unset;
-  box-sizing: border-box;
-  display: inline-flex;
-  width: 0;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  opacity: 0;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    width 200ms var(--ease-out-strong),
-    opacity 140ms var(--ease-out-strong) 40ms,
-    color 160ms var(--ease);
-}
-
-.cursor-chat-pin-controls:hover .cursor-chat-pin-remove,
-.cursor-chat-pin-controls:focus-within .cursor-chat-pin-remove {
-  width: 44px;
-  opacity: 1;
-}
-
-.cursor-chat-pin-remove:hover {
-  color: var(--ink);
-}
-
 @media (pointer: coarse), (max-width: 860px) {
   .cursor-chat-iconbtn,
   .cursor-chat-send,
@@ -870,18 +726,6 @@
     padding-right: 56px;
   }
 
-  .cursor-chat-pin-controls {
-    min-width: 88px;
-  }
-
-  .cursor-chat-pin-remove {
-    width: 44px;
-    opacity: 1;
-  }
-
-  .cursor-chat-pin-label {
-    display: none;
-  }
 }
 
 @keyframes cursorChatIn {
@@ -910,18 +754,6 @@
   to {
     opacity: 0;
     transform: translateY(var(--chat-enter-y, 6px)) scale(0.92);
-  }
-}
-
-/* The pin the panel collapses into arrives with a small spring, not a pop. */
-.cursor-chat-pin {
-  animation: cursorChatPinIn 220ms var(--spring) both;
-}
-
-@keyframes cursorChatPinIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
   }
 }
 
@@ -980,7 +812,7 @@
 
 /*
  * Touch entry FAB: an orange keycap of the same family as .cursor-chat-send and
- * .cursor-chat-pin-key, scaled up. Hidden by default; shown only on coarse
+ * .contextual-ask-key, scaled up. Hidden by default; shown only on coarse
  * pointers or narrow viewports. The 44px button is the hit target; the 40px
  * inner span is the visible keycap.
  */
@@ -1131,8 +963,6 @@
   .cursor-chat-suggestions,
   .cursor-chat-suggestions button,
   .cursor-chat.is-leaving,
-  .cursor-chat-pin,
-  .cursor-chat-pin-label,
   .cursor-chat-thinking,
   .cursor-chat-caret,
   .cursor-chat-fab,

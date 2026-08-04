@@ -153,8 +153,12 @@ function essayPageDefault(essayId: string, underlyingPage: PageDefault): PageDef
   const item = essaysById[essayId];
   if (!item) return { ...underlyingPage, label: ESSAY_LABEL };
 
-  const chips = item.askPromptChips.length ? item.askPromptChips : underlyingPage.chips;
-  const followUps = item.askFollowUpPromptChips.length
+  // Both chip fields are optional on EssayItem: an essay may ship without its
+  // own copy, in which case the underlying page's chips stand in.
+  const chips = item.askPromptChips?.length
+    ? item.askPromptChips
+    : underlyingPage.chips;
+  const followUps = item.askFollowUpPromptChips?.length
     ? item.askFollowUpPromptChips
     : chips;
 

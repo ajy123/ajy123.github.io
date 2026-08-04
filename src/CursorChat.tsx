@@ -86,8 +86,6 @@ type Thread = {
   selectedTextOverride?: string;
   nearbyTextOverride?: string;
   status: ChatStatus;
-  isPinned: boolean;
-  createdAt: number;
   dragPageLeft?: number;
   dragPageTop?: number;
   draftPlaceholder?: string;
@@ -300,33 +298,6 @@ function placeComposer(pageX: number, pageY: number) {
     ),
     anchorCorner:
       `${opensUp ? "bottom" : "top"}-${opensLeft ? "right" : "left"}` as AnchorCorner,
-  };
-}
-
-function placePin(pageX: number, pageY: number) {
-  const point = getViewportPoint(pageX, pageY);
-  const touchWidth =
-    window.matchMedia("(pointer: coarse)").matches ||
-    window.innerWidth <= DOCK_MAX_VIEWPORT;
-  const targetWidth = touchWidth ? 88 : 44;
-  const roomOnRight = window.innerWidth - point.x - EDGE;
-  const side = roomOnRight >= targetWidth + 8 ? "right" : "left";
-  const preferredControlLeft =
-    side === "right" ? point.x + 8 : point.x - targetWidth - 8;
-  const controlLeft = Math.min(
-    Math.max(preferredControlLeft, EDGE),
-    window.innerWidth - EDGE - targetWidth,
-  );
-  const controlTop = Math.min(
-    Math.max(point.y - 52, EDGE),
-    window.innerHeight - EDGE - 44,
-  );
-  return {
-    left: point.x,
-    top: point.y,
-    controlX: controlLeft - point.x,
-    controlY: controlTop - point.y,
-    side,
   };
 }
 
@@ -614,9 +585,10 @@ export function CursorChat({
   const openComposerRef = useRef<((options?: OpenComposerOptions) => void) | null>(
     null,
   );
-  // One controller per thread: generations can overlap (a pinned thread keeps
-  // streaming while another submits), so a shared controller would let one
-  // thread's close/stop abort a different thread's request.
+  // Keyed by thread id so an abort can only ever cancel the request it belongs
+  // to. In practice the map holds at most one entry: openComposer returns early
+  // whenever activeIdRef is set, and finishCloseActive drops the outgoing
+  // thread, so only one thread exists at a time.
   const abortControllersRef = useRef(new Map<string, AbortController>());
   const abortThread = (id: string) => {
     abortControllersRef.current.get(id)?.abort();
@@ -673,13 +645,7 @@ export function CursorChat({
         previous.focus();
         return;
       }
-      const pinButtons = Array.from(
-        document.querySelectorAll<HTMLButtonElement>(".cursor-chat-pin-open"),
-      );
-      const fallback =
-        pinButtons[pinButtons.length - 1] ??
-        document.querySelector<HTMLButtonElement>(".cursor-chat-fab");
-      fallback?.focus();
+      document.querySelector<HTMLButtonElement>(".cursor-chat-fab")?.focus();
     });
   };
 
@@ -713,8 +679,8 @@ export function CursorChat({
   }, [isGenerating, activeThread?.id]);
 
   // Publish "model is working" to ambient listeners (the logo's thinking
-  // shimmer). Any thread counts, not just the active one — background
-  // generation is still generation. No cleanup here: `threads` changes on
+  // shimmer). Scans `threads` rather than the active thread alone, which costs
+  // nothing now that only one thread is ever open. No cleanup here: `threads` changes on
   // every streamed token, and a per-change false→true flap would restart the
   // shimmer's CSS animation each chunk. The store dedupes same-value sets, so
   // this effect is cheap; a separate unmount-only cleanup clears the bit.
@@ -889,8 +855,6 @@ export function CursorChat({
           selectedTextOverride: selectionAnchor?.selectedText,
           nearbyTextOverride,
           status: "draft",
-          isPinned: false,
-          createdAt: Date.now(),
           suggestedPrompts: threadSuggestedPrompts,
           promptPool: buildPromptPool(
             threadSuggestedPrompts,
@@ -1097,8 +1061,8 @@ export function CursorChat({
     textarea.style.height = `${Math.min(textarea.scrollHeight, 154)}px`;
   }, [draft, activeId]);
 
-  // Close discards the thread — pinning is only ever the explicit pin
-  // button's job. Auto-pinning on close left "random" pin markers behind.
+  // Close discards the thread. Nothing outlives the panel: a closed chat leaves
+  // no marker on the page and no history to reopen.
   const closeActive = () => {
     // Release the resolved section so a closed panel can't retain a
     // detached subtree after that part of the page unmounts.
@@ -1110,15 +1074,13 @@ export function CursorChat({
     beginLeave(id, () => finishCloseActive(id));
   };
 
-  // A pin pressed while a panel was open queues here instead of vanishing
-  // (see openComposer's queue branch). Shared by both close paths —
-  // finishCloseActive (the close button / Escape) and collapseActive's
-  // finish callback (the collapse/pin control) — so a press that lands
-  // during either kind of close animation is drained exactly once, never
-  // dropped and never replayed by a later, unrelated close. Nulls the refs
-  // BEFORE calling back in, so a re-entrant open triggered by that call
-  // can't replay the same request. Returns whether it drained anything, so
-  // callers know whether to fall back to restoreFocus() themselves.
+  // An ask pin pressed while a panel was open queues here instead of vanishing
+  // (see openComposer's queue branch), and finishCloseActive drains it once the
+  // close animation settles — so a press that lands mid-close is honoured
+  // exactly once, never dropped and never replayed by a later, unrelated close.
+  // Nulls the refs BEFORE calling back in, so a re-entrant open triggered by
+  // that call can't replay the same request. Returns whether it drained
+  // anything, so callers know whether to fall back to restoreFocus().
   const drainPendingOpen = () => {
     const queued = pendingOpenRef.current;
     if (!queued) return false;
@@ -1145,11 +1107,6 @@ export function CursorChat({
     if (drainPendingOpen()) return;
 
     restoreFocus();
-  };
-
-  const removeThread = (id: string) => {
-    abortThread(id);
-    setThreads((current) => current.filter((thread) => thread.id !== id));
   };
 
   // Stop keeps the thread open: partial text becomes the answer; a stop before
@@ -1347,7 +1304,6 @@ export function CursorChat({
       context,
       status: "loading",
       response: "",
-      isPinned: false,
       suggestedPrompts: undefined,
     }));
 
@@ -1372,47 +1328,6 @@ export function CursorChat({
     pendingAutoAskRef.current = null;
     void submitThread(pending, "ask_pin");
   }, [activeThread?.id]);
-
-  const collapseActive = () => {
-    // Release the resolved section so a closed panel can't retain a
-    // detached subtree after that part of the page unmounts.
-    resolvedElementRef.current = null;
-    if (!activeThread || activeThread.status === "draft") return;
-    if (leavingIdRef.current) return;
-
-    const id = activeThread.id;
-    beginLeave(id, () => {
-      setThreads((current) =>
-        current.map((thread) =>
-          thread.id === id ? { ...thread, isPinned: true } : thread,
-        ),
-      );
-      activeIdRef.current = null;
-      setActiveId(null);
-
-      // A pin pressed while this collapse animation was still running (see
-      // FINDING A) queues into pendingOpenRef via openComposer's queue
-      // branch, but closeActive no-ops during a leave in progress, so this
-      // is the only place that request gets drained.
-      if (drainPendingOpen()) return;
-
-      restoreFocus();
-    });
-  };
-
-  const reopenThread = (id: string) => {
-    previousFocusRef.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    setThreads((current) =>
-      current.map((thread) =>
-        thread.id === id ? { ...thread, isPinned: false } : thread,
-      ),
-    );
-    activeIdRef.current = id;
-    setActiveId(id);
-  };
 
   const retryActive = () => {
     if (!activeThread) return;
@@ -1520,62 +1435,6 @@ export function CursorChat({
 
   return (
     <>
-      {threads
-        .filter((thread) => thread.isPinned)
-        .map((thread) => {
-          const position = placePin(thread.pageX, thread.pageY);
-          const snippet =
-            thread.prompt.length > 34
-              ? `${thread.prompt.slice(0, 34).trimEnd()}…`
-              : thread.prompt;
-          return (
-            <div
-              className="cursor-chat-pin"
-              key={thread.id}
-              data-side={position.side}
-              style={
-                {
-                  left: position.left,
-                  top: position.top,
-                  "--pin-control-x": `${position.controlX}px`,
-                  "--pin-control-y": `${position.controlY}px`,
-                } as CSSProperties
-              }
-            >
-              <span className="cursor-chat-pin-anchor" aria-hidden="true" />
-              <div className="cursor-chat-pin-controls" data-side={position.side}>
-                <button
-                  className="cursor-chat-pin-open"
-                  type="button"
-                  aria-label={`Reopen chat: ${thread.prompt}`}
-                  onClick={() => reopenThread(thread.id)}
-                >
-                  <span className="cursor-chat-pin-key" aria-hidden="true">
-                    /
-                  </span>
-                  <span className="cursor-chat-pin-label">{snippet}</span>
-                </button>
-                <button
-                  className="cursor-chat-pin-remove"
-                  type="button"
-                  aria-label="Remove pinned chat"
-                  onClick={() => removeThread(thread.id)}
-                >
-                  <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-                    <path
-                      d="M2 2l6 6M8 2l-6 6"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          );
-        })}
-
       {activeThread && (isDockedActive || activePosition) ? (
         <section
           ref={panelRef}
@@ -1614,25 +1473,6 @@ export function CursorChat({
               <span className="cursor-chat-zonetag" aria-hidden="true">
                 {activeZoneTag}
               </span>
-            ) : null}
-            {activeThread.status === "done" ? (
-              <button
-                className="cursor-chat-iconbtn"
-                type="button"
-                aria-label="Pin chat to page"
-                onClick={collapseActive}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-                  <path
-                    d="M4.2 1h3.6M5 1.2v3L3.2 6v.9h5.6V6L7 4.2v-3M6 6.9V11"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-              </button>
             ) : null}
             <button
               className="cursor-chat-iconbtn"

@@ -1,10 +1,9 @@
 import { getLlmBusy, subscribeLlmBusy } from "./llmActivity";
-import type { ContribDay } from "./contribData";
 
 /**
  * Shared "cluster pulse" engine — the living-grid's thinking animation, one
- * scheduler feeding two renderers (GridLogo's DOM cells + faviconPulse's
- * canvas). Same architectural species as theme.ts / llmActivity.ts: a
+ * scheduler driving faviconPulse's canvas. Same architectural species as
+ * theme.ts / llmActivity.ts: a
  * module-level store, no React, no framework.
  *
  * What it models (from the reference video): lit cells arrive as ROAMING
@@ -25,8 +24,8 @@ import type { ContribDay } from "./contribData";
  * snapshot.
  */
 
-// Exported: GridLogo (and, transitively, faviconPulse) import these rather
-// than hardcoding 3/9 — one source of truth for the mark's grid shape.
+// Exported so faviconPulse imports these rather than hardcoding 3/9 — one
+// source of truth for the mark's grid shape.
 export const CELLS = 9;
 export const COLS = 3;
 
@@ -39,7 +38,7 @@ const STAGGER_MS = 30;
 // Naturally coalesces the flat gap phase to a single zero emit, not 9/frame.
 const EMIT_EPSILON = 1 / 256;
 
-export interface PulseParams {
+interface PulseParams {
   /** Blob bloom-in duration (seed→full, center-out stagger). */
   growMs: number;
   /** Full-brightness dwell. */
@@ -54,9 +53,8 @@ export interface PulseParams {
   maxCells: number;
 }
 
-// Live tunables — the dev dials mutate these in place (see LogoDials/GridLogo);
-// the loop re-reads them every frame, so a dial drag retimes the next phase
-// mid-flight. Defaults are the video's measured cadence (~850ms cycle).
+// Live tunables — the loop re-reads them every frame. Defaults are the
+// video's measured cadence (~850ms cycle).
 // minCells 2 / maxCells 4 are retuned for the 3×3 (9-cell) field — the old
 // 4–8 range was sized for 16 cells; an 8-cell blob on 9 cells is a flood, not
 // a roaming blob.
@@ -289,10 +287,8 @@ export function subscribePulse(cb: PulseCallback): () => void {
 }
 
 /**
- * Levels-selection helper — the single source of truth for WHICH CELLS levels
- * the mark shows, shared so GridLogo (and, by mirroring its DOM, the favicon)
- * can never drift. Live trailing GitHub window when it's present and carries
- * the identity; the designed fallback otherwise.
+ * The levels the favicon paints. This used to be a fallback for a live GitHub
+ * contribution window; with the header mark gone it is the only source.
  *
  * Density study for the 3×3 field: corners quiet (levels 1–2), a bright
  * center ridge through the middle row/cell (peaking at 4) — designed, not
@@ -302,19 +298,3 @@ export const FALLBACK_LEVELS: ReadonlyArray<0 | 1 | 2 | 3 | 4> = [
   1, 3, 2, 2, 4, 3, 1, 3, 2,
 ];
 
-export function selectGridLevels(
-  days: ContribDay[] | null,
-  forceFallback: boolean,
-): ReadonlyArray<0 | 1 | 2 | 3 | 4> {
-  const liveLevels =
-    !forceFallback && days && days.length >= CELLS
-      ? days.slice(-CELLS).map((d) => d.level)
-      : null;
-  // Identity floor — a sparse window (<4 of 9 active cells) collapses the 3×3
-  // mark, so fall back to the designed density rather than render a
-  // near-empty grid.
-  const activeCount = liveLevels
-    ? liveLevels.filter((level) => level >= 1).length
-    : 0;
-  return liveLevels && activeCount >= 4 ? liveLevels : FALLBACK_LEVELS;
-}

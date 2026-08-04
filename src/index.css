@@ -45,11 +45,6 @@
   /* --white, --control-dark and --control-dark-hover now live in tokens.css,
      which this file imports: the case-study figure videos use the same media
      control and do not load this stylesheet. */
-  --contrib-0: #ececec;
-  --contrib-1: #c2c2c0;
-  --contrib-2: #6d6d6d;
-  --contrib-3: #363634;
-  --contrib-4: #000000;
 
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
@@ -458,108 +453,6 @@ h1 span {
   line-height: 1;
 }
 
-/* GitHub contributions (last 30 days) — additive rail block, links to profile. */
-.contrib {
-  display: block;
-  width: 100%;
-  margin-bottom: var(--rl-gap, 12px);
-  color: var(--muted);
-}
-
-.contrib-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.contrib-label {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* The week tiles + the hover summary share one slot, right after the label. */
-.contrib-slot {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.contrib-weeks {
-  display: inline-flex;
-  gap: var(--rl-cell-gap, 3px);
-  transition: opacity 0.2s var(--ease);
-}
-
-/* Hovering the row crossfades the tiles to the active-days summary. Absolutely
-   positioned so the wider text never reflows the row or shoves the arrow. */
-.contrib-count {
-  position: absolute;
-  left: 0;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  color: var(--muted);
-  transition: opacity 0.2s var(--ease);
-}
-
-.contrib-head:hover .contrib-weeks {
-  opacity: 0;
-}
-
-.contrib-head:hover .contrib-count {
-  opacity: 1;
-}
-
-/* Only the arrow is the link — limited hit area, sits right after the title. */
-.contrib-link {
-  display: inline-flex;
-  color: var(--muted);
-  transition: color 0.35s var(--spring);
-}
-
-.contrib-link:hover {
-  color: var(--ink);
-}
-
-.contrib-head svg {
-  width: 12px;
-  height: 12px;
-}
-
-/* The .email-row stroke rules are scoped; restate them for this glyph. */
-.contrib-head svg path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.contrib-cell {
-  width: var(--rl-cell, 12.285px);
-  height: var(--rl-cell, 12.285px);
-  border-radius: var(--rl-cell-radius, 2px);
-  background: var(--contrib-0); /* level 0 — empty week, one step darker */
-}
-
-.contrib-cell[data-level="1"] {
-  background: var(--contrib-1);
-}
-
-.contrib-cell[data-level="2"] {
-  background: var(--contrib-2);
-}
-
-.contrib-cell[data-level="3"] {
-  background: var(--contrib-3);
-}
-
-.contrib-cell[data-level="4"] {
-  background: var(--contrib-4);
-}
-
 /* ===========================================================================
    Rail-footer design variants. The footer body carries data-variant + the
    DialKit-tuned CSS vars (set inline; the var() fallbacks below = baked
@@ -581,11 +474,6 @@ h1 span {
 .rail-footer-body[data-variant="divided"] .rail-link svg {
   margin-left: auto;
 }
-.rail-footer-body[data-variant="divided"] .contrib {
-  margin-bottom: 0;
-  padding-bottom: var(--rl-rowpad, 10px);
-  border-bottom: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
-}
 .rail-footer-body[data-variant="divided"] > p {
   margin-top: var(--rl-rowpad, 10px);
   padding-top: var(--rl-rowpad, 10px);
@@ -597,12 +485,10 @@ h1 span {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: var(--rl-mono-tracking, 0px);
 }
-.rail-footer-body[data-variant="mono"] .rail-link,
-.rail-footer-body[data-variant="mono"] .contrib-head {
+.rail-footer-body[data-variant="mono"] .rail-link {
   font-size: var(--rl-mono-size, 12px);
 }
-.rail-footer-body[data-variant="mono"] .rail-link-label,
-.rail-footer-body[data-variant="mono"] .contrib-label {
+.rail-footer-body[data-variant="mono"] .rail-link-label {
   text-transform: lowercase;
 }
 .rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::before {
@@ -611,8 +497,7 @@ h1 span {
 .rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::after {
   content: "]";
 }
-.rail-footer-body[data-variant="mono"] .rail-link svg,
-.rail-footer-body[data-variant="mono"] .contrib-link {
+.rail-footer-body[data-variant="mono"] .rail-link svg {
   display: none;
 }
 
@@ -664,26 +549,6 @@ h1 span {
 }
 .rail-footer-body[data-variant="keycap"] .rail-link-sub {
   display: none;
-}
-
-/* --- physics: matter.js drives transforms; assembled look = current -----
-   The body must be a real box (not display:contents) so the controller can
-   measure it for the ground plane + cursor-proximity. Block flow stacks the
-   children identically, so the assembled look is unchanged. */
-.rail-footer-body[data-variant="physics"] {
-  display: block;
-  position: relative;
-}
-.rail-footer-body[data-variant="physics"] .rail-link-label,
-.rail-footer-body[data-variant="physics"] .rail-link-sub,
-.rail-footer-body[data-variant="physics"] .rail-link svg,
-.rail-footer-body[data-variant="physics"] .contrib-label,
-.rail-footer-body[data-variant="physics"] .contrib-count,
-.rail-footer-body[data-variant="physics"] .contrib-head svg,
-.rail-footer-body[data-variant="physics"] .contrib-cell,
-.rail-footer-body[data-variant="physics"] .phys-char,
-.rail-footer-body[data-variant="physics"] > p {
-  will-change: transform;
 }
 
 .work-canvas {
@@ -1758,100 +1623,3 @@ a.card-eyebrow-flag .flag-verb {
   }
 }
 
-/* ===========================================================================
-   Site logo — an inert, aria-hidden decorative mark (the site is light-only, so
-   it no longer switches anything). Identity is carried by the "Joanna Yen"
-   heading beside it; the GridLogo art reuses ContribGraph's --contrib-* ramp.
-   =========================================================================== */
-.site-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  /* The grid (24px by default, dial-driven) is centred in a 48px box; the
-     negative margins trim part of that visual inset so the mark hangs near the
-     rail edge. Tuned by eye alongside the 24px dial defaults — if the size
-     dial changes materially, re-check this trim. */
-  margin: 0 -4px 0 -8px;
-  padding: 0;
-}
-
-/* --- GridLogo — bare 3×3 activity grid ---------------------------------
-   Borderless (no tile, no fill): the grid fills its dial-sized box (24px
-   default) edge to edge, in the favicon's orange ramp language (the rail
-   graph keeps the quieter --contrib-* greys).
-   All --gridlogo-* vars are set inline by GridLogo from DEFAULT_LOGO_DIALS —
-   the fallbacks here mirror those defaults and are dead in practice; keep
-   them in sync when the dial defaults change. */
-.gridlogo {
-  /* Glow colour for the thinking pulse — the ramp's hottest step, so the blob
-     reads as activity surging; one family with the favicon. */
-  --glow-color: #d63e00;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: var(--gridlogo-gap, 2.08px);
-  width: var(--gridlogo-size, 24px);
-  height: var(--gridlogo-size, 24px);
-}
-.gridlogo-cell {
-  position: relative; /* anchors the scrim/glow overlays below */
-  /* Gentle rounding (16% default) — softened square, not bubble; percentage
-     tracks cell size as the gap dial changes it; dial-driven. */
-  border-radius: var(--gridlogo-cell-radius, 16%);
-  /* Activity ramp in the favicon's orange family (same steps as the busy
-     canvas in faviconPulse.ts) — NOT the rail's --contrib-* greys; the rail
-     graph keeps its own quieter language. */
-  background: #ffe3d5;
-  /* Crossfade the ramp when the live contrib window refreshes. */
-  transition: background-color 200ms var(--ease);
-}
-.gridlogo-cell[data-level="1"] {
-  background: #ffc4a3;
-}
-.gridlogo-cell[data-level="2"] {
-  background: #ff9866;
-}
-.gridlogo-cell[data-level="3"] {
-  background: #f96a24;
-}
-.gridlogo-cell[data-level="4"] {
-  background: #d63e00;
-}
-/* Two overlay layers, both opacity-only (compositor-friendly, no repaint):
-   ::before is a paper-coloured scrim (the page canvas the mark sits on) that
-   dims the idle ramp while thinking, so the lit blob reads as a bright cluster
-   on a dark field. ::after is the glow,
-   its opacity driven straight from the pulse engine's per-cell --cell-glow.
-   Paint order (background → ::before → ::after) puts the glow above the scrim
-   with no z-index bookkeeping. */
-.gridlogo-cell::before,
-.gridlogo-cell::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-}
-.gridlogo-cell::before {
-  background: var(--canvas);
-  opacity: 0;
-  /* Fades in when thinking begins; on thinking→false it eases back to 0 over
-     260ms — that scrim release IS the "answer landed" settle. */
-  transition: opacity 260ms ease-out;
-}
-.gridlogo[data-thinking="on"] .gridlogo-cell::before {
-  opacity: var(--gridlogo-scrim, 0.5);
-}
-.gridlogo-cell::after {
-  background: var(--glow-color);
-  opacity: var(--cell-glow, 0); /* engine-driven, frame by frame */
-}
-/* No transition on ::after while thinking — the engine already eases every
-   value, so a CSS transition would only smear the 60fps drive. Off the clock
-   (thinking cleared), add a settle so the last glow value fades out instead of
-   snapping when --cell-glow is cleared. */
-.gridlogo:not([data-thinking="on"]) .gridlogo-cell::after {
-  transition: opacity 260ms ease-out;
-}

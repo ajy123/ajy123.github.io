@@ -3,10 +3,9 @@ import { CELLS, COLS, FALLBACK_LEVELS, subscribePulse } from "./logoPulse";
 
 /**
  * Animated favicon — the second renderer of the shared cluster pulse. One
- * engine (src/logoPulse), two surfaces: the header DOM (GridLogo) and this
- * 32×32 canvas painted into the browser-tab icon. While the LLM is busy the
- * tab breathes the same roaming blobs the logo does; when it stops we swap the
- * static /favicon.svg back in.
+ * engine (src/logoPulse) painted into this 32×32 canvas, which becomes the
+ * browser-tab icon. While the LLM is busy the tab breathes roaming blobs;
+ * when it stops we swap the static /favicon.svg back in.
  *
  * Honest + cheap: no standalone loop. We piggyback on logoPulse's rAF (which
  * itself only runs while busy) and throttle favicon swaps to ~10fps — repaint-
@@ -16,9 +15,9 @@ import { CELLS, COLS, FALLBACK_LEVELS, subscribePulse } from "./logoPulse";
  * Cell geometry is a 3×3 grid (rendered @2x = 64px) on a transparent
  * background (no tile) — recolored to a favicon-only orange ramp so the busy
  * tab icon reads as an extension of the static cube glyph, not the neutral
- * rail/logo palette. The base levels are read from the logo's own DOM, so the
- * two marks literally cannot drift — the favicon shows whatever the logo
- * resolved (live window or fallback).
+ * rail/logo palette. Levels come from FALLBACK_LEVELS: this once mirrored the
+ * header mark's DOM, but that mark was removed, so the designed density is the
+ * only source now.
  */
 
 // 32px favicon rendered at 2× for crisp retina tabs. All draw coords below are
@@ -27,9 +26,8 @@ import { CELLS, COLS, FALLBACK_LEVELS, subscribePulse } from "./logoPulse";
 const SIZE = 64;
 const CELL_XS = [0, 23, 46]; // svg 0/11.5/23 × 2 (cell 9 + gap 2.5)
 const CELL = 18; // svg 9 × 2
-// Tracks the logo's cellRadius dial default (16% of the cell = svg 1.44,
-// ×2 retina = 2.88, rounded to 3 → effectively 16.7%). Update alongside
-// DEFAULT_LOGO_DIALS.cellRadius and public/favicon.svg's rx.
+// 16% of the cell (svg 1.44, ×2 retina = 2.88, rounded to 3 → effectively
+// 16.7%). Keep in sync with public/favicon.svg's rx.
 const CELL_R = 3;
 
 // Favicon swaps throttled to 10fps (100ms). The pulse emits at ~60fps; we
@@ -73,20 +71,6 @@ function ensureCanvas(): CanvasRenderingContext2D | null {
   return ctx;
 }
 
-// Mirror the logo's resolved levels straight off its DOM — the single source of
-// truth already picked live-vs-fallback (logoPulse.selectGridLevels), so the
-// favicon can't diverge. Fallback design if the logo isn't mounted yet.
-function readLevels(): ReadonlyArray<number> {
-  const grid = document.querySelector(".gridlogo");
-  const cells = grid?.querySelectorAll(".gridlogo-cell");
-  if (cells && cells.length === CELLS) {
-    const out: number[] = [];
-    cells.forEach((c) => out.push(Number(c.getAttribute("data-level")) || 0));
-    return out;
-  }
-  return FALLBACK_LEVELS;
-}
-
 function roundRectPath(
   c: CanvasRenderingContext2D,
   x: number,
@@ -118,9 +102,8 @@ function render(): void {
   // strip paints behind it.
   c.clearRect(0, 0, SIZE, SIZE);
 
-  // Cells: dimmed idle ramp (1 − scrim = 0.5, tracking the logo's
-  // scrimOpacity dial default) + glow overlay on top — the same "bright blob
-  // on a dim field" the logo shows.
+  // Cells: dimmed idle ramp (1 − scrim = 0.5) + glow overlay on top, for a
+  // bright blob on a dim field.
   for (let i = 0; i < CELLS; i++) {
     const x = CELL_XS[i % COLS];
     const y = CELL_XS[Math.floor(i / COLS)];
@@ -195,7 +178,6 @@ function onPulse(glow: Float32Array): void {
 function startAnimating(): void {
   if (prefersReducedMotion()) return; // never animate the tab under reduced motion
   if (!ensureCanvas()) return;
-  levels = readLevels();
   latestGlow = null;
   lastRenderTs = 0;
   render(); // paint the dimmed "thinking" grid at once, before the first blob

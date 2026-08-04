@@ -2,15 +2,14 @@ import { type CSSProperties, createContext } from "react";
 
 /**
  * Footer design knobs, carried via context so the rail footer can keep the
- * chosen baked layout while preserving the optional physics delight path.
+ * chosen baked layout.
  */
 export type FooterVariant =
   | "current"
   | "divided"
   | "mono"
   | "dotleader"
-  | "keycap"
-  | "physics";
+  | "keycap";
 
 export type FooterDials = {
   variant: FooterVariant;
@@ -19,8 +18,6 @@ export type FooterDials = {
   mono: { size: number; tracking: number; brackets: boolean };
   dotleader: { dotGap: number };
   keycap: { radius: number; depth: number };
-  physics: { gravity: number; magnetRadius: number; stiffness: number; bounce: number };
-  heatmap: { cell: number; cellGap: number; radius: number };
 };
 
 export const DEFAULT_FOOTER_DIALS: FooterDials = {
@@ -30,8 +27,6 @@ export const DEFAULT_FOOTER_DIALS: FooterDials = {
   mono: { size: 12, tracking: 0, brackets: true },
   dotleader: { dotGap: 6 },
   keycap: { radius: 8, depth: 3 },
-  physics: { gravity: 1, magnetRadius: 260, stiffness: 0.04, bounce: 0.2 },
-  heatmap: { cell: 12.285, cellGap: 3, radius: 2 },
 };
 
 export const FooterDialsContext = createContext<FooterDials>(DEFAULT_FOOTER_DIALS);
@@ -49,8 +44,5 @@ export function footerVars(d: FooterDials): CSSProperties {
     "--rl-leader-gap": `${d.dotleader.dotGap}px`,
     "--rl-key-radius": `${d.keycap.radius}px`,
     "--rl-key-depth": `${d.keycap.depth}px`,
-    "--rl-cell": `${d.heatmap.cell}px`,
-    "--rl-cell-gap": `${d.heatmap.cellGap}px`,
-    "--rl-cell-radius": `${d.heatmap.radius}px`,
   } as CSSProperties;
 }

@@ -16,13 +16,6 @@ export type AskableKind = "project" | "essay" | "profile" | "contact" | "action"
 
 export type AskAnchorPreference = "cursor" | "edge" | "margin";
 
-export type AskableZone = {
-  id: string;
-  hint: string;
-  kind: AskableKind;
-  anchorPreference?: AskAnchorPreference;
-};
-
 export type ContextualAskHintDials = {
   dwellMs: number;
   offsetX: number;
@@ -544,11 +537,11 @@ export function ContextualAskHint({
 
       if (event.key === "Enter" && focusedZone) {
         // Native activation must win: never swallow Enter for real controls
-        // (button / role=switch / links / the theme-toggle .site-logo) that
+        // (button / role=switch / links) that
         // happen to live inside or be a [data-ask-hint] zone.
         if (
           event.target instanceof Element &&
-          event.target.closest('button, [role="switch"], a[href], .site-logo')
+          event.target.closest('button, [role="switch"], a[href]')
         ) {
           return;
         }

@@ -34,6 +34,14 @@ export type ContextualAskHintDials = {
   scrambleSpeed: number;
 };
 
+// How the active hint was summoned. A pointer-summoned hint tracks the
+// pointer via the existing pointerout/pointermove wiring; a focus-summoned
+// hint has no pointer relationship to lose, so it needs its own retirement
+// rule (see the pointermove handler below). Left undefined for hints built
+// outside the show() path (e.g. the Enter-key handler's transient object),
+// which never linger long enough to need one.
+type ActivationSource = "pointer" | "focus";
+
 type ActiveHint = {
   element: HTMLElement;
   hint: string;
@@ -42,6 +50,7 @@ type ActiveHint = {
   suggestedPrompts: SuggestedPrompt[];
   followUpPrompts: SuggestedPrompt[];
   contextText: string;
+  source?: ActivationSource;
 };
 
 type HintStage = "expanded" | "exiting";
@@ -357,15 +366,17 @@ export function ContextualAskHint({
     element: HTMLElement,
     {
       anchor = pointerRef.current,
+      source = "pointer",
     }: {
       anchor?: Point;
+      source?: ActivationSource;
     } = {},
   ) => {
     clearDwellTimer();
     clearExitTimer();
     pendingElementRef.current = null;
 
-    const next = readActiveHint(element);
+    const next: ActiveHint = { ...readActiveHint(element), source };
     clearZoneState(activeRef.current?.element ?? null);
     activeRef.current = next;
     visibleRef.current = true;
@@ -463,6 +474,19 @@ export function ContextualAskHint({
 
     const onPointerMove = (event: PointerEvent) => {
       pointerRef.current = { x: event.clientX, y: event.clientY };
+
+      // A focus-summoned hint has no pointer relationship to lose (unlike a
+      // pointer-summoned one, which retires via onPointerOut). Retire it the
+      // moment the pointer strays off both the focused zone and the pin
+      // itself, so "/" can't send a stale zone's question for wherever the
+      // reader's eyes actually are.
+      const current = activeRef.current;
+      if (current && visibleRef.current && current.source === "focus") {
+        const target = event.target;
+        const insideZone = target instanceof Node && current.element.contains(target);
+        const insidePin = target instanceof Node && labelRef.current?.contains(target);
+        if (!insideZone && !insidePin) hide();
+      }
     };
 
     const onPointerOut = (event: PointerEvent) => {
@@ -484,7 +508,7 @@ export function ContextualAskHint({
       if (!element) return;
       // Yield to the selection pill while text is selected.
       if (selectionActiveRef.current) return;
-      show(element, { anchor: getFocusAnchor(element) });
+      show(element, { anchor: getFocusAnchor(element), source: "focus" });
     };
 
     const onFocusOut = (event: FocusEvent) => {

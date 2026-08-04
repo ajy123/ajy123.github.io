@@ -933,11 +933,15 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
         // Tap is still wired so touch keeps an entry point (no pin, no "/"
         // key there); it opens with page-default context, same as the fix
         // above.
+        // No tabIndex here: with no data-ask-hint there is nothing for the
+        // Enter path in ContextualAskHint to resolve, so a focus stop would
+        // announce an instruction and then do nothing. Desktop keyboard
+        // readers still reach the chat through the plain "/" shortcut and the
+        // rail ask card, and this card's own DEELI.AI link stays focusable
+        // inside cardBody.
         <div
           className="askable-region work-card-askable"
           data-ask-zone="none"
-          tabIndex={0}
-          aria-label={`Ask about Joanna's work. ${askActionSuffix()}`}
           onClick={handleDezonedCardTap}
         >
           {cardBody}

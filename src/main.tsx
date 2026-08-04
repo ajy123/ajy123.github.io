@@ -68,7 +68,7 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From search box to research assistant",
-    role: "Design + PM",
+    role: "Product design + PM",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read",
@@ -84,7 +84,8 @@ const workItems: WorkItem[] = [
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
     // and the headline growth number's baseline (outcome). The third slot used
-    // to ask what "the PM half" of Design + PM covered, on a 5-engineer build.
+    // to ask what "the PM half" of Product design + PM covered, on a 5-engineer
+    // build.
     // Neither the team size nor a design/PM split is in SITE_CONTEXT or in this
     // card's zone text, and DEELI_CASE_CONTEXT only loads on /deeli/, so on the
     // homepage that chip could only be answered "I don't know". The baseline

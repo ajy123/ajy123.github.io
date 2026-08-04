@@ -1,5 +1,5 @@
-// Essay copy + visuals — the single source of truth for the "AI practice"
-// essays. Moved out of main.tsx so the landing page and the /deeli/ chat
+// Essay copy + visuals — the single source of truth for the "Designing with
+// AI" essays. Moved out of main.tsx so the landing page and the /deeli/ chat
 // island can both render the same essay data through the same EssayDialog,
 // instead of each carrying its own copy.
 import { EssayEvalThumbnail } from "../components/EssayEvalThumbnail";
@@ -23,7 +23,7 @@ const unlistedEssayItems: EssayItem[] = [
     id: "eval-is-the-spec",
     eyebrow: "Essay",
     title: "The eval is the spec",
-    role: "Building with AI",
+    role: "Model evaluation",
     year: "2026",
     // No askHint: this item is unlisted, so no card renders it and nothing
     // reads a hint from it. The chips below are still live, reached through
@@ -76,7 +76,7 @@ export const aiPracticeItems: EssayItem[] = [
     id: "team-of-agents",
     eyebrow: "Essay",
     title: "Designing with a team of agents",
-    role: "Building with AI",
+    role: "Research synthesis",
     year: "2026",
     askHint: "How did agents earn design time?",
     askKind: "essay",
@@ -143,7 +143,7 @@ export const aiPracticeItems: EssayItem[] = [
     id: "persona-golden-dataset",
     eyebrow: "Essay",
     title: "Use personas to build a golden dataset",
-    role: "Building with AI",
+    role: "Eval datasets",
     year: "2026",
     askHint: "Why regenerate personas weekly?",
     askKind: "essay",

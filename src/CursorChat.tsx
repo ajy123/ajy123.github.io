@@ -562,6 +562,7 @@ export function CursorChat({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const activeIdRef = useRef<string | null>(null);
+  const pendingAutoAskRef = useRef<string | null>(null);
   // One controller per thread: generations can overlap (a pinned thread keeps
   // streaming while another submits), so a shared controller would let one
   // thread's close/stop abort a different thread's request.
@@ -753,12 +754,14 @@ export function CursorChat({
       followUpPrompts,
       zoneContext,
       docked,
+      autoAsk,
     }: {
       anchorOverride?: { x: number; y: number };
       suggestedPrompts?: SuggestedPrompt[];
       followUpPrompts?: SuggestedPrompt[];
       zoneContext?: CursorChatZoneContext;
       docked?: boolean;
+      autoAsk?: string;
     } = {}) => {
       if (suspendedRef.current) return;
 
@@ -844,6 +847,11 @@ export function CursorChat({
           contextLabel: askContext.label,
         },
       ]);
+      // Drained by the effect below submitThread, not called here: submitThread
+      // early-returns on !activeThread, and activeThread is derived from render
+      // state, so a call on this tick would silently no-op before React commits
+      // the thread just queued above.
+      pendingAutoAskRef.current = autoAsk?.trim() || null;
       setActiveId(id);
       window.dispatchEvent(
         new CustomEvent(CURSOR_CHAT_OPENED_EVENT, {
@@ -878,6 +886,7 @@ export function CursorChat({
         followUpPrompts: detail?.followUpPrompts,
         zoneContext: detail?.zoneContext,
         docked: detail?.docked,
+        autoAsk: detail?.autoAsk,
       });
     };
 
@@ -1156,14 +1165,17 @@ export function CursorChat({
     }
   };
 
-  const submitThread = async (promptOverride?: string) => {
+  const submitThread = async (
+    promptOverride?: string,
+    sourceOverride?: ChatQuerySource,
+  ) => {
     if (!activeThread || leavingIdRef.current) return;
 
     const id = activeThread.id;
     // One precedence chain decides both what is sent and how it's classified,
     // so the analytics label can't drift from the submission logic.
     const [message, querySource]: [string, ChatQuerySource] = promptOverride?.trim()
-      ? [promptOverride.trim(), "suggested"]
+      ? [promptOverride.trim(), sourceOverride ?? "suggested"]
       : draft.trim()
         ? [draft.trim(), "typed"]
         : activeThread.status === "error"
@@ -1224,6 +1236,17 @@ export function CursorChat({
 
     await runGeneration(id, message, context, history, zoneContext, extraContext);
   };
+
+  // Sends the pin's question once the thread it belongs to exists. Keyed on the
+  // thread id rather than the thread object so it does not re-run on every
+  // draft -> loading -> streaming transition, and the ref is cleared before the
+  // await so a re-render cannot fire the same question twice.
+  useEffect(() => {
+    const pending = pendingAutoAskRef.current;
+    if (!pending || !activeThread || activeThread.status !== "draft") return;
+    pendingAutoAskRef.current = null;
+    void submitThread(pending, "pin");
+  }, [activeThread?.id]);
 
   const collapseActive = () => {
     // Release the resolved section so a closed panel can't retain a

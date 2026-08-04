@@ -45,15 +45,28 @@ Rejected alternatives:
 
 ## Decisions
 
-1. **Press always sends.** No escape hatch over a zone. A reader who wants a
-   blank composer moves off the zone and presses `/` on empty page, which
-   `src/main.tsx:1042` already handles. One key, one meaning.
+1. **Press always sends, in every state.** No escape hatch over a zone, and no
+   silent discard when a chat panel is already open. Earlier, `openComposer`
+   early-returned in that case, so a press over a zone while a panel was open
+   did nothing and the reader saw no response. Now a press over a zone always
+   asks that zone's question: if a panel is open, its thread closes and a new
+   thread opens anchored at the pressed pin. It must be a new thread rather
+   than an appended turn, because a thread freezes its zone context when
+   created, so appending would answer the new question using the previous
+   section's context. A reader who wants a blank composer moves off the zone
+   and presses `/` on empty page, which the `handleKeyDown` window listener in
+   `src/CursorChat.tsx` already handles. One key, one meaning.
 2. **Pin copy is the question.** Sent verbatim via `submitThread`.
 3. **Action pins are untouched.** `kind="action"` pins ("Read", "See it live")
    still navigate. Only `kind="project"` / `"essay"` / `"profile"` pins ask.
-4. **Touch is unchanged.** Pins are hidden at or below 860px, so tap-to-ask
-   (`handleAskableTap`) keeps opening the panel with chips. Nothing was
-   promised on touch, so nothing changes.
+4. **Touch is unchanged for every card that keeps a zone.** Pins are hidden at
+   or below 860px, so tap-to-ask (`handleAskableTap`) keeps opening the panel
+   with that card's own chips. The one card without a zone is different: the
+   Brand Identity card (decision 5) loses `askHint`, and `handleAskableTap` is
+   wired inside the components that carry a hint, so removing the hint also
+   removed that card's touch entry point. That card gets an explicit tap entry
+   instead, which opens the composer with page-default context rather than
+   borrowing a neighbouring card's chips.
 5. **The brand card loses its ask zone entirely.** `askHint`,
    `askPromptChips`, and `askFollowUpPromptChips` come off the Brand Identity
    item. Only its `DEELI.AI` action pin remains.
@@ -61,6 +74,21 @@ Rejected alternatives:
    reader who does not know the key can click it, and clicking now sends too.
    Auto-send makes the key less load-bearing, not more. Revisit only if it
    still feels undiscovered in use.
+7. **Asking from the de-zoned card resolves to the page default, not a
+   neighbour.** With no `data-ask-hint`, nearest-section resolution picked the
+   adjacent Deeli card, so pressing `/` over Brand Identity opened a panel
+   headed "ASKING ABOUT: THIS PROJECT" carrying the Deeli card's chips and
+   context. An explicit opt-out marker on the de-zoned wrapper makes
+   resolution fall through to the page default instead. An opt-out marker was
+   chosen over changing the nearest-section distance logic itself, because
+   every other zone depends on that logic and a change there risks all of
+   them, not just this one card.
+8. **A focus-summoned pin retires when the pointer moves away.** A pin
+   summoned by keyboard focus used to stay active indefinitely, so `/` could
+   send that zone's question while the pointer was over unrelated content.
+   Harmless when a press only opened suggestions; not harmless now that a
+   press sends. Keyboard-only readers are unaffected, since no pointermove
+   fires for them.
 
 ## Copy
 
@@ -78,6 +106,12 @@ clips silently.
 | Essay: evals | Ask why evals became the spec | Why did evals become the spec? |
 | Essay: agents | Ask how agents earned design time | How did agents earn design time? |
 | Essay: personas | Ask why personas regenerate weekly | Why regenerate personas weekly? |
+
+The "Essay: evals" row names a zone the landing page does not render: its item
+lives in `unlistedEssayItems`, which no card iterates over, so this string is
+unreachable as a pin. Its chips stay live through `essaysById` for readers who
+land on the `#essay/eval-is-the-spec` deep link. Left in the table as a record
+of the copy, not a claim that a pin shows it.
 
 The Deeli question moved from process ("how it shipped") to model-behavior
 design at Joanna's direction: it is more specific to product design and to how
@@ -190,6 +224,26 @@ change removes. The fine-pointer branch ("Press slash to ask.") stays correct.
    app attaches, read the answers, and revise any question whose answer hedges.
    This is the check that matters most: with no confirmation step, a question
    that produces a weak answer is now shipped directly to the reader.
+
+## Post-implementation review
+
+A whole-branch review, run after the change above first shipped, confirmed the
+auto-ask mechanism itself sound: no double-send, missed-send, or cross-thread
+leak was reproducible. `openComposer` assigns the pending ref unconditionally
+on every open that passes its guards, so plain composer opens, the selection
+pill, the FAB, and touch taps all clear it rather than inheriting a stale
+value.
+
+The four findings above, decisions 1, 4, 7, and 8, were what the review
+raised, and all four are fixed on this branch.
+
+One piece of dead copy was removed separately, in the same pass: the pin
+question "Why did evals become the spec?" belonged to an essay in
+`unlistedEssayItems`, which no card renders, so the string was unreachable.
+Its chips remain live through `essaysById` for the `#essay/eval-is-the-spec`
+deep link. The note beside the copy table above records this so a future
+reader is not misled into thinking every row in that table is a pin someone
+can press.
 
 ## Known limitation
 

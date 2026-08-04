@@ -399,7 +399,9 @@ export function ContextualAskHint({
       suggestedPrompts: current.suggestedPrompts,
       followUpPrompts: current.followUpPrompts,
       // The pin displays a question; pressing it asks that question. The
-      // suggested prompts survive as follow-ups under the answer.
+      // suggested prompts survive as follow-ups under the answer: the opening
+      // chips are not pre-marked as shown for an auto-ask thread, precisely
+      // so they can still be offered once the answer lands.
       autoAsk: current.hint,
       zoneContext: {
         hint: current.hint,
@@ -533,7 +535,7 @@ export function ContextualAskHint({
           : null;
       const canOpenFromHint = current && visibleRef.current;
 
-      if (event.key === "/" && canOpenFromHint) {
+      if (event.key === "/" && canOpenFromHint && !isEditableTarget(event.target)) {
         event.preventDefault();
         event.stopImmediatePropagation();
         openActiveChat();

@@ -71,7 +71,7 @@ const workItems: WorkItem[] = [
     liveHref: "/deeli/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask how the search redesign shipped",
+    askHint: "How does she design what AI says?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -142,7 +142,7 @@ const workItems: WorkItem[] = [
     liveHref: "/swiftly/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask about the Swiftly work",
+    askHint: "What was the Swiftly work?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -169,7 +169,7 @@ const workItems: WorkItem[] = [
     liveHref: "/nyu/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "Ask about the NYU work",
+    askHint: "What was the NYU work?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -263,7 +263,10 @@ function handleAskableTap(
 
 // Slash is a keyboard affordance; on touch the same zones respond to a tap.
 function askActionSuffix() {
-  return isCoarsePointer() ? "Tap to ask." : "Press slash to ask.";
+  // On touch no pin is shown and a tap opens suggested questions rather than
+  // sending one, so "Tap to ask." next to a question string would promise the
+  // same thing the pin used to break.
+  return isCoarsePointer() ? "Tap for related questions." : "Press slash to ask.";
 }
 
 function Reveal({
@@ -326,7 +329,7 @@ function Reveal({
             ),
             "data-ask-context": askContextText,
             tabIndex: 0,
-            "aria-label": `${askHint}. ${askActionSuffix()}`,
+            "aria-label": `${askHint} ${askActionSuffix()}`,
             onClick: (event: ReactMouseEvent<HTMLElement>) =>
               handleAskableTap(event, {
                 hint: askHint,
@@ -468,7 +471,7 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
         <Reveal
           as="div"
           className="profile-content"
-          askHint="Ask about Joanna's fit"
+          askHint="What kind of role fits Joanna?"
           askKind="profile"
           askAnchorPreference="margin"
           askPromptChips={[

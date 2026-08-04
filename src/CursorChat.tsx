@@ -86,7 +86,6 @@ type Thread = {
   selectedTextOverride?: string;
   nearbyTextOverride?: string;
   status: ChatStatus;
-  createdAt: number;
   dragPageLeft?: number;
   dragPageTop?: number;
   draftPlaceholder?: string;
@@ -856,7 +855,6 @@ export function CursorChat({
           selectedTextOverride: selectionAnchor?.selectedText,
           nearbyTextOverride,
           status: "draft",
-          createdAt: Date.now(),
           suggestedPrompts: threadSuggestedPrompts,
           promptPool: buildPromptPool(
             threadSuggestedPrompts,

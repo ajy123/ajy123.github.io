@@ -95,6 +95,11 @@ type Thread = {
   promptPool?: SuggestedPrompt[];
   shownPromptIds: string[];
   zoneContext?: CursorChatZoneContext;
+  // Opened by a pin press / auto-ask, i.e. the zone's own hint was sent as the
+  // first question. Frozen at creation and read on every later turn: the hint
+  // is a full question now, so quoting it back at the model alongside a
+  // follow-up would read as a second, competing instruction. See buildMessages.
+  openedByAutoAsk?: boolean;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
   // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
@@ -423,6 +428,7 @@ function buildMessages(
   history: ChatTurn[] = [],
   zoneContext?: CursorChatZoneContext,
   extraContext?: string,
+  fromAutoAsk = false,
 ): ChatMessage[] {
   const audienceGuidance =
     context.audienceRole === "recruiter"
@@ -432,18 +438,23 @@ function buildMessages(
         : "";
 
   // A pin ask sends its hint verbatim as the prompt, so hint and prompt are
-  // the same string there — naming the prompt again would just tell the
-  // model its own question twice. Only quote the hint when it actually adds
-  // information, i.e. it differs from what the visitor sent (a chip click,
-  // where the chip text is sent but the hint still names the zone).
-  const zoneHintMatchesPrompt =
+  // the same string on turn one — naming the prompt again would just tell the
+  // model its own question twice. From turn two the strings differ, but the
+  // hint is still a full question, so quoting it would hand the model a second
+  // instruction competing with the follow-up actually asked; fromAutoAsk keeps
+  // it suppressed for the whole life of such a thread. Only quote the hint when
+  // it adds information: a chip click or typed question in a thread that was
+  // not opened by a pin, where the hint names the zone rather than repeats the
+  // question. The rest of the sentence, which names the section, always stays.
+  const omitHintQuote =
+    fromAutoAsk ||
     zoneContext?.hint.trim().toLowerCase() === prompt.trim().toLowerCase();
 
   const contextLines = [
     `Page title: ${context.title}`,
     context.audienceRole ? `Audience role: ${context.audienceRole}` : "",
     zoneContext
-      ? zoneHintMatchesPrompt
+      ? omitHintQuote
         ? `The visitor opened this chat from the ${zoneContext.kind} section. Answer with that focus.`
         : `The visitor opened this chat from the ${zoneContext.kind} section, invited by the prompt "${zoneContext.hint}". Answer with that focus.`
       : "",
@@ -890,6 +901,7 @@ export function CursorChat({
             (prompt) => prompt.id,
           ),
           zoneContext: threadZoneContext,
+          openedByAutoAsk: Boolean(autoAsk?.trim()),
           docked: isDocked,
           draftPlaceholder: fromSelection
             ? "ask about what you selected"
@@ -920,6 +932,13 @@ export function CursorChat({
 
       if (event.key === "Escape" && activeIdRef.current) {
         event.preventDefault();
+        // Escape is the universal "never mind". A pin press that landed while
+        // this panel was open is sitting in the queue waiting for the close to
+        // settle, and closeActive no-ops mid-leave, so without this the queued
+        // question would still be sent on the visitor's behalf after they
+        // cancelled. Outside that window both refs are already null.
+        pendingOpenRef.current = null;
+        pendingPreviousFocusRef.current = null;
         closeActive();
       }
     };
@@ -969,8 +988,21 @@ export function CursorChat({
     );
   }, [activeThread]);
 
+  // The composer is the right focus target for an ordinary open, and it stays
+  // mounted there. An auto-ask is different: the effect below submits as soon
+  // as this thread commits, and `loading` unmounts the textarea, so a deferred
+  // focus would either miss it or be dropped to <body> when it unmounts under
+  // the caret. The panel is role="dialog" and tabIndex={-1}, so focusing it
+  // instead lands the reader inside the panel with stop/close one Tab away,
+  // and it stays mounted for the whole exchange. Read the ref before the
+  // auto-ask effect clears it: effects run in declaration order and this one
+  // is declared first.
   useEffect(() => {
     if (!activeId) return;
+    if (pendingAutoAskRef.current && panelRef.current) {
+      panelRef.current.focus();
+      return;
+    }
     window.setTimeout(() => textareaRef.current?.focus(), 0);
   }, [activeId]);
 
@@ -1170,6 +1202,7 @@ export function CursorChat({
     history: ChatTurn[],
     zoneContext: CursorChatZoneContext | undefined,
     extraContext: string | undefined,
+    fromAutoAsk: boolean,
   ) => {
     const patch = (updater: (thread: Thread) => Thread) =>
       setThreads((current) =>
@@ -1188,6 +1221,7 @@ export function CursorChat({
         history,
         zoneContext,
         extraContext,
+        fromAutoAsk,
       );
       if (import.meta.env.DEV) {
         // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
@@ -1296,7 +1330,10 @@ export function CursorChat({
         setExitingSuggestions(null);
       }
     }
-    setAnnouncement("");
+    // Between here and the reply there is nothing on screen but a thinking
+    // line, and a pin ask sends on a single keypress, so without this a screen
+    // reader gets no confirmation that anything was sent at all.
+    setAnnouncement("Question sent. Generating a reply.");
     setDraft("");
 
     const patch = (updater: (thread: Thread) => Thread) =>
@@ -1314,7 +1351,15 @@ export function CursorChat({
       suggestedPrompts: undefined,
     }));
 
-    await runGeneration(id, message, context, history, zoneContext, extraContext);
+    await runGeneration(
+      id,
+      message,
+      context,
+      history,
+      zoneContext,
+      extraContext,
+      activeThread.openedByAutoAsk === true,
+    );
   };
 
   // Sends the pin's question once the thread it belongs to exists. Keyed on the
@@ -1552,6 +1597,10 @@ export function CursorChat({
           }
           role="dialog"
           aria-label="Cursor chat"
+          // Programmatic focus target only (never in the Tab order). An
+          // auto-ask has no mounted composer to focus, so the dialog itself
+          // takes focus — see the open-focus effect.
+          tabIndex={-1}
         >
           {/* Intentionally non-modal: the page remains available for context. */}
           <div

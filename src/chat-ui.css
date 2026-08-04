@@ -1107,7 +1107,16 @@
   .cursor-chat {
     width: min(var(--chat-width, 340px), calc(100vw - 28px));
   }
+}
 
+/* The pin is a hover affordance, and on a coarse pointer it also lies: whether
+   a zone auto-sends or opens chips is gated on the pointer type, not on width,
+   so a tablet in landscape (coarse, but wider than 860px) rendered a pin whose
+   zone still said "Tap for related questions". Width alone can't express that.
+   A touchscreen laptop with a mouse reports `pointer: fine` as its primary
+   pointer, so hybrids that can hover keep their pins. Same condition the FAB
+   and the touch layouts above use. */
+@media (pointer: coarse), (max-width: 860px) {
   .contextual-ask-hint {
     display: none;
   }

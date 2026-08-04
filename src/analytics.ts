@@ -60,7 +60,7 @@ export function initAnalytics(): void {
   }
 }
 
-export type ChatQuerySource = "typed" | "suggested" | "retry" | "pin";
+export type ChatQuerySource = "typed" | "suggested" | "retry" | "ask_pin";
 
 export function trackChatQuery(
   query: string,

@@ -431,11 +431,21 @@ function buildMessages(
         ? "Audience role: product design. Tailor the answer toward design systems, product judgment, interaction design, prototyping, systems thinking, and craft. Do not claim personal knowledge of the visitor."
         : "";
 
+  // A pin ask sends its hint verbatim as the prompt, so hint and prompt are
+  // the same string there — naming the prompt again would just tell the
+  // model its own question twice. Only quote the hint when it actually adds
+  // information, i.e. it differs from what the visitor sent (a chip click,
+  // where the chip text is sent but the hint still names the zone).
+  const zoneHintMatchesPrompt =
+    zoneContext?.hint.trim().toLowerCase() === prompt.trim().toLowerCase();
+
   const contextLines = [
     `Page title: ${context.title}`,
     context.audienceRole ? `Audience role: ${context.audienceRole}` : "",
     zoneContext
-      ? `The visitor opened this chat from the ${zoneContext.kind} section, invited by the prompt "${zoneContext.hint}". Answer with that focus.`
+      ? zoneHintMatchesPrompt
+        ? `The visitor opened this chat from the ${zoneContext.kind} section. Answer with that focus.`
+        : `The visitor opened this chat from the ${zoneContext.kind} section, invited by the prompt "${zoneContext.hint}". Answer with that focus.`
       : "",
     context.selectedText
       ? `Selected text (the visitor's primary focus): ${context.selectedText}`
@@ -1315,7 +1325,7 @@ export function CursorChat({
     const pending = pendingAutoAskRef.current;
     if (!pending || !activeThread || activeThread.status !== "draft") return;
     pendingAutoAskRef.current = null;
-    void submitThread(pending, "pin");
+    void submitThread(pending, "ask_pin");
   }, [activeThread?.id]);
 
   const collapseActive = () => {

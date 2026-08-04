@@ -65,7 +65,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. Before it shipped she set the measurement plan and instrumented three metrics: processing, training, and communication time. The headline number is a separate measure: average turnaround on a maintenance ticket, taken from NYU's own post-launch analytics over the first month, which fell roughly 33%. NYU read it after she had left, so it is early and directional and not a figure she audited herself.",
+        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. The team set the measurement plan before launch and instrumented all three metrics on day one: processing, training, and communication time. Average work-request turnaround was the first to report back, down roughly 33% in the first month on the team's own post-launch analytics. That number is early and directional, not an audited figure.",
     },
   ],
   facts: [

@@ -190,11 +190,12 @@
   letter-spacing: 0.05em;
   text-align: left;
   /* Sentence case everywhere — the source hint strings are already written
-     that way (e.g. "Ask how this became a chat"); this used to force them
-     uppercase, which was the odd one out among the 4 keycap affordances. */
+     that way (e.g. "How does she design what AI says?"); this used to force
+     them uppercase, which was the odd one out among the 4 keycap
+     affordances. */
   /* One line, always. A wrapped pin doubles in height mid-hover and shifts
-     under the cursor as the copy reflows; the max-width above is sized to the
-     longest authored hint (35 chars) so nothing clips. */
+     under the cursor as the copy reflows; the max-width above is sized above
+     the longest authored hint (33 chars) so nothing clips. */
   white-space: nowrap;
   transition:
     opacity 140ms var(--ease-out-strong) 40ms,

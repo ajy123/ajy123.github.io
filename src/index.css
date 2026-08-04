@@ -355,11 +355,22 @@ h1 span {
   white-space: nowrap;
 }
 
+/* Each label carries a discipline and a domain ("Product design, news
+   analytics"), too long for the rail on one line. The rail column is 216px at
+   the clamp floor and only 192px between 861px and 1100px, so dropping
+   `white-space: nowrap` is what fixes this: with it, the row could not break
+   the label, and the flex row grew the column past its own width and clipped
+   the bio and ask card mid-word. Measured at 1024px, the old rule pushed the
+   216px column to 270px.
+   No `min-width: 0` here on purpose. `overflow: hidden` on the old rule already
+   zeroed the automatic minimum size, so it was never what held the layout
+   together. `overflow-wrap` replaces the clipping that rule used to provide:
+   wrapping handles ordinary labels, and this catches a single token too long
+   for the column. The row stays `align-items: baseline`, so the year keeps its
+   baseline on the label's first line. */
 .rail-ledger-role {
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .rail-ledger-yr {
@@ -1501,7 +1512,7 @@ a.card-eyebrow-flag .flag-verb {
   .intro-sentence {
     line-height: 1.2;
     /* `balance` rags harder as the line count climbs; `pretty` avoids
-       orphaned fragments (a lone "to the pixels.") on narrow measures. */
+       orphaned fragments (a lone "the model says.") on narrow measures. */
     text-wrap: pretty;
   }
 }

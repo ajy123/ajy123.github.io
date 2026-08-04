@@ -68,7 +68,7 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From search box to research assistant",
-    role: "Design + PM",
+    role: "Product design + PM",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read",
@@ -84,7 +84,8 @@ const workItems: WorkItem[] = [
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
     // and the headline growth number's baseline (outcome). The third slot used
-    // to ask what "the PM half" of Design + PM covered, on a 5-engineer build.
+    // to ask what "the PM half" of Product design + PM covered, on a 5-engineer
+    // build.
     // Neither the team size nor a design/PM split is in SITE_CONTEXT or in this
     // card's zone text, and DEELI_CASE_CONTEXT only loads on /deeli/, so on the
     // homepage that chip could only be answered "I don't know". The baseline
@@ -140,7 +141,7 @@ const workItems: WorkItem[] = [
       "why did you choose a color legend over icons?",
     ],
     askFollowUpPromptChips: [
-      "You missed your own <12-hour goal — what did that teach you?",
+      "You missed your own <12-hour goal. What did that teach you?",
       "Why hover instead of click for the device status view?",
       "How did this project shift the team from engineering-led to design-led?",
     ],
@@ -151,7 +152,7 @@ const workItems: WorkItem[] = [
   // Case-study page still to be built; card carries the coded thumbnail + status
   // flag until it ships. Copy locked against the résumé (real project facts).
   {
-    eyebrow: "Service design",
+    eyebrow: "Product design",
     title: "Unifying campus maintenance",
     role: "Maintenance Team",
     year: "2018",
@@ -498,17 +499,20 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <h1>
               <span>Joanna Yen</span>
             </h1>
-            <p className="profile-role-line">Senior product designer</p>
+            <p className="profile-role-line">
+              Senior product designer. AI and search, in complex B2B.
+            </p>
 
             <p className="sidebar-bio sidebar-story">
               Most of my work shrinks queues: maintenance tickets, device-issue
-              reports, searches people gave up on. Lately I&apos;m doing the
-              same for{" "}
+              reports, searches people gave up on. Now the queue is research
+              itself. On{" "}
               <span className="bio-hl">
                 Deeli AI&apos;s research assistant
               </span>
-              : designing what they say, testing model&apos;s output, and
-              planning for when they&apos;re wrong.
+              , I design what it says, test its answers before they ship, and
+              plan for when it&apos;s wrong. I own it end to end, and I start
+              from the system.
             </p>
 
             {/*
@@ -550,22 +554,30 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, AI research
+                </span>
                 <span className="rail-ledger-yr">now</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Swiftly</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, transit data
+                </span>
                 <span className="rail-ledger-yr">&rsquo;22</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Diligent</span>
-                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-role">
+                  Product design, news analytics
+                </span>
                 <span className="rail-ledger-yr">&rsquo;20</span>
               </li>
               <li>
                 <span className="rail-ledger-co">NYU</span>
-                <span className="rail-ledger-role">Service design</span>
+                <span className="rail-ledger-role">
+                  Product design, campus ops
+                </span>
                 <span className="rail-ledger-yr">&rsquo;18</span>
               </li>
             </ul>

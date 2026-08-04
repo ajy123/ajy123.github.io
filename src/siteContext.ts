@@ -71,10 +71,12 @@ const PROFILE: SiteProfile = {
   facts: [
     "On Deeli's research assistant, she designed what the AI says and not just the UX and UI around it. She created response patterns the model could adapt to new situations, then tested its answers against expected outputs before shipping. That process taught her to treat model behavior as part of the product experience.",
     "Around 7 years of product design experience since 2015, across enterprise SaaS, governance analytics, transit data, and now AI-native products.",
-    "Currently designs and ships at Deeli AI.",
+    "Currently designs and ships at Deeli AI, where she started in August 2025.",
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
+    "On Swiftly, the internal goal of under 12 hours was not met. That honest miss taught the team that a single investigation-time target measured the wrong thing, because agencies triage differently.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
     "Works across Figma and code (React, Vue).",
+    "She usually owns work end to end, but decisions are reached by consensus rather than made alone. She writes out the reasoning behind each decision and tracks it against data.",
     "Her personas and research regenerate every week because there are user interviews and feedback tickets every week, and that is when the team learns something new about users.",
     "LinkedIn profile, for a reader who wants more than this page carries: https://www.linkedin.com/in/joanna-yen (link only; its contents are not available here).",
     "APAC remote in Taipei; open to relocation.",

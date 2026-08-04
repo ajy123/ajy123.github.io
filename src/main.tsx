@@ -30,7 +30,6 @@ import { SwiftlyThumbnail } from "./components/SwiftlyThumbnail";
 import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
-import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
 import { initAnalytics } from "./analytics";
@@ -600,9 +599,6 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
 
             <p>© 2026 Joanna Yen</p>
 
-            {dials.variant === "physics" ? (
-              <PhysicsFooter bodyRef={footerBodyRef} dials={dials.physics} />
-            ) : null}
           </div>
         </Reveal>
       </div>

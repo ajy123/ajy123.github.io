@@ -666,26 +666,6 @@ h1 span {
   display: none;
 }
 
-/* --- physics: matter.js drives transforms; assembled look = current -----
-   The body must be a real box (not display:contents) so the controller can
-   measure it for the ground plane + cursor-proximity. Block flow stacks the
-   children identically, so the assembled look is unchanged. */
-.rail-footer-body[data-variant="physics"] {
-  display: block;
-  position: relative;
-}
-.rail-footer-body[data-variant="physics"] .rail-link-label,
-.rail-footer-body[data-variant="physics"] .rail-link-sub,
-.rail-footer-body[data-variant="physics"] .rail-link svg,
-.rail-footer-body[data-variant="physics"] .contrib-label,
-.rail-footer-body[data-variant="physics"] .contrib-count,
-.rail-footer-body[data-variant="physics"] .contrib-head svg,
-.rail-footer-body[data-variant="physics"] .contrib-cell,
-.rail-footer-body[data-variant="physics"] .phys-char,
-.rail-footer-body[data-variant="physics"] > p {
-  will-change: transform;
-}
-
 .work-canvas {
   flex: 1;
   min-width: 0;

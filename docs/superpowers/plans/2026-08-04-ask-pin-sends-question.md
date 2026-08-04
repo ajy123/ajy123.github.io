@@ -10,6 +10,13 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-04-ask-pin-sends-question-design.md`
 
+**Status: executed.** All six tasks shipped on branch `ask-pin-sends-question`
+(PR #66). The checkboxes below were not ticked during execution; the commit
+history is the record of what landed, and the spec carries the behavior as
+shipped, including two decisions that changed after this plan was written: the
+analytics member is `"ask_pin"` (see Task 1 Step 2), and the de-zoned card also
+shed `askKind` / `askAnchorPreference` (see Task 4).
+
 ## Global Constraints
 
 - **No unit-test runner exists in this repo.** `package.json` has no `test` script; `playwright` is a devDependency but there is no config and no test files. Do not add a test framework — it is out of scope for this change. Every task below verifies with `npx tsc --noEmit` plus a specific browser observation with an exact expected result.
@@ -50,6 +57,11 @@ In `src/chatEvents.ts`, add the field to `CursorChatRequestOpenDetail` (after `d
 ```
 
 - [ ] **Step 2: Add the `"pin"` analytics source**
+
+> **Superseded after execution.** The shipped member is `"ask_pin"`, not
+> `"pin"`. A later cleanup renamed it because `src/CursorChat.tsx` already uses
+> "pin" for a pinned thread, so a dashboard row reading `pin` was ambiguous.
+> Query `ask_pin`. The block below is left as originally written.
 
 In `src/analytics.ts:63`, widen the union:
 

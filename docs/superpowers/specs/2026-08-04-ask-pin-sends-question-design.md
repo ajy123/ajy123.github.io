@@ -75,9 +75,11 @@ Rejected alternatives:
    borrowing a neighbouring card's chips.
 5. **The brand card loses its ask zone entirely.** `askHint`,
    `askPromptChips`, and `askFollowUpPromptChips` come off the Brand Identity
-   item. Only its `DEELI.AI` action pin remains. (`askKind` and
-   `askAnchorPreference` stay on that item; they are dead data now, kept only
-   because `askKind` is a required field on the `WorkItem` type.)
+   item. Only its `DEELI.AI` action pin remains. `askKind` and
+   `askAnchorPreference` came off it too, in a later cleanup pass: they were
+   dead data once the hint was gone, and shedding them meant making `askKind`
+   optional on the `WorkItem` type, which had been the only reason to keep
+   them.
 6. **No new teaching affordance in this round.** The pin is a `<button>`, so a
    reader who does not know the key can click it, and clicking now sends too.
    Auto-send makes the key less load-bearing, not more. Revisit only if it
@@ -205,11 +207,14 @@ into a pin marker was queued but never drained there, and its stale request
 surfaced later, on an unrelated close. `collapseActive`'s own finish callback
 now calls `drainPendingOpen` too.
 
-**Analytics.** `submitThread:1166` classifies any `promptOverride` as
-`"suggested"`, so pin auto-asks would land in the same bucket as chip clicks.
-Since the question this change asks is whether pins convert, that number must
-not be blended. Add `"pin"` to `ChatQuerySource` (`src/analytics.ts:63`) and
-pass it for auto-asks.
+**Analytics.** `submitThread` classifies any `promptOverride` as `"suggested"`,
+so pin auto-asks would land in the same bucket as chip clicks. Since the
+question this change asks is whether pins convert, that number must not be
+blended. Add `"ask_pin"` to `ChatQuerySource` (`src/analytics.ts`) and pass it
+for auto-asks. The member is `"ask_pin"` rather than plain `"pin"` because
+`src/CursorChat.tsx` already uses "pin" for a pinned thread (`isPinned`,
+`collapseActive`, "Pin chat to page"), and a dashboard row reading `pin` could
+not be told apart from that.
 
 **Copy and zones.** `src/main.tsx` work items (`askHint` at lines 74, 111, 145,
 172), the rail region (line 471), and `src/essays/index.tsx` (lines 28, 79,

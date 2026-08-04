@@ -522,7 +522,21 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
                 className="rail-askbox"
                 type="button"
                 aria-keyshortcuts="/"
-                onClick={() => requestCursorChatOpen()}
+                // Anchor to this button rather than opening coordinate-less.
+                // Without a point, findNearestSection falls to its
+                // viewport-centre scan and resolves to whichever zone happens
+                // to be centred (at the top of the page, the Deeli card), so
+                // the rail's own button answered as THIS PROJECT. Anchored
+                // here it lands inside the rail's data-ask-zone="none" and
+                // falls through to the page default, which is what a question
+                // asked from the rail should get.
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  requestCursorChatOpen({
+                    clientX: rect.left + rect.width / 2,
+                    clientY: rect.top + rect.height / 2,
+                  });
+                }}
               >
                 <span className="rail-askbox-key" aria-hidden="true">
                   /

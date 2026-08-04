@@ -41,7 +41,7 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220% from the pre-launch internal pilot on the old keyword search to launch week 2, measured on the same denominator, and 70% arrived as real questions instead of keywords.",
+        "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220% from the internal pilot to launch week 2, measured on the same denominator, and 70% arrived as real questions instead of keywords.",
     },
     {
       title: "Brand Identity",
@@ -49,11 +49,11 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "https://deeli.ai",
       summary:
-        "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
+        "Built Deeli's brand site and sales kit in a week for Deeli's Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     },
     {
       title: "From daily paper reports to live device monitoring (Swiftly)",
-      role: "Product design, Data Monitor Team",
+      role: "Product designer, Data Monitor Team",
       year: "2022",
       liveUrl: "/swiftly/",
       summary:
@@ -61,7 +61,7 @@ const PROFILE: SiteProfile = {
     },
     {
       title: "Unifying campus maintenance (NYU)",
-      role: "Service design, Maintenance Team",
+      role: "Product designer, Maintenance Team",
       year: "2018",
       liveUrl: "/nyu/",
       summary:

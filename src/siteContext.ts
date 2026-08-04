@@ -65,7 +65,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. The team set the measurement plan before launch and instrumented all three metrics on day one: processing, training, and communication time. Average work-request turnaround was the first to report back, down roughly 33% in the first month on the team's own post-launch analytics. The project ran long, and the team reported that number back once it landed. It is early and directional, not an audited figure.",
+        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. The team set the measurement plan before launch and instrumented all three metrics on day one: processing, training, and communication time. Average work-request turnaround was the first to report back, down roughly 33% in the first month on the team's own post-launch analytics. That number is early and directional, not an audited figure.",
     },
   ],
   facts: [
@@ -78,7 +78,7 @@ const PROFILE: SiteProfile = {
     "Joanna's read on why staff took to WorkLink: it replaced the CSV files and the software-hopping with one record in one system, so nobody had to check several places to be sure a maintenance request reached the right team.",
     "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, processing, training, and communication time, on a measurement plan set before shipping.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
-    "Designer and engineer in practice: she works across Figma and code (React, Vue), ships what she designs, and did junior front-end work while she was at Swiftly.",
+    "She works across Figma and code (React, Vue) and ships what she designs.",
     "She usually owns work end to end, but decisions are reached by consensus rather than made alone. She writes out the reasoning behind each decision and tracks it against data.",
     "Her personas and research regenerate every week because there are user interviews and feedback tickets every week, and that is when the team learns something new about users.",
     "LinkedIn profile, for a reader who wants more than this page carries: https://www.linkedin.com/in/joanna-yen (link only; its contents are not available here).",

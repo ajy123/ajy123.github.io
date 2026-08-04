@@ -108,8 +108,6 @@ const workItems: WorkItem[] = [
     title: "Brand Identity",
     role: "Solo design + build",
     year: "2026",
-    askKind: "project",
-    askAnchorPreference: "cursor",
     summary:
       "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
     liveHref: "https://deeli.ai",
@@ -770,9 +768,12 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           data-ask-anchor={item.askAnchorPreference}
           data-ask-hint={item.askHint}
           data-ask-kind={item.askKind}
-          data-ask-prompts={JSON.stringify(item.askPromptChips)}
+          // askKind is optional on WorkItem now, but every essay item sets
+          // both prompt chip lists; default to [] so the intent (a real
+          // zone always has prompts) stays explicit instead of incidental.
+          data-ask-prompts={JSON.stringify(item.askPromptChips ?? [])}
           data-ask-follow-up-prompts={JSON.stringify(
-            item.askFollowUpPromptChips,
+            item.askFollowUpPromptChips ?? [],
           )}
           data-ask-context={[
             item.title,
@@ -904,7 +905,11 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
         <AskableRegion
           className="work-card-askable"
           hint={item.askHint}
-          kind={item.askKind}
+          // A zone with a hint always declares its kind, so this fallback is
+          // unreachable for a correctly configured zone; it exists only to
+          // satisfy AskableRegion's required AskableKind prop now that
+          // askKind is optional on WorkItem.
+          kind={item.askKind ?? "project"}
           anchorPreference={item.askAnchorPreference}
           promptChips={item.askPromptChips}
           followUpPromptChips={item.askFollowUpPromptChips}

@@ -22,7 +22,7 @@ export type WorkItem = {
   /** Omitted on cards that carry no ask zone (the reader gets the page-default
    * chips there instead). WorkCard renders a plain wrapper when this is unset. */
   askHint?: string;
-  askKind: AskableKind;
+  askKind?: AskableKind;
   askAnchorPreference?: AskAnchorPreference;
   askPromptChips?: string[];
   askFollowUpPromptChips?: string[];

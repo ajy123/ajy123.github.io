@@ -385,6 +385,9 @@ export function ContextualAskHint({
       clientY: anchor.y,
       suggestedPrompts: current.suggestedPrompts,
       followUpPrompts: current.followUpPrompts,
+      // The pin displays a question; pressing it asks that question. The
+      // suggested prompts survive as follow-ups under the answer.
+      autoAsk: current.hint,
       zoneContext: {
         hint: current.hint,
         kind: current.kind,
@@ -596,9 +599,7 @@ export function ContextualAskHint({
       data-kind={active.kind}
       data-stage={visualStage}
       type="button"
-      aria-label={
-        active.kind === "action" ? copy : `Open chat suggestions: ${copy}`
-      }
+      aria-label={active.kind === "action" ? copy : `Ask "${copy}"`}
       onMouseDown={(event) => event.preventDefault()}
       onClick={openActiveChat}
       onPointerLeave={(event) => {

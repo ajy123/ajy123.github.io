@@ -131,7 +131,7 @@ const workItems: WorkItem[] = [
     liveHref: "/swiftly/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "What was the Swiftly work?",
+    askHint: "Why 12–24 hours, not under 12?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [
@@ -158,7 +158,7 @@ const workItems: WorkItem[] = [
     liveHref: "/nyu/",
     linkLabel: "Read",
     flagLabel: "Case study",
-    askHint: "What was the NYU work?",
+    askHint: "Why did staff actually adopt it?",
     askKind: "project",
     askAnchorPreference: "cursor",
     askPromptChips: [

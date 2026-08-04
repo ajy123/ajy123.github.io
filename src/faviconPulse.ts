@@ -3,10 +3,9 @@ import { CELLS, COLS, FALLBACK_LEVELS, subscribePulse } from "./logoPulse";
 
 /**
  * Animated favicon — the second renderer of the shared cluster pulse. One
- * engine (src/logoPulse), two surfaces: the header DOM (GridLogo) and this
- * 32×32 canvas painted into the browser-tab icon. While the LLM is busy the
- * tab breathes the same roaming blobs the logo does; when it stops we swap the
- * static /favicon.svg back in.
+ * engine (src/logoPulse) painted into this 32×32 canvas, which becomes the
+ * browser-tab icon. While the LLM is busy the tab breathes roaming blobs;
+ * when it stops we swap the static /favicon.svg back in.
  *
  * Honest + cheap: no standalone loop. We piggyback on logoPulse's rAF (which
  * itself only runs while busy) and throttle favicon swaps to ~10fps — repaint-
@@ -71,20 +70,6 @@ function ensureCanvas(): CanvasRenderingContext2D | null {
   canvas.height = SIZE;
   ctx = canvas.getContext("2d");
   return ctx;
-}
-
-// Mirror the logo's resolved levels straight off its DOM — the single source of
-// truth already picked live-vs-fallback (logoPulse.selectGridLevels), so the
-// favicon can't diverge. Fallback design if the logo isn't mounted yet.
-function readLevels(): ReadonlyArray<number> {
-  const grid = document.querySelector(".gridlogo");
-  const cells = grid?.querySelectorAll(".gridlogo-cell");
-  if (cells && cells.length === CELLS) {
-    const out: number[] = [];
-    cells.forEach((c) => out.push(Number(c.getAttribute("data-level")) || 0));
-    return out;
-  }
-  return FALLBACK_LEVELS;
 }
 
 function roundRectPath(
@@ -195,7 +180,7 @@ function onPulse(glow: Float32Array): void {
 function startAnimating(): void {
   if (prefersReducedMotion()) return; // never animate the tab under reduced motion
   if (!ensureCanvas()) return;
-  levels = readLevels();
+  levels = FALLBACK_LEVELS;
   latestGlow = null;
   lastRenderTs = 0;
   render(); // paint the dimmed "thinking" grid at once, before the first blob

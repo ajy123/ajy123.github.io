@@ -541,7 +541,7 @@ export function ContextualAskHint({
         // happen to live inside or be a [data-ask-hint] zone.
         if (
           event.target instanceof Element &&
-          event.target.closest('button, [role="switch"], a[href], .site-logo')
+          event.target.closest('button, [role="switch"], a[href]')
         ) {
           return;
         }

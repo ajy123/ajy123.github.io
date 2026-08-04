@@ -8,8 +8,8 @@ import { type RefObject, useEffect, useRef } from "react";
  * scattering again when the cursor leaves.
  *
  * Granularity is PER-CHARACTER: every text label is split into inline-block
- * glyph spans (one body each) so the words shatter into letters, and the GitHub
- * heatmap tiles (`.contrib-cell`) join the pile too. Splitting is fully reverted
+ * glyph spans (one body each) so the words shatter into letters, and the link
+ * arrows fall intact alongside them. Splitting is fully reverted
  * on teardown (original innerHTML restored), so it's additive — touches nothing
  * but the targeted nodes' inline transform. matter.js is dynamically imported so
  * it only downloads when this (the physics variant) is mounted. Renders null.
@@ -67,7 +67,7 @@ export function PhysicsFooter({
         const charEls: HTMLElement[] = [];
         const splitEls = [
           ...container.querySelectorAll<HTMLElement>(
-            ".contrib-label, .contrib-count, .rail-link-label, .rail-link-sub",
+            ".rail-link-label, .rail-link-sub",
           ),
           ...container.querySelectorAll<HTMLElement>(":scope > p"),
         ];
@@ -89,13 +89,10 @@ export function PhysicsFooter({
           }
         }
 
-        // 2. Whole-body pieces: the link arrows + every populated heatmap tile
-        //    (skip the transparent leading-pad cells — nothing to see fall).
+        // 2. Whole-body pieces: the link arrows fall intact rather than
+        //    shattering into characters.
         const wholeEls: (HTMLElement | SVGElement)[] = [
-          ...container.querySelectorAll<SVGElement>(".rail-link svg, .contrib-head svg"),
-          ...container.querySelectorAll<HTMLElement>(
-            ".contrib-cell:not(.contrib-cell--pad)",
-          ),
+          ...container.querySelectorAll<SVGElement>(".rail-link svg"),
         ];
 
         const els: (HTMLElement | SVGElement)[] = [...charEls, ...wholeEls];
@@ -236,21 +233,11 @@ export function PhysicsFooter({
         };
       };
 
-      // The GitHub block (ContribGraph) renders async after its fetch, so wait
-      // for its head to exist before measuring — otherwise the GitHub text/tiles
-      // aren't captured and there's nothing up top to drop.
-      if (container.querySelector(".contrib-head")) {
-        build();
-      } else {
-        const mo = new MutationObserver(() => {
-          if (cancelled || container.querySelector(".contrib-head")) {
-            mo.disconnect();
-            if (!cancelled) build();
-          }
-        });
-        mo.observe(container, { childList: true, subtree: true });
-        teardown = () => mo.disconnect();
-      }
+      // Everything in the footer is static JSX, so it is measurable as soon as
+      // this effect runs. This used to wait for the GitHub block's `.contrib-head`
+      // to appear, which stopped rendering when that block was removed from the
+      // rail — the observer then waited forever and the footer never built.
+      build();
     })();
 
     return () => {

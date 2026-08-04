@@ -74,6 +74,7 @@ const PROFILE: SiteProfile = {
     "Currently designs and ships at Deeli AI, where she started in August 2025.",
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
     "On Swiftly, the internal goal of under 12 hours was not met. That honest miss taught the team that a single investigation-time target measured the wrong thing, because agencies triage differently.",
+    "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, processing, training, and communication time, on a measurement plan set before shipping.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
     "Works across Figma and code (React, Vue).",
     "She usually owns work end to end, but decisions are reached by consensus rather than made alone. She writes out the reasoning behind each decision and tracks it against data.",

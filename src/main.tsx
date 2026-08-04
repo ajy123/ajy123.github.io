@@ -30,7 +30,6 @@ import { SwiftlyThumbnail } from "./components/SwiftlyThumbnail";
 import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
 import { EssayDialog } from "./components/EssayDialog";
-import { SiteLogo } from "./components/SiteLogo";
 import { PhysicsFooter } from "./components/PhysicsFooter";
 import { FooterDialsContext, footerVars } from "./footerDials";
 import { ScrollIntro } from "./components/ScrollIntro";
@@ -176,15 +175,6 @@ const workItems: WorkItem[] = [
 ];
 
 const INTRO_EXIT_MS = 280;
-// DEV: the logo's dial panel wraps SiteLogo; prod mounts the bare mark. The
-// wrapper is lazy + DEV-gated so neither dialkit JS nor its CSS reaches prod.
-const SiteLogoWithDials = import.meta.env.DEV
-  ? lazy(() =>
-      import("./components/LogoDials").then((module) => ({
-        default: module.SiteLogoWithDials,
-      })),
-    )
-  : null;
 const ContextualAskHintWithDials = import.meta.env.DEV
   ? lazy(() =>
       import("./components/ContextualAskHintDials").then((module) => ({
@@ -454,17 +444,6 @@ function PauseGlyph() {
       <path d="M16 5v14" />
     </svg>
   );
-}
-
-function SiteLogoMount() {
-  if (SiteLogoWithDials) {
-    return (
-      <Suspense fallback={<SiteLogo />}>
-        <SiteLogoWithDials />
-      </Suspense>
-    );
-  }
-  return <SiteLogo />;
 }
 
 function ProfileRail({ suspended }: { suspended: boolean }) {

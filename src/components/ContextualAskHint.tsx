@@ -16,13 +16,6 @@ export type AskableKind = "project" | "essay" | "profile" | "contact" | "action"
 
 export type AskAnchorPreference = "cursor" | "edge" | "margin";
 
-export type AskableZone = {
-  id: string;
-  hint: string;
-  kind: AskableKind;
-  anchorPreference?: AskAnchorPreference;
-};
-
 export type ContextualAskHintDials = {
   dwellMs: number;
   offsetX: number;

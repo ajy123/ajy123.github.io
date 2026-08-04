@@ -518,6 +518,25 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
       color: #111111;
       font-weight: 600;
     }
+    /* Under 360px the label alone (147px) plus the 14px gap exceeds the step's
+       ~160px content box, so flex:none pushed the row 10px past the viewport
+       and the page scrolled sideways. Below that width both sides become
+       shrinkable and give in proportion to their bases, so the label wraps to
+       two or more lines and the row fits. Scoped to the media query rather
+       than applied globally: min-width:0 on the result is NOT inert above the
+       breakpoint, it lets the box shrink past min-content and pulls a wrapped
+       fragment off the right edge between 360 and about 403. At 360 and up
+       this file renders exactly as it did before. */
+    @media (max-width:359px) {
+      .sol-b .mtr-label {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+
+      .sol-b .mtr-result {
+        min-width: 0;
+      }
+    }
     .sol-b .mtr-foot {
       margin: 10px 0 0 4px;
       font-size: 10px;

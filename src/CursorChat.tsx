@@ -579,6 +579,14 @@ export function CursorChat({
   // open thread (each thread freezes a different zone's context), so it
   // queues here, closes the open thread, and reopens once the close settles.
   const pendingOpenRef = useRef<OpenComposerOptions | null>(null);
+  // The pre-press focus, captured at QUEUE time while the pin that triggered
+  // the queued open still has focus. By the time the queue drains (up to
+  // LEAVE_MS later) that pin is long unmounted and document.activeElement
+  // has fallen back to <body>, so capturing there (as openComposer normally
+  // does) would make restoreFocus land on <body> instead of a sensible
+  // fallback. Applied onto previousFocusRef after the drained openComposer
+  // call returns, since that call overwrites previousFocusRef itself.
+  const pendingPreviousFocusRef = useRef<HTMLElement | null>(null);
   // openComposer is defined inside the mount-only event-wiring effect below,
   // out of reach for finishCloseActive; this ref is how the queued reopen
   // calls back into it once the effect assigns it.
@@ -789,6 +797,12 @@ export function CursorChat({
         // thread, and finishCloseActive reopens it once the close settles.
         if (autoAsk?.trim()) {
           pendingOpenRef.current = options;
+          // Capture now, while the pin that sent this request still has
+          // focus — see pendingPreviousFocusRef.
+          pendingPreviousFocusRef.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
           closeActive();
           return;
         }
@@ -1054,22 +1068,39 @@ export function CursorChat({
     beginLeave(id, () => finishCloseActive(id));
   };
 
+  // A pin pressed while a panel was open queues here instead of vanishing
+  // (see openComposer's queue branch). Shared by both close paths —
+  // finishCloseActive (the close button / Escape) and collapseActive's
+  // finish callback (the collapse/pin control) — so a press that lands
+  // during either kind of close animation is drained exactly once, never
+  // dropped and never replayed by a later, unrelated close. Nulls the refs
+  // BEFORE calling back in, so a re-entrant open triggered by that call
+  // can't replay the same request. Returns whether it drained anything, so
+  // callers know whether to fall back to restoreFocus() themselves.
+  const drainPendingOpen = () => {
+    const queued = pendingOpenRef.current;
+    if (!queued) return false;
+    pendingOpenRef.current = null;
+    const queuedFocus = pendingPreviousFocusRef.current;
+    pendingPreviousFocusRef.current = null;
+    openComposerRef.current?.(queued);
+    // openComposer just captured document.activeElement into
+    // previousFocusRef, but the pin that triggered this queued request has
+    // long since unmounted by now; the pre-press focus captured at queue
+    // time is the correct restore target, so it wins.
+    if (queuedFocus?.isConnected) {
+      previousFocusRef.current = queuedFocus;
+    }
+    return true;
+  };
+
   const finishCloseActive = (id: string) => {
     setThreads((current) => current.filter((item) => item.id !== id));
     activeIdRef.current = null;
     setActiveId(null);
     setDraft("");
 
-    // A pin pressed while a panel was open queues here instead of vanishing;
-    // drain it now that the close has actually settled. Null the ref before
-    // calling back in, so a re-entrant open (there isn't one today) can't
-    // replay the same request.
-    const queued = pendingOpenRef.current;
-    if (queued) {
-      pendingOpenRef.current = null;
-      openComposerRef.current?.(queued);
-      return;
-    }
+    if (drainPendingOpen()) return;
 
     restoreFocus();
   };
@@ -1303,6 +1334,13 @@ export function CursorChat({
       );
       activeIdRef.current = null;
       setActiveId(null);
+
+      // A pin pressed while this collapse animation was still running (see
+      // FINDING A) queues into pendingOpenRef via openComposer's queue
+      // branch, but closeActive no-ops during a leave in progress, so this
+      // is the only place that request gets drained.
+      if (drainPendingOpen()) return;
+
       restoreFocus();
     });
   };

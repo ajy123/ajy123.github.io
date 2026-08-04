@@ -273,7 +273,6 @@ function handleDezonedCardTap(event: ReactMouseEvent<HTMLElement>) {
   requestCursorChatOpen({
     clientX: event.clientX,
     clientY: event.clientY,
-    docked: true,
   });
 }
 

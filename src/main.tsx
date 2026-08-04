@@ -95,7 +95,7 @@ const workItems: WorkItem[] = [
       "The 220% compares an internal pilot to launch week 2. What makes that comparable?",
     ],
     summary:
-      "Search that clears up an ambiguous query, a word like 'market', before it answers. I designed the question it asks back, and the eval that made me add it. Queries per active day rose 220%, and real questions instead of keywords went from 13% to 70%.",
+      "Search that clears up an ambiguous query, a word like 'market', before it answers. Queries per active day rose 220%, and real questions instead of keywords went from 13% to 70%.",
     media: {
       type: "video",
       src: deeliCaseStudyVideoUrl,

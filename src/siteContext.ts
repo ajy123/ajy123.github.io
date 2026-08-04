@@ -41,7 +41,7 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "Search that clears up an ambiguous query, a word like 'market', before it answers. Joanna designed the question it asks back, and the eval that made her add it. Queries per active day rose 220% from the internal pilot to launch week 2, measured on the same denominator, and real questions instead of keywords went from 13% to 70%.",
+        "Search that clears up an ambiguous query, a word like 'market', before it answers. Queries per active day rose 220% from the internal pilot to launch week 2, measured on the same denominator, and real questions instead of keywords went from 13% to 70%.",
     },
     {
       title: "Brand Identity",

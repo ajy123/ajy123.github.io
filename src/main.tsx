@@ -68,7 +68,7 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From search box to research assistant",
-    role: "Product design + PM",
+    role: "Only designer, research to launch",
     year: "2026",
     liveHref: "/deeli/",
     linkLabel: "Read",
@@ -83,22 +83,19 @@ const workItems: WorkItem[] = [
     ],
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
-    // and the headline growth number's baseline (outcome). The third slot used
-    // to ask what "the PM half" of Product design + PM covered, on a 5-engineer
-    // build.
-    // Neither the team size nor a design/PM split is in SITE_CONTEXT or in this
-    // card's zone text, and DEELI_CASE_CONTEXT only loads on /deeli/, so on the
-    // homepage that chip could only be answered "I don't know". The baseline
-    // question replaces it: it escalates the 220% chip above the way Swiftly's
-    // follow-up escalates its own goal chip, and the page publishes the answer
-    // ("Internal pilot vs. launch week 2, same denominator.").
+    // and the headline growth number's baseline (outcome). Every chip has to be
+    // answerable from SITE_CONTEXT alone, because DEELI_CASE_CONTEXT only loads
+    // on /deeli/ and anything outside both reads back on the homepage as "I
+    // don't know". The baseline chip escalates the 220% chip above it the way
+    // Swiftly's follow-up escalates its own goal chip, and the page publishes
+    // the answer ("Internal pilot vs. launch week 2, same denominator.").
     askFollowUpPromptChips: [
       "The model got six of seven right. What happened to the seventh?",
       "How is 28% of queries coming back as re-asks not a failure?",
       "The 220% compares an internal pilot to launch week 2. What makes that comparable?",
     ],
     summary:
-      "A search redesign that narrows what someone means by a word like 'market' before it answers. Queries per active day rose 220%, and 70% arrived as real questions instead of keywords.",
+      "Search that clears up an ambiguous query, a word like 'market', before it answers. I designed the question it asks back and the evals that gated launch. Queries per active day rose 220%, and real questions instead of keywords went from 13% to 70%.",
     media: {
       type: "video",
       src: deeliCaseStudyVideoUrl,
@@ -112,7 +109,7 @@ const workItems: WorkItem[] = [
     role: "Solo design + build",
     year: "2026",
     summary:
-      "Built Deeli's brand site and sales kit in a week for our Computex debut, which opened enterprise pilots across semiconductors, aerospace, and industrial research.",
+      "Built Deeli's brand site and sales kit in a week for our Computex debut, where the enterprise pilot conversations started: semiconductors, aerospace, industrial research.",
     liveHref: "https://deeli.ai",
     flagLabel: "deeli.ai",
     media: {
@@ -127,7 +124,7 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "From paper reports to live monitoring",
-    role: "Data Monitor Team",
+    role: "Research to launch",
     year: "2022",
     liveHref: "/swiftly/",
     linkLabel: "Read",
@@ -154,7 +151,7 @@ const workItems: WorkItem[] = [
   {
     eyebrow: "Product design",
     title: "Unifying campus maintenance",
-    role: "Maintenance Team",
+    role: "Research to launch",
     year: "2018",
     liveHref: "/nyu/",
     linkLabel: "Read",
@@ -173,7 +170,7 @@ const workItems: WorkItem[] = [
       "What would you build next if you'd kept working on this?",
     ],
     summary:
-      "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. I replaced that with one work-order platform and measured processing, training, and communication time from launch. First-month turnaround fell roughly 33%.",
+      "NYU Client Service staff ran maintenance requests through CSVs and disconnected tools. I replaced that with one work-order platform. Work-request turnaround fell roughly 33% in the first month.",
     thumbnail: NyuThumbnail,
   },
 ];
@@ -989,11 +986,15 @@ function WorkCanvas() {
 
       <Reveal as="div" className="work-heading">
         <span className="section-heading" id="ai-practice" aria-hidden="true">
-          AI Practice
+          Designing with AI
         </span>
       </Reveal>
 
-      <div aria-label="AI practice essays" className="work-grid" role="region">
+      <div
+        aria-label="Designing with AI essays"
+        className="work-grid"
+        role="region"
+      >
         {aiPracticeItems.map((item, index) => (
           <EssayPracticeCard item={item} index={index} key={item.title} />
         ))}

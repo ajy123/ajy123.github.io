@@ -191,6 +191,12 @@
   aspect-ratio: 16 / 9;
 }
 
+/* The promoted section figure carries the body figure's own top margin; the
+   hero already owns the gap to the dek above it. */
+.essay-dialog-hero-figure {
+  margin-top: 0;
+}
+
 .essay-dialog-body {
   max-width: var(--measure-prose);
   margin: 0;
@@ -243,7 +249,8 @@
   height: auto;
 }
 
-.essay-dialog-section .essay-figure-caption {
+.essay-dialog-section .essay-figure-caption,
+.essay-dialog-hero .essay-figure-caption {
   margin: 12px 0 0;
   color: var(--muted);
   font-family: Georgia, "Times New Roman", serif;

@@ -170,6 +170,14 @@ export function EssayDialog({
     ? `${layoutIdPrefix}-visual-${item.id}`
     : undefined;
 
+  // An essay's first section visual is the strongest thing it has to show, so
+  // it doubles as the dialog's hero and does not repeat further down. The
+  // animated thumbnail is a card affordance; essays without a section visual
+  // (eval-is-the-spec) still fall back to it.
+  const heroSectionIndex = item.sections.findIndex((section) => section.visual);
+  const heroSection =
+    heroSectionIndex === -1 ? null : item.sections[heroSectionIndex];
+
   // Standalone mode has no trigger to morph from, so the panel fades/scales
   // in on its own instead of relying on a layoutId match.
   const standaloneMotionProps = panelLayoutId
@@ -265,12 +273,26 @@ export function EssayDialog({
               <p className="essay-dialog-dek">{item.dek}</p>
             </motion.div>
 
+            {/* The layoutId morph only holds while both ends render the same
+                artwork, so a promoted section figure opts out of it and the
+                card's thumbnail simply stays put behind the panel. */}
             <motion.div
               className="essay-dialog-hero"
-              layoutId={visualLayoutId}
+              layoutId={heroSection ? undefined : visualLayoutId}
               transition={modalEnterTransition}
             >
-              <item.thumbnail interactive={false} />
+              {heroSection ? (
+                <figure className="essay-dialog-figure essay-dialog-hero-figure">
+                  {heroSection.visual}
+                  {heroSection.visualCaption ? (
+                    <figcaption className="essay-figure-caption">
+                      {heroSection.visualCaption}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ) : (
+                <item.thumbnail interactive={false} />
+              )}
             </motion.div>
 
             <motion.div
@@ -285,7 +307,7 @@ export function EssayDialog({
               initial={contentInitial}
               transition={contentTransition}
             >
-              {item.sections.map((section) => (
+              {item.sections.map((section, index) => (
                 <section
                   className="essay-dialog-section"
                   key={section.heading}
@@ -294,7 +316,7 @@ export function EssayDialog({
                   {section.body.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
-                  {section.visual ? (
+                  {section.visual && index !== heroSectionIndex ? (
                     <figure className="essay-dialog-figure">
                       {section.visual}
                       {section.visualCaption ? (

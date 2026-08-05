@@ -514,7 +514,10 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
               <span>Joanna Yen</span>
             </h1>
             <p className="profile-role-line">
-              Senior product designer. AI and search, in complex B2B.
+              Senior product designer.{" "}
+              <span className="profile-role-focus">
+                AI and search, in complex B2B.
+              </span>
             </p>
 
             <p className="sidebar-bio sidebar-story">

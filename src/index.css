@@ -237,6 +237,14 @@ h1 {
   line-height: 1.4;
 }
 
+/* Title on line one, focus on line two: a deliberate break rather than
+   whatever the rail width happens to wrap. Still one <p>, so the text the
+   ask-zone reader pulls off the rail is unchanged (the JSX keeps the space
+   between the two spans). */
+.profile-role-focus {
+  display: block;
+}
+
 h1 span {
   display: block;
 }

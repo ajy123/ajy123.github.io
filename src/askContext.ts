@@ -130,7 +130,14 @@ const CASE_PLACEHOLDER = "or ask anything about how this shipped";
 // report.", "In-service status leads: it is the one thing IT scans for", "I
 // chose a labeled color legend over icons", "Hover to monitor, click to
 // investigate", "The internal goal was not met." / "The target was under 12
-// hours per investigation.", "I mapped a full agency day".
+// hours per investigation.", "claims nothing the data cannot back up".
+//
+// The sixth slot on each page deliberately does NOT ask for a fact. Its first
+// draft ("what did one device issue cost before?") only recited a number, and
+// its draft before that repeated what the opening chip already answers. A
+// follow-up should give the reader a reason to keep going, so it asks after a
+// stance instead: designing within what the data can honestly support, and
+// stating the bet before building.
 // ---------------------------------------------------------------------------
 const SWIFTLY_CHIPS = [
   "why stop trying to improve the report?",
@@ -138,7 +145,7 @@ const SWIFTLY_CHIPS = [
   "what did missing the under-12-hour goal teach?",
   "why a labeled legend instead of icons?",
   "why hover to monitor but click to investigate?",
-  "what did mapping a full agency day surface?",
+  "why claim nothing the data cannot back up?",
 ];
 
 // Verified against nyu/index.html: "a workflow, not a row of data.", "I weighed
@@ -152,7 +159,7 @@ const NYU_CHIPS = [
   "how was the 33% turnaround measured?",
   "why keep the floating action button?",
   "who signed off before launch?",
-  "what did mapping a request's journey change?",
+  "what was the bet before building?",
 ];
 
 const ESSAY_DEFAULT_PLACEHOLDER = "or ask anything about this essay";

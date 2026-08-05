@@ -19,7 +19,12 @@
 // raise it without redoing that math.
 // The dev-only assert below fails loudly if the digest drifts over budget.
 //
-// The contract, which is NOT "everything below is on the page":
+// The contract, which is NOT "everything below is on the page". None of these
+// comments reach the model: the rules below bind it only because the first
+// bullet of the digest and each UNPUBLISHED marker restate them inside the
+// string. A reviewer has already read this block as the enforcement and cleared
+// a change on that basis. If you trim that first bullet or a marker to buy
+// characters, the rule is gone no matter what this comment still says.
 //   1. deeli/index.html published copy is authoritative. Where this file and
 //      the page disagree, the page wins and this file gets corrected.
 //   2. Published facts are citable and may be quoted back to a visitor.

@@ -66,15 +66,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-b .na-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:67px 48px 72px 0;}
     .sol-b .na-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
     .sol-b .na-side-home:hover{color:var(--accent-deep);}
-    /* One static jump to the method section, for phones only. Below 1000px the
-       TOC is hidden and #ns-method sits ~6.5 screens down, so this is the only
-       way to reach it without scrolling the whole story. Deliberately NOT
-       inside nav.na-side-toc — that element is the one carrying display:none —
-       and deliberately not a TOC: one always-visible link, no reveal, no state,
-       nothing in the chat FAB's bottom-right thumb zone. Hidden by default at
-       every width; the @media (max-width:999px) block below turns it on. */
-    .sol-b .na-side-jump{display:none;font-size:15px;font-weight:600;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;}
-    .sol-b .na-side-jump:hover,.sol-b .na-side-jump:active{color:var(--ink);}
     .sol-b .na-side ol{list-style:none;margin:4px 0 0;padding:0;}
     .sol-b .na-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--faint);text-decoration:none;padding:5px 0;transition:color .15s ease;}
     .sol-b .na-side ol a:hover{color:var(--ink);}
@@ -89,12 +80,11 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
          outright is what left this page with no way back on a phone: the home
          link is the only exit below 1000px, since the TOC stays hidden. */
       .sol-b .na-rail-col{display:contents;}
-      /* One row: way out on the left, way down on the right. The hidden TOC is
-         display:none so it never becomes a flex item. */
-      .sol-b .na-side{position:static;width:auto;height:auto;padding:0;margin:0 0 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+      /* Just the way out, on the left. The hidden TOC is display:none so it
+         never becomes a flex item. */
+      .sol-b .na-side{position:static;width:auto;height:auto;padding:0;margin:0 0 28px;display:flex;align-items:center;gap:16px;}
       .sol-b .na-side-toc{display:none;}
       .sol-b .na-side-home{display:inline-flex;align-items:center;min-height:44px;margin:0;}
-      .sol-b .na-side-jump{display:inline-flex;align-items:center;gap:6px;min-height:44px;}
     }
     @media (min-width:1000px) and (max-width:1100px){.sol-b .na-rail-col,.sol-b .na-side{width:240px;}.sol-b .na-shell{gap:40px;}}
     /* End-of-page sign-off: the second way out, shown at every width. The
@@ -335,10 +325,6 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
          way the .na-endnote sign-off link below does it, so the accessible
          name is "Joanna Yen" and not "left arrow Joanna Yen". -->
     <a class="na-side-home" href="/"><span aria-hidden="true">&larr;</span> Joanna Yen</a>
-    <!-- Mobile-only sibling of the home link (see .na-side-jump above): the
-         arrow is decoration, so the accessible name stays "How I work with AI",
-         the same wording the desktop TOC uses for #ns-method. -->
-    <a class="na-side-jump" href="#ns-method">How I work with AI <span aria-hidden="true">&darr;</span></a>
     <nav class="na-side-toc" aria-label="Story sections">
     <ol>
       <li><a href="#ns-problem">The problem</a></li>

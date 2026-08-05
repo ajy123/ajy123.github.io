@@ -1610,10 +1610,19 @@ a.card-eyebrow-flag .flag-verb {
   }
 
   /* Coded thumbnails have no motion under reduced motion, so their play/pause
-     control would be inert — hide it. Video controls stay: the video still
-     plays. */
+     control would be inert — hide it. */
   .work-media--thumbnail .work-media-control {
     display: none;
+  }
+
+  /* Video controls do the opposite: under reduced motion the card no longer
+     plays by itself, so the control is the only way to start it and the only
+     sign the still is a video at all. Hidden until hover, a pointer visitor
+     would see two static images and never learn otherwise, so it stays up. The
+     NYU figure video's control follows the same rule. */
+  .work-media-control {
+    opacity: 1;
+    transform: none;
   }
 
   .reveal {

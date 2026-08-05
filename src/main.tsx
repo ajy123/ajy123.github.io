@@ -708,7 +708,7 @@ function ThumbnailMedia({ item }: { item: WorkItem }) {
 // offscreen loop is bandwidth and battery nobody is watching. A pause the
 // visitor asked for is different from one the observer did, so userPausedRef
 // records theirs and the observer refuses to override it.
-function WorkMedia({ item }: { item: WorkItem }) {
+function WorkMedia({ item, suspended }: { item: WorkItem; suspended: boolean }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const userPausedRef = useRef(false);
   // The observer and the arming effect each need to know what the other last
@@ -721,7 +721,13 @@ function WorkMedia({ item }: { item: WorkItem }) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    // While the intro is up the cards sit in the layout viewport but behind a
+    // full-screen overlay, and an IntersectionObserver counts them as visible
+    // anyway. On a desktop viewport both video cards land in that first screen,
+    // so arming here fetched all 24MB before the visitor had even entered the
+    // site — the exact cost this gate exists to avoid. Waiting until the intro
+    // is dismissed also keeps the fetch clear of first paint.
+    if (!video || suspended) return;
 
     // Matches the NYU figure video: reduced motion means the poster holds and
     // the visitor presses play if they want the loop. Nothing is fetched until
@@ -760,7 +766,7 @@ function WorkMedia({ item }: { item: WorkItem }) {
 
     observer.observe(video);
     return () => observer.disconnect();
-  }, []);
+  }, [suspended]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -944,8 +950,8 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
   );
 }
 
-function WorkCardMedia({ item }: { item: WorkItem }) {
-  if (!item.liveHref) return <WorkMedia item={item} />;
+function WorkCardMedia({ item, suspended }: { item: WorkItem; suspended: boolean }) {
+  if (!item.liveHref) return <WorkMedia item={item} suspended={suspended} />;
 
   // Internal links (e.g. the case-study page) navigate in the same tab;
   // external product sites keep opening in a new one.
@@ -965,7 +971,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
       data-ask-kind="action"
       data-ask-anchor="cursor"
     >
-      <WorkMedia item={item} />
+      <WorkMedia item={item} suspended={suspended} />
       <a
         className="work-media-link"
         href={item.liveHref}
@@ -978,7 +984,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
   );
 }
 
-function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+function WorkCard({ item, index, suspended }: { item: WorkItem; index: number; suspended: boolean }) {
   const cardBody = (
     <>
       <h2 className="card-title">{item.title}</h2>
@@ -999,7 +1005,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
           <p className="card-eyebrow-flag">{item.status}</p>
         ) : null}
       </div>
-      <WorkCardMedia item={item} />
+      <WorkCardMedia item={item} suspended={suspended} />
       {item.summary ? <p className="card-summary">{item.summary}</p> : null}
     </>
   );
@@ -1068,7 +1074,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
   );
 }
 
-function WorkCanvas() {
+function WorkCanvas({ suspended }: { suspended: boolean }) {
   return (
     <main className="work-canvas" aria-label="Selected work">
       <Reveal as="div" className="work-heading">
@@ -1079,7 +1085,7 @@ function WorkCanvas() {
 
       <div className="work-grid">
         {workItems.map((item, index) => (
-          <WorkCard item={item} index={index} key={item.title} />
+          <WorkCard item={item} index={index} suspended={suspended} key={item.title} />
         ))}
       </div>
 
@@ -1231,7 +1237,7 @@ function App() {
   const shell = (
     <div className="portfolio-shell">
       <ProfileRail suspended={showIntro} />
-      <WorkCanvas />
+      <WorkCanvas suspended={showIntro} />
     </div>
   );
 

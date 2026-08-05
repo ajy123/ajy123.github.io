@@ -106,8 +106,8 @@ const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";
 const DEELI_CHIPS = [
   "does the page say keyword search returned the same report for everyone?",
   "does the page say the interface was written as design primitives in design.md?",
-  "did the model get six of seven right on who the report was for?",
   "does the page say nl query share rose from 13% to 70%?",
+  "did the model get six of seven right on who the report was for?",
   "were 28% of queries re-asks?",
   "does the page name four moves: ask, scope, research, verify?",
 ];

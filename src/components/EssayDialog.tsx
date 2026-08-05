@@ -282,7 +282,7 @@ export function EssayDialog({
               transition={modalEnterTransition}
             >
               {heroSection ? (
-                <figure className="essay-dialog-figure essay-dialog-hero-figure">
+                <figure className="essay-dialog-figure">
                   {heroSection.visual}
                   {heroSection.visualCaption ? (
                     <figcaption className="essay-figure-caption">

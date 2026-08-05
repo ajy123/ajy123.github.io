@@ -191,9 +191,10 @@
   aspect-ratio: 16 / 9;
 }
 
-/* The promoted section figure carries the body figure's own top margin; the
-   hero already owns the gap to the dek above it. */
-.essay-dialog-hero-figure {
+/* The promoted section figure arrives with the body figure's own top margin;
+   the hero already owns the gap to the dek above it. Scoped through .hero so
+   it outranks .essay-dialog-figure's margin shorthand further down the file. */
+.essay-dialog-hero .essay-dialog-figure {
   margin-top: 0;
 }
 

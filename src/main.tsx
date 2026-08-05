@@ -700,9 +700,61 @@ function ThumbnailMedia({ item }: { item: WorkItem }) {
   );
 }
 
+// The two card videos are large — 7MB for the Deeli film, 17MB for the Brand
+// Identity montage — and the page used to fetch both before the visitor had
+// scrolled anywhere. preload="metadata" does not fix that: measured against
+// the production build, Chrome still pulled all 24MB at load. The only
+// reliable gate is giving the element nothing to fetch, so the <source> is
+// withheld until the card first enters the viewport, then mounted and load()ed
+// on the spot. A visitor who stops before the second card never pays for it.
+//
+// Pausing when the card leaves the viewport is the same idea in reverse: an
+// offscreen loop is bandwidth and battery nobody is watching. A pause the
+// visitor asked for is different from one the observer did, so userPausedRef
+// records theirs and the observer refuses to override it.
 function WorkMedia({ item }: { item: WorkItem }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const userPausedRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Matches the NYU figure video: reduced motion means the poster holds and
+    // the visitor presses play if they want the loop. Nothing is fetched until
+    // they do.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      userPausedRef.current = true;
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasEnteredView(true);
+          if (!userPausedRef.current) void video.play().catch(() => {});
+        } else if (!video.paused) {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  // A <source> appended after the element already tried to load is invisible to
+  // it until load() is called, so arming and starting playback belong together.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !hasEnteredView) return;
+
+    video.load();
+    if (!userPausedRef.current) void video.play().catch(() => {});
+  }, [hasEnteredView]);
 
   if (!item.media) {
     if (item.thumbnail) return <ThumbnailMedia item={item} />;
@@ -714,6 +766,13 @@ function WorkMedia({ item }: { item: WorkItem }) {
     if (!video) return;
 
     if (video.paused) {
+      userPausedRef.current = false;
+      // Under reduced motion the card is never armed on its own, so the first
+      // press is what mounts the source; the arming effect starts playback.
+      if (!hasEnteredView) {
+        setHasEnteredView(true);
+        return;
+      }
       try {
         await video.play();
         setIsPlaying(true);
@@ -721,6 +780,7 @@ function WorkMedia({ item }: { item: WorkItem }) {
         setIsPlaying(false);
       }
     } else {
+      userPausedRef.current = true;
       video.pause();
       setIsPlaying(false);
     }
@@ -731,16 +791,15 @@ function WorkMedia({ item }: { item: WorkItem }) {
       <video
         ref={videoRef}
         aria-label={`${item.title} preview`}
-        autoPlay
         loop
         muted
         playsInline
         poster={item.media.poster}
-        preload="auto"
+        preload="none"
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
       >
-        <source src={item.media.src} type={item.media.mimeType} />
+        {hasEnteredView ? <source src={item.media.src} type={item.media.mimeType} /> : null}
       </video>
       <MediaControl isPlaying={isPlaying} onToggle={() => void togglePlayback()} />
     </div>

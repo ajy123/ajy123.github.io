@@ -137,7 +137,9 @@ const CASE_PLACEHOLDER = "or ask anything about how this shipped";
 // its draft before that repeated what the opening chip already answers. A
 // follow-up should give the reader a reason to keep going, so it asks after a
 // stance instead: designing within what the data can honestly support, and
-// stating the bet before building.
+// stating the hypothesis before building. The chip says "hypothesis" where
+// nyu/index.html:565 says "bet"; a chip has to be answerable from the page,
+// not quote it, and "hypothesis" is the word a hiring reader is scanning for.
 // ---------------------------------------------------------------------------
 const SWIFTLY_CHIPS = [
   "why stop trying to improve the report?",
@@ -159,7 +161,7 @@ const NYU_CHIPS = [
   "how was the 33% turnaround measured?",
   "why keep the floating action button?",
   "who signed off before launch?",
-  "what was the bet before building?",
+  "what was the hypothesis before building?",
 ];
 
 const ESSAY_DEFAULT_PLACEHOLDER = "or ask anything about this essay";

@@ -18,10 +18,12 @@ import {
   CURSOR_CHAT_OPENED_EVENT,
   CURSOR_CHAT_REQUEST_OPEN_EVENT,
   requestCursorChatOpen,
+  type CaseContextKey,
   type CursorChatZoneContext,
   type CursorChatRequestOpenDetail,
   type SuggestedPrompt,
 } from "./chatEvents";
+import { CASE_CONTEXTS, toCaseContextKey } from "./caseContexts";
 import { SITE_CONTEXT } from "./siteContext";
 import { setLlmBusy } from "./llmActivity";
 import {
@@ -71,6 +73,7 @@ type OpenComposerOptions = {
   suggestedPrompts?: SuggestedPrompt[];
   followUpPrompts?: SuggestedPrompt[];
   zoneContext?: CursorChatZoneContext;
+  caseKey?: CaseContextKey;
   docked?: boolean;
   autoAsk?: string;
 };
@@ -93,6 +96,18 @@ type Thread = {
   promptPool?: SuggestedPrompt[];
   shownPromptIds: string[];
   zoneContext?: CursorChatZoneContext;
+  // The project digest this thread carries, chosen by the surface that opened
+  // it (a work card, a case-study ask zone). Frozen for the thread's life, and
+  // it outranks the page-level extraContext prop — see submitThread.
+  caseKey?: CaseContextKey;
+  // Opened from a zone that named itself, so the pointer must not retarget it.
+  // A card hands over its own chips, its own follow-ups and its own case
+  // digest; letting the pointer-follow effect re-resolve the section would
+  // swap all three for whatever the pointer drifts over next, while the topbar
+  // tag stayed put (every work card reads "ASKING ABOUT: THIS PROJECT"). That
+  // is how a thread opened from the NYU card came back offering Deeli's
+  // follow-up chips. Threads opened by "/" carry no zone and still follow.
+  zoneLocked?: boolean;
   // Opened by a pin press / auto-ask, i.e. the zone's own hint was sent as the
   // first question. Frozen at creation and read on every later turn: the hint
   // is a full question now, so quoting it back at the model alongside a
@@ -401,19 +416,35 @@ const THINKING_PHRASE_DELAYS_MS = [3000, 5500, 8000];
 
 // Only the most recent turns are re-sent to the API. Older turns rarely matter
 // for a portfolio chat, and an unbounded history would eventually trip the
-// worker's 40-message / 24k-char request limit and error the thread. The char
-// budget matters as much as the turn count: 8 turns of 2000-char prompts
-// (the composer's maxLength) plus full-length replies alone would blow the
-// worker's 24k cap, so trimming stops at whichever bound hits first.
+// worker's 40-message / 24k-char request limit and error the thread.
+//
+// The char budget is computed, not fixed. It used to be a flat 14000, chosen
+// against a system prompt assumed to be ~1.5-2k; SITE_CONTEXT alone is 4.3k
+// today and a case digest adds up to 5.1k more, so the fixed number described
+// a request that no longer existed and a long thread on a case-study page
+// could be assembled at ~28k and rejected outright by the worker (it rejects,
+// it does not truncate — see MAX_TOTAL_CHARS in worker/src/index.js). History
+// is the one part of the request that is safe to shorten, so it takes whatever
+// the system prompt and the new question leave behind.
 const MAX_HISTORY_TURNS = 8;
-const MAX_HISTORY_CHARS = 14000;
+// Mirrors the worker's MAX_TOTAL_CHARS. Keep the two in sync.
+const MAX_REQUEST_CHARS = 24000;
+// Slack for the JSON envelope and for anything the worker counts that this
+// arithmetic does not, so a request lands under the cap rather than exactly on
+// it. Also the floor: below this much room, history is dropped entirely and
+// the question still goes out grounded.
+const REQUEST_CHARS_RESERVE = 1000;
 
-function recentHistory(history: ChatTurn[]): ChatTurn[] {
+function recentHistory(history: ChatTurn[], budget: number): ChatTurn[] {
   const kept: ChatTurn[] = [];
   let chars = 0;
   for (const turn of history.slice(-MAX_HISTORY_TURNS).reverse()) {
-    chars += turn.prompt.length + turn.response.length;
-    if (chars > MAX_HISTORY_CHARS && kept.length > 0) break;
+    const next = chars + turn.prompt.length + turn.response.length;
+    // No `kept.length > 0` escape hatch here: the old rule kept one turn even
+    // when it overshot, which is exactly the case that gets the whole request
+    // rejected. Grounding and the question outrank an old turn.
+    if (next > budget) break;
+    chars = next;
     kept.unshift(turn);
   }
   return kept;
@@ -509,7 +540,21 @@ function buildMessages(
 
   const messages: ChatMessage[] = [{ role: "system", content: system }];
 
-  recentHistory(history).forEach((turn) => {
+  // What the worker's char count has left once the parts that cannot be
+  // shortened are accounted for.
+  const historyBudget = Math.max(
+    0,
+    MAX_REQUEST_CHARS - REQUEST_CHARS_RESERVE - system.length - prompt.length,
+  );
+  if (import.meta.env.DEV && historyBudget === 0) {
+    console.warn(
+      `[cursor-chat] system prompt (${system.length}) + question (${prompt.length}) ` +
+        `leaves no room for history under the worker's ${MAX_REQUEST_CHARS}-char cap. ` +
+        "Trim a case digest or SITE_CONTEXT.",
+    );
+  }
+
+  recentHistory(history, historyBudget).forEach((turn) => {
     messages.push(
       { role: "user", content: turn.prompt },
       { role: "assistant", content: turn.response },
@@ -652,6 +697,9 @@ export function CursorChat({
   // The section a draft thread is currently pointed at, so pointer moves that
   // stay inside the same section don't churn state.
   const resolvedElementRef = useRef<HTMLElement | null>(null);
+  // Where focus goes when the element that opened the panel is gone or hidden.
+  // Captured at close, consumed once by restoreFocus.
+  const focusFallbackRef = useRef<HTMLElement | null>(null);
   const draftRef = useRef("");
   // Mirrors whether the active thread still accepts retargeting, so the
   // pointer handler can bail before doing resolver work rather than
@@ -691,14 +739,37 @@ export function CursorChat({
     }, LEAVE_MS);
   };
 
+  // Rendered (not display:none, not detached). getClientRects is the cheap
+  // version of that question that also catches an ancestor being hidden.
+  const isRendered = (element: Element) =>
+    element.isConnected && element.getClientRects().length > 0;
+
   const restoreFocus = () => {
     window.requestAnimationFrame(() => {
       const previous = previousFocusRef.current;
-      if (previous?.isConnected) {
+      if (previous && isRendered(previous)) {
         previous.focus();
         return;
       }
-      document.querySelector<HTMLButtonElement>(".cursor-chat-fab")?.focus();
+      // The FAB is display:none above 860px on a fine pointer, and focusing a
+      // hidden element is a no-op that silently drops focus to <body> — so on
+      // desktop this fallback did nothing at all. Check before using it.
+      const fab = document.querySelector<HTMLButtonElement>(".cursor-chat-fab");
+      if (fab && isRendered(fab)) {
+        fab.focus();
+        return;
+      }
+      // Last resort: the section this thread was opened over, captured by
+      // closeActive before it released the ref. It is not normally focusable,
+      // so it gets a programmatic-only tabindex, the same pattern a dialog
+      // uses to return a reader to where they were rather than to the top of
+      // the document.
+      const zone = focusFallbackRef.current;
+      focusFallbackRef.current = null;
+      if (zone && isRendered(zone)) {
+        if (!zone.hasAttribute("tabindex")) zone.setAttribute("tabindex", "-1");
+        zone.focus({ preventScroll: true });
+      }
     });
   };
 
@@ -827,6 +898,7 @@ export function CursorChat({
         suggestedPrompts,
         followUpPrompts,
         zoneContext,
+        caseKey,
         docked,
         autoAsk,
       } = options;
@@ -853,8 +925,13 @@ export function CursorChat({
         return;
       }
 
+      // <body> is what document.activeElement reports when nothing is focused
+      // (a pointer open, a tap). Storing it makes restoreFocus think it has a
+      // target, and focusing <body> is a no-op — so the whole fallback chain
+      // was skipped and focus stayed exactly where it already was: nowhere.
       previousFocusRef.current =
-        document.activeElement instanceof HTMLElement
+        document.activeElement instanceof HTMLElement &&
+        document.activeElement !== document.body
           ? document.activeElement
           : null;
 
@@ -895,6 +972,19 @@ export function CursorChat({
       // the reader moved the pointer.
       const threadZoneContext =
         zoneContext ?? zoneContextFor(askContext.element, nearbyTextOverride);
+      // A "/" opened over a work card adopts that card's chips, so it has to
+      // adopt the card's grounding as well. Without this the card's own
+      // follow-ups reach the model with SITE_CONTEXT alone and come back "I
+      // don't know", which is the defect this registry exists to remove. The
+      // retarget handler reads the attribute too, but it bails when the pointer
+      // never leaves the card and again once history locks the thread, so it
+      // does not cover the ordinary press-then-click path. An explicit caseKey
+      // from the opening surface still wins.
+      const caseKeyElement =
+        askContext.element ??
+        (anchorElement instanceof HTMLElement ? anchorElement : undefined);
+      const threadCaseKey =
+        caseKey ?? toCaseContextKey(caseKeyElement?.dataset.askCase);
 
       // A text selection is about the selection, not the section, so it keeps
       // its own placeholder and offers no opening chips.
@@ -929,6 +1019,8 @@ export function CursorChat({
             (prompt) => prompt.id,
           ),
           zoneContext: threadZoneContext,
+          caseKey: threadCaseKey,
+          zoneLocked: Boolean(zoneContext),
           openedByAutoAsk: Boolean(autoAsk?.trim()),
           docked: isDocked,
           draftPlaceholder: fromSelection
@@ -983,6 +1075,7 @@ export function CursorChat({
         suggestedPrompts: detail?.suggestedPrompts,
         followUpPrompts: detail?.followUpPrompts,
         zoneContext: detail?.zoneContext,
+        caseKey: toCaseContextKey(detail?.caseKey),
         docked: detail?.docked,
         autoAsk: detail?.autoAsk,
       });
@@ -1012,7 +1105,8 @@ export function CursorChat({
       activeThread &&
         activeThread.status === "draft" &&
         !activeThread.history.length &&
-        !activeThread.selectedTextOverride,
+        !activeThread.selectedTextOverride &&
+        !activeThread.zoneLocked,
     );
   }, [activeThread]);
 
@@ -1071,12 +1165,24 @@ export function CursorChat({
           // change; the ref is the cheap gate, this is the correct one.
           if (thread.status !== "draft") return thread;
           if (thread.history.length || thread.selectedTextOverride) return thread;
+          // The correct gate for the zone lock too: a stop-before-first-token
+          // returns a thread to "draft", which flips followableRef back on a
+          // frame later, and that was one of the two ways a card-opened thread
+          // could still be retargeted.
+          if (thread.zoneLocked) return thread;
 
           const chips = toSuggestedPrompts(next.chips);
           return {
             ...thread,
             contextLabel: next.label,
             zoneContext,
+            // The case digest moves with the section for the same reason the
+            // zone instructions do: a "/" thread that drifts onto a work card
+            // is offered that card's chips, and half of them ask about detail
+            // only the project's own digest holds. Reading it off the resolved
+            // element keeps this in step with the chips it just adopted, and
+            // resolves to undefined on a zone that names no project.
+            caseKey: toCaseContextKey(next.element?.dataset.askCase),
             nearbyTextOverride: contextText,
             suggestedPrompts: chips,
             promptPool: buildPromptPool(
@@ -1096,6 +1202,11 @@ export function CursorChat({
     };
 
     const handleMove = (event: PointerEvent) => {
+      // Same guard the hover pin applies (see ContextualAskHint's pointermove
+      // handler): a finger is not a hover. On touch these events arrive while
+      // the reader is starting a scroll, so following them retargets a thread
+      // the reader opened deliberately.
+      if (event.pointerType === "touch") return;
       if (frame) return;
       const { clientX, clientY } = event;
       frame = window.requestAnimationFrame(() => {
@@ -1128,6 +1239,9 @@ export function CursorChat({
   // Close discards the thread. Nothing outlives the panel: a closed chat leaves
   // no marker on the page and no history to reopen.
   const closeActive = () => {
+    // Hand the section to restoreFocus before releasing it: the close is
+    // animated, so by the time focus is restored this ref is long since null.
+    focusFallbackRef.current = resolvedElementRef.current;
     // Release the resolved section so a closed panel can't retain a
     // detached subtree after that part of the page unmounts.
     resolvedElementRef.current = null;
@@ -1353,8 +1467,16 @@ export function CursorChat({
     }
     // Between here and the reply there is nothing on screen but a thinking
     // line, and a pin ask sends on a single keypress, so without this a screen
-    // reader gets no confirmation that anything was sent at all.
-    setAnnouncement("Question sent. Generating a reply.");
+    // reader gets no confirmation that anything was sent at all. What it
+    // confirms has to match what happened: a retry is not a new question, and
+    // plenty of what visitors type ("tell me about the eval") is a statement.
+    setAnnouncement(
+      querySource === "retry"
+        ? "Retrying. Generating a reply."
+        : message.endsWith("?")
+          ? "Question sent. Generating a reply."
+          : "Message sent. Generating a reply.",
+    );
     setDraft("");
 
     const patch = (updater: (thread: Thread) => Thread) =>
@@ -1377,7 +1499,11 @@ export function CursorChat({
       context,
       history,
       zoneContext,
-      extraContext,
+      // A thread that named its project outranks the page. On a case-study page
+      // the two agree; on the homepage only the thread knows, and without this
+      // the card's own chips ask about detail SITE_CONTEXT has never held.
+      (activeThread.caseKey ? CASE_CONTEXTS[activeThread.caseKey] : undefined) ??
+        extraContext,
       activeThread.openedByAutoAsk === true,
     );
   };

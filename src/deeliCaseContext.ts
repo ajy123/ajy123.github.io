@@ -4,13 +4,16 @@
 // whatever text happens to be under the cursor.
 //
 // Hard budget: <= 5100 characters for the DEELI_CASE_CONTEXT string value.
-// Measured length as of writing: 5094 chars.
+// Measured length as of writing: 5070 chars. Re-measure when you edit a bullet;
+// this note has drifted before, and headroom here is single digits, not slack.
 // The worker REJECTS (it does not truncate) any request over MAX_TOTAL_CHARS =
-// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~2k), zone
-// contextText (<=2200), the composer prompt (<=2000), and recentHistory
-// (MAX_HISTORY_CHARS = 14,000 in CursorChat.tsx). Every character spent here is
-// a character a long thread cannot spend on history before the worker 400s it,
-// so this digest is the one knob that trades grounding against thread length.
+// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~4.5k), zone
+// contextText (<=2200), the composer prompt (<=2000), and the history. History
+// is no longer a fixed allowance: recentHistory takes whatever the assembled
+// system prompt and the new question leave under the cap, so growing this
+// digest no longer risks a rejected request — it shortens the thread instead.
+// Measured on /deeli/, the system prompt runs ~12.5k, which leaves ~8.5k of
+// history, about two full turns.
 // The ceiling moved from 3500 to 5100 when the unpublished facts gained
 // explicit markers and the published quotes became verbatim: a marked, quoted
 // fact costs more characters than a bare paraphrase, and the alternatives
@@ -19,7 +22,12 @@
 // raise it without redoing that math.
 // The dev-only assert below fails loudly if the digest drifts over budget.
 //
-// The contract, which is NOT "everything below is on the page":
+// The contract, which is NOT "everything below is on the page". None of these
+// comments reach the model: the rules below bind it only because the first
+// bullet of the digest and each UNPUBLISHED marker restate them inside the
+// string. A reviewer has already read this block as the enforcement and cleared
+// a change on that basis. If you trim that first bullet or a marker to buy
+// characters, the rule is gone no matter what this comment still says.
 //   1. deeli/index.html published copy is authoritative. Where this file and
 //      the page disagree, the page wins and this file gets corrected.
 //   2. Published facts are citable and may be quoted back to a visitor.
@@ -56,8 +64,8 @@ export const DEELI_CASE_CONTEXT: string = [
   `- UNPUBLISHED, internal only, do not state to visitors: 263 tagged issues ranked by frequency x impact (report content led frequency, citations led impact, rare but severe); 21 benchmark runs where path-grounded retrieval, every claim traceable to a source, cost about 6x more per run than fast retrieval and was judged worth paying (6x is derived, rounded from $0.02 vs $0.11, i.e. 5.5x); logs and interviews showed multi-part, bilingual, role-specific asks the keyword box flattened into one topic.`,
   `- #ns-solution "Designed as a researcher's journey: ask, scope, watch the work, check the receipts." The page's four moves, quote these verbatim: "01 · Ask" / "Take the question, not the keyword"; "02 · Scope" / "Aim the report"; "03 · Research" / "Show the agents"; "04 · Verify" / "Make claims inspectable". Nothing else names them; express/aim/observe/verify is not page copy.`,
   `- Detail behind the moves (paraphrase, not page wording): 01 takes natural questions, fragments and bilingual queries, keeps the original and shows its interpretation separately, no silent rewrites. 02 asks one clarifying question back as tappable chips with a rewrite escape hatch; in the prototype a chip tap attaches a footnote and arms submit; submit shows a queued state, no report. 03 has each named agent report concrete source activity while generating, not a progress bar. 04 exposes source count, citations and drill-down paths.`,
-  `- #ns-outcome "Researchers trusted what came back." Published, first ~2 weeks live: natural-language query share rose 13% -> 70% (keyword fell 87% -> 30%); average queries per active day rose +220% from internal pilot to launch week 2, indexed 31% -> 53% -> 100%, same denominator.`,
-  `- UNPUBLISHED, internal only, do not state to visitors: 91 of 92 live queries returned an inspectable report (generation reliability, not research-outcome quality, which was evaluated separately). Never cite it as page copy.`,
+  `- #ns-outcome "Researchers changed how they asked, and kept coming back." Published, first ~2 weeks live: natural-language query share rose 13% -> 70% (keyword fell 87% -> 30%); average queries per active day rose +220% from internal pilot to launch week 2, indexed 31% -> 53% -> 100%.`,
+  `- UNPUBLISHED, internal only, do not state to visitors: 91 of 92 live queries returned an inspectable report (generation reliability, not research-outcome quality, which was evaluated separately).`,
   `- #ns-method "The story above ran on a working method." Published: persona.md is built from interviews, user feedback and usage data and feeds product prioritization, and upkeep that took "6+ hours a week now takes about one"; an AI judge grades every answer against the persona questions, so review asks which check failed instead of arguing taste; the interface is written as a few design primitives in design.md, and the doc is the handoff, engineers read it instead of meeting. UNPUBLISHED, do not state to visitors: those primitives are content not chrome, encode by exception, hierarchy via weight and space not color.`,
   `- #ns-postlaunch "28% of queries were re-asks. We're finding out why." Page copy: "Each re-ask raises one question: did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature." That answers any what-is-next question. No feature is committed or planned; never tell a visitor one is.`,
   `- UNPUBLISHED, internal only, do not state to visitors: one candidate direction was discussed and explicitly NOT committed to, surfacing the system's interpretation before generating so users can steer it and same-intent queries return one consistent report; candidate only, never describe it as planned. Also unpublished: near-identical queries sometimes produced different report titles, e.g. one MRAM-aerospace question asked 5x produced 2 different titles.`,

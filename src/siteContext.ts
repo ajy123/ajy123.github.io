@@ -41,7 +41,7 @@ const PROFILE: SiteProfile = {
       year: "2026",
       liveUrl: "/deeli/",
       summary:
-        "Search that clears up an ambiguous query, a word like 'market', before it answers. Queries per active day rose 220% from the internal pilot to launch week 2, measured on the same denominator, and real questions instead of keywords went from 13% to 70%.",
+        "Search that clears up an ambiguous query, a word like 'market', before it answers. Queries per active day rose 220% from the internal pilot to launch week 2, and real questions instead of keywords went from 13% to 70%.",
     },
     {
       title: "Brand Identity",
@@ -65,7 +65,7 @@ const PROFILE: SiteProfile = {
       year: "2018",
       liveUrl: "/nyu/",
       summary:
-        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. The team set the measurement plan before launch and instrumented all three metrics on day one: processing, training, and communication time. Average work-request turnaround was the first to report back, down roughly 33% in the first month on the team's own post-launch analytics. That number is early and directional, not an audited figure.",
+        "NYU Client Service staff processed maintenance requests across CSVs and disconnected tools. She replaced that with one work-order platform. The team set the measurement plan before launch and instrumented all three metrics on day one: turnaround, training, and communication time. Average work-request turnaround was the first to report back, down roughly 33% in the first month on Joanna's own post-launch analytics. That number is early and directional, not an audited figure.",
     },
   ],
   facts: [
@@ -76,9 +76,9 @@ const PROFILE: SiteProfile = {
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
     "On Swiftly, the team set the under-12-hour target deliberately ambitious. Investigation time still fell from 30+ hours to 12–24, so landing short of that target was a large improvement rather than a failure. The miss also taught the team that a single investigation-time target measured the wrong thing, because agencies triage differently.",
     "Joanna's read on why staff took to WorkLink: it replaced the CSV files and the software-hopping with one record in one system, so nobody had to check several places to be sure a maintenance request reached the right team.",
-    "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, processing, training, and communication time, on a measurement plan set before shipping.",
+    "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, turnaround, training, and communication time, on a measurement plan set before shipping.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
-    "She works across Figma and code (React, Vue) and ships what she designs.",
+    "She is a designer who writes code. She works in Figma and in React and Vue, and what she designs is usually what ships. Building is part of how she designs, so 'designer' is the right title for her and 'engineer' is not.",
     "She usually owns work end to end, but decisions are reached by consensus rather than made alone. She writes out the reasoning behind each decision and tracks it against data.",
     "Her personas and research regenerate every week because there are user interviews and feedback tickets every week, and that is when the team learns something new about users.",
     "LinkedIn profile, for a reader who wants more than this page carries: https://www.linkedin.com/in/joanna-yen (link only; its contents are not available here).",

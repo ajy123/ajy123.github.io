@@ -13,12 +13,22 @@ export type CursorChatZoneContext = {
   contextText?: string;
 };
 
+// Which project's grounding digest a thread should carry. The union lives here
+// rather than in caseContexts.ts so the surfaces that only name a key (work
+// cards, the ask pin, the open event) don't pull three case digests into their
+// bundle to do it. The key→digest map is in src/caseContexts.ts.
+export type CaseContextKey = "deeli" | "swiftly" | "nyu";
+
 export type CursorChatRequestOpenDetail = {
   clientX?: number;
   clientY?: number;
   suggestedPrompts?: SuggestedPrompt[];
   followUpPrompts?: SuggestedPrompt[];
   zoneContext?: CursorChatZoneContext;
+  // The project this chat is about, when the surface that opened it knows.
+  // Work cards and case-study ask zones set it; a "/" press or a text selection
+  // does not, and those threads keep whatever context the page itself passes.
+  caseKey?: CaseContextKey;
   // Touch entry points (FAB) ask the composer to open bottom-docked rather
   // than anchored at a point. Omitted = let the composer decide by viewport.
   docked?: boolean;

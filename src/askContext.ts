@@ -54,6 +54,8 @@ export function zoneKindLabel(kind?: string | null): string {
 }
 
 const DEELI_LABEL = "ASKING ABOUT: DEELI CASE STUDY";
+const SWIFTLY_LABEL = "ASKING ABOUT: SWIFTLY CASE STUDY";
+const NYU_LABEL = "ASKING ABOUT: NYU CASE STUDY";
 const HOME_LABEL = "ASKING ABOUT: JOANNA'S WORK";
 const ESSAY_LABEL = zoneKindLabel("essay"); // "ASKING ABOUT: THIS ESSAY" — fixed
 // wording per correction; the open essay's title is NOT interpolated in (it
@@ -106,12 +108,61 @@ const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";
 const DEELI_CHIPS = [
   "does the page say keyword search returned the same report for everyone?",
   "does the page say the interface was written as design primitives in design.md?",
-  "did the model get six of seven right on who the report was for?",
   "does the page say nl query share rose from 13% to 70%?",
+  "did the model get six of seven right on who the report was for?",
   "were 28% of queries re-asks?",
   "does the page name four moves: ask, scope, research, verify?",
 ];
-const DEELI_PLACEHOLDER = "or ask anything about how this shipped";
+const CASE_PLACEHOLDER = "or ask anything about how this shipped";
+
+// ---------------------------------------------------------------------------
+// /swiftly/ and /nyu/ page defaults. Before these existed, resolvePageDefault
+// special-cased only /deeli and every other path fell through to the homepage
+// set, so a reader on the Swiftly case study was offered "what is Joanna's
+// role?" and "what is Joanna's email?" while looking at a transit dashboard.
+// The digest for the page was loaded and could answer far better questions;
+// nothing invited them.
+//
+// Same rule as DEELI_CHIPS: each chip must be answerable from the PUBLISHED
+// page, not from the private grounding. These ask after the decisions the page
+// states its reasoning for, since that is what a hiring reader is trying to
+// judge. Verified against the page copy: "I stopped trying to improve the
+// report.", "In-service status leads: it is the one thing IT scans for", "I
+// chose a labeled color legend over icons", "Hover to monitor, click to
+// investigate", "The internal goal was not met." / "The target was under 12
+// hours per investigation.", "claims nothing the data cannot back up".
+//
+// The sixth slot on each page deliberately does NOT ask for a fact. Its first
+// draft ("what did one device issue cost before?") only recited a number, and
+// its draft before that repeated what the opening chip already answers. A
+// follow-up should give the reader a reason to keep going, so it asks after a
+// stance instead: designing within what the data can honestly support, and
+// stating the hypothesis before building. The chip says "hypothesis" where
+// nyu/index.html:565 says "bet"; a chip has to be answerable from the page,
+// not quote it, and "hypothesis" is the word a hiring reader is scanning for.
+// ---------------------------------------------------------------------------
+const SWIFTLY_CHIPS = [
+  "why stop trying to improve the report?",
+  "why does in-service status lead the table?",
+  "what did missing the under-12-hour goal teach?",
+  "why a labeled legend instead of icons?",
+  "why hover to monitor but click to investigate?",
+  "why claim nothing the data cannot back up?",
+];
+
+// Verified against nyu/index.html: "a workflow, not a row of data.", "I weighed
+// overload against scannability and chose a continuous form over a paginated
+// one", "I weighed button visibility against minimizing distraction and kept
+// the floating action button", "I ran two pre-launch loops", the measurement
+// note under the ~33% stat, and "I mapped how a request travels".
+const NYU_CHIPS = [
+  "why is a request a workflow, not a row?",
+  "why a continuous form instead of pagination?",
+  "how was the 33% turnaround measured?",
+  "why keep the floating action button?",
+  "who signed off before launch?",
+  "what was the hypothesis before building?",
+];
 
 const ESSAY_DEFAULT_PLACEHOLDER = "or ask anything about this essay";
 
@@ -143,7 +194,25 @@ function deeliPageDefault(): PageDefault {
     label: DEELI_LABEL,
     chips: DEELI_CHIPS,
     followUps: DEELI_CHIPS,
-    placeholder: DEELI_PLACEHOLDER,
+    placeholder: CASE_PLACEHOLDER,
+  };
+}
+
+function swiftlyPageDefault(): PageDefault {
+  return {
+    label: SWIFTLY_LABEL,
+    chips: SWIFTLY_CHIPS,
+    followUps: SWIFTLY_CHIPS,
+    placeholder: CASE_PLACEHOLDER,
+  };
+}
+
+function nyuPageDefault(): PageDefault {
+  return {
+    label: NYU_LABEL,
+    chips: NYU_CHIPS,
+    followUps: NYU_CHIPS,
+    placeholder: CASE_PLACEHOLDER,
   };
 }
 
@@ -201,8 +270,15 @@ function resolvePageDefault(): PageDefault {
     return homePageDefault(undefined);
   }
 
-  const isDeeli = window.location.pathname.startsWith("/deeli");
-  const underlyingPage = isDeeli ? deeliPageDefault() : homePageDefault(getAudienceRole());
+  const path = window.location.pathname;
+  const casePage = path.startsWith("/deeli")
+    ? deeliPageDefault()
+    : path.startsWith("/swiftly")
+      ? swiftlyPageDefault()
+      : path.startsWith("/nyu")
+        ? nyuPageDefault()
+        : undefined;
+  const underlyingPage = casePage ?? homePageDefault(getAudienceRole());
 
   // Essay open outranks pathname: the essay modal can be reached from either
   // page (src/main.tsx and src/deeliChatApp.tsx both mount EssayDialog off

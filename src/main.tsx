@@ -20,6 +20,7 @@ import {
   requestCursorChatOpen,
   toSuggestedPrompts,
 } from "./chatEvents";
+import type { CaseContextKey } from "./chatEvents";
 import {
   ContextualAskHint,
   type AskableKind,
@@ -76,6 +77,7 @@ const workItems: WorkItem[] = [
     askHint: "How does she design what AI says?",
     askKind: "project",
     askAnchorPreference: "cursor",
+    askCaseKey: "deeli",
     askPromptChips: [
       "did queries per active day rise 220% after launch?",
       "did 70% of queries become real questions instead of keywords?",
@@ -83,18 +85,19 @@ const workItems: WorkItem[] = [
     ],
     // Follow-ups press on a published claim from each of the case study's three
     // evidence areas: the eval miss (research), the re-ask rate (post-launch),
-    // and the headline growth number's baseline (outcome). Only the third one
-    // answers where these chips render. workItems is homepage-only (the map at
-    // the bottom of WorkCanvas is its one consumer), the homepage chat gets
-    // SITE_CONTEXT and no extraContext, and siteContext.ts carries the baseline
-    // in its own words. The six-of-seven and 28% figures live only in
-    // DEELI_CASE_CONTEXT, which deeliChatApp passes on /deeli/, where no card
-    // renders these chips — so the first two answer "I don't know" wherever a
-    // visitor can actually click them. Both need a rewrite against SITE_CONTEXT.
+    // and the headline growth number's baseline (outcome). The first two are
+    // answerable only from DEELI_CASE_CONTEXT, which is why this card sets
+    // askCaseKey — that digest also carries the guardrails these two questions
+    // need ("the page gives the pattern, never the case"; "no feature is
+    // committed"), so the question and its rail arrive together. The third asks
+    // what the baseline was, not why it is comparable: the page dropped its
+    // "same denominator" phrasing precisely because the pilot ran on a
+    // different surface, so a chip that asked the model to defend
+    // comparability would be asking it to reassert what the page retracted.
     askFollowUpPromptChips: [
       "The model got six of seven right. What happened to the seventh?",
       "How is 28% of queries coming back as re-asks not a failure?",
-      "The 220% compares an internal pilot to launch week 2. What makes that comparable?",
+      "The 220% is measured against an internal pilot. What was that baseline?",
     ],
     summary:
       "Search that clears up an ambiguous query, a word like 'market', before it answers. Queries per active day rose 220%, and real questions instead of keywords went from 13% to 70%.",
@@ -121,8 +124,8 @@ const workItems: WorkItem[] = [
       poster: caseStudyPosterUrl,
     },
   },
-  // Case-study page still to be built; card carries the coded thumbnail + status
-  // flag until it ships. Copy locked against the deck (deck numbers only) + résumé.
+  // Copy locked against the deck (deck numbers only) + résumé. The card keeps
+  // its coded thumbnail rather than video; /swiftly/ has shipped since.
   {
     eyebrow: "Product design",
     title: "From paper reports to live monitoring",
@@ -134,22 +137,23 @@ const workItems: WorkItem[] = [
     askHint: "Why 12–24 hours, not under 12?",
     askKind: "project",
     askAnchorPreference: "cursor",
+    askCaseKey: "swiftly",
     askPromptChips: [
       "did investigation time drop from 30+ hrs to 12–24 hrs?",
       "did the tool hit its under-12-hour goal?",
-      "why did you choose a color legend over icons?",
+      "why a color legend instead of status icons?",
     ],
     askFollowUpPromptChips: [
-      "You missed your own <12-hour goal. What did that teach you?",
+      "The team missed its own under-12-hour goal. What did that teach them?",
       "Why hover instead of click for the device status view?",
-      "How did this project shift the team from engineering-led to design-led?",
+      "How did this project change how the team planned?",
     ],
     summary:
       "A 0-to-1 dashboard that let transit IT spot failing in-vehicle devices themselves instead of waiting on daily reports. Investigation time fell from 30+ hours to 12–24, and requests to the internal team dropped 20%.",
     thumbnail: SwiftlyThumbnail,
   },
-  // Case-study page still to be built; card carries the coded thumbnail + status
-  // flag until it ships. Copy locked against the résumé (real project facts).
+  // Copy locked against the résumé (real project facts). The card keeps its
+  // coded thumbnail rather than video; /nyu/ has shipped since.
   {
     eyebrow: "Product design",
     title: "Unifying campus maintenance",
@@ -161,6 +165,7 @@ const workItems: WorkItem[] = [
     askHint: "Why did staff actually adopt it?",
     askKind: "project",
     askAnchorPreference: "cursor",
+    askCaseKey: "nyu",
     askPromptChips: [
       "what did staff use before the unified platform?",
       "why one form view instead of pagination?",
@@ -168,8 +173,8 @@ const workItems: WorkItem[] = [
     ],
     askFollowUpPromptChips: [
       "How was the 33% turnaround improvement measured?",
-      "How did you decide to keep the floating action button over the alternatives?",
-      "What would you build next if you'd kept working on this?",
+      "Why keep the floating action button over the alternatives?",
+      "What would she build next if the project had continued?",
     ],
     summary:
       "NYU Client Service staff ran maintenance requests through CSVs and disconnected tools. I replaced that with one work-order platform. Work-request turnaround fell roughly 33% in the first month.",
@@ -203,12 +208,14 @@ function handleAskableTap(
     chips,
     followUpChips,
     contextText,
+    caseKey,
   }: {
     hint: string;
     kind: AskableKind;
     chips: string[];
     followUpChips: string[];
     contextText?: string;
+    caseKey?: CaseContextKey;
   },
 ) {
   if (!isCoarsePointer()) return;
@@ -224,6 +231,7 @@ function handleAskableTap(
     clientY: event.clientY,
     suggestedPrompts: toSuggestedPrompts(chips.length ? chips : [hint]),
     followUpPrompts: toSuggestedPrompts(followUpChips),
+    caseKey,
     zoneContext: {
       hint,
       kind,
@@ -377,6 +385,7 @@ function AskableRegion({
   promptChips,
   followUpPromptChips,
   contextText,
+  caseKey,
 }: {
   children: ReactNode;
   className?: string;
@@ -386,6 +395,7 @@ function AskableRegion({
   promptChips?: string[];
   followUpPromptChips?: string[];
   contextText?: string;
+  caseKey?: CaseContextKey;
 }) {
   return (
     <div
@@ -396,6 +406,10 @@ function AskableRegion({
       data-ask-prompts={JSON.stringify(promptChips ?? [hint])}
       data-ask-follow-up-prompts={JSON.stringify(followUpPromptChips ?? [])}
       data-ask-context={contextText}
+      // Read back off the DOM by the hover-pin path (ContextualAskHint reads
+      // the zone element, not this component's props), so both entry points
+      // send the same key.
+      data-ask-case={caseKey}
       tabIndex={0}
       aria-label={`${hint} ${askActionSuffix()}`}
       onClick={(event) =>
@@ -405,6 +419,7 @@ function AskableRegion({
           chips: promptChips ?? [hint],
           followUpChips: followUpPromptChips ?? [],
           contextText,
+          caseKey,
         })
       }
     >
@@ -509,9 +524,9 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
               <span className="bio-hl">
                 Deeli AI&apos;s research assistant
               </span>
-              , I design what it says, test its answers before they ship, and
-              plan for when it&apos;s wrong. I own it end to end, and I start
-              from the system.
+              , I design what the model says, test its answers before they
+              ship, and plan for when it&apos;s wrong. I own that end to end,
+              and I start from the system.
             </p>
 
             {/*
@@ -929,6 +944,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
           anchorPreference={item.askAnchorPreference}
           promptChips={item.askPromptChips}
           followUpPromptChips={item.askFollowUpPromptChips}
+          caseKey={item.askCaseKey}
           contextText={[
             item.title,
             item.role,

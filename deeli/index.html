@@ -355,9 +355,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
   <div class="wrap">
     <header class="masthead">
       <h1 id="sol-b-title">Researchers stopped trusting Deeli&rsquo;s generic reports. I&nbsp;rebuilt its search as a research assistant that asks what you need.</h1>
-<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. I built it from what researchers asked for, and from one test the model couldn&rsquo;t pass.</p>
+<p class="mast-lede">Two weeks after launch, queries per active day were up 220% and 70% arrived as real questions instead of keywords. I built it from what researchers asked for, and from the one query the model couldn&rsquo;t place.</p>
       <dl class="na-dossier" aria-label="Project facts">
-        <div><dt>Product</dt><dd>Deeli<small>Top-5 semiconductor foundry</small></dd></div>
+        <div><dt>Product</dt><dd>Deeli<small>Enterprise pilot with a top-5 semiconductor foundry</small></dd></div>
         <div><dt>Role</dt><dd>Only designer, research to launch</dd></div>
         <div><dt>Team</dt><dd>5-engineer build</dd></div>
         <div><dt>Shipped</dt><dd>June 2026</dd></div>
@@ -540,6 +540,24 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
         min-width: 0;
       }
     }
+    /* Below 320 the shrink-in-proportion fix above runs out of room: both sides
+       are already at min-content and the result's longest word still does not
+       fit beside the label, so it overhangs the card again (0.2px at 305, ~11px
+       at 280). Widths that narrow have no two-column answer, so the row stops
+       being two columns: label over result, both left-aligned, each with the
+       full card width to wrap in. text-align:right is what makes the result read
+       as a second column, so it goes with the row direction. */
+    @media (max-width:319px) {
+      .sol-b .mtr-step {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+      }
+
+      .sol-b .mtr-result {
+        text-align: left;
+      }
+    }
     .sol-b .mtr-foot {
       margin: 10px 0 0 4px;
       font-size: 10px;
@@ -579,7 +597,7 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     <p class="turn-callout"><b>The design lives where the two met:</b> when the model can&rsquo;t be sure, it <em>asks</em>. A good support conversation makes the same first move.</p>
 
     <article class="act" id="ns-solution" aria-labelledby="sol-b-act3">
-      <div class="act-head"><p class="eyebrow">The solution</p><h2 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h2><p class="measure">I designed Deeli to behave like a research assistant. Three of the four steps meet expectations researchers told us about. The second exists because of the one test the model couldn&rsquo;t pass.</p></div>
+      <div class="act-head"><p class="eyebrow">The solution</p><h2 id="sol-b-act3">Designed as a researcher&rsquo;s journey: ask, scope, watch the work, check the receipts.</h2><p class="measure">I designed Deeli to behave like a research assistant. Three of the four steps meet expectations researchers told us about. The second exists because of the one query the model couldn&rsquo;t place, so it asked instead of guessing.</p></div>
 
       <!-- The four cards are a single-choice selector over the prototype
            panels below, so they are a tablist, not four independent toggles.
@@ -3088,9 +3106,9 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     </article>
 
     <article class="act" id="ns-outcome" aria-labelledby="sol-b-outcome">
-      <div class="act-head"><p class="eyebrow">Outcome</p><h2 id="sol-b-outcome">Researchers trusted what came back.</h2></div>
+      <div class="act-head"><p class="eyebrow">Outcome</p><h2 id="sol-b-outcome">Researchers changed how they asked, and kept coming back.</h2></div>
       <div class="outcome-grid">
-<div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, same denominator.</p></div>
+<div class="metric"><p class="big tnum">+220%</p><p class="lede">Queries &middot; per active day</p><p class="measure">Internal pilot vs. launch week 2, queries per active day.</p></div>
         <div class="metric"><p class="big tnum">70%</p><p class="lede">Behavior change &middot; natural-language queries</p><p class="measure">Researchers changed how they ask. Within two weeks of launch, 70% of live queries were real questions instead of keywords. That&rsquo;s the behavior the redesign was built to earn.</p></div>
       </div>
       <div class="na-charts">

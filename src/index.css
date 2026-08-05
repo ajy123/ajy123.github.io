@@ -340,41 +340,48 @@ h1 span {
   list-style: none;
 }
 
+/* Two-line row: company and year share the top line, the label owns the one
+   below. The label used to sit inline after the company, so its left edge
+   moved with each company's width — "Deeli AI" and "Diligent" pushed their
+   labels to four different x positions and the column read as ragged. Giving
+   the label the full row width starts every "Product design" on the list's own
+   left edge, which is the only vertical the eye can use to compare rows. */
 .rail-ledger li {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: baseline;
-  gap: 8px;
-  padding: 5px 0;
+  column-gap: 12px;
+  padding: 6px 0;
   font-size: 13px;
   line-height: 1.4;
 }
 
 .rail-ledger-co {
+  grid-column: 1;
+  grid-row: 1;
   color: var(--ink);
   font-weight: 500;
-  white-space: nowrap;
 }
 
 /* Each label carries a discipline and a domain ("Product design, news
    analytics"), too long for the rail on one line. The rail column is 216px at
-   the clamp floor and only 192px between 861px and 1100px, so dropping
-   `white-space: nowrap` is what fixes this: with it, the row could not break
-   the label, and the flex row grew the column past its own width and clipped
-   the bio and ask card mid-word. Measured at 1024px, the old rule pushed the
-   216px column to 270px.
-   No `min-width: 0` here on purpose. `overflow: hidden` on the old rule already
-   zeroed the automatic minimum size, so it was never what held the layout
-   together. `overflow-wrap` replaces the clipping that rule used to provide:
-   wrapping handles ordinary labels, and this catches a single token too long
-   for the column. The row stays `align-items: baseline`, so the year keeps its
-   baseline on the label's first line. */
+   the clamp floor and only 192px between 861px and 1100px, so the label keeps
+   `overflow-wrap` for the case where a single token still outruns the column.
+   It spans both grid columns rather than sitting in column 1, so a wrap uses
+   the full rail width instead of stopping short under the year. */
 .rail-ledger-role {
+  grid-column: 1 / -1;
+  grid-row: 2;
   overflow-wrap: anywhere;
   color: var(--muted);
 }
 
+/* Year and label carry the same muted tone: one step down from the company,
+   not two. The distinction between them is positional and numeric, so a third
+   grey would only muddy which of the two is the row's subject. */
 .rail-ledger-yr {
-  margin-left: auto;
+  grid-column: 2;
+  grid-row: 1;
   color: var(--muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
@@ -1603,10 +1610,19 @@ a.card-eyebrow-flag .flag-verb {
   }
 
   /* Coded thumbnails have no motion under reduced motion, so their play/pause
-     control would be inert — hide it. Video controls stay: the video still
-     plays. */
+     control would be inert — hide it. */
   .work-media--thumbnail .work-media-control {
     display: none;
+  }
+
+  /* Video controls do the opposite: under reduced motion the card no longer
+     plays by itself, so the control is the only way to start it and the only
+     sign the still is a video at all. Hidden until hover, a pointer visitor
+     would see two static images and never learn otherwise, so it stays up. The
+     NYU figure video's control follows the same rule. */
+  .work-media-control {
+    opacity: 1;
+    transform: none;
   }
 
   .reveal {

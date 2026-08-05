@@ -568,30 +568,26 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>
-                <span className="rail-ledger-role">
-                  Product design, AI research
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">AI research</span>
                 <span className="rail-ledger-yr">now</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Swiftly</span>
-                <span className="rail-ledger-role">
-                  Product design, transit data
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">transit data</span>
                 <span className="rail-ledger-yr">&rsquo;22</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Diligent</span>
-                <span className="rail-ledger-role">
-                  Product design, news analytics
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">news analytics</span>
                 <span className="rail-ledger-yr">&rsquo;20</span>
               </li>
               <li>
                 <span className="rail-ledger-co">NYU</span>
-                <span className="rail-ledger-role">
-                  Product design, campus ops
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">campus ops</span>
                 <span className="rail-ledger-yr">&rsquo;18</span>
               </li>
             </ul>
@@ -700,9 +696,90 @@ function ThumbnailMedia({ item }: { item: WorkItem }) {
   );
 }
 
-function WorkMedia({ item }: { item: WorkItem }) {
+// The two card videos are large — 7MB for the Deeli film, 17MB for the Brand
+// Identity montage — and the page used to fetch both before the visitor had
+// scrolled anywhere. preload="metadata" does not fix that: measured against
+// the production build, Chrome still pulled all 24MB at load. The only
+// reliable gate is giving the element nothing to fetch, so the <source> is
+// withheld until the card first enters the viewport and mounted then. A visitor
+// who stops before the second card never pays for it.
+//
+// Pausing when the card leaves the viewport is the same idea in reverse: an
+// offscreen loop is bandwidth and battery nobody is watching. A pause the
+// visitor asked for is different from one the observer did, so userPausedRef
+// records theirs and the observer refuses to override it.
+function WorkMedia({ item, suspended }: { item: WorkItem; suspended: boolean }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const userPausedRef = useRef(false);
+  // The observer and the arming effect each need to know what the other last
+  // saw, and neither can read the other's state without re-subscribing, so the
+  // two facts that cross between them live in refs.
+  const inViewRef = useRef(false);
+  const armedRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    // While the intro is up the cards sit in the layout viewport but behind a
+    // full-screen overlay, and an IntersectionObserver counts them as visible
+    // anyway. On a desktop viewport both video cards land in that first screen,
+    // so arming here fetched all 24MB before the visitor had even entered the
+    // site — the exact cost this gate exists to avoid. Waiting until the intro
+    // is dismissed also keeps the fetch clear of first paint.
+    if (!video || suspended) return;
+
+    // Matches the NYU figure video: reduced motion means the poster holds and
+    // the visitor presses play if they want the loop. Nothing is fetched until
+    // they do. The observer still runs, so a video they did start still stops
+    // when it leaves the viewport.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      userPausedRef.current = true;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // The callback receives a queue, not a single record. A fast scroll or
+        // a blocked frame can deliver enter-then-exit together, and reading
+        // entries[0] would act on the stale enter and leave the card playing
+        // offscreen.
+        const entry = entries[entries.length - 1];
+        inViewRef.current = entry.isIntersecting;
+
+        if (!entry.isIntersecting) {
+          if (!video.paused) video.pause();
+          return;
+        }
+
+        // Calling play() before the <source> is committed would flip paused to
+        // false with nothing loaded: the control would read "Pause preview"
+        // over a still poster, and pressing it would register as the visitor
+        // pausing. Arm first and let the arming effect start playback.
+        if (!armedRef.current) {
+          setHasEnteredView(true);
+          return;
+        }
+        if (!userPausedRef.current) void video.play().catch(() => {});
+      },
+      { threshold: 0.25 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [suspended]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !hasEnteredView) return;
+
+    armedRef.current = true;
+    // Inserting a <source> into an element that has loaded nothing starts
+    // resource selection by itself. Calling load() anyway aborts that fetch and
+    // reissues it, and the emptied event snaps any decoded frame back to the
+    // poster — so only load() when the insertion did not already do it.
+    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
+    if (!userPausedRef.current && inViewRef.current) void video.play().catch(() => {});
+  }, [hasEnteredView]);
 
   if (!item.media) {
     if (item.thumbnail) return <ThumbnailMedia item={item} />;
@@ -714,6 +791,16 @@ function WorkMedia({ item }: { item: WorkItem }) {
     if (!video) return;
 
     if (video.paused) {
+      userPausedRef.current = false;
+      // Under reduced motion the card is never armed on its own, so the first
+      // press is what mounts the source; the arming effect starts playback.
+      // They pressed the control, so the card is by definition in front of them
+      // — say so, in case the observer has not reported yet.
+      if (!hasEnteredView) {
+        inViewRef.current = true;
+        setHasEnteredView(true);
+        return;
+      }
       try {
         await video.play();
         setIsPlaying(true);
@@ -721,6 +808,7 @@ function WorkMedia({ item }: { item: WorkItem }) {
         setIsPlaying(false);
       }
     } else {
+      userPausedRef.current = true;
       video.pause();
       setIsPlaying(false);
     }
@@ -731,16 +819,15 @@ function WorkMedia({ item }: { item: WorkItem }) {
       <video
         ref={videoRef}
         aria-label={`${item.title} preview`}
-        autoPlay
         loop
         muted
         playsInline
         poster={item.media.poster}
-        preload="auto"
+        preload="none"
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
       >
-        <source src={item.media.src} type={item.media.mimeType} />
+        {hasEnteredView ? <source src={item.media.src} type={item.media.mimeType} /> : null}
       </video>
       <MediaControl isPlaying={isPlaying} onToggle={() => void togglePlayback()} />
     </div>
@@ -863,8 +950,8 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
   );
 }
 
-function WorkCardMedia({ item }: { item: WorkItem }) {
-  if (!item.liveHref) return <WorkMedia item={item} />;
+function WorkCardMedia({ item, suspended }: { item: WorkItem; suspended: boolean }) {
+  if (!item.liveHref) return <WorkMedia item={item} suspended={suspended} />;
 
   // Internal links (e.g. the case-study page) navigate in the same tab;
   // external product sites keep opening in a new one.
@@ -884,7 +971,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
       data-ask-kind="action"
       data-ask-anchor="cursor"
     >
-      <WorkMedia item={item} />
+      <WorkMedia item={item} suspended={suspended} />
       <a
         className="work-media-link"
         href={item.liveHref}
@@ -897,7 +984,7 @@ function WorkCardMedia({ item }: { item: WorkItem }) {
   );
 }
 
-function WorkCard({ item, index }: { item: WorkItem; index: number }) {
+function WorkCard({ item, index, suspended }: { item: WorkItem; index: number; suspended: boolean }) {
   const cardBody = (
     <>
       <h2 className="card-title">{item.title}</h2>
@@ -918,7 +1005,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
           <p className="card-eyebrow-flag">{item.status}</p>
         ) : null}
       </div>
-      <WorkCardMedia item={item} />
+      <WorkCardMedia item={item} suspended={suspended} />
       {item.summary ? <p className="card-summary">{item.summary}</p> : null}
     </>
   );
@@ -987,7 +1074,7 @@ function WorkCard({ item, index }: { item: WorkItem; index: number }) {
   );
 }
 
-function WorkCanvas() {
+function WorkCanvas({ suspended }: { suspended: boolean }) {
   return (
     <main className="work-canvas" aria-label="Selected work">
       <Reveal as="div" className="work-heading">
@@ -998,7 +1085,7 @@ function WorkCanvas() {
 
       <div className="work-grid">
         {workItems.map((item, index) => (
-          <WorkCard item={item} index={index} key={item.title} />
+          <WorkCard item={item} index={index} suspended={suspended} key={item.title} />
         ))}
       </div>
 
@@ -1150,7 +1237,7 @@ function App() {
   const shell = (
     <div className="portfolio-shell">
       <ProfileRail suspended={showIntro} />
-      <WorkCanvas />
+      <WorkCanvas suspended={showIntro} />
     </div>
   );
 

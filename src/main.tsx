@@ -568,30 +568,26 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>
-                <span className="rail-ledger-role">
-                  Product design, AI research
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">AI research</span>
                 <span className="rail-ledger-yr">now</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Swiftly</span>
-                <span className="rail-ledger-role">
-                  Product design, transit data
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">transit data</span>
                 <span className="rail-ledger-yr">&rsquo;22</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Diligent</span>
-                <span className="rail-ledger-role">
-                  Product design, news analytics
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">news analytics</span>
                 <span className="rail-ledger-yr">&rsquo;20</span>
               </li>
               <li>
                 <span className="rail-ledger-co">NYU</span>
-                <span className="rail-ledger-role">
-                  Product design, campus ops
-                </span>
+                <span className="rail-ledger-role">Product design</span>
+                <span className="rail-ledger-dom">campus ops</span>
                 <span className="rail-ledger-yr">&rsquo;18</span>
               </li>
             </ul>
@@ -705,8 +701,8 @@ function ThumbnailMedia({ item }: { item: WorkItem }) {
 // scrolled anywhere. preload="metadata" does not fix that: measured against
 // the production build, Chrome still pulled all 24MB at load. The only
 // reliable gate is giving the element nothing to fetch, so the <source> is
-// withheld until the card first enters the viewport, then mounted and load()ed
-// on the spot. A visitor who stops before the second card never pays for it.
+// withheld until the card first enters the viewport and mounted then. A visitor
+// who stops before the second card never pays for it.
 //
 // Pausing when the card leaves the viewport is the same idea in reverse: an
 // offscreen loop is bandwidth and battery nobody is watching. A pause the
@@ -715,6 +711,11 @@ function ThumbnailMedia({ item }: { item: WorkItem }) {
 function WorkMedia({ item }: { item: WorkItem }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const userPausedRef = useRef(false);
+  // The observer and the arming effect each need to know what the other last
+  // saw, and neither can read the other's state without re-subscribing, so the
+  // two facts that cross between them live in refs.
+  const inViewRef = useRef(false);
+  const armedRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasEnteredView, setHasEnteredView] = useState(false);
 
@@ -724,20 +725,35 @@ function WorkMedia({ item }: { item: WorkItem }) {
 
     // Matches the NYU figure video: reduced motion means the poster holds and
     // the visitor presses play if they want the loop. Nothing is fetched until
-    // they do.
+    // they do. The observer still runs, so a video they did start still stops
+    // when it leaves the viewport.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       userPausedRef.current = true;
-      return;
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasEnteredView(true);
-          if (!userPausedRef.current) void video.play().catch(() => {});
-        } else if (!video.paused) {
-          video.pause();
+      (entries) => {
+        // The callback receives a queue, not a single record. A fast scroll or
+        // a blocked frame can deliver enter-then-exit together, and reading
+        // entries[0] would act on the stale enter and leave the card playing
+        // offscreen.
+        const entry = entries[entries.length - 1];
+        inViewRef.current = entry.isIntersecting;
+
+        if (!entry.isIntersecting) {
+          if (!video.paused) video.pause();
+          return;
         }
+
+        // Calling play() before the <source> is committed would flip paused to
+        // false with nothing loaded: the control would read "Pause preview"
+        // over a still poster, and pressing it would register as the visitor
+        // pausing. Arm first and let the arming effect start playback.
+        if (!armedRef.current) {
+          setHasEnteredView(true);
+          return;
+        }
+        if (!userPausedRef.current) void video.play().catch(() => {});
       },
       { threshold: 0.25 },
     );
@@ -746,14 +762,17 @@ function WorkMedia({ item }: { item: WorkItem }) {
     return () => observer.disconnect();
   }, []);
 
-  // A <source> appended after the element already tried to load is invisible to
-  // it until load() is called, so arming and starting playback belong together.
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !hasEnteredView) return;
 
-    video.load();
-    if (!userPausedRef.current) void video.play().catch(() => {});
+    armedRef.current = true;
+    // Inserting a <source> into an element that has loaded nothing starts
+    // resource selection by itself. Calling load() anyway aborts that fetch and
+    // reissues it, and the emptied event snaps any decoded frame back to the
+    // poster — so only load() when the insertion did not already do it.
+    if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
+    if (!userPausedRef.current && inViewRef.current) void video.play().catch(() => {});
   }, [hasEnteredView]);
 
   if (!item.media) {
@@ -769,7 +788,10 @@ function WorkMedia({ item }: { item: WorkItem }) {
       userPausedRef.current = false;
       // Under reduced motion the card is never armed on its own, so the first
       // press is what mounts the source; the arming effect starts playback.
+      // They pressed the control, so the card is by definition in front of them
+      // — say so, in case the observer has not reported yet.
       if (!hasEnteredView) {
+        inViewRef.current = true;
         setHasEnteredView(true);
         return;
       }

@@ -401,12 +401,6 @@ h1 span {
   white-space: nowrap;
 }
 
-.social-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 /* Contact block anchored at the bottom of the rail, above the copyright.
    Resume / LinkedIn / Email all follow the GitHub block's design: bold ink
    label, optional muted secondary, icon pushed right, hover → ink. */
@@ -443,14 +437,6 @@ h1 span {
   font-size: var(--rl-label-size, 12px);
 }
 
-.rail-link-sub {
-  overflow: hidden;
-  color: var(--muted);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  transition: color 0.35s var(--spring);
-}
-
 .rail-link svg {
   width: var(--rl-icon-size, 12px);
   height: var(--rl-icon-size, 12px);
@@ -470,10 +456,6 @@ h1 span {
 
 .rail-link:hover .rail-link-label,
 .rail-link:hover svg {
-  color: var(--ink);
-}
-
-.rail-link.is-copied .rail-link-sub {
   color: var(--ink);
 }
 
@@ -536,9 +518,6 @@ h1 span {
 .rail-link-leader {
   display: none; /* inert in every variant except dotleader */
 }
-.rail-footer-body[data-variant="dotleader"] .rail-link-sub {
-  display: none;
-}
 .rail-footer-body[data-variant="dotleader"] .rail-link-leader {
   display: block;
   flex: 1;
@@ -578,10 +557,6 @@ h1 span {
   transform: translateY(var(--rl-key-depth, 3px));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); /* pressed flat */
 }
-.rail-footer-body[data-variant="keycap"] .rail-link-sub {
-  display: none;
-}
-
 .work-canvas {
   flex: 1;
   min-width: 0;

@@ -4,13 +4,16 @@
 // whatever text happens to be under the cursor.
 //
 // Hard budget: <= 5100 characters for the DEELI_CASE_CONTEXT string value.
-// Measured length as of writing: 5094 chars.
+// Measured length as of writing: 5070 chars. Re-measure when you edit a bullet;
+// this note has drifted before, and headroom here is single digits, not slack.
 // The worker REJECTS (it does not truncate) any request over MAX_TOTAL_CHARS =
-// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~2k), zone
-// contextText (<=2200), the composer prompt (<=2000), and recentHistory
-// (MAX_HISTORY_CHARS = 14,000 in CursorChat.tsx). Every character spent here is
-// a character a long thread cannot spend on history before the worker 400s it,
-// so this digest is the one knob that trades grounding against thread length.
+// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~4.5k), zone
+// contextText (<=2200), the composer prompt (<=2000), and the history. History
+// is no longer a fixed allowance: recentHistory takes whatever the assembled
+// system prompt and the new question leave under the cap, so growing this
+// digest no longer risks a rejected request — it shortens the thread instead.
+// Measured on /deeli/, the system prompt runs ~12.5k, which leaves ~8.5k of
+// history, about two full turns.
 // The ceiling moved from 3500 to 5100 when the unpublished facts gained
 // explicit markers and the published quotes became verbatim: a marked, quoted
 // fact costs more characters than a bare paraphrase, and the alternatives

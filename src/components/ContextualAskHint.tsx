@@ -8,8 +8,10 @@ import {
 import {
   CURSOR_CHAT_OPENED_EVENT,
   requestCursorChatOpen,
+  type CaseContextKey,
   type SuggestedPrompt,
 } from "../chatEvents";
+import { toCaseContextKey } from "../caseContexts";
 import { TextScramble } from "./TextScramble";
 
 export type AskableKind = "project" | "essay" | "profile" | "contact" | "action";
@@ -42,6 +44,7 @@ type ActiveHint = {
   anchorPreference: AskAnchorPreference;
   suggestedPrompts: SuggestedPrompt[];
   followUpPrompts: SuggestedPrompt[];
+  caseKey?: CaseContextKey;
   contextText: string;
   source?: ActivationSource;
 };
@@ -181,6 +184,10 @@ function readActiveHint(element: HTMLElement): ActiveHint {
       (element.dataset.askAnchor as AskAnchorPreference | undefined) ?? "cursor",
     suggestedPrompts: getSuggestedPrompts(element),
     followUpPrompts: getFollowUpPrompts(element),
+    // Narrowed rather than cast: this is a DOM attribute, and an unknown value
+    // must mean "no case context", not a lookup that returns undefined and
+    // reaches the model as the string "undefined".
+    caseKey: toCaseContextKey(element.dataset.askCase),
     contextText: `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200),
   };
 }
@@ -396,6 +403,7 @@ export function ContextualAskHint({
       clientY: anchor.y,
       suggestedPrompts: current.suggestedPrompts,
       followUpPrompts: current.followUpPrompts,
+      caseKey: current.caseKey,
       // The pin displays a question; pressing it asks that question. The
       // suggested prompts survive as follow-ups under the answer: the opening
       // chips are not pre-marked as shown for an auto-ask thread, precisely

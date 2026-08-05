@@ -6,6 +6,7 @@ import type {
   AskableKind,
   AskAnchorPreference,
 } from "../components/ContextualAskHint";
+import type { CaseContextKey } from "../chatEvents";
 
 export type WorkItem = {
   eyebrow: string;
@@ -26,6 +27,11 @@ export type WorkItem = {
   askAnchorPreference?: AskAnchorPreference;
   askPromptChips?: string[];
   askFollowUpPromptChips?: string[];
+  /** Which project's grounding digest a chat opened from this card should
+   * carry. Set it on any card whose chips ask about project detail, or those
+   * chips get answered from SITE_CONTEXT alone and come back "I don't know".
+   * See src/caseContexts.ts. */
+  askCaseKey?: CaseContextKey;
   media?: {
     type: "video";
     src: string;

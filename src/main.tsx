@@ -568,26 +568,22 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <ul className="rail-ledger">
               <li>
                 <span className="rail-ledger-co">Deeli AI</span>
-                <span className="rail-ledger-role">Product design</span>
                 <span className="rail-ledger-dom">AI research</span>
                 <span className="rail-ledger-yr">now</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Swiftly</span>
-                <span className="rail-ledger-role">Product design</span>
-                <span className="rail-ledger-dom">transit data</span>
+                <span className="rail-ledger-dom">Transit analytics</span>
                 <span className="rail-ledger-yr">&rsquo;22</span>
               </li>
               <li>
                 <span className="rail-ledger-co">Diligent</span>
-                <span className="rail-ledger-role">Product design</span>
-                <span className="rail-ledger-dom">news analytics</span>
+                <span className="rail-ledger-dom">News analytics</span>
                 <span className="rail-ledger-yr">&rsquo;20</span>
               </li>
               <li>
                 <span className="rail-ledger-co">NYU</span>
-                <span className="rail-ledger-role">Product design</span>
-                <span className="rail-ledger-dom">campus ops</span>
+                <span className="rail-ledger-dom">Campus ops</span>
                 <span className="rail-ledger-yr">&rsquo;18</span>
               </li>
             </ul>

@@ -1,22 +1,21 @@
-/* Shared case-study chrome — the single source of truth for everything that
- * is byte-identical across the case-study pages (deeli/, swiftly/, nyu/).
+/* Shared case-study base — the palette, fonts, and element defaults the three
+ * case-study pages (deeli/, swiftly/, nyu/) hold in common.
  *
  * Loaded by each page via <link rel="stylesheet" href="/src/case-study.css">,
  * right after tokens.css. All three pages are rollupOptions.input entries in
- * vite.config.ts, so Vite bundles and hashes this file for each of them. Do
- * not inline a copy into any page.
+ * vite.config.ts, so Vite bundles and hashes this file for each of them.
  *
- * Two tiers of case-study CSS exist, and only the first belongs here:
- *   1. CHROME   the page frame every case study shares — :root palette/fonts,
- *               hero, proof strip, section heads, skim rail, side TOC, shell
- *               geometry. One value, three pages; edit it here.
- *   2. VOCAB    content styling a page is allowed to evolve on its own
- *               (.gal-*, .cs-figure, .cs-decision, .impact-*, .cs-next-*).
- *               These have already drifted between pages on purpose (deeli's
- *               .gal-kick is not swiftly's) and stay inline in each page.
- * This file loads BEFORE each page's inline <style>, so an inline rule of
- * equal specificity always wins — a page can still override chrome locally,
- * but prefer editing here if the change should hold everywhere.
+ * This file once also carried a shared .cs-* chrome tier — hero, proof strip,
+ * section heads, skim rail, side TOC, shell geometry — meant as one source of
+ * truth for the page frame. It never held: each page grew its own prefixed
+ * clone of that frame inline (deeli .na-*, nyu .ny-*, swiftly .sw-*) and none
+ * of them ever referenced a .cs-* class. The chrome shipped to every page for
+ * nothing, so it is gone, along with caseNav.ts, the scroll-spy that queried
+ * .cs-side and was never loaded by any page.
+ *
+ * What is left is genuinely shared, because every page reads these tokens.
+ * Per-page chrome and content vocab both live inline in the page now; this
+ * file loads first, so an inline rule of equal specificity still wins.
  */
 
 :root{
@@ -51,90 +50,3 @@
 html{scroll-behavior:auto;}
 body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
 ::selection{color:var(--accent-deep);background:var(--accent-wash);}
-
-/* ---- hero ---- */
-.cs-hero{padding:64px var(--gutter) 24px;}
-.cs-hero-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);margin:0;}
-.cs-hero-title{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-0.025em;line-height:1.04;margin:14px 0 0;color:var(--ink);}
-.cs-hero-lede{font-size:19px;line-height:1.55;color:var(--body);max-width:var(--measure-lede);margin:18px 0 0;}
-.cs-hero-lede b{color:var(--ink);}
-.cs-hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 32px;margin:30px 0 0;}
-.cs-hero-meta-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-hero-meta-val{font-size:14px;line-height:1.55;color:var(--muted-strong);margin:0;}
-@media(max-width:720px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;}}
-@media(max-width:420px){.cs-hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px;}.cs-hero-meta>div:last-child{grid-column:1 / -1;}}
-.cs-hero-honest{font-size:13px;line-height:1.55;color:var(--muted-strong);font-style:italic;margin:16px 0 0;max-width:var(--measure-prose);}
-
-/* ---- proof strip ---- */
-.cs-proof-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:30px 0 0;padding:22px 0;box-shadow:inset 0 1px 0 var(--hairline-faint),inset 0 -1px 0 var(--hairline-faint);}
-.cs-proof-item{padding:0 20px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-.cs-proof-item:first-child{padding-left:0;box-shadow:none;}
-.cs-proof-tag{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:9px;}
-.cs-proof-value{display:block;font-family:var(--font-mono);font-size:clamp(25px,3.4vw,36px);font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
-.cs-proof-label{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted-strong);}
-@media(max-width:640px){
-  .cs-proof-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px 0;}
-  .cs-proof-item,.cs-proof-item:first-child{padding:0 9px;box-shadow:inset 1px 0 0 var(--hairline-faint);}
-  .cs-proof-item:first-child{padding-left:0;box-shadow:none;}
-  .cs-proof-value{font-size:22px;}
-  .cs-proof-label{font-size:10.5px;line-height:1.4;}
-}
-
-/* ---- section heads ---- */
-.cs-sechead{padding:var(--space-section) var(--gutter) 0;}
-.cs-sechead + .gal-block{border-top:none !important;padding-top:var(--space-copy);}
-.cs-sec-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:26px;box-shadow:0 -1px 0 0 var(--hairline-faint);display:block;}
-
-/* ---- skim rail (the numbered "case in fifteen seconds" list) ---- */
-/* 28px bottom, not 32: the block after the rail carries some padding-top of
-   its own, so this is what makes the gaps above and below read as equal. */
-.cs-rail{padding:32px var(--gutter) 28px;}
-.cs-rail-title{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
-.cs-rail ol,.cs-side ol{list-style:none;margin:0;padding:0;}
-.cs-rail ol{max-width:var(--measure-prose);}
-.cs-rail li{box-shadow:0 1px 0 0 var(--hairline-faint);}
-.cs-rail li:first-child{box-shadow:0 1px 0 0 var(--hairline-faint),0 -1px 0 0 var(--hairline-faint);}
-.cs-rail a{display:flex;align-items:baseline;gap:14px;padding:12px 2px;font-size:14.5px;line-height:1.4;color:var(--ink);text-decoration:none;}
-.cs-rail a:hover{color:var(--accent-deep);}
-.cs-rail a:focus-visible,.cs-side a:focus-visible{outline:1px solid var(--accent);outline-offset:2px;}
-.cs-rail-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;}
-
-/* ---- page shell matching the landing .portfolio-shell geometry (locked:
-   no accent in the rail, ink+weight-600 active state only, no numbering in
-   the side TOC, shell max-width 1200px centered, no rail divider) ---- */
-/* Same numbers as src/index.css: 40px page padding, 280px rail, 64px gap.
-   .cs-rail-col is an in-flow flex spacer the same size as the visible rail;
-   .cs-side is position:fixed with no left/right set, so its used left value
-   is its static position, exactly where .cs-rail-col sits in the flex
-   row. That's the same trick .profile-sticky relies on.
-   The shell is capped and centred, same as .portfolio-shell. The cap is what
-   holds the rail-to-content gap at the declared 64px: uncapped, .cs-content's
-   auto margins centre it in the whole flex remainder, so the gap grew as
-   64 + (viewport - 1200)/2 and reached ~390px on a wide display. The rail
-   moves with the shell rather than sitting in the viewport gutter, which is
-   why the rail carries no divider — a full-height hairline needs a page edge
-   to belong to, and a centred shell has none. 1200 = 40 + 280 + 64 + 776
-   + 40, matching .work-canvas. */
-.cs-shell{display:flex;padding:0 40px;gap:64px;max-width:1200px;margin:0 auto;}
-.cs-rail-col{position:relative;width:280px;flex-shrink:0;}
-.cs-content{flex:1 1 auto;min-width:0;}
-@media(max-width:999px){.cs-shell{padding:0;}.cs-rail-col{display:none;}}
-/* Rail/content geometry only needs to cap+center once the rail is visible
-   (>=1000px): mirrors .work-canvas's max-width/margin so the case content
-   sits at identical x to the landing at every shared width. */
-@media(min-width:1000px){.cs-content{max-width:776px;margin:0 auto;}}
-
-/* ---- side TOC (fixed, desktop only) ---- */
-/* No divider: the 64px gap does the separating. See .profile-sticky. */
-.cs-side{position:fixed;top:0;width:280px;height:100vh;height:100dvh;padding:72px 48px 72px 0;}
-.cs-side ol{margin-top:4px;}
-.cs-side ol a{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:400;line-height:1.4;color:var(--muted);text-decoration:none;padding:5px 0;transition:color .15s var(--ease);}
-.cs-side ol a:hover{color:var(--ink);}
-.cs-side ol a[aria-current="location"]{color:var(--ink);font-weight:600;}
-@media(prefers-reduced-motion:reduce){.cs-side ol a{transition:none;}}
-.cs-side-home{display:block;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);text-decoration:none;padding:5px 0;margin-bottom:14px;}
-.cs-side-home:hover{color:var(--accent-deep);}
-/* Must stay after the base .cs-side rule: same specificity, so source order
-   decides. When it sat above, .cs-side's unconditional width:280px won and the
-   visible rail overhung its 240px spacer, closing the gap to 0 in this band. */
-@media(min-width:1000px) and (max-width:1100px){.cs-rail-col,.cs-side{width:240px;}.cs-shell{gap:40px;}}

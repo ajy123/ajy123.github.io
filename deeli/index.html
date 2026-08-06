@@ -21,7 +21,8 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
 <!-- Shared case-study stylesheet. Since PR #78 it is only the :root
-     palette/token block plus the global body reset — the .cs-* chrome it used
+     palette/token block plus four element defaults (*, html, body, ::selection)
+     — the .cs-* chrome it used
      to carry (hero, proof strip, sechead, rail, side TOC, shell) was deleted
      because no page ever referenced it. The story below ships its own
      .sol-b / .na-* vocabulary in section-local <style> blocks. Keep the link:
@@ -67,13 +68,18 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
          rail; .na-side is position:fixed with no left/right set, so its used
          left value is its static position — exactly where .na-rail-col sits in
          the flex row. Same trick .profile-sticky uses on the landing page.
-       - The 1200px cap is what holds the rail-to-content gap at the declared
-         64px. Uncapped, .na-content's auto margins centre it in the whole flex
-         remainder and the gap grows as 64 + (viewport − 1200)/2, reaching
-         ~390px on a wide display.
+       - The 1200px cap sets the measure, not the gap: .na-content is a bare
+         flex:1 with no auto margins, so the gap is held at 64px by gap alone
+         and the cap is what stops the reading column from growing without
+         limit. Here 1200 = 280 + 64 + 856 — no gutters inside the shell, since
+         .sol-b's own 24px page padding sits outside the capped box, so the
+         measure is 856px rather than the landing page's 776px.
+         Do NOT give .na-content auto margins to "centre" it. That is what the
+         deleted .cs-content did (max-width:776px;margin:0 auto above 1000px),
+         and with them the gap grew as 64 + (viewport − 1200)/2 and reached
+         ~390px on a wide display. Same trap as .work-canvas on the landing.
        - The rail carries no divider on purpose: a full-height hairline needs a
          page edge to belong to, and a centred shell has none.
-       - 1200 = 40 + 280 + 64 + 776 + 40, matching .work-canvas.
        - Any 1000–1100px override that narrows the rail to 240px must stay
          AFTER the base .na-side rule — same specificity, so source order
          decides. Above it, the unconditional width:280px wins and the visible

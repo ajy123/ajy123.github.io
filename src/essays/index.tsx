@@ -89,7 +89,7 @@ export const aiPracticeItems: EssayItem[] = [
       "did agents generate fourteen baseline options?",
     ],
     askFollowUpPromptChips: [
-      "was the bottleneck deciding which screens were worth drawing?",
+      "did the output have to be solid enough to plan against?",
       "did the token usage request look simple?",
       "did Joanna treat agents as a temporary design team?",
     ],

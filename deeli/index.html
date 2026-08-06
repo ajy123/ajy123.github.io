@@ -20,12 +20,13 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
 <!-- Shared spacing + measure tokens. Vite bundles this for the deeli entry;
      see vite.config.ts rollupOptions.input. -->
 <link rel="stylesheet" href="/src/tokens.css">
-<!-- Shared case-study stylesheet. This page uses only two things from it: the
-     :root palette/token block and the global body reset. None of the .cs-*
-     chrome (hero, proof strip, sechead, rail, side TOC, shell) is used here;
-     the story below ships its own .sol-b / .na-* vocabulary in section-local
-     <style> blocks. Keep the link: the :root tokens it defines are read by
-     those blocks (--ink, --accent, --hairline-faint, --font-serif, ...). -->
+<!-- Shared case-study stylesheet. Since PR #78 it is only the :root
+     palette/token block plus the global body reset — the .cs-* chrome it used
+     to carry (hero, proof strip, sechead, rail, side TOC, shell) was deleted
+     because no page ever referenced it. The story below ships its own
+     .sol-b / .na-* vocabulary in section-local <style> blocks. Keep the link:
+     the :root tokens it defines are read by those blocks (--ink, --accent,
+     --hairline-faint, --font-serif, ...). -->
 <link rel="stylesheet" href="/src/case-study.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,10 +55,29 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     }
     .sol-b *{box-sizing:border-box;}
     .sol-b .wrap{max-width:none;margin:0;}
-    /* Two-column shell cloned from the cs-shell/cs-side chrome
-       (src/case-study.css), na- prefixed to keep this vocabulary separate
-       from the shared .cs-* chrome. Same numbers: 280px rail,
-       64px gap, 1200px cap, fixed rail via static-position trick. */
+    /* Two-column shell, na- prefixed. This is the original of the three: the
+       nyu (.ny-*) and swiftly (.sw-*) rails were cloned from it and carry the
+       same numbers — 280px rail, 64px gap, 1200px cap, fixed rail via the
+       static-position trick. It began as a copy of the .cs-shell/.cs-side
+       chrome in src/case-study.css, which was deleted in PR #78 once it turned
+       out no page had ever referenced it, so the reasoning behind the numbers
+       is parked here:
+
+       - .na-rail-col is an in-flow flex spacer the same size as the visible
+         rail; .na-side is position:fixed with no left/right set, so its used
+         left value is its static position — exactly where .na-rail-col sits in
+         the flex row. Same trick .profile-sticky uses on the landing page.
+       - The 1200px cap is what holds the rail-to-content gap at the declared
+         64px. Uncapped, .na-content's auto margins centre it in the whole flex
+         remainder and the gap grows as 64 + (viewport − 1200)/2, reaching
+         ~390px on a wide display.
+       - The rail carries no divider on purpose: a full-height hairline needs a
+         page edge to belong to, and a centred shell has none.
+       - 1200 = 40 + 280 + 64 + 776 + 40, matching .work-canvas.
+       - Any 1000–1100px override that narrows the rail to 240px must stay
+         AFTER the base .na-side rule — same specificity, so source order
+         decides. Above it, the unconditional width:280px wins and the visible
+         rail overhangs its 240px spacer, closing the gap to 0 in that band. */
     .sol-b .na-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
     .sol-b .na-rail-col{position:relative;width:280px;flex-shrink:0;}
     .sol-b .na-content{flex:1 1 auto;min-width:0;}

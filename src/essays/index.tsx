@@ -82,11 +82,18 @@ export const aiPracticeItems: EssayItem[] = [
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it.
+    // ContextualAskHint truncates there before the chat model sees it. Here the
+    // cut falls inside "The productive kill", so that section and "The judgment
+    // stayed mine" are out of reach for a chip.
+    // A chip also has to be unanswerable from the card face: the grouping of
+    // tickets into themes and the fourteen baselines are both printed in the
+    // summary, so chips asking those back returned what the reader had just
+    // read. RICE and the reach score are the parts of the same paragraphs the
+    // card never shows.
     askPromptChips: [
       "does the essay say roughly 40% of issues were uncategorized?",
-      "did agents group tickets into themes and score them with RICE?",
-      "did agents generate fourteen baseline options?",
+      "did RICE scoring decide what got design time?",
+      "did token usage score high mostly on reach?",
     ],
     askFollowUpPromptChips: [
       "did the output have to be solid enough to plan against?",
@@ -149,16 +156,23 @@ export const aiPracticeItems: EssayItem[] = [
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it.
+    // ContextualAskHint truncates there before the chat model sees it. For this
+    // essay the cut falls mid-sentence in "Personas became situations", so the
+    // last two sections are unreachable and no chip may draw on them.
+    // A chip must also be unanswerable from the card face (title, role,
+    // summary): three of these asked back what the summary already prints —
+    // the weekly regeneration, the three things mixed-language broke, and
+    // "each becomes a test scenario" — so they returned copy the reader had
+    // just finished reading.
     askPromptChips: [
-      "do agents regenerate personas every week?",
-      "did mixed-language queries break three things at once?",
+      "are user goals stable while expectations shift?",
+      "was the persona already behind the users it described?",
       "did manual research cost 6+ hours a week?",
     ],
     askFollowUpPromptChips: [
       "does a persona written three months ago miss how users now behave?",
       "did users start writing longer, iterative prompts?",
-      "does each persona become a scenario to test against?",
+      "do agents extract objections and edge cases too?",
     ],
     summary:
       "In my research workflow, agents update the personas weekly from fresh transcripts and queries. Each becomes a test scenario; one caught mixed-language users breaking language detection, the evals, and the model at once.",

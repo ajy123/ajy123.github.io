@@ -78,7 +78,7 @@ export const aiPracticeItems: EssayItem[] = [
     title: "Designing with a team of agents",
     role: "Research synthesis",
     year: "2026",
-    askHint: "How did agents earn design time?",
+    askHint: "What bottleneck needed a team?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —
@@ -89,7 +89,7 @@ export const aiPracticeItems: EssayItem[] = [
       "did agents generate fourteen baseline options?",
     ],
     askFollowUpPromptChips: [
-      "was the bottleneck deciding which screens were worth drawing?",
+      "did the output have to be solid enough to plan against?",
       "did the token usage request look simple?",
       "did Joanna treat agents as a temporary design team?",
     ],
@@ -102,8 +102,8 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "The bottleneck was never drawing screens",
         body: [
-          "It was deciding which screens were worth drawing. On an AI research product, the work arrives as a mess: hundreds of open issues, roughly 40% of them uncategorized, customer context scattered across transcripts and sales calls, and product questions that look small until you read them twice.",
-          "To help the team anchor a North Star design, I had to understand which tickets belonged together, what users were really asking for and how that shifted over the past six months, and where the product needed a decision instead of another mockup. So I stopped treating agents as one assistant and started treating them as a temporary design team.",
+          "It was prioritizing which user feedback to explore first. The work arrives as a mess: hundreds of open issues, roughly 40% of them uncategorized, and customer context scattered across transcripts and sales calls. Feedback came in faster than anyone could read it, and parsing that pile by hand to decide what mattered held up everything after it. The bottleneck was a workflow problem before it was a design problem.",
+          "So I ran it as an automation experiment. Could the reading and the ranking happen without me sitting in the middle of them, and would what came back be solid enough for the team to plan against? Anchoring a North Star design still meant knowing which tickets belonged together, what users were really asking for and how that shifted over the past six months, and where the product needed a decision instead of another mockup. I stopped treating agents as one assistant and started treating them as a temporary design team.",
         ],
       },
       {

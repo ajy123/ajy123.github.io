@@ -26,7 +26,6 @@ import {
   type AskableKind,
   type AskAnchorPreference,
 } from "./components/ContextualAskHint";
-import { CursorTrail } from "./components/CursorTrail";
 import { SwiftlyThumbnail } from "./components/SwiftlyThumbnail";
 import { NyuThumbnail } from "./components/NyuThumbnail";
 import { SelectionAskPill } from "./components/SelectionAskPill";
@@ -1243,7 +1242,6 @@ function App() {
   return (
     <>
       {shell}
-      <CursorTrail suspended={showIntro} />
       <ContextualAskHintLayer />
       <SelectionAskPill suspended={showIntro} />
       <CursorChat suspended={showIntro} />

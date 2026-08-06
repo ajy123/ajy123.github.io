@@ -84,10 +84,10 @@ try{sessionStorage.setItem("joanna-intro-seen","1")}catch(e){}
     .sol-nyu .sn-dossier>div:nth-child(-n+2){border-top:none;}
   }
 
-  /* ---------- left rail (cloned from deeli's na-shell/na-side treatment;
-     ny- prefixed to keep this vocabulary separate from the shared .cs-*
-     chrome in src/case-study.css. Same numbers: 280px rail, 64px gap,
-     1200px cap, fixed rail via the static-position trick.) ---------- */
+  /* ---------- left rail (cloned from deeli's na-shell/na-side treatment,
+     ny- prefixed. Same numbers: 280px rail, 64px gap, 1200px cap, fixed rail
+     via the static-position trick. Why those numbers, and the two bugs they
+     avoid, is documented once beside .na-shell in deeli/index.html.) ------- */
   .sol-nyu .ny-shell{display:flex;gap:64px;max-width:1200px;margin:0 auto;}
   .sol-nyu .ny-rail-col{position:relative;width:280px;flex-shrink:0;}
   .sol-nyu .ny-content{flex:1 1 auto;min-width:0;}

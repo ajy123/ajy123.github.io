@@ -34,6 +34,7 @@ import {
 import { getAudienceRole } from "./audienceRole";
 import {
   findOpenEssayPanel,
+  readOpenEssayId,
   resolveAskContext,
   zoneKindLabel,
 } from "./askContext";
@@ -117,6 +118,14 @@ type Thread = {
   // is a full question now, so quoting it back at the model alongside a
   // follow-up would read as a second, competing instruction. See buildMessages.
   openedByAutoAsk?: boolean;
+  // The essay that was open when this thread was created, or null on the page
+  // itself. Identity, not geometry: nothing inside the dialog carries
+  // data-ask-hint, so an essay thread never resolves a section and its anchor
+  // element is wherever the opening gesture happened to land — the FAB on touch,
+  // the stage gutter beside the panel on a "/" press. Testing DOM containment of
+  // that anchor rejected the thread's own essay; the id it opened against does
+  // not move.
+  openedEssayId?: string | null;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
   // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
@@ -1207,6 +1216,7 @@ export function CursorChat({
           caseKey: threadCaseKey,
           zoneLocked: Boolean(zoneContext),
           openedByAutoAsk: Boolean(autoAsk?.trim()),
+          openedEssayId: readOpenEssayId(),
           docked: isDocked,
           draftPlaceholder: fromSelection
             ? "ask about what you selected"
@@ -1688,23 +1698,36 @@ export function CursorChat({
     // opt-out sentinel still wins outright — a region that asked to stay out of
     // the prompt does not get overridden by the essay it sits in.
     const threadAnchor = resolvedElementRef.current ?? anchorElementRef.current;
-    const essayPanel =
-      chipSubmit &&
-      activeThread.nearbyTextOverride !== NEARBY_TEXT_SUPPRESSED
-        ? findOpenEssayPanel()
-        : null;
     // An essay being open is not the same as this thread being in it. The chat
-    // panel sits above the essay stage (z-index 1103 against 1101, see
+    // panel sits above the essay stage (z-index 1102 against 1101, see
     // chat-ui.css and essay-dialog.css) and nothing closes a thread when an
     // essay opens, so a thread anchored on a work card stays live and clickable
     // while the reader opens an essay beside it — or steps into one with
     // Back/Forward, since the dialog is driven off the hash. Its chips are the
-    // card's chips and its zoneContext still names the card, so handing them
-    // the essay's text would tell the model to focus on one thing and give it
-    // another. The thread's own anchor has to be inside the panel.
+    // card's chips and its zoneContext still names the card, so handing it the
+    // essay's text would tell the model to focus on one thing and give it
+    // another.
+    //
+    // Compared by essay id, NOT by testing whether the thread's anchor element
+    // sits inside the panel. Nothing in the dialog carries data-ask-hint, so
+    // resolveAskContext always falls through to the page default there and an
+    // essay thread's resolved element is null; the anchor is then whatever the
+    // opening gesture hit. Both real entry points miss the panel — the touch FAB
+    // is its own fixed element at z-index 1102, and a "/" press lands on
+    // .essay-dialog-stage, which is `fixed; inset: 0` with ~300px of hit-testable
+    // gutter either side of the 820px panel. Measured 2026-08-10: containment
+    // rejected the essay's own chips on both, sending nearby text of 0 from the
+    // FAB and 2200 truncated chars of stage text from the gutter. The id the
+    // thread opened against does not move, and it still differs from the id of
+    // an essay opened later over a page thread.
+    const inOpenEssay =
+      !!activeThread.openedEssayId &&
+      activeThread.openedEssayId === readOpenEssayId();
     const essayChipContext =
-      essayPanel && threadAnchor && essayPanel.contains(threadAnchor)
-        ? essayPanel.dataset.askContext?.trim()
+      chipSubmit &&
+      inOpenEssay &&
+      activeThread.nearbyTextOverride !== NEARBY_TEXT_SUPPRESSED
+        ? findOpenEssayPanel()?.dataset.askContext?.trim()
         : undefined;
 
     const context = captureContext(
@@ -1777,14 +1800,18 @@ export function CursorChat({
       (activeThread.caseKey ? CASE_CONTEXTS[activeThread.caseKey] : undefined) ??
         extraContext,
       activeThread.openedByAutoAsk === true,
-      // A chip inside an open essay used to reach the strong model through
-      // pickTier's selectedText branch, riding the stale selection this file
-      // now suppresses. Inside the dialog nothing else routes it: the panel
-      // carries data-ask-context but no data-ask-hint, so zoneContext is
-      // undefined, the first follow-up sees history.length 1, and a chip is far
-      // short of 160 chars — so the request that carries the most page context
-      // of any on the site was the one going to the cheap model.
-      !!essayChipContext,
+      // Anything asked from inside an open essay, not only a chip. A chip used
+      // to reach the strong model through pickTier's selectedText branch,
+      // riding the stale selection this file now suppresses, and inside the
+      // dialog nothing else routes it: the panel carries data-ask-context but
+      // no data-ask-hint, so zoneContext is undefined, the first follow-up sees
+      // history.length 1, and a chip is far short of 160 chars. A typed
+      // follow-up one keypress later is the same request — getBoundedText reads
+      // the panel's own data-ask-context off the ancestor, so it still ships
+      // 2200 characters of the essay — and it was routing cheap for the same
+      // reason. Either way this is the request carrying the most page context
+      // on the site.
+      inOpenEssay,
     );
   };
 

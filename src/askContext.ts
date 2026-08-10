@@ -345,7 +345,7 @@ function essayPageDefault(essayId: string, underlyingPage: PageDefault): PageDef
 // ---------------------------------------------------------------------------
 const ESSAY_HASH_PREFIX = "#essay/";
 
-function readOpenEssayId(): string | null {
+export function readOpenEssayId(): string | null {
   if (typeof window === "undefined") return null;
   const { hash } = window.location;
   if (!hash.startsWith(ESSAY_HASH_PREFIX)) return null;

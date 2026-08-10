@@ -435,8 +435,16 @@ const ESSAY_PANEL_SELECTOR = ".essay-dialog-panel";
 // one open-essay lookup this file already owns, instead of a second selector
 // somewhere else that could outlive a class rename.
 export function findOpenEssayPanel(): HTMLElement | null {
-  if (!readOpenEssayId()) return null;
-  return document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR);
+  const essayId = readOpenEssayId();
+  if (!essayId) return null;
+  // By id, not by class. Two panels share the class during a switch between
+  // essays: the outgoing one is still mounted for its exit animation while the
+  // incoming one has rendered, and querySelector would hand back whichever
+  // comes first in the DOM. Measured 2026-08-10 — going straight from the
+  // persona essay to team-of-agents left both mounted, so a chip fired in that
+  // window would have quoted the essay the reader just closed. The id is the
+  // same `essay-dialog-<id>` EssayDialog puts on the panel.
+  return document.getElementById(`essay-dialog-${essayId}`);
 }
 
 // A work card can deliberately ship with no ask zone (the Brand Identity card

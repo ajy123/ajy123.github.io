@@ -565,6 +565,18 @@ const MAX_REQUEST_CHARS = 24000;
 // it. Also the floor: below this much room, history is dropped entirely and
 // the question still goes out grounded.
 const REQUEST_CHARS_RESERVE = 1000;
+// Ceiling for the whole-essay context a chip reads off the open dialog panel.
+// Wider than the 2200 getBoundedText applies to an arbitrary page region,
+// because that bound exists to stop an unbounded DOM walk while this string is
+// a known, authored quantity: the two live essays measure 2699 and 3510 chars
+// (2026-08-10), and at 2200 both lost their closing sections, so a chip naming
+// a fact only the tail states answered "I don't know". This costs the request
+// at most ~1.3k more than the old clamp, which comes out of history rather than
+// out of the cap — historyBudget below subtracts the assembled system prompt,
+// so grounding wins and old turns drop first. Raise it only against a measured
+// essay length; it is not a soft preference, it is what keeps the request under
+// the worker's MAX_TOTAL_CHARS.
+const ESSAY_CHIP_CONTEXT_MAX = 4000;
 
 function recentHistory(history: ChatTurn[], budget: number): ChatTurn[] {
   const kept: ChatTurn[] = [];
@@ -1652,10 +1664,11 @@ export function CursorChat({
     // essay, answers off the essay, so the dialog panel now carries that same
     // string and a chip reads it there.
     //
-    // Clamped to the 2200 getBoundedText applies to every other nearby text.
-    // This essay's context is 2699 chars, so its tail is cut — that is the
-    // limit the card has always sent under, and raising it pushes the request
-    // toward the worker's 24k cap. Not a bug to fix.
+    // Clamped to ESSAY_CHIP_CONTEXT_MAX, not to the 2200 every other nearby
+    // text gets: at 2200 both live essays lost their tail (persona is 2699, so
+    // the cut landed mid-"What it caught" and "Judgment doesn't automate" was
+    // unreachable; team-of-agents is 3510 and lost two sections), and a chip
+    // that names a fact only the tail states would answer "I don't know".
     //
     // Only for a chip: a selection ask and a typed question (and its retry)
     // asked about one place on the page and keep the section they resolved. The
@@ -1672,7 +1685,7 @@ export function CursorChat({
       activeThread.pageY,
       selectedTextOverride,
       essayChipContext
-        ? essayChipContext.slice(0, 2200)
+        ? essayChipContext.slice(0, ESSAY_CHIP_CONTEXT_MAX)
         : activeThread.nearbyTextOverride,
       resolvedElementRef.current ?? anchorElementRef.current,
     );

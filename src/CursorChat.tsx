@@ -258,7 +258,17 @@ function getBoundedText(element: Element | null) {
     element?.closest("[data-ask-hint]") ??
     element?.closest("section, article, aside, main, footer") ??
     element;
-  const text = (source?.textContent ?? "").replace(/\s+/g, " ").trim();
+  // Prefer the zone's curated context over its rendered text, the same
+  // preference ContextualAskHint's readActiveHint already applies. Without it
+  // the two entry points disagreed: a hover-pin ask on an essay card sent the
+  // essay body, while a "/" or click-opened thread on the same card sent only
+  // the card face, so a chip written against the body answered from the pin and
+  // returned "I don't know" from the card. Read off `source`, not `element`:
+  // the attribute sits on the zone, and a click lands on a child span.
+  const curated = (source as HTMLElement | null)?.dataset?.askContext;
+  const text = (curated ?? source?.textContent ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
   const links = Array.from(source?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? [])
     .slice(0, 4)
     .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)

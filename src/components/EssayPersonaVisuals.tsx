@@ -114,7 +114,7 @@ export function PersonaCoverageGrid() {
             <th scope="col">Scenario</th>
             <th scope="col">UI</th>
             <th scope="col">Model</th>
-            <th scope="col">Eval</th>
+            <th scope="col">Evaluation</th>
           </tr>
         </thead>
         <tbody>

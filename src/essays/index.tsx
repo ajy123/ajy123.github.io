@@ -150,60 +150,66 @@ export const aiPracticeItems: EssayItem[] = [
     id: "persona-golden-dataset",
     eyebrow: "Essay",
     title: "Use personas to build a golden dataset",
-    role: "Eval datasets",
+    role: "Model evaluations",
     year: "2026",
     askHint: "Why regenerate personas weekly?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it. For this
-    // essay the cut falls mid-sentence in "Personas became situations", so the
-    // last two sections are unreachable and no chip may draw on them.
-    // A chip must also be unanswerable from the card face (title, role,
-    // summary): three of these asked back what the summary already prints —
-    // the weekly regeneration, the three things mixed-language broke, and
-    // "each becomes a test scenario" — so they returned copy the reader had
-    // just finished reading.
+    // ContextualAskHint truncates there before the chat model sees it. This
+    // essay's context is 2699 chars, so the cut falls mid-sentence in "What it
+    // caught" (after "Nobody had written that test, because the") and the whole
+    // of "Judgment doesn't automate" is unreachable. No chip may draw on either.
+    // A chip must also be unanswerable from the card face (title, role, year,
+    // summary, thumbnail). The summary now states the premise, the test, and the
+    // mixed-language catch, so no chip asks those back; they ask what the card
+    // cannot print — what design.md controls, what a scenario contains, the
+    // review cost, and the three things the mixed-language query broke.
+    // A chip must also name a fact the essay states outright. "what does
+    // design.md have to do with personas?" was cut after failing twice against
+    // the live worker: the essay offers that link as an analogy ("a persona
+    // could work the same way"), and the prompt forbids inferring, so the model
+    // correctly refused to assert a connection the page never states.
     askPromptChips: [
-      "are user goals stable while expectations shift?",
-      "was the persona already behind the users it described?",
-      "did manual research cost 6+ hours a week?",
+      "what is design.md used to control?",
+      "what is in a scenario besides the query?",
+      "how long does the weekly review take?",
     ],
     askFollowUpPromptChips: [
-      "does a persona written three months ago miss how users now behave?",
-      "did users start writing longer, iterative prompts?",
-      "do agents extract objections and edge cases too?",
+      "what broke when a query mixed two languages?",
+      "why do static personas work in most products?",
+      "what changes in weeks for a daily AI user?",
     ],
     summary:
-      "In my research workflow, agents update the personas weekly from fresh transcripts and queries. Each becomes a test scenario; one caught mixed-language users breaking language detection, the evals, and the model at once.",
-    dek: "Agents refresh our personas every week, and each persona becomes a scenario that tests the design and the model.",
+      "Static personas say who a user is. I tested whether one built from our interviews and query history could generate what that user would do; the scenarios caught a mixed-language case our hand-written model evaluations missed.",
+    dek: "Personas as a spec an agent expands, the way design.md expands into screens nobody drew.",
     thumbnail: EssayPersonaThumbnail,
     sections: [
       {
-        heading: "Static personas can't keep up",
+        heading: "A persona is a stand-in",
         body: [
-          "I don't fully trust static personas for AI products. Not because user goals change; those are stable. What changes fast is what people expect the AI to do. Someone who uses these tools daily builds new instincts in weeks. They ask longer questions. They mix languages. They expect the system to clarify intent, show its work, and recover when the answer isn't good enough. A persona written three months ago still describes the user's job but quietly misses how that user now expects the product to behave.",
+          "A persona is a stand-in for the user who is not in the room. Write it once and it holds for years, because what someone is trying to get done does not change much.",
+          "AI products break that. Goals stay stable, expectations do not: a daily user builds new instincts in weeks, asks longer questions, mixes languages, expects the system to clarify intent and recover when an answer is wrong. The persona still tells me who they are. It stopped telling me what they will do.",
         ],
       },
       {
-        heading: "From document to pipeline",
+        heading: "The hypothesis",
         body: [
-          "I saw this the moment we shipped a chat-based report flow. Query behavior shifted fast: users stopped typing one-line searches and started writing longer, iterative prompts. The persona we'd designed against was already behind the users it described. So I stopped treating research as a document and started treating it as a pipeline.",
-          "Every week, agents ingest interviews, product data, and past queries to extract personas, jobs, vocabulary, objections, and edge cases. The old version was manual: tag transcripts by hand, read every ticket, assign owners. It cost 6+ hours a week. The workflow cuts that to about an hour, spent reviewing the output and watching how the direction moves over time.",
+          "I had already consolidated our design system. The primitives live in design.md, and that file is how we control whether the system scales to screens nobody drew. A persona could work the same way: written as a spec, expanded by an agent into situations I never thought to test. The experiment was whether a persona could stand in for a user well enough to test what the model says.",
         ],
       },
       {
-        heading: "Personas became situations",
+        heading: "What the golden dataset is made of",
         body: [
-          "Speed was a side effect. What I actually wanted was personas I could test against: each one becomes a scenario, and those scenarios pressure-test the design and the model at once. Real queries didn't arrive in clean English. They came mixed, a sentence in one language with technical terms dropped in from another. That broke three things at once: language detection guessed wrong, our eval cases didn't cover it, and the model answered in the wrong language for the user's intent. What looked like a translation bug was actually an entire user the write-once personas had never surfaced. The scenario changed the interface too: instead of letting the system guess, the chat now confirms the response language as part of pinning down intent.",
+          "Looking into our data, agents draft personas each week from our interviews, product usage, and past queries, along with the situations each persona would put the product in: the queries that user would type, and what a good answer looks like. From that base the model scales what we already have into as many scenarios as it can generate, and I review what comes back. That reviewed set is our golden dataset, the one our model evaluations run against, and it costs about an hour a week against the six it took by hand.",
         ],
         visual: <PersonaScenarioCards />,
         visualCaption: "Personas became situations the product had to survive.",
       },
       {
-        heading: "Where research meets the model",
+        heading: "What it caught",
         body: [
-          "That's the shift that matters most: in an AI product, the value of a persona is the scenarios it generates. The weekly scenarios feed the eval suite directly, so a change in how users actually behave becomes a test case the model is measured against that same week.",
+          "The clearest catch came in a language our model evaluations did not cover. Real queries arrived mixed, a sentence in one language with technical terms from another, and that broke three things at once: language detection guessed wrong, our evaluation cases did not include it, and the model answered in the wrong language. Nobody had written that test, because the persona we wrote by hand described a user who typed in one language. Scenarios now feed the model evaluation suite directly, so a shift in behavior becomes a test case that same week.",
         ],
         visual: <PersonaCoverageGrid />,
         visualCaption: "Where research meets the model: shipped, in design, gap.",
@@ -211,7 +217,7 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "Judgment doesn't automate",
         body: [
-          "None of this runs unattended. Agents overgeneralize, invent quotes, and flatten the messy specifics that make a scenario real. So I still own the judgment: is this persona accurate, is this scenario realistic. For AI products, research written once is already behind. Research that regenerates keeps the product honest and keeps the team current with what users expect.",
+          "Agents overgeneralize, invent quotes, and flatten the specifics that make a scenario real, so I still own the call on whether a persona is accurate and a scenario is plausible. In an AI product the value of a persona is the scenarios it generates. Research written once is already behind.",
         ],
       },
     ],

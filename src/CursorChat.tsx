@@ -1382,6 +1382,15 @@ export function CursorChat({
             // element keeps this in step with the chips it just adopted, and
             // resolves to undefined on a zone that names no project.
             caseKey: toCaseContextKey(next.element?.dataset.askCase),
+            // And the essay identity, for the same reason and in both
+            // directions. A draft opened on the page that drifts onto an essay
+            // panel adopts that essay's chips here, so without this it would be
+            // offered them and then denied the text to answer them from; a
+            // draft opened inside an essay that outlives it — Back closes the
+            // dialog but leaves the thread — can drift onto a work card, take
+            // that card's chips and digest, and then match again on Forward,
+            // which would hand a Deeli question the whole persona essay.
+            openedEssayId: readOpenEssayId(),
             nearbyTextOverride: contextText,
             suggestedPrompts: chips,
             promptPool: buildPromptPool(
@@ -1699,7 +1708,7 @@ export function CursorChat({
     // the prompt does not get overridden by the essay it sits in.
     const threadAnchor = resolvedElementRef.current ?? anchorElementRef.current;
     // An essay being open is not the same as this thread being in it. The chat
-    // panel sits above the essay stage (z-index 1102 against 1101, see
+    // panel sits above the essay stage (z-index 1103 against 1101, see
     // chat-ui.css and essay-dialog.css) and nothing closes a thread when an
     // essay opens, so a thread anchored on a work card stays live and clickable
     // while the reader opens an essay beside it — or steps into one with

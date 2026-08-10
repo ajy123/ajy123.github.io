@@ -253,6 +253,33 @@ const MAX_SELECTED_CHARS = 2200;
 export const CHAT_SYSTEM_PREFIX =
   "You are a concise assistant embedded directly in Joanna Yen's portfolio website.";
 
+// textContent includes the text of <style> and <script> children, and the case
+// study pages carry section-local <style> blocks (eight of them in
+// deeli/index.html alone). A zone that fell back to rendered text therefore
+// opened the model's nearby content with CSS: the /deeli/ solution section sent
+// ".sol-b{ /* Local names, shared values..." before a word of prose. Walk text
+// nodes instead and skip those two elements. Zones that set data-ask-context
+// never reach this path.
+function visibleTextOf(source: Element | null) {
+  if (!source) return "";
+  const walker = document.createTreeWalker(source, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) =>
+      node.parentElement?.closest("style, script")
+        ? NodeFilter.FILTER_REJECT
+        : NodeFilter.FILTER_ACCEPT,
+  });
+  const parts: string[] = [];
+  // Bounded so a long page section can't walk thousands of nodes before the
+  // 2200-char slice throws the rest away.
+  let budget = 2600;
+  for (let node = walker.nextNode(); node && budget > 0; node = walker.nextNode()) {
+    const value = node.nodeValue ?? "";
+    parts.push(value);
+    budget -= value.length;
+  }
+  return parts.join(" ");
+}
+
 function getBoundedText(element: Element | null) {
   const source =
     element?.closest("[data-ask-hint]") ??
@@ -266,7 +293,7 @@ function getBoundedText(element: Element | null) {
   // returned "I don't know" from the card. Read off `source`, not `element`:
   // the attribute sits on the zone, and a click lands on a child span.
   const curated = (source as HTMLElement | null)?.dataset?.askContext;
-  const text = (curated ?? source?.textContent ?? "")
+  const text = (curated ?? visibleTextOf(source) ?? "")
     .replace(/\s+/g, " ")
     .trim();
   const links = Array.from(source?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? [])

@@ -270,12 +270,20 @@ function visibleTextOf(source: Element | null) {
   });
   const parts: string[] = [];
   // Bounded so a long page section can't walk thousands of nodes before the
-  // 2200-char slice throws the rest away.
-  let budget = 2600;
-  for (let node = walker.nextNode(); node && budget > 0; node = walker.nextNode()) {
+  // 2200-char slice throws the rest away. Count what survives whitespace
+  // collapsing, not raw length: the case study pages are pretty-printed, so
+  // indentation between elements arrives as its own text node. Charging those
+  // against the budget cost /deeli/ sections between 440 and 2004 characters of
+  // real prose, measured 2026-08-10, which is context the model used to get.
+  let kept = 0;
+  for (
+    let node = walker.nextNode();
+    node && kept < 2400;
+    node = walker.nextNode()
+  ) {
     const value = node.nodeValue ?? "";
     parts.push(value);
-    budget -= value.length;
+    kept += value.replace(/\s+/g, " ").trim().length;
   }
   return parts.join(" ");
 }

@@ -15,6 +15,7 @@ import {
   type ChatTier,
 } from "./chatApi";
 import {
+  boundAskContext,
   CURSOR_CHAT_OPENED_EVENT,
   CURSOR_CHAT_REQUEST_OPEN_EVENT,
   requestCursorChatOpen,
@@ -32,7 +33,10 @@ import {
   type ChatQuerySource,
 } from "./analytics";
 import { getAudienceRole } from "./audienceRole";
-import { resolveAskContext, zoneKindLabel } from "./askContext";
+import {
+  resolveAskContext,
+  zoneKindLabel,
+} from "./askContext";
 // Same posters the WorkCanvas case-study cards use (see workItems in main.tsx),
 // reused as inline thumbnails when a response names one of those projects.
 import researchChatThumbUrl from "../images/deeli-casestudy-poster.jpg?url";
@@ -239,8 +243,10 @@ function getElementLabel(element: Element | null) {
   return `${tag}${id}${classes}`;
 }
 
-// Matches getBoundedText's nearbyText clamp — keeps a big selection from
-// pushing the request past the worker's MAX_TOTAL_CHARS (24k) limit.
+// Matches the walked bound getBoundedText applies (WALKED_CONTEXT_MAX) — keeps
+// a big selection from pushing the request past the worker's MAX_TOTAL_CHARS
+// (24k) limit. Not the curated bound: a selection is text the visitor dragged
+// over, not an authored string.
 const MAX_SELECTED_CHARS = 2200;
 
 // Contract with the Cloudflare Worker: validMessages() 400s any request whose
@@ -293,6 +299,21 @@ function getBoundedText(element: Element | null) {
     element?.closest("[data-ask-hint]") ??
     element?.closest("section, article, aside, main, footer") ??
     element;
+  // A source that got no narrower than the document root is not "nearby"
+  // anything, and visibleTextOf walks from the top of the tree: a thread opened
+  // inside the persona essay that failed to resolve a zone came back with
+  // element "body" and 2200 characters of the homepage — the profile rail
+  // ("Joanna Yen Senior product designer...") and every work card — handed to
+  // the model as what the visitor is looking at. Measured 2026-08-10. Returning
+  // nothing is the honest answer: the model falls back to SITE_CONTEXT instead
+  // of a confident claim about a section that was never on screen.
+  if (
+    !source ||
+    source === document.body ||
+    source === document.documentElement
+  ) {
+    return "";
+  }
   // Prefer the zone's curated context over its rendered text, the same
   // preference ContextualAskHint's readActiveHint already applies. Without it
   // the two entry points disagreed: a hover-pin ask on an essay card sent the
@@ -308,7 +329,12 @@ function getBoundedText(element: Element | null) {
     .slice(0, 4)
     .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
     .join("; ");
-  return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
+  // Bounded by where the text came from, not by which surface asked — see
+  // boundAskContext in chatEvents.
+  return boundAskContext(
+    `${text}${links ? ` Links: ${links}` : ""}`,
+    !!curated,
+  );
 }
 
 // The same explicit opt-out findNearestSection reads (src/askContext.ts:361).
@@ -324,6 +350,25 @@ function getBoundedText(element: Element | null) {
 // which would read the opted-out region straight back off the page.
 const NO_ASK_ZONE_SELECTOR = '[data-ask-zone="none"]';
 const NEARBY_TEXT_SUPPRESSED = "[nearby-text-suppressed:data-ask-zone-none]";
+// Same sentinel trick, for the other half of the context. A zone-supplied chip
+// must not ship the visitor's earlier selection as their "primary focus", and
+// "" cannot say so: captureContext reads "" as "no override given" and falls
+// back to the live window selection, which is still highlighted on the page
+// while the thread that was opened from it is answering follow-ups.
+const SELECTED_TEXT_SUPPRESSED = "[selected-text-suppressed:zone-chip]";
+
+// elementFromPoint that reports a miss as a miss. A point outside the viewport
+// returns null, but a point that lands on no real box returns <body>, and a
+// non-null <body> short-circuits every `??` fallback behind it — pinning the
+// thread to the document root instead of the element the selection knows about.
+// Neither answer resolves a zone, so both come back null.
+function elementAtPoint(x: number, y: number) {
+  const hit = document.elementFromPoint(x, y);
+  if (!hit || hit === document.body || hit === document.documentElement) {
+    return null;
+  }
+  return hit;
+}
 
 function getSelectionAnchor() {
   const selection = window.getSelection();
@@ -335,10 +380,33 @@ function getSelectionAnchor() {
   const rect = range.getBoundingClientRect();
   if (rect.width === 0 && rect.height === 0) return null;
 
+  // The element the selection lives in, carried next to the point because the
+  // point alone cannot resolve a zone: y is the selection's BOTTOM edge, so a
+  // paragraph whose last line sits at the foot of the screen puts it below the
+  // viewport, where elementFromPoint answers null. Measured 2026-08-10 with a
+  // paragraph of the persona essay selected inside the essay dialog — element
+  // "unknown", nearbyText "" (len 0), y 1777 against a 761px viewport — i.e.
+  // the request reached the model with SITE_CONTEXT and no page text at all.
+  //
+  // Read off the START container, never commonAncestorContainer. A real Chrome
+  // triple-click ends its range at a boundary outside the paragraph — measured
+  // 2026-08-10 on the persona essay, endContainer was a body-level overlay DIV
+  // — so the common ancestor climbs to BODY, which resolves no zone and which
+  // getBoundedText refuses outright. The start container is the text node the
+  // reader actually clicked into, and its parent is the paragraph.
+  const start = range.startContainer;
+  const element =
+    start instanceof Element
+      ? start.childNodes[range.startOffset] instanceof Element
+        ? (start.childNodes[range.startOffset] as Element)
+        : start
+      : start.parentElement;
+
   return {
     x: rect.left + rect.width / 2,
     y: rect.bottom,
     selectedText: selection.toString().trim(),
+    element,
   };
 }
 
@@ -423,6 +491,7 @@ function captureContext(
   pageY: number,
   selectedTextOverride = "",
   nearbyTextOverride = "",
+  fallbackElement: Element | null = null,
 ): CapturedContext {
   const point = getViewportPoint(pageX, pageY);
   const selection = window.getSelection();
@@ -430,12 +499,19 @@ function captureContext(
   // (a whole essay, Ctrl+A) would otherwise ship unbounded into the system
   // prompt and can push the request past the worker's 24k-char cap, which
   // 400s as a generic "could not get a response" the user can't retry past.
-  const selectedText = (
-    selectedTextOverride ||
-    selection?.toString().trim() ||
-    ""
-  ).slice(0, MAX_SELECTED_CHARS);
-  const element = document.elementFromPoint(point.x, point.y);
+  const selectedText =
+    selectedTextOverride === SELECTED_TEXT_SUPPRESSED
+      ? ""
+      : (selectedTextOverride || selection?.toString().trim() || "").slice(
+          0,
+          MAX_SELECTED_CHARS,
+        );
+  // The stored anchor can sit outside the viewport — a selection anchored on
+  // its bottom edge below the fold, or a page scrolled since the thread opened
+  // — and elementFromPoint answers null there, which is what reported element
+  // "unknown" and dropped the nearbyText fallback to "". The caller's resolved
+  // section stands in for the point in that case.
+  const element = elementAtPoint(point.x, point.y) ?? fallbackElement;
   const audienceRole = getAudienceRole();
   const context = {
     url: window.location.href,
@@ -553,8 +629,13 @@ function buildMessages(
   // it adds information: a chip click or typed question in a thread that was
   // not opened by a pin, where the hint names the zone rather than repeats the
   // question. The rest of the sentence, which names the section, always stays.
+  // An empty hint counts as nothing to quote. The essay dialog is an ask zone
+  // with no pin — it carries data-ask-kind but deliberately no data-ask-hint,
+  // since [data-ask-hint] is what the contextual pin scans for — so without this
+  // the prompt would read: invited by the prompt "".
   const omitHintQuote =
     fromAutoAsk ||
+    !zoneContext?.hint.trim() ||
     zoneContext?.hint.trim().toLowerCase() === prompt.trim().toLowerCase();
 
   const contextLines = [
@@ -769,6 +850,21 @@ export function CursorChat({
   // The section a draft thread is currently pointed at, so pointer moves that
   // stay inside the same section don't churn state.
   const resolvedElementRef = useRef<HTMLElement | null>(null);
+  // What the active thread was anchored on, kept because its stored point can
+  // stop resolving anything: elementFromPoint answers null outside the viewport,
+  // so a selection anchored on its bottom edge below the fold made captureContext
+  // report element "unknown" and fall back to no nearby text at all. Released
+  // with resolvedElementRef on close for the same detached-subtree reason.
+  const anchorElementRef = useRef<Element | null>(null);
+  // How the last message on this thread was submitted, so a retry can inherit
+  // that classification instead of losing it: a retry re-sends
+  // activeThread.prompt, which is the chip's text when the failed request was a
+  // chip click, and reading only the retry's own querySource handed the
+  // selection back to the exact prompt the suppression below exists to protect.
+  // Keyed by thread id so it can't be read across a thread that never submitted.
+  const lastSubmitSourceRef = useRef<{ id: string; source: ChatQuerySource } | null>(
+    null,
+  );
   // Where focus goes when the element that opened the panel is gone or hidden.
   // Captured at close, consumed once by restoreFocus.
   const focusFallbackRef = useRef<HTMLElement | null>(null);
@@ -1021,7 +1117,22 @@ export function CursorChat({
       // Explicit request wins; otherwise the small-screen layout docks.
       const isDocked = docked ?? window.innerWidth <= DOCK_MAX_VIEWPORT;
       const id = crypto.randomUUID();
-      const anchorElement = document.elementFromPoint(anchor.x, anchor.y);
+      // A selection anchors on its bottom edge, which is below the fold for any
+      // paragraph ending at the foot of the screen, and elementFromPoint answers
+      // null outside the viewport. Falling back to the element the selection
+      // lives in keeps the anchor point from being the only way to resolve a
+      // zone: without it askContext.element and anchorElement were both null,
+      // getBoundedText(null) returned "", and the thread carried no page text.
+      //
+      // Keyed on the selection existing, NOT on fromSelection: the selection pin
+      // handles the "/" itself and reopens through CURSOR_CHAT_REQUEST_OPEN with
+      // an anchorOverride, which makes fromSelection false while selectionAnchor
+      // is still non-null. Measured 2026-08-10 on that exact path — a paragraph
+      // triple-clicked inside the persona essay, selectedText 288 chars, and the
+      // thread still resolved element "body" and sent the homepage rail as
+      // nearby content.
+      const anchorElement =
+        elementAtPoint(anchor.x, anchor.y) ?? selectionAnchor?.element ?? null;
       // What the reader is actually looking at, resolved once and frozen for
       // the life of the thread: an explicit zone wins, else the nearest
       // section in the viewport, else the page (or open essay) default.
@@ -1068,6 +1179,7 @@ export function CursorChat({
       setAnnouncement("");
       setExitingSuggestions(null);
       resolvedElementRef.current = askContext.element ?? null;
+      anchorElementRef.current = anchorElement;
       activeIdRef.current = id;
       setThreads((current) => [
         ...current,
@@ -1322,6 +1434,7 @@ export function CursorChat({
     // Release the resolved section so a closed panel can't retain a
     // detached subtree after that part of the page unmounts.
     resolvedElementRef.current = null;
+    anchorElementRef.current = null;
     const id = activeIdRef.current;
     if (!id || leavingIdRef.current) return;
 
@@ -1435,6 +1548,7 @@ export function CursorChat({
         extraContext,
         fromAutoAsk,
       );
+      const tier = pickTier(message, context, history, zoneContext);
       if (import.meta.env.DEV) {
         // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
         // short-circuits inside streamChat, after these messages are built. Stash
@@ -1442,6 +1556,12 @@ export function CursorChat({
         // the zone/section a thread claims and the context it sends must agree.
         (window as unknown as { __cursorChatLastMessages?: unknown }).__cursorChatLastMessages =
           messages;
+        // The tier is consumed inside streamChat, past the point where the test
+        // stub returns, so it is invisible to the same check. Routing is part of
+        // what a chip sends: an essay chip carries the most page context on the
+        // site and must not be the one request that goes to the cheap model.
+        (window as unknown as { __cursorChatLastTier?: unknown }).__cursorChatLastTier =
+          tier;
       }
       const response = await streamChat(
         messages,
@@ -1449,7 +1569,7 @@ export function CursorChat({
           patch((thread) => ({ ...thread, status: "streaming", response: full }));
         },
         controller.signal,
-        pickTier(message, context, history, zoneContext),
+        tier,
       );
       patch((thread) => {
         const nextHistory = [...thread.history, { prompt: message, response }];
@@ -1515,11 +1635,43 @@ export function CursorChat({
       return;
     }
 
+    // A chip is written against the zone, not against whatever the visitor had
+    // highlighted when the thread opened. Measured 2026-08-10: with the
+    // "Judgment doesn't automate" paragraph selected in the persona essay, the
+    // zone follow-up "what broke when a query mixed two languages?" still
+    // shipped that paragraph as "the visitor's primary focus", so the model
+    // answered about a section the chip never asked about — and from
+    // SITE_CONTEXT, naming languages the essay does not name. Only text the
+    // visitor typed (or a retry of it) keeps the selection. A retry of a chip
+    // stays suppressed too — it re-sends the chip's own text, so re-deriving
+    // from its "retry" label alone would ship the stale selection one keypress
+    // later.
+    const chipSubmit =
+      querySource === "suggested" ||
+      (querySource === "retry" &&
+        lastSubmitSourceRef.current?.id === id &&
+        lastSubmitSourceRef.current.source === "suggested");
+    const selectedTextOverride = chipSubmit
+      ? SELECTED_TEXT_SUPPRESSED
+      : activeThread.selectedTextOverride;
+    // Recorded only for a first send: a retry must not overwrite the source it
+    // just inherited, or a second retry would fall back to "retry" itself.
+    if (querySource !== "retry") {
+      lastSubmitSourceRef.current = { id, source: querySource };
+    }
+
+    // Nothing essay-specific here any more. A thread opened inside the dialog
+    // resolved the panel as its element, so nearbyTextOverride already holds the
+    // whole essay, frozen at open the same way a card's text is — including
+    // after that essay closes, which is the truthful answer for a thread that
+    // asked about it. See the page-default branch in resolveAskContext.
+    const threadAnchor = resolvedElementRef.current ?? anchorElementRef.current;
     const context = captureContext(
       activeThread.pageX,
       activeThread.pageY,
-      activeThread.selectedTextOverride,
+      selectedTextOverride,
       activeThread.nearbyTextOverride,
+      threadAnchor,
     );
     const history = activeThread.history;
     const zoneContext = activeThread.zoneContext;

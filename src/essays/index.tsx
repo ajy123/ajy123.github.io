@@ -81,10 +81,11 @@ export const aiPracticeItems: EssayItem[] = [
     askHint: "What bottleneck needed a team?",
     askKind: "essay",
     askAnchorPreference: "cursor",
-    // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it. Here the
-    // cut falls inside "The productive kill", so that section and "The judgment
-    // stayed mine" are out of reach for a chip.
+    // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
+    // data-ask-context — every surface that reads it bounds there, see
+    // boundAskContext in chatEvents. This essay's context is 3510, so all of it
+    // is reachable and a chip may draw on any section, "The productive kill" and
+    // "The judgment stayed mine" included.
     // A chip also has to be unanswerable from the card face: the grouping of
     // tickets into themes and the fourteen baselines are both printed in the
     // summary, so chips asking those back returned what the reader had just
@@ -155,24 +156,28 @@ export const aiPracticeItems: EssayItem[] = [
     askHint: "Why regenerate personas weekly?",
     askKind: "essay",
     askAnchorPreference: "cursor",
-    // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it. This
-    // essay's context is 2699 chars, so the cut falls mid-sentence in "What it
-    // caught" (after "Nobody had written that test, because the") and the whole
-    // of "Judgment doesn't automate" is unreachable. No chip may draw on either.
+    // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
+    // data-ask-context — every surface that reads it bounds there, see
+    // boundAskContext in chatEvents. This essay's context is 2699, so all of it
+    // is reachable, "What it caught" and "Judgment doesn't automate" included.
     // A chip must also be unanswerable from the card face (title, role, year,
     // summary, thumbnail). The summary now states the premise, the test, and the
     // mixed-language catch, so no chip asks those back; they ask what the card
-    // cannot print — what design.md controls, what a scenario contains, the
-    // review cost, and the three things the mixed-language query broke.
+    // cannot print — what design.md controls, what each situation includes
+    // besides the query, the review cost, and the three things the
+    // mixed-language query broke.
     // A chip must also name a fact the essay states outright. "what does
     // design.md have to do with personas?" was cut after failing twice against
     // the live worker: the essay offers that link as an analogy ("a persona
     // could work the same way"), and the prompt forbids inferring, so the model
     // correctly refused to assert a connection the page never states.
+    // A chip must also use the essay's own noun. "what is in a scenario besides
+    // the query?" returned "I don't know" on the live worker because the essay
+    // attaches that list to "situations", not "scenario", and the prompt
+    // forbids inferring, so the model would not equate the two.
     askPromptChips: [
       "what is design.md used to control?",
-      "what is in a scenario besides the query?",
+      "besides the query, what does each situation include?",
       "how long does the weekly review take?",
     ],
     askFollowUpPromptChips: [

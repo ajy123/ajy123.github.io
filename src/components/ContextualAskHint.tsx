@@ -6,6 +6,7 @@ import {
   type CSSProperties,
 } from "react";
 import {
+  boundAskContext,
   CURSOR_CHAT_OPENED_EVENT,
   requestCursorChatOpen,
   type CaseContextKey,
@@ -188,7 +189,14 @@ function readActiveHint(element: HTMLElement): ActiveHint {
     // must mean "no case context", not a lookup that returns undefined and
     // reaches the model as the string "undefined".
     caseKey: toCaseContextKey(element.dataset.askCase),
-    contextText: `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200),
+    // Same bounds getBoundedText applies, from the same place: without the
+    // curated/walked split a pin ask on the essay card cut the 2699-char persona
+    // essay at 2200 and lost the tail, while the identical chip inside the open
+    // dialog got all of it.
+    contextText: boundAskContext(
+      `${text}${links ? ` Links: ${links}` : ""}`,
+      !!element.dataset.askContext,
+    ),
   };
 }
 

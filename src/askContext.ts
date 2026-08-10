@@ -426,9 +426,25 @@ function distanceToRect(rect: DOMRect, x: number, y: number): number {
   return Math.hypot(dx, dy);
 }
 
-// The essay modal covers the page, so while it is open the sections behind it
-// are not what the reader is looking at. Scope section resolution to the panel.
-const ESSAY_PANEL_SELECTOR = ".essay-dialog-panel";
+// The open essay's panel, or null when no essay is open. The essay modal covers
+// the page, so while it is open the sections behind it are not what the reader
+// is looking at, so section resolution scopes itself to what this returns and
+// the page-default branch hands it back as the resolved element. Module-private
+// on purpose: when the composer looked the panel up for itself at submit time,
+// that second lookup was a live re-derivation of a fact the thread had already
+// frozen, and keeping the two in step took four attempts.
+function findOpenEssayPanel(): HTMLElement | null {
+  const essayId = readOpenEssayId();
+  if (!essayId) return null;
+  // By id, not by class. Two panels share the class during a switch between
+  // essays: the outgoing one is still mounted for its exit animation while the
+  // incoming one has rendered, and querySelector would hand back whichever
+  // comes first in the DOM. Measured 2026-08-10 — going straight from the
+  // persona essay to team-of-agents left both mounted, so a chip fired in that
+  // window would have quoted the essay the reader just closed. The id is the
+  // same `essay-dialog-<id>` EssayDialog puts on the panel.
+  return document.getElementById(`essay-dialog-${essayId}`);
+}
 
 // A work card can deliberately ship with no ask zone (the Brand Identity card
 // keeps only its "DEELI.AI" live link and opts out of the ask surface). Its
@@ -533,11 +549,12 @@ export function resolveAskContext(opts: {
 
   // 2. Nearest section in the viewport. While the essay modal is open the
   // search is scoped to it — a section behind the overlay is not what the
-  // reader is looking at, and letting it win would contradict the label.
+  // reader is looking at, and letting it win would contradict the label. The
+  // panel comes from findOpenEssayPanel so a switch between essays resolves by
+  // id rather than by class, and the two flags stay separate: an open essay
+  // whose panel has not rendered yet must skip the scan, not run it unscoped.
   const essayIsOpen = typeof window !== "undefined" && !!readOpenEssayId();
-  const essayPanel = essayIsOpen
-    ? document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR)
-    : null;
+  const essayPanel = essayIsOpen ? findOpenEssayPanel() : null;
   if (!essayIsOpen || essayPanel) {
     const section = findNearestSection(
       opts.anchorElement,
@@ -551,10 +568,27 @@ export function resolveAskContext(opts: {
   }
 
   // 3. Page default (essay > pathname > home).
+  //
+  // When that default is an open essay, the panel IS the resolved element. It
+  // carries the whole essay as data-ask-context and data-ask-kind="essay", so
+  // every consumer downstream treats the dialog as an ordinary ask zone: the
+  // caller freezes getBoundedText(panel) onto the thread the way it freezes a
+  // card's text, zoneContextFor reads kind "essay" off it, and pickTier routes
+  // that to the strong model the same way it already does for the essay card.
+  //
+  // Returning it here rather than special-casing the dialog at submit time is
+  // the point. Four defects came from comparing a frozen thread against a live
+  // lookup — a panel found by class, a panel found by geometry, an id compared
+  // against the hash — and each fix needed the comparison maintained at one more
+  // site. A thread that resolved the panel has nothing left to re-derive: it
+  // keeps answering from the essay it was opened in after that essay closes,
+  // which is the truthful answer, and a thread that never resolved it cannot
+  // acquire the text later.
   return {
     label: pageDefault.label,
     chips: pageDefault.chips.slice(0, 3),
     followUps: pageDefault.followUps,
     placeholder: pageDefault.placeholder,
+    element: essayPanel ?? undefined,
   };
 }

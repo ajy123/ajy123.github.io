@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 import type { EssayItem } from "../essays/types";
+import { essayAskContext } from "../essays/essayAskContext";
 
 function CloseGlyph() {
   return (
@@ -231,6 +232,23 @@ export function EssayDialog({
             aria-labelledby={dialogTitleId}
             aria-modal="true"
             className="essay-dialog-panel"
+            // The whole essay, readable off the DOM at submit time. A chip
+            // offered inside the dialog is written against the essay end to
+            // end, while a section-sized context would leave a chip about any
+            // other section nothing to answer from, and the model fell back to
+            // SITE_CONTEXT. resolveAskContext returns this panel as the resolved
+            // element for an open essay, so the thread freezes this string as
+            // its nearby text at open. Must travel with data-ask-kind below:
+            // without this attribute getBoundedText would walk the dialog's DOM
+            // instead and bound the result at the walked ceiling.
+            data-ask-context={essayAskContext(item)}
+            // Makes the panel an ordinary ask zone. resolveAskContext returns it
+            // as the resolved element for an open essay, zoneContextFor reads
+            // this kind off it, and pickTier already routes "essay" to the
+            // strong model — the same route the essay card takes. Deliberately
+            // no data-ask-hint: that attribute is what the contextual pin scans
+            // for, and the dialog does not host pins.
+            data-ask-kind="essay"
             data-scroll-ready={isScrollReady}
             id={dialogId}
             layoutId={panelLayoutId}

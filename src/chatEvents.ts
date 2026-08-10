@@ -59,6 +59,25 @@ export function isCoarsePointer(): boolean {
   );
 }
 
+// How much page text an ask surface may send as its grounding, split by where
+// the text came from. The walked bound exists to stop an unbounded DOM walk over
+// a region nobody authored; a curated data-ask-context is a known quantity, and
+// the two live essays measure 2699 and 3510, so one flat bound at 2200 cut both
+// mid-section and a chip naming a fact only the tail states answered "I don't
+// know". Raise the curated bound only against a measured length: it is what
+// keeps the assembled request under the worker's MAX_TOTAL_CHARS.
+//
+// Lives here because four surfaces read a data-ask-context and each used to
+// carry its own copy of the clamp — getBoundedText, ContextualAskHint's
+// readActiveHint, and main.tsx's tap handler. Three copies of one rule is how
+// the dialog and the card ended up disagreeing about the same string.
+export const WALKED_CONTEXT_MAX = 2200;
+export const CURATED_CONTEXT_MAX = 4000;
+
+export function boundAskContext(text: string, curated: boolean): string {
+  return text.slice(0, curated ? CURATED_CONTEXT_MAX : WALKED_CONTEXT_MAX);
+}
+
 // Turn a list of prompt-chip strings into SuggestedPrompt records. Mirrors the
 // id/label/prompt shape ContextualAskHint builds from data-ask-prompts so tap
 // and hover entry points produce identical chips.

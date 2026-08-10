@@ -63,32 +63,75 @@ const ESSAY_LABEL = zoneKindLabel("essay"); // "ASKING ABOUT: THIS ESSAY" — fi
 // button inside a 340px panel).
 
 // ---------------------------------------------------------------------------
-// Home page defaults — copy reused verbatim from the old AUDIENCE_PROMPTS
-// (CursorChat.tsx:122-155), not re-authored: re-writing that copy is out of
-// scope. All three of its branches survive. recruiter and default shared one
-// chip array there and still do; only their placeholders differ. One chip has
-// since departed from that copy: the product-design set's brand question
-// page-checked "opened enterprise pilots", which the card stopped saying, so
-// it had to move or answer no against the site's own suggested question.
+// Home page defaults. Every chip here is new, and they replace six that a
+// reader could already answer without opening the chat. "what is Joanna's role?"
+// and "what does Joanna focus on?" are both printed in the rail's own bio, two
+// lines above the button that opens this panel. "what did she build for Deeli?"
+// and "did she build Deeli's site in a week?" were answered outright by the work
+// card summaries, the second one almost word for word by the Brand Identity
+// card. The fifth, "is Joanna a designer and engineer?", went for a worse reason
+// than redundancy: it returned "No" against SITE_CONTEXT, which states designer
+// is the right title for her and engineer is not, and a suggested question that
+// talks the reader out of a capability is worse than no chip at all.
+//
+// "what is Joanna's email?" went too, and for the same reason rather than a
+// softer one: the rail prints the address with a copy button directly below this
+// panel's own button, so the chip spent a suggestion slot on the one thing the
+// page already hands over.
+//
+// Every chip here is answerable only from the facts in
+// src/siteContext.ts, and each deliberately avoids text already printed on the
+// home page cards. The Deeli card prints the 220% and the 13% to 70% figures and
+// the word market, and the Swiftly card prints 30+ to 12 to 24 hours and the 20%
+// inbound drop, so none of those appear in the new chips or in the facts they
+// draw on.
+//
+// Only the first three chips render at open (resolveAskContext slices to 3).
+// followUpsFor then offers three previously unshown chips after each answered
+// turn, so the whole set is reachable inside one thread and a reader who keeps
+// going can click five of them. An earlier version of this comment claimed the
+// unclicked opening chips were spent and capped a thread at two answers. That was
+// wrong, verified by simulating followUpsFor against this array on 2026-08-10.
+// The opening three still lead deliberately: one on how she tests model output,
+// one on product judgment in the search flow, and one on resolving a disagreement
+// with a PM, so a first glance shows range rather than three questions about the
+// same subject.
+//
+// Browser-tested twice on 2026-08-10. The first chip used to ask what happens
+// when the assistant gets it wrong, and the model answered it correctly but only
+// from the last sentence of its fact, so the mixed-language example never reached
+// the reader. The cause was one fact holding two answers, one about what
+// evaluations catch before shipping and one about what a reader can verify
+// afterwards, which forced the model to choose. The fact is now split in two. The
+// catching half keeps this chip, retargeted to what it actually describes. The
+// verification half is a fact with no chip of its own, still reachable by a typed
+// question, since the reader-feedback chip already covers that territory.
+//
+// The first chip was then retargeted a second time, away from "what did the model
+// evaluations catch before launch?", because the homepage essay card already
+// prints that a persona test caught mixed-language users breaking language
+// detection, so the answer restated copy the reader could already see. The
+// mixed-language fact stays in src/siteContext.ts and a typed question still
+// reaches it.
 const HOME_DEFAULT_CHIPS = [
-  "what is Joanna's role?",
-  "what did she build for Deeli?",
-  "what does Joanna focus on?",
-  "did she build Deeli's site in a week?",
-  "is Joanna a designer and engineer?",
-  "what is Joanna's email?",
+  "how does she test what the model says before it ships?",
+  "why does the Deeli research assistant ask before it answers?",
+  "what did she do when queries came in mixed English and Mandarin?",
+  "how does she settle a disagreement with a PM?",
+  "when has she pushed back on what she was asked to build?",
+  "what happened when the product team proposed thumbs up and down?",
+  "what does she not hand to AI in her own workflow?",
+  "how does one designer keep a design system consistent at Deeli?",
+  "why are expert users the hardest audience for AI-generated content?",
+  "which of her own ideas did the data kill?",
+  "what did she do when interviews could not settle which sections readers wanted?",
+  "how does she get more evidence behind a finding?",
+  "how much time did her synthesis pipeline save?",
+  "can model evaluations catch every edge case?",
 ];
 const HOME_RECRUITER_PLACEHOLDER = "or ask what's on your checklist";
 const HOME_DEFAULT_PLACEHOLDER = "or ask anything about her work";
 
-const HOME_PRODUCT_DESIGN_CHIPS = [
-  "does Joanna build AI products that hold data rigor and design quality equally?",
-  "what was her role on the brand identity?",
-  "does Joanna work across Figma and code?",
-  "what did she build in a week?",
-  "does the page say enterprise pilot conversations started at Computex?",
-  "is Joanna a designer and engineer?",
-];
 const HOME_PRODUCT_DESIGN_PLACEHOLDER = "or ask how anything here was made";
 
 // ---------------------------------------------------------------------------
@@ -166,21 +209,71 @@ const NYU_CHIPS = [
 
 const ESSAY_DEFAULT_PLACEHOLDER = "or ask anything about this essay";
 
+// Rotating the opening three. resolveAskContext takes the first three chips for
+// the panel, and that slice always started at index 0, so a reader who opened the
+// panel, asked a question and came back saw the same three forever. Everything
+// past the sixth chip was reachable only by someone who kept one thread going for
+// four turns.
+//
+// The offset advances once per page load, not once per thread. resolveAskContext
+// runs again on every pointer move while a thread is still a draft, so an offset
+// that moved per call would change the chips under the reader mid-draft. Stored in
+// sessionStorage, the same place getAudienceRole and the intro flag already keep
+// their state, so moving between pages keeps walking through the set. Read once
+// into a module-scope memo so every call within one load agrees.
+const HOME_CHIP_OFFSET_KEY = "ask-home-chip-offset";
+const HOME_CHIP_OPENING_COUNT = 3;
+let homeChipOffset: number | null = null;
+
+function homeChipsRotated(): string[] {
+  const chips = HOME_DEFAULT_CHIPS;
+  if (typeof window === "undefined" || chips.length <= HOME_CHIP_OPENING_COUNT) {
+    return chips;
+  }
+  if (homeChipOffset === null) {
+    let start = 0;
+    try {
+      const raw = window.sessionStorage.getItem(HOME_CHIP_OFFSET_KEY);
+      const parsed = raw ? Number.parseInt(raw, 10) : 0;
+      start = Number.isFinite(parsed) && parsed >= 0 ? parsed % chips.length : 0;
+    } catch {
+      start = 0; // Storage unavailable in private browsing; rotation just stays at 0.
+    }
+    homeChipOffset = start;
+    try {
+      window.sessionStorage.setItem(
+        HOME_CHIP_OFFSET_KEY,
+        String((start + HOME_CHIP_OPENING_COUNT) % chips.length),
+      );
+    } catch {
+      // Same private-browsing case: the next load reads 0 and opens with the
+      // strongest three, which is the right thing to fall back to.
+    }
+  }
+  return [...chips.slice(homeChipOffset), ...chips.slice(0, homeChipOffset)];
+}
+
 function homePageDefault(role: AudienceRole | undefined): PageDefault {
-  // All three branches of the old AUDIENCE_PROMPTS survive. `product design`
-  // is the one with genuinely different chips; dropping it would silently
-  // regress `?audience=product-design` links to the default set.
+  // All three branches of the old AUDIENCE_PROMPTS survive, but the reasoning
+  // has flipped: the default set is now the stronger one, so `product design`
+  // keeps only its placeholder and serves the same chips. Its own six chips
+  // were cut because "is Joanna a designer and engineer?" returned "No"
+  // against SITE_CONTEXT, "does Joanna build AI products that hold data rigor
+  // and design quality equally?" restated a positioning claim so the answer
+  // could only echo it back, and "does the page say enterprise pilot
+  // conversations started at Computex?" reads as a test assertion rather than
+  // a question a reader would ask.
   if (role === "product design") {
     return {
       label: HOME_LABEL,
-      chips: HOME_PRODUCT_DESIGN_CHIPS,
-      followUps: HOME_PRODUCT_DESIGN_CHIPS,
+      chips: homeChipsRotated(),
+      followUps: HOME_DEFAULT_CHIPS,
       placeholder: HOME_PRODUCT_DESIGN_PLACEHOLDER,
     };
   }
   return {
     label: HOME_LABEL,
-    chips: HOME_DEFAULT_CHIPS,
+    chips: homeChipsRotated(),
     followUps: HOME_DEFAULT_CHIPS,
     placeholder:
       role === "recruiter"

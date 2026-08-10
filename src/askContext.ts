@@ -345,7 +345,7 @@ function essayPageDefault(essayId: string, underlyingPage: PageDefault): PageDef
 // ---------------------------------------------------------------------------
 const ESSAY_HASH_PREFIX = "#essay/";
 
-export function readOpenEssayId(): string | null {
+function readOpenEssayId(): string | null {
   if (typeof window === "undefined") return null;
   const { hash } = window.location;
   if (!hash.startsWith(ESSAY_HASH_PREFIX)) return null;
@@ -428,12 +428,12 @@ function distanceToRect(rect: DOMRect, x: number, y: number): number {
 
 // The open essay's panel, or null when no essay is open. The essay modal covers
 // the page, so while it is open the sections behind it are not what the reader
-// is looking at, and both callers here scope themselves to what this returns:
-// section resolution below, and the composer's whole-essay chip context. Exported so the
-// composer can read the panel's own data-ask-context at submit time through the
-// one open-essay lookup this file already owns, instead of a second selector
-// somewhere else that could outlive a class rename.
-export function findOpenEssayPanel(): HTMLElement | null {
+// is looking at, so section resolution scopes itself to what this returns and
+// the page-default branch hands it back as the resolved element. Module-private
+// on purpose: when the composer looked the panel up for itself at submit time,
+// that second lookup was a live re-derivation of a fact the thread had already
+// frozen, and keeping the two in step took four attempts.
+function findOpenEssayPanel(): HTMLElement | null {
   const essayId = readOpenEssayId();
   if (!essayId) return null;
   // By id, not by class. Two panels share the class during a switch between

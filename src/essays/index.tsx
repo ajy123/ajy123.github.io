@@ -81,10 +81,11 @@ export const aiPracticeItems: EssayItem[] = [
     askHint: "What bottleneck needed a team?",
     askKind: "essay",
     askAnchorPreference: "cursor",
-    // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it. Here the
-    // cut falls inside "The productive kill", so that section and "The judgment
-    // stayed mine" are out of reach for a chip.
+    // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
+    // data-ask-context — every surface that reads it bounds there, see
+    // boundAskContext in chatEvents. This essay's context is 3510, so all of it
+    // is reachable and a chip may draw on any section, "The productive kill" and
+    // "The judgment stayed mine" included.
     // A chip also has to be unanswerable from the card face: the grouping of
     // tickets into themes and the fourteen baselines are both printed in the
     // summary, so chips asking those back returned what the reader had just
@@ -155,11 +156,10 @@ export const aiPracticeItems: EssayItem[] = [
     askHint: "Why regenerate personas weekly?",
     askKind: "essay",
     askAnchorPreference: "cursor",
-    // Chip facts must sit inside the first 2200 chars of data-ask-context —
-    // ContextualAskHint truncates there before the chat model sees it. This
-    // essay's context is 2699 chars, so the cut falls mid-sentence in "What it
-    // caught" (after "Nobody had written that test, because the") and the whole
-    // of "Judgment doesn't automate" is unreachable. No chip may draw on either.
+    // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
+    // data-ask-context — every surface that reads it bounds there, see
+    // boundAskContext in chatEvents. This essay's context is 2699, so all of it
+    // is reachable, "What it caught" and "Judgment doesn't automate" included.
     // A chip must also be unanswerable from the card face (title, role, year,
     // summary, thumbnail). The summary now states the premise, the test, and the
     // mixed-language catch, so no chip asks those back; they ask what the card

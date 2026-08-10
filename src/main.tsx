@@ -16,6 +16,7 @@ import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { createRoot } from "react-dom/client";
 import { CursorChat } from "./CursorChat";
 import {
+  boundAskContext,
   isCoarsePointer,
   requestCursorChatOpen,
   toSuggestedPrompts,
@@ -247,7 +248,14 @@ function handleAskableTap(
           .slice(0, 4)
           .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
           .join("; ");
-        return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
+        // The third reader of a curated data-ask-context, bounded the same way
+        // as the other two. Latent today — every zone routing through the tap
+        // handler has a short context — but a flat clamp here is exactly the
+        // copy-drift that let the card and the dialog disagree about one string.
+        return boundAskContext(
+          `${text}${links ? ` Links: ${links}` : ""}`,
+          !!contextText,
+        );
       })(),
     },
   });

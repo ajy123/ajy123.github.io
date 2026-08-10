@@ -234,10 +234,13 @@ export function EssayDialog({
             className="essay-dialog-panel"
             // The whole essay, readable off the DOM at submit time. A chip
             // offered inside the dialog is written against the essay end to
-            // end, while the thread's nearby text is only the section nearest
-            // the anchor — so a chip about a different section had nothing to
-            // answer from and the model fell back to SITE_CONTEXT. See the
-            // essay-panel branch in CursorChat's submitThread.
+            // end, while a section-sized context would leave a chip about any
+            // other section nothing to answer from, and the model fell back to
+            // SITE_CONTEXT. resolveAskContext returns this panel as the resolved
+            // element for an open essay, so the thread freezes this string as
+            // its nearby text at open. Must travel with data-ask-kind below:
+            // without this attribute getBoundedText would walk the dialog's DOM
+            // instead and bound the result at the walked ceiling.
             data-ask-context={essayAskContext(item)}
             // Makes the panel an ordinary ask zone. resolveAskContext returns it
             // as the resolved element for an open essay, zoneContextFor reads

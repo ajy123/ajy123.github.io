@@ -15,6 +15,7 @@ import {
   type ChatTier,
 } from "./chatApi";
 import {
+  boundAskContext,
   CURSOR_CHAT_OPENED_EVENT,
   CURSOR_CHAT_REQUEST_OPEN_EVENT,
   requestCursorChatOpen,
@@ -242,8 +243,10 @@ function getElementLabel(element: Element | null) {
   return `${tag}${id}${classes}`;
 }
 
-// Matches getBoundedText's nearbyText clamp — keeps a big selection from
-// pushing the request past the worker's MAX_TOTAL_CHARS (24k) limit.
+// Matches the walked bound getBoundedText applies (WALKED_CONTEXT_MAX) — keeps
+// a big selection from pushing the request past the worker's MAX_TOTAL_CHARS
+// (24k) limit. Not the curated bound: a selection is text the visitor dragged
+// over, not an authored string.
 const MAX_SELECTED_CHARS = 2200;
 
 // Contract with the Cloudflare Worker: validMessages() 400s any request whose
@@ -291,19 +294,6 @@ function visibleTextOf(source: Element | null) {
   return parts.join(" ");
 }
 
-// Bound for text walked off an arbitrary page region: it exists to stop an
-// unbounded DOM walk, not to say anything about how much grounding is useful.
-const WALKED_CONTEXT_MAX = 2200;
-// Bound for an authored data-ask-context. Wider because the string is a known
-// quantity rather than whatever the walk finds: the two live essays measure
-// 2699 and 3510 chars (2026-08-10), and at 2200 both lost their closing
-// sections, so a chip naming a fact only the tail states answered "I don't
-// know". The extra ~1.3k comes out of history rather than out of the cap —
-// historyBudget subtracts the assembled system prompt, so grounding wins and
-// old turns drop first. Raise it only against a measured essay length; it is
-// what keeps the request under the worker's MAX_TOTAL_CHARS.
-const CURATED_CONTEXT_MAX = 4000;
-
 function getBoundedText(element: Element | null) {
   const source =
     element?.closest("[data-ask-hint]") ??
@@ -339,17 +329,11 @@ function getBoundedText(element: Element | null) {
     .slice(0, 4)
     .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
     .join("; ");
-  // Two bounds, because the two sources are not the same kind of thing. The
-  // walked bound exists to stop an unbounded DOM walk over a region nobody
-  // authored; a curated data-ask-context is a known, authored string, and the
-  // two live essays measure 2699 and 3510, so 2200 cut both of them mid-section
-  // and a chip naming a fact only the tail states answered "I don't know".
-  // Applying the split here rather than at the call site fixes every surface
-  // that reads the string at once — the card, the pin, and the open dialog all
-  // come through this function.
-  return `${text}${links ? ` Links: ${links}` : ""}`.slice(
-    0,
-    curated ? CURATED_CONTEXT_MAX : WALKED_CONTEXT_MAX,
+  // Bounded by where the text came from, not by which surface asked — see
+  // boundAskContext in chatEvents.
+  return boundAskContext(
+    `${text}${links ? ` Links: ${links}` : ""}`,
+    !!curated,
   );
 }
 

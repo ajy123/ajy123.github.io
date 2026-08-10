@@ -33,8 +33,6 @@ import {
 } from "./analytics";
 import { getAudienceRole } from "./audienceRole";
 import {
-  findOpenEssayPanel,
-  readOpenEssayId,
   resolveAskContext,
   zoneKindLabel,
 } from "./askContext";
@@ -118,14 +116,6 @@ type Thread = {
   // is a full question now, so quoting it back at the model alongside a
   // follow-up would read as a second, competing instruction. See buildMessages.
   openedByAutoAsk?: boolean;
-  // The essay that was open when this thread was created, or null on the page
-  // itself. Identity, not geometry: nothing inside the dialog carries
-  // data-ask-hint, so an essay thread never resolves a section and its anchor
-  // element is wherever the opening gesture happened to land — the FAB on touch,
-  // the stage gutter beside the panel on a "/" press. Testing DOM containment of
-  // that anchor rejected the thread's own essay; the id it opened against does
-  // not move.
-  openedEssayId?: string | null;
   // Bottom-docked layout (touch FAB / small viewport) instead of anchored.
   docked?: boolean;
   // "ASKING ABOUT: <NOUN>" for the topbar tag. Tracks the pointer while the
@@ -301,6 +291,19 @@ function visibleTextOf(source: Element | null) {
   return parts.join(" ");
 }
 
+// Bound for text walked off an arbitrary page region: it exists to stop an
+// unbounded DOM walk, not to say anything about how much grounding is useful.
+const WALKED_CONTEXT_MAX = 2200;
+// Bound for an authored data-ask-context. Wider because the string is a known
+// quantity rather than whatever the walk finds: the two live essays measure
+// 2699 and 3510 chars (2026-08-10), and at 2200 both lost their closing
+// sections, so a chip naming a fact only the tail states answered "I don't
+// know". The extra ~1.3k comes out of history rather than out of the cap —
+// historyBudget subtracts the assembled system prompt, so grounding wins and
+// old turns drop first. Raise it only against a measured essay length; it is
+// what keeps the request under the worker's MAX_TOTAL_CHARS.
+const CURATED_CONTEXT_MAX = 4000;
+
 function getBoundedText(element: Element | null) {
   const source =
     element?.closest("[data-ask-hint]") ??
@@ -336,7 +339,18 @@ function getBoundedText(element: Element | null) {
     .slice(0, 4)
     .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)
     .join("; ");
-  return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
+  // Two bounds, because the two sources are not the same kind of thing. The
+  // walked bound exists to stop an unbounded DOM walk over a region nobody
+  // authored; a curated data-ask-context is a known, authored string, and the
+  // two live essays measure 2699 and 3510, so 2200 cut both of them mid-section
+  // and a chip naming a fact only the tail states answered "I don't know".
+  // Applying the split here rather than at the call site fixes every surface
+  // that reads the string at once — the card, the pin, and the open dialog all
+  // come through this function.
+  return `${text}${links ? ` Links: ${links}` : ""}`.slice(
+    0,
+    curated ? CURATED_CONTEXT_MAX : WALKED_CONTEXT_MAX,
+  );
 }
 
 // The same explicit opt-out findNearestSection reads (src/askContext.ts:361).
@@ -574,18 +588,6 @@ const MAX_REQUEST_CHARS = 24000;
 // it. Also the floor: below this much room, history is dropped entirely and
 // the question still goes out grounded.
 const REQUEST_CHARS_RESERVE = 1000;
-// Ceiling for the whole-essay context a chip reads off the open dialog panel.
-// Wider than the 2200 getBoundedText applies to an arbitrary page region,
-// because that bound exists to stop an unbounded DOM walk while this string is
-// a known, authored quantity: the two live essays measure 2699 and 3510 chars
-// (2026-08-10), and at 2200 both lost their closing sections, so a chip naming
-// a fact only the tail states answered "I don't know". This costs the request
-// at most ~1.3k more than the old clamp, which comes out of history rather than
-// out of the cap — historyBudget below subtracts the assembled system prompt,
-// so grounding wins and old turns drop first. Raise it only against a measured
-// essay length; it is not a soft preference, it is what keeps the request under
-// the worker's MAX_TOTAL_CHARS.
-const ESSAY_CHIP_CONTEXT_MAX = 4000;
 
 function recentHistory(history: ChatTurn[], budget: number): ChatTurn[] {
   const kept: ChatTurn[] = [];
@@ -643,8 +645,13 @@ function buildMessages(
   // it adds information: a chip click or typed question in a thread that was
   // not opened by a pin, where the hint names the zone rather than repeats the
   // question. The rest of the sentence, which names the section, always stays.
+  // An empty hint counts as nothing to quote. The essay dialog is an ask zone
+  // with no pin — it carries data-ask-kind but deliberately no data-ask-hint,
+  // since [data-ask-hint] is what the contextual pin scans for — so without this
+  // the prompt would read: invited by the prompt "".
   const omitHintQuote =
     fromAutoAsk ||
+    !zoneContext?.hint.trim() ||
     zoneContext?.hint.trim().toLowerCase() === prompt.trim().toLowerCase();
 
   const contextLines = [
@@ -1216,7 +1223,6 @@ export function CursorChat({
           caseKey: threadCaseKey,
           zoneLocked: Boolean(zoneContext),
           openedByAutoAsk: Boolean(autoAsk?.trim()),
-          openedEssayId: readOpenEssayId(),
           docked: isDocked,
           draftPlaceholder: fromSelection
             ? "ask about what you selected"
@@ -1382,15 +1388,6 @@ export function CursorChat({
             // element keeps this in step with the chips it just adopted, and
             // resolves to undefined on a zone that names no project.
             caseKey: toCaseContextKey(next.element?.dataset.askCase),
-            // And the essay identity, for the same reason and in both
-            // directions. A draft opened on the page that drifts onto an essay
-            // panel adopts that essay's chips here, so without this it would be
-            // offered them and then denied the text to answer them from; a
-            // draft opened inside an essay that outlives it — Back closes the
-            // dialog but leaves the thread — can drift onto a work card, take
-            // that card's chips and digest, and then match again on Forward,
-            // which would hand a Deeli question the whole persona essay.
-            openedEssayId: readOpenEssayId(),
             nearbyTextOverride: contextText,
             suggestedPrompts: chips,
             promptPool: buildPromptPool(
@@ -1547,10 +1544,6 @@ export function CursorChat({
     zoneContext: CursorChatZoneContext | undefined,
     extraContext: string | undefined,
     fromAutoAsk: boolean,
-    // Set when the caller already knows this request carries a whole essay as
-    // its page context. pickTier cannot see that: it reads the tier off
-    // selectedText, and a chip deliberately sends none.
-    forceDeepTier = false,
   ) => {
     const patch = (updater: (thread: Thread) => Thread) =>
       setThreads((current) =>
@@ -1571,9 +1564,7 @@ export function CursorChat({
         extraContext,
         fromAutoAsk,
       );
-      const tier = forceDeepTier
-        ? "deep"
-        : pickTier(message, context, history, zoneContext);
+      const tier = pickTier(message, context, history, zoneContext);
       if (import.meta.env.DEV) {
         // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
         // short-circuits inside streamChat, after these messages are built. Stash
@@ -1685,67 +1676,17 @@ export function CursorChat({
       lastSubmitSourceRef.current = { id, source: querySource };
     }
 
-    // A chip offered inside the open essay is written against the whole essay,
-    // but the thread's nearby text is only the section nearest the anchor
-    // (300-700 chars in the persona essay), so a chip about any other section
-    // had nothing to answer from. Measured 2026-08-10: with "Judgment doesn't
-    // automate" as the resolved section, "what broke when a query mixed two
-    // languages?" came back in SITE_CONTEXT's words ("English and Mandarin",
-    // src/siteContext.ts) — languages the rewritten essay deliberately does not
-    // name. The same chip from the CARD, whose data-ask-context is the whole
-    // essay, answers off the essay, so the dialog panel now carries that same
-    // string and a chip reads it there.
-    //
-    // Clamped to ESSAY_CHIP_CONTEXT_MAX, not to the 2200 every other nearby
-    // text gets: at 2200 both live essays lost their tail (persona is 2699, so
-    // the cut landed mid-"What it caught" and "Judgment doesn't automate" was
-    // unreachable; team-of-agents is 3510 and lost two sections), and a chip
-    // that names a fact only the tail states would answer "I don't know".
-    //
-    // Only for a chip: a selection ask and a typed question (and its retry)
-    // asked about one place on the page and keep the section they resolved. The
-    // opt-out sentinel still wins outright — a region that asked to stay out of
-    // the prompt does not get overridden by the essay it sits in.
+    // Nothing essay-specific here any more. A thread opened inside the dialog
+    // resolved the panel as its element, so nearbyTextOverride already holds the
+    // whole essay, frozen at open the same way a card's text is — including
+    // after that essay closes, which is the truthful answer for a thread that
+    // asked about it. See the page-default branch in resolveAskContext.
     const threadAnchor = resolvedElementRef.current ?? anchorElementRef.current;
-    // An essay being open is not the same as this thread being in it. The chat
-    // panel sits above the essay stage (z-index 1103 against 1101, see
-    // chat-ui.css and essay-dialog.css) and nothing closes a thread when an
-    // essay opens, so a thread anchored on a work card stays live and clickable
-    // while the reader opens an essay beside it — or steps into one with
-    // Back/Forward, since the dialog is driven off the hash. Its chips are the
-    // card's chips and its zoneContext still names the card, so handing it the
-    // essay's text would tell the model to focus on one thing and give it
-    // another.
-    //
-    // Compared by essay id, NOT by testing whether the thread's anchor element
-    // sits inside the panel. Nothing in the dialog carries data-ask-hint, so
-    // resolveAskContext always falls through to the page default there and an
-    // essay thread's resolved element is null; the anchor is then whatever the
-    // opening gesture hit. Both real entry points miss the panel — the touch FAB
-    // is its own fixed element at z-index 1102, and a "/" press lands on
-    // .essay-dialog-stage, which is `fixed; inset: 0` with ~300px of hit-testable
-    // gutter either side of the 820px panel. Measured 2026-08-10: containment
-    // rejected the essay's own chips on both, sending nearby text of 0 from the
-    // FAB and 2200 truncated chars of stage text from the gutter. The id the
-    // thread opened against does not move, and it still differs from the id of
-    // an essay opened later over a page thread.
-    const inOpenEssay =
-      !!activeThread.openedEssayId &&
-      activeThread.openedEssayId === readOpenEssayId();
-    const essayChipContext =
-      chipSubmit &&
-      inOpenEssay &&
-      activeThread.nearbyTextOverride !== NEARBY_TEXT_SUPPRESSED
-        ? findOpenEssayPanel()?.dataset.askContext?.trim()
-        : undefined;
-
     const context = captureContext(
       activeThread.pageX,
       activeThread.pageY,
       selectedTextOverride,
-      essayChipContext
-        ? essayChipContext.slice(0, ESSAY_CHIP_CONTEXT_MAX)
-        : activeThread.nearbyTextOverride,
+      activeThread.nearbyTextOverride,
       threadAnchor,
     );
     const history = activeThread.history;
@@ -1809,18 +1750,6 @@ export function CursorChat({
       (activeThread.caseKey ? CASE_CONTEXTS[activeThread.caseKey] : undefined) ??
         extraContext,
       activeThread.openedByAutoAsk === true,
-      // Anything asked from inside an open essay, not only a chip. A chip used
-      // to reach the strong model through pickTier's selectedText branch,
-      // riding the stale selection this file now suppresses, and inside the
-      // dialog nothing else routes it: the panel carries data-ask-context but
-      // no data-ask-hint, so zoneContext is undefined, the first follow-up sees
-      // history.length 1, and a chip is far short of 160 chars. A typed
-      // follow-up one keypress later is the same request — getBoundedText reads
-      // the panel's own data-ask-context off the ancestor, so it still ships
-      // 2200 characters of the essay — and it was routing cheap for the same
-      // reason. Either way this is the request carrying the most page context
-      // on the site.
-      inOpenEssay,
     );
   };
 

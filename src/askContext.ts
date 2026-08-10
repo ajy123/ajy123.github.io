@@ -568,10 +568,27 @@ export function resolveAskContext(opts: {
   }
 
   // 3. Page default (essay > pathname > home).
+  //
+  // When that default is an open essay, the panel IS the resolved element. It
+  // carries the whole essay as data-ask-context and data-ask-kind="essay", so
+  // every consumer downstream treats the dialog as an ordinary ask zone: the
+  // caller freezes getBoundedText(panel) onto the thread the way it freezes a
+  // card's text, zoneContextFor reads kind "essay" off it, and pickTier routes
+  // that to the strong model the same way it already does for the essay card.
+  //
+  // Returning it here rather than special-casing the dialog at submit time is
+  // the point. Four defects came from comparing a frozen thread against a live
+  // lookup — a panel found by class, a panel found by geometry, an id compared
+  // against the hash — and each fix needed the comparison maintained at one more
+  // site. A thread that resolved the panel has nothing left to re-derive: it
+  // keeps answering from the essay it was opened in after that essay closes,
+  // which is the truthful answer, and a thread that never resolved it cannot
+  // acquire the text later.
   return {
     label: pageDefault.label,
     chips: pageDefault.chips.slice(0, 3),
     followUps: pageDefault.followUps,
     placeholder: pageDefault.placeholder,
+    element: essayPanel ?? undefined,
   };
 }

@@ -253,12 +253,57 @@ const MAX_SELECTED_CHARS = 2200;
 export const CHAT_SYSTEM_PREFIX =
   "You are a concise assistant embedded directly in Joanna Yen's portfolio website.";
 
+// textContent includes the text of <style> and <script> children, and the case
+// study pages carry section-local <style> blocks (eight of them in
+// deeli/index.html alone). A zone that fell back to rendered text therefore
+// opened the model's nearby content with CSS: the /deeli/ solution section sent
+// ".sol-b{ /* Local names, shared values..." before a word of prose. Walk text
+// nodes instead and skip those two elements. Zones that set data-ask-context
+// never reach this path.
+function visibleTextOf(source: Element | null) {
+  if (!source) return "";
+  const walker = document.createTreeWalker(source, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) =>
+      node.parentElement?.closest("style, script")
+        ? NodeFilter.FILTER_REJECT
+        : NodeFilter.FILTER_ACCEPT,
+  });
+  const parts: string[] = [];
+  // Bounded so a long page section can't walk thousands of nodes before the
+  // 2200-char slice throws the rest away. Count what survives whitespace
+  // collapsing, not raw length: the case study pages are pretty-printed, so
+  // indentation between elements arrives as its own text node. Charging those
+  // against the budget cost /deeli/ sections between 440 and 2004 characters of
+  // real prose, measured 2026-08-10, which is context the model used to get.
+  let kept = 0;
+  for (
+    let node = walker.nextNode();
+    node && kept < 2400;
+    node = walker.nextNode()
+  ) {
+    const value = node.nodeValue ?? "";
+    parts.push(value);
+    kept += value.replace(/\s+/g, " ").trim().length;
+  }
+  return parts.join(" ");
+}
+
 function getBoundedText(element: Element | null) {
   const source =
     element?.closest("[data-ask-hint]") ??
     element?.closest("section, article, aside, main, footer") ??
     element;
-  const text = (source?.textContent ?? "").replace(/\s+/g, " ").trim();
+  // Prefer the zone's curated context over its rendered text, the same
+  // preference ContextualAskHint's readActiveHint already applies. Without it
+  // the two entry points disagreed: a hover-pin ask on an essay card sent the
+  // essay body, while a "/" or click-opened thread on the same card sent only
+  // the card face, so a chip written against the body answered from the pin and
+  // returned "I don't know" from the card. Read off `source`, not `element`:
+  // the attribute sits on the zone, and a click lands on a child span.
+  const curated = (source as HTMLElement | null)?.dataset?.askContext;
+  const text = (curated ?? visibleTextOf(source) ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
   const links = Array.from(source?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? [])
     .slice(0, 4)
     .map((link) => `${link.textContent?.trim() || "link"}: ${link.href}`)

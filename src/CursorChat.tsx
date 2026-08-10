@@ -547,7 +547,7 @@ function buildMessages(
     "Use only facts explicitly stated in that context. Do not speculate, infer missing implementation details, or add examples that are not written there. " +
     "If a fact is not in the context, say you don't know rather than inventing it. For a yes-or-no question, begin with Yes or No and restate only the supporting fact. " +
     "Answer in at most three sentences. When the profile below contains a fact that answers the question, use that fact's own wording and keep its specifics: the numbers, the named example, and the reason it gives. " +
-    "Do not compress a specific into a generality. Prefer the profile facts over text that is visible on the page, and never end with a sentence that restates the question or summarizes what you just said. " +
+    "Do not compress a specific into a generality. Prefer the profile facts over text that is visible on the page. Stop as soon as the fact is stated: add no closing sentence of your own, no restatement of the question, and no summary of what you just said. " +
     (audienceGuidance ? `${audienceGuidance} ` : "") +
     "Keep replies direct, plain, and helpful.\n\n" +
     SITE_CONTEXT +

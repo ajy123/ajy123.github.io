@@ -1528,6 +1528,10 @@ export function CursorChat({
     zoneContext: CursorChatZoneContext | undefined,
     extraContext: string | undefined,
     fromAutoAsk: boolean,
+    // Set when the caller already knows this request carries a whole essay as
+    // its page context. pickTier cannot see that: it reads the tier off
+    // selectedText, and a chip deliberately sends none.
+    forceDeepTier = false,
   ) => {
     const patch = (updater: (thread: Thread) => Thread) =>
       setThreads((current) =>
@@ -1548,6 +1552,9 @@ export function CursorChat({
         extraContext,
         fromAutoAsk,
       );
+      const tier = forceDeepTier
+        ? "deep"
+        : pickTier(message, context, history, zoneContext);
       if (import.meta.env.DEV) {
         // The assembled prompt is otherwise unobservable: __cursorChatTestResponse
         // short-circuits inside streamChat, after these messages are built. Stash
@@ -1555,6 +1562,12 @@ export function CursorChat({
         // the zone/section a thread claims and the context it sends must agree.
         (window as unknown as { __cursorChatLastMessages?: unknown }).__cursorChatLastMessages =
           messages;
+        // The tier is consumed inside streamChat, past the point where the test
+        // stub returns, so it is invisible to the same check. Routing is part of
+        // what a chip sends: an essay chip carries the most page context on the
+        // site and must not be the one request that goes to the cheap model.
+        (window as unknown as { __cursorChatLastTier?: unknown }).__cursorChatLastTier =
+          tier;
       }
       const response = await streamChat(
         messages,
@@ -1562,7 +1575,7 @@ export function CursorChat({
           patch((thread) => ({ ...thread, status: "streaming", response: full }));
         },
         controller.signal,
-        pickTier(message, context, history, zoneContext),
+        tier,
       );
       patch((thread) => {
         const nextHistory = [...thread.history, { prompt: message, response }];
@@ -1674,10 +1687,24 @@ export function CursorChat({
     // asked about one place on the page and keep the section they resolved. The
     // opt-out sentinel still wins outright — a region that asked to stay out of
     // the prompt does not get overridden by the essay it sits in.
-    const essayChipContext =
+    const threadAnchor = resolvedElementRef.current ?? anchorElementRef.current;
+    const essayPanel =
       chipSubmit &&
       activeThread.nearbyTextOverride !== NEARBY_TEXT_SUPPRESSED
-        ? findOpenEssayPanel()?.dataset.askContext?.trim()
+        ? findOpenEssayPanel()
+        : null;
+    // An essay being open is not the same as this thread being in it. The chat
+    // panel sits above the essay stage (z-index 1103 against 1101, see
+    // chat-ui.css and essay-dialog.css) and nothing closes a thread when an
+    // essay opens, so a thread anchored on a work card stays live and clickable
+    // while the reader opens an essay beside it — or steps into one with
+    // Back/Forward, since the dialog is driven off the hash. Its chips are the
+    // card's chips and its zoneContext still names the card, so handing them
+    // the essay's text would tell the model to focus on one thing and give it
+    // another. The thread's own anchor has to be inside the panel.
+    const essayChipContext =
+      essayPanel && threadAnchor && essayPanel.contains(threadAnchor)
+        ? essayPanel.dataset.askContext?.trim()
         : undefined;
 
     const context = captureContext(
@@ -1687,7 +1714,7 @@ export function CursorChat({
       essayChipContext
         ? essayChipContext.slice(0, ESSAY_CHIP_CONTEXT_MAX)
         : activeThread.nearbyTextOverride,
-      resolvedElementRef.current ?? anchorElementRef.current,
+      threadAnchor,
     );
     const history = activeThread.history;
     const zoneContext = activeThread.zoneContext;
@@ -1750,6 +1777,14 @@ export function CursorChat({
       (activeThread.caseKey ? CASE_CONTEXTS[activeThread.caseKey] : undefined) ??
         extraContext,
       activeThread.openedByAutoAsk === true,
+      // A chip inside an open essay used to reach the strong model through
+      // pickTier's selectedText branch, riding the stale selection this file
+      // now suppresses. Inside the dialog nothing else routes it: the panel
+      // carries data-ask-context but no data-ask-hint, so zoneContext is
+      // undefined, the first follow-up sees history.length 1, and a chip is far
+      // short of 160 chars — so the request that carries the most page context
+      // of any on the site was the one going to the cheap model.
+      !!essayChipContext,
     );
   };
 

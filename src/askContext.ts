@@ -426,11 +426,10 @@ function distanceToRect(rect: DOMRect, x: number, y: number): number {
   return Math.hypot(dx, dy);
 }
 
-// The essay modal covers the page, so while it is open the sections behind it
-// are not what the reader is looking at. Scope section resolution to the panel.
-const ESSAY_PANEL_SELECTOR = ".essay-dialog-panel";
-
-// The open essay's panel, or null when no essay is open. Exported so the
+// The open essay's panel, or null when no essay is open. The essay modal covers
+// the page, so while it is open the sections behind it are not what the reader
+// is looking at, and both callers here scope themselves to what this returns:
+// section resolution below, and the composer's whole-essay chip context. Exported so the
 // composer can read the panel's own data-ask-context at submit time through the
 // one open-essay lookup this file already owns, instead of a second selector
 // somewhere else that could outlive a class rename.
@@ -550,11 +549,12 @@ export function resolveAskContext(opts: {
 
   // 2. Nearest section in the viewport. While the essay modal is open the
   // search is scoped to it — a section behind the overlay is not what the
-  // reader is looking at, and letting it win would contradict the label.
+  // reader is looking at, and letting it win would contradict the label. The
+  // panel comes from findOpenEssayPanel so a switch between essays resolves by
+  // id rather than by class, and the two flags stay separate: an open essay
+  // whose panel has not rendered yet must skip the scan, not run it unscoped.
   const essayIsOpen = typeof window !== "undefined" && !!readOpenEssayId();
-  const essayPanel = essayIsOpen
-    ? document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR)
-    : null;
+  const essayPanel = essayIsOpen ? findOpenEssayPanel() : null;
   if (!essayIsOpen || essayPanel) {
     const section = findNearestSection(
       opts.anchorElement,

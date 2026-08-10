@@ -430,6 +430,15 @@ function distanceToRect(rect: DOMRect, x: number, y: number): number {
 // are not what the reader is looking at. Scope section resolution to the panel.
 const ESSAY_PANEL_SELECTOR = ".essay-dialog-panel";
 
+// The open essay's panel, or null when no essay is open. Exported so the
+// composer can read the panel's own data-ask-context at submit time through the
+// one open-essay lookup this file already owns, instead of a second selector
+// somewhere else that could outlive a class rename.
+export function findOpenEssayPanel(): HTMLElement | null {
+  if (!readOpenEssayId()) return null;
+  return document.querySelector<HTMLElement>(ESSAY_PANEL_SELECTOR);
+}
+
 // A work card can deliberately ship with no ask zone (the Brand Identity card
 // keeps only its "DEELI.AI" live link and opts out of the ask surface). Its
 // fallback wrapper carries this marker instead of data-ask-hint. Without an

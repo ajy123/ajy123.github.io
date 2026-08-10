@@ -163,16 +163,21 @@ export const aiPracticeItems: EssayItem[] = [
     // A chip must also be unanswerable from the card face (title, role, year,
     // summary, thumbnail). The summary now states the premise, the test, and the
     // mixed-language catch, so no chip asks those back; they ask what the card
-    // cannot print — what design.md controls, what a scenario contains, the
-    // review cost, and the three things the mixed-language query broke.
+    // cannot print — what design.md controls, what each situation includes
+    // besides the query, the review cost, and the three things the
+    // mixed-language query broke.
     // A chip must also name a fact the essay states outright. "what does
     // design.md have to do with personas?" was cut after failing twice against
     // the live worker: the essay offers that link as an analogy ("a persona
     // could work the same way"), and the prompt forbids inferring, so the model
     // correctly refused to assert a connection the page never states.
+    // A chip must also use the essay's own noun. "what is in a scenario besides
+    // the query?" returned "I don't know" on the live worker because the essay
+    // attaches that list to "situations", not "scenario", and the prompt
+    // forbids inferring, so the model would not equate the two.
     askPromptChips: [
       "what is design.md used to control?",
-      "what is in a scenario besides the query?",
+      "besides the query, what does each situation include?",
       "how long does the weekly review take?",
     ],
     askFollowUpPromptChips: [

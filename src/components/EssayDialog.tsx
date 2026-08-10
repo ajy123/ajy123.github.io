@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 import type { EssayItem } from "../essays/types";
+import { essayAskContext } from "../essays/essayAskContext";
 
 function CloseGlyph() {
   return (
@@ -231,6 +232,13 @@ export function EssayDialog({
             aria-labelledby={dialogTitleId}
             aria-modal="true"
             className="essay-dialog-panel"
+            // The whole essay, readable off the DOM at submit time. A chip
+            // offered inside the dialog is written against the essay end to
+            // end, while the thread's nearby text is only the section nearest
+            // the anchor — so a chip about a different section had nothing to
+            // answer from and the model fell back to SITE_CONTEXT. See the
+            // essay-panel branch in CursorChat's submitThread.
+            data-ask-context={essayAskContext(item)}
             data-scroll-ready={isScrollReady}
             id={dialogId}
             layoutId={panelLayoutId}

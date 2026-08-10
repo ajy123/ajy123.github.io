@@ -35,6 +35,7 @@ import { ScrollIntro } from "./components/ScrollIntro";
 import { initAnalytics } from "./analytics";
 import { initFaviconPulse } from "./faviconPulse";
 import { aiPracticeItems } from "./essays";
+import { essayAskContext } from "./essays/essayAskContext";
 import type { EssayItem, WorkItem } from "./essays/types";
 import { useEssayHashRoute } from "./essays/useEssayHashRoute";
 import caseStudyPosterUrl from "../images/case-study-test-poster.jpg?url";
@@ -894,17 +895,8 @@ function EssayPracticeCard({ item, index }: { item: EssayItem; index: number }) 
           data-ask-follow-up-prompts={JSON.stringify(
             item.askFollowUpPromptChips ?? [],
           )}
-          data-ask-context={[
-            item.title,
-            item.role,
-            item.year,
-            item.summary,
-            item.dek,
-            ...item.sections.flatMap((section) => [
-              section.heading,
-              ...section.body,
-            ]),
-          ].join(" ")}
+          // Same string the open dialog panel carries — see essayAskContext.
+          data-ask-context={essayAskContext(item)}
           layoutId={`essay-dialog-panel-${item.id}`}
           onClick={openDialog}
           onKeyDown={handleTriggerKeyDown}

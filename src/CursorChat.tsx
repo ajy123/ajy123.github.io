@@ -266,6 +266,20 @@ function getBoundedText(element: Element | null) {
   return `${text}${links ? ` Links: ${links}` : ""}`.slice(0, 2200);
 }
 
+// The same explicit opt-out findNearestSection reads (src/askContext.ts:361).
+// A region carrying it gets no chips and no zone from the resolver, and it must
+// get no nearby text either: the profile rail sets data-ask-zone="none" on
+// purpose, so feeding its visible bio back as nearby page content contradicted
+// that opt-out. Browser-tested 2026-08-10: the model reached for the rail's
+// "plan for when it's wrong" line instead of the profile fact that answers the
+// question.
+//
+// Carried as a sentinel rather than an empty string because captureContext
+// treats "" as "no override given" and falls back to getBoundedText(element),
+// which would read the opted-out region straight back off the page.
+const NO_ASK_ZONE_SELECTOR = '[data-ask-zone="none"]';
+const NEARBY_TEXT_SUPPRESSED = "[nearby-text-suppressed:data-ask-zone-none]";
+
 function getSelectionAnchor() {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
@@ -383,7 +397,10 @@ function captureContext(
     title: document.title,
     ...(audienceRole ? { audienceRole } : {}),
     selectedText,
-    nearbyText: nearbyTextOverride || getBoundedText(element),
+    nearbyText:
+      nearbyTextOverride === NEARBY_TEXT_SUPPRESSED
+        ? ""
+        : nearbyTextOverride || getBoundedText(element),
     element: getElementLabel(element),
     position: { x: Math.round(pageX), y: Math.round(pageY) },
     viewport: {
@@ -419,7 +436,7 @@ const THINKING_PHRASE_DELAYS_MS = [3000, 5500, 8000];
 // worker's 40-message / 24k-char request limit and error the thread.
 //
 // The char budget is computed, not fixed. It used to be a flat 14000, chosen
-// against a system prompt assumed to be ~1.5-2k; SITE_CONTEXT alone is 4.3k
+// against a system prompt assumed to be ~1.5-2k; SITE_CONTEXT alone is ~7.4k
 // today and a case digest adds up to 5.1k more, so the fixed number described
 // a request that no longer existed and a long thread on a case-study page
 // could be assembled at ~28k and rejected outright by the worker (it rejects,
@@ -516,11 +533,21 @@ function buildMessages(
     // Worker's validMessages() rejects any request whose system message does
     // not start with this exact string (see CHAT_SYSTEM_PREFIX). Reword the
     // rest freely; do not edit the prefix without matching worker/src/index.js.
+    //
+    // The three-sentence cap and the fidelity clause replaced a two-sentence cap
+    // that was quietly costing answers their evidence. Browser-tested 2026-08-10:
+    // three of four home page chips came back with the specific dropped (one lost
+    // a named example, one lost the reason a decision was made), and two padded the
+    // space with a closing generality lifted from the visible page copy. Two
+    // sentences forces the model to summarize, and summarizing drops subordinate
+    // clauses first, so the cap and the stay-specific instruction were fighting.
     `${CHAT_SYSTEM_PREFIX} ` +
     "Answer the visitor's question about Joanna and the page they are looking at. " +
     "Ground your answer in the site profile and page context below. Prefer the selected text when present. " +
     "Use only facts explicitly stated in that context. Do not speculate, infer missing implementation details, or add examples that are not written there. " +
-    "If a fact is not in the context, say you don't know rather than inventing it. For a yes-or-no question, begin with Yes or No and restate only the supporting fact. Answer in no more than two short sentences. " +
+    "If a fact is not in the context, say you don't know rather than inventing it. For a yes-or-no question, begin with Yes or No and restate only the supporting fact. " +
+    "Answer in at most three sentences. When the profile below contains a fact that answers the question, use that fact's own wording and keep its specifics: the numbers, the named example, and the reason it gives. " +
+    "Do not compress a specific into a generality. Prefer the profile facts over text that is visible on the page, and never end with a sentence that restates the question or summarizes what you just said. " +
     (audienceGuidance ? `${audienceGuidance} ` : "") +
     "Keep replies direct, plain, and helpful.\n\n" +
     SITE_CONTEXT +
@@ -963,9 +990,10 @@ export function CursorChat({
       // The model reads the same section the panel names. Taking this from the
       // raw pointer element instead would let the tag say "THIS PROJECT" while
       // the prompt quoted whatever the cursor happened to rest on.
-      const nearbyTextOverride =
-        zoneContext?.contextText ||
-        getBoundedText(askContext.element ?? anchorElement);
+      const nearbyTextOverride = anchorElement?.closest(NO_ASK_ZONE_SELECTOR)
+        ? NEARBY_TEXT_SUPPRESSED
+        : zoneContext?.contextText ||
+          getBoundedText(askContext.element ?? anchorElement);
       // A "/" opened over a section resolves that section for the tag and the
       // chips, so it must carry the same instructions an explicit hint would.
       // Without this the model was only told which section to focus on after
@@ -1152,7 +1180,11 @@ export function CursorChat({
       if ((next.element ?? null) === resolvedElementRef.current) return;
 
       resolvedElementRef.current = next.element ?? null;
-      const contextText = getBoundedText(next.element ?? element);
+      // Same opt-out as the open path: drifting onto an opted-out region must
+      // not hand the model text that region asked to keep out of the prompt.
+      const contextText = element?.closest(NO_ASK_ZONE_SELECTOR)
+        ? NEARBY_TEXT_SUPPRESSED
+        : getBoundedText(next.element ?? element);
       // The zone instructions must move with the section too. Leaving the
       // opening zone in place would tell the model to focus on the section
       // the panel launched from while the tag named a different one.

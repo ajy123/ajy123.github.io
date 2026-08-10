@@ -70,11 +70,17 @@ const PROFILE: SiteProfile = {
   ],
   facts: [
     "On Deeli's research assistant, she designed what the AI says and not just the UX and UI around it. She created response patterns the model could adapt to new situations, then tested its answers against expected outputs before shipping. That process taught her to treat model behavior as part of the product experience.",
+    "No evaluation catches every edge case in what an AI generates.",
+    "Queries typed in mixed English and Mandarin came back in the wrong language, and the eval cases had not covered that. She worked with the ML engineer on the options against a short timeline and a small scope: improve the Chinese output, prompt the reader to switch, or say plainly that English returns the best result.",
+    "Every claim in a Deeli report shows the source it came from, so the reader can check it and flag a claim that is wrong or a source that does not belong.",
+    "Deeli's intent parser reads the query to work out which kind of reader is asking, then asks the one clarification that reader's definition needs. A word like market means one thing to a deep tech researcher and another to a deep tech VC, and each definition opens a different question.",
+    "When the product team proposed thumbs up and down on each citation, she flagged that a thumbs down can mean several different things and gives the model nothing to act on. She went to the engineers for what the model needs from the signal and to users for what they expect the buttons to mean in a research assistant.",
     "Around 7 years of product design experience across enterprise SaaS, governance analytics, transit data, and now AI-native products.",
     "Currently designs and ships at Deeli AI, where she started in August 2025.",
     "At Deeli she is the only designer and their first full-time product design hire.",
     "Previously: Swiftly (transit data platform, 2020 to 2022), Diligent (news analytics, 2020), New York University (internal maintenance tooling, 2018 to 2019), Blue Fountain Media (2015 to 2017).",
-    "On Swiftly, the team set the under-12-hour target deliberately ambitious. Investigation time still fell from 30+ hours to 12–24, so landing short of that target was a large improvement rather than a failure. The miss also taught the team that a single investigation-time target measured the wrong thing, because agencies triage differently.",
+    "At Swiftly the ask was a better daily report, but agencies across the US and Europe triage differently, so a better report would only have helped the ones that already had one. She pushed back and built one consolidated view where in-service status leads, since that is the one thing IT scans for.",
+    "On Swiftly, the team set the under-12-hour target deliberately ambitious. Investigation time still fell from 30+ hours to 12–24, so landing short of that target was a large improvement rather than a failure. The miss also taught the team that a single investigation-time target measured the wrong thing.",
     "Joanna's read on why staff took to WorkLink: it replaced the CSV files and the software-hopping with one record in one system, so nobody had to check several places to be sure a maintenance request reached the right team.",
     "On NYU, two sign-off loops ran before launch: ops staff reviewed the workflow and engineering reviewed the specs. Three metrics were instrumented at launch, turnaround, training, and communication time, on a measurement plan set before shipping.",
     "Studied data storytelling at Columbia's School of Journalism in 2024.",
@@ -83,6 +89,14 @@ const PROFILE: SiteProfile = {
     "Her personas and research regenerate every week because there are user interviews and feedback tickets every week, and that is when the team learns something new about users.",
     "LinkedIn profile, for a reader who wants more than this page carries: https://www.linkedin.com/in/joanna-yen (link only; its contents are not available here).",
     "APAC remote in Taipei; open to relocation.",
+    "AI does the broad pass and she keeps the refinement, because it generates options fast but lacks precise control, so she drops into code for anything that has to be exact.",
+    "Her synthesis pipeline turns support tickets and interview transcripts into updated personas, which cut research synthesis from over six hours a week to about one.",
+    "Her design system at Deeli is one consolidated system, maintained by the only designer on the team, with the interface described as design primitives in design.md so the AI can adapt them to cases nobody drew, and that same document doubles as the engineering handoff.",
+    "To put more evidence behind what real users already told her, she runs personas built from interviews and in-product feedback through AI-generated scenarios, which widens coverage beyond the users she can reach directly.",
+    "Experts can tell when generated content is wrong because they have the domain knowledge to catch it, so trust patterns that survive a deep tech researcher are conservative by construction and transfer down to less expert readers rather than up.",
+    "She put an evidence tab inside the tooltip, A/B tested it, and it lost, so it was cut and layered disclosure won instead, overview first and then methodology.",
+    "Interviews said VCs and engineers wanted different sections of the report, so rather than ask again she replaced a hidden Basic/Advanced toggle with section-level buttons and let the clicks answer it.",
+    "When she and the PM disagreed about whether asking readers for input up front would cause abandonment, she had already tested search with filters and found nobody used them, so the guidance shipped.",
   ],
 };
 
@@ -103,3 +117,14 @@ export const SITE_CONTEXT: string = [
   `- Other facts:`,
   ...PROFILE.facts.map((f) => `  - ${f}`),
 ].join("\n");
+
+// Budget: <= 8000 characters. This block grew from 4388 to 7383 chars without
+// anything failing loudly, and it is injected into every request on every page,
+// so it is subtracted from the same 24,000-char request budget the case digests
+// are measured against. It gets the same guard they have.
+if (import.meta.env.DEV && SITE_CONTEXT.length > 8000) {
+  // eslint-disable-next-line no-console
+  console.error(
+    `SITE_CONTEXT is ${SITE_CONTEXT.length} chars, over the 8000-char budget. Trim before shipping.`,
+  );
+}

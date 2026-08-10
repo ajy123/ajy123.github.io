@@ -502,8 +502,11 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
           verbatim the same; the rest ask the same things), and the context
           text was a second biography of Joanna in third person, restating the
           global profile in src/siteContext.ts that every system prompt already
-          carries. What stays specific to this region is the visible bio, which
-          getBoundedText still reads off the rail element.
+          carries. The visible bio is not sent either: a thread anchored inside
+          this data-ask-zone="none" region now suppresses nearby page text
+          entirely (see NEARBY_TEXT_SUPPRESSED in CursorChat.tsx), because
+          feeding the rail's own copy back to the model contradicted the opt-out
+          and had it answering from the bio instead of the profile fact.
           The rail's own "Ask about my work" button is the affordance here, and
           it is untouched.
         */}

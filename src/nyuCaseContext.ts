@@ -5,7 +5,7 @@
 //
 // Hard budget: <= 3500 characters for the NYU_CASE_CONTEXT string value.
 // The worker caps the whole request at 24,000 chars shared with SITE_CONTEXT
-// (~1.5k), zone contextText (<=2200), and 40-message history — this digest
+// (~7.4k as of 2026-08-10), zone contextText (<=2200), and 40-message history — this digest
 // must leave room for all of that.
 //
 // Source of truth: the deck-verified merged case-study draft, plus Joanna's own

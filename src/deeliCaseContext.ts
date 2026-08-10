@@ -7,12 +7,13 @@
 // Measured length as of writing: 5070 chars. Re-measure when you edit a bullet;
 // this note has drifted before, and headroom here is single digits, not slack.
 // The worker REJECTS (it does not truncate) any request over MAX_TOTAL_CHARS =
-// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~4.5k), zone
+// 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~7.4k as of
+// 2026-08-10), zone
 // contextText (<=2200), the composer prompt (<=2000), and the history. History
 // is no longer a fixed allowance: recentHistory takes whatever the assembled
 // system prompt and the new question leave under the cap, so growing this
 // digest no longer risks a rejected request — it shortens the thread instead.
-// Measured on /deeli/, the system prompt runs ~12.5k, which leaves ~8.5k of
+// Measured on /deeli/ on 2026-08-10, the system prompt runs ~18.3k, which leaves ~4.7k of
 // history, about two full turns.
 // The ceiling moved from 3500 to 5100 when the unpublished facts gained
 // explicit markers and the published quotes became verbatim: a marked, quoted

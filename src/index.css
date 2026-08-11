@@ -270,6 +270,13 @@ h1 {
 .profile-role-focus {
   display: block;
   margin-left: -5px;
+  /* Between 861 and 1100px the rail is overridden to 240px, so the measure is
+     192px and this phrase does wrap. Left to the browser it broke as
+     "AI and agents in complex" / "B2B.", orphaning a four-character washed chip
+     on its own line. Balanced it splits "AI and agents in" / "complex B2B.".
+     Where balance is unsupported the ragged break returns, which is the old
+     behaviour rather than a broken one. */
+  text-wrap: balance;
 }
 
 /* The domain claim carries the wash the chat already puts on a clarified

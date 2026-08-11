@@ -28,7 +28,11 @@ type SiteProfile = {
 
 const PROFILE: SiteProfile = {
   name: "Joanna Yen",
-  role: "Senior product designer. AI and search, in complex B2B.",
+  // Kept verbatim in step with the rail's own role line (.profile-role-line in
+  // main.tsx). The rail is data-ask-zone="none", so a thread anchored there
+  // suppresses nearby page text and answers from this fact instead: if the two
+  // drift, the assistant contradicts the sentence the visitor is looking at.
+  role: "Senior product designer. AI and agents, in complex B2B.",
   email: "joannayen24@gmail.com",
   focus: [
     "AI products that hold data rigor and design quality equally",

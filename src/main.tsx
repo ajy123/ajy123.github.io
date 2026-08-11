@@ -527,7 +527,9 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
             <p className="profile-role-line">
               Senior product designer.{" "}
               <span className="profile-role-focus">
-                AI and search in complex B2B.
+                <span className="profile-role-mark">
+                  AI and agents in complex B2B.
+                </span>
               </span>
             </p>
 

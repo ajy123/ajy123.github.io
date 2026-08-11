@@ -186,8 +186,11 @@ svg {
   margin: calc(var(--space-copy) - 4px) 0 0;
 }
 
+/* 11.5px + the 4px flex gap renders as a 24.2px optical seam, which is
+   --space-figure as seen rather than as declared. The old
+   calc(--space-figure - 4px) measured 31.8. See .profile-role-line. */
 .profile-identity .sidebar-story {
-  margin-top: calc(var(--space-figure) - 4px);
+  margin-top: 11.5px;
 }
 
 h1,
@@ -219,30 +222,84 @@ h1 {
   letter-spacing: -0.01em;
 }
 
-/* Inline ink emphasis in the muted bio — the Caleb move: the phrase
-   the skim should catch, ranked by color and weight, not size. */
+/* Inline emphasis in the muted bio — the Caleb move: the phrase the skim
+   should catch, ranked by color and weight, not size.
+   One step down from --ink, because at full ink this was the heaviest mark in
+   the rail after the name itself. The eye landed on a project name inside a
+   paragraph before it reached the positioning line above, which put the role
+   line fourth in a five-block rail. Still the skim target, no longer the
+   thing that outranks the identity. */
 .sidebar-bio .bio-hl {
-  color: var(--ink);
+  color: var(--muted-strong);
   font-weight: 500;
 }
 
-/* Role line bound to the masthead as a 13px label: label leading (1.4,
-   not the body's 1.55) and muted-strong keep it one lockup with the
-   name rather than a stray body line. 8px seam = 4px margin + flex gap. */
+/* Role line bound to the masthead as a 13px label: muted-strong keeps it one
+   lockup with the name rather than a stray body line.
+ *
+ * Spacing here is stated as the OPTICAL gap, ink to ink, because the margin
+ * and the gap you see are not the same number. A 32px Bricolage line box
+ * reserves ~11.7px of ascent slack above its caps for accents it never uses,
+ * and a 13px Figtree line leaves ~2.8px of descender slack below its
+ * baseline. Stack those and the old `margin: 4px` + 4px flex gap rendered as
+ * a 14.7px gap under the name, while `--space-figure` before the bio rendered
+ * as 31.8px. Neither was a token and no two seams held a ratio.
+ *
+ * Solved backwards instead: pick the optical gap, derive the margin. The
+ * three seams now measure 16.1 / 7.9 / 24.2, stepping 1 : 2 : 3 on
+ * --space-copy and --space-figure. Measured in a browser, not computed from
+ * the stylesheet.
+ *
+ * 20px leading is --space-copy plus one 4px unit, and it is what puts the
+ * seam between the two lines at 7.9. The old 1.4 gives 6.1 and breaks the
+ * step. */
 .profile-role-line {
-  margin: 4px 0 0;
+  margin: 4.5px 0 0; /* + 4px flex gap; optical 16.1 under the name */
   color: var(--muted-strong);
   font-size: 13px;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 20px;
 }
 
 /* Title on line one, focus on line two: a deliberate break rather than
    whatever the rail width happens to wrap. Still one <p>, so the text the
    ask-zone reader pulls off the rail is unchanged (the JSX keeps the space
-   between the two spans). */
+   between the two spans).
+   The -5px pull cancels the mark's horizontal padding so the glyph edge sits
+   on the rail's left margin, not the wash's box edge. */
 .profile-role-focus {
   display: block;
+  margin-left: -5px;
+}
+
+/* The domain claim carries the wash the chat already puts on a clarified
+   term, so the mark means the same thing here as it does there: these are
+   the terms the assistant behind the "/" key is briefed on. It ranks without
+   growing, by being the only object in the identity block with a surface.
+   Inline, not inline-block, so box-decoration-break can carry the wash across
+   the wrap the 216px rail forces below a 1320px window. */
+.profile-role-mark {
+  display: inline;
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: var(--selection-ink);
+  background: var(--selection-bg);
+  font-weight: 500;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ::selection near the top of this file paints --selection-ink on
+   --selection-bg, which is exactly what the mark already is. Dragging a cursor
+   over the phrase therefore painted the same wash onto the same wash and the
+   selection was invisible: the one place on the page where selecting text
+   reported nothing. Deepened here so the phrase still answers the drag. */
+.profile-role-mark::selection {
+  background: rgba(230, 95, 46, 0.26);
+}
+
+.profile-role-mark::-moz-selection {
+  background: rgba(230, 95, 46, 0.26);
 }
 
 h1 span {

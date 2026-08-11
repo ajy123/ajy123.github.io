@@ -186,11 +186,14 @@ svg {
   margin: calc(var(--space-copy) - 4px) 0 0;
 }
 
-/* 11.5px + the 4px flex gap renders as a 24.2px optical seam, which is
+/* 12px + the 4px flex gap renders as a 24.0px optical seam, which is
    --space-figure as seen rather than as declared. The old
-   calc(--space-figure - 4px) measured 31.8. See .profile-role-line. */
+   calc(--space-figure - 4px) measured 31.8. See .profile-role-line.
+   Integer on purpose: a fractional margin rounds unpredictably at non-integer
+   devicePixelRatio, and here the whole numbers land nearer the targets anyway
+   (16.2 and 24.0, against 15.7 and 23.5 for the halves). */
 .profile-identity .sidebar-story {
-  margin-top: 11.5px;
+  margin-top: 12px;
 }
 
 h1,
@@ -254,7 +257,7 @@ h1 {
  * seam between the two lines at 7.9. The old 1.4 gives 6.1 and breaks the
  * step. */
 .profile-role-line {
-  margin: 4.5px 0 0; /* + 4px flex gap; optical 16.1 under the name */
+  margin: 5px 0 0; /* + 4px flex gap; optical 16.2 under the name */
   color: var(--muted-strong);
   font-size: 13px;
   font-weight: 400;

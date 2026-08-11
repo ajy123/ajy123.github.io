@@ -19,7 +19,7 @@ type EssayAgentsThumbnailProps = {
   active?: boolean;
 };
 
-// Thumbnail for "Designing with a team of agents": three generated
+// Thumbnail for "Product discovery on a weekly clock": three generated
 // candidates as plain outlines. Hover replays the decision — the triangle
 // fills green (chosen) while the circle and square recede to dotted
 // strokes: considered, mapped, not taken.
@@ -34,7 +34,7 @@ export function EssayAgentsThumbnail({
 
   return (
     <motion.div
-      aria-label="Interactive thumbnail for Designing with a team of agents"
+      aria-label="Interactive thumbnail for Product discovery on a weekly clock"
       className={`work-media${className ? ` ${className}` : ""}`}
       onHoverStart={interactive ? () => setHovered(true) : undefined}
       onHoverEnd={interactive ? () => setHovered(false) : undefined}

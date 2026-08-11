@@ -75,74 +75,84 @@ export const aiPracticeItems: EssayItem[] = [
   {
     id: "team-of-agents",
     eyebrow: "Essay",
-    title: "Designing with a team of agents",
-    role: "Research synthesis",
+    title: "Product discovery on a weekly clock",
+    role: "AI workflow",
     year: "2026",
-    askHint: "What bottleneck needed a team?",
+    askHint: "What was the experiment testing?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
-    // data-ask-context — every surface that reads it bounds there, see
-    // boundAskContext in chatEvents. This essay's context is 3510, so all of it
-    // is reachable and a chip may draw on any section, "The productive kill" and
-    // "The judgment stayed mine" included.
-    // A chip also has to be unanswerable from the card face: the grouping of
-    // tickets into themes and the fourteen baselines are both printed in the
-    // summary, so chips asking those back returned what the reader had just
-    // read. RICE and the reach score are the parts of the same paragraphs the
-    // card never shows.
+    // data-ask-context: every surface that reads it bounds there, see
+    // boundAskContext in chatEvents. This essay's context measures 3793, so the
+    // whole essay is reachable and a chip may draw on any section, "The kill
+    // happened before the PRD" and "What changed is the order" included.
+    // A chip also has to be unanswerable from the card face (title, role, year,
+    // summary, thumbnail). The summary already prints the weekly workflow, the
+    // analysis, and the top-ranked features, so no chip asks those back; they
+    // ask what the card cannot show: the 40% figure, what RICE scores, the reach
+    // call, the fourteen features the first run produced, the two calibrations
+    // the kill surfaced, and the week of waiting the parallel tracks removed.
+    // A chip must also name a fact the essay states outright, not one it
+    // implies: a chip built on an analogy or an inference failed against the
+    // live worker, because the prompt forbids inferring and the model correctly
+    // refused to assert what the page never says.
+    // A chip must also use the essay's own noun. Asking with a synonym the page
+    // does not use returned "I don't know" on the live worker, since the model
+    // will not equate two words the page keeps apart.
     askPromptChips: [
       "does the essay say roughly 40% of issues were uncategorized?",
-      "did RICE scoring decide what got design time?",
+      "what does the pipeline use RICE to score?",
       "did token usage score high mostly on reach?",
     ],
     askFollowUpPromptChips: [
-      "did the output have to be solid enough to plan against?",
-      "did the token usage request look simple?",
-      "did Joanna treat agents as a temporary design team?",
+      "how many features did the first run produce?",
+      "what did killing the cost estimate surface?",
+      "how much waiting did the parallel tracks remove?",
     ],
     summary:
-      "I used agents for the grunt work of research synthesis: grouping hundreds of tickets into themes and drafting fourteen baselines. The judgment calls stayed mine.",
+      "Our backlog grew faster than anyone could read it. So I ran an experiment: a weekly agent workflow that analyzes the feedback and draws the top-ranked features.",
     dek:
-      "How I turned messy product context into reviewable design direction, and why the judgment stayed mine.",
+      "Prioritization and design exploration run in parallel now, so the PRD gets written against something the team has already seen.",
     thumbnail: EssayAgentsThumbnail,
     sections: [
       {
-        heading: "The bottleneck was never drawing screens",
+        heading: "Two queues, both stuck",
         body: [
-          "It was prioritizing which user feedback to explore first. The work arrives as a mess: hundreds of open issues, roughly 40% of them uncategorized, and customer context scattered across transcripts and sales calls. Feedback came in faster than anyone could read it, and parsing that pile by hand to decide what mattered held up everything after it. The bottleneck was a workflow problem before it was a design problem.",
-          "So I ran it as an automation experiment. Could the reading and the ranking happen without me sitting in the middle of them, and would what came back be solid enough for the team to plan against? Anchoring a North Star design still meant knowing which tickets belonged together, what users were really asking for and how that shifted over the past six months, and where the product needed a decision instead of another mockup. I stopped treating agents as one assistant and started treating them as a temporary design team.",
+          "Hundreds of open issues, roughly 40% of them uncategorized, with customer context scattered across transcripts and sales calls. It came in faster than anyone could sort it. Before the product team could say which request had the most reach or the least effort, they had to review and categorize the pile themselves, and that review held up everything behind it.",
+          "Design sat behind the same queue, one step further back. Exploration waited on the PRD, the PRD waited on prioritization, and by the time a document existed to react to, the discussion happened over words. So I ran it as a workflow experiment. Could feedback analysis run as an analytics pipeline, feedback in and ranked themes out, instead of a reading assignment the team worked through by hand? And would what came back be solid enough to plan against?",
         ],
       },
       {
-        heading: "The pipeline: from raw tickets to fourteen baselines",
+        heading: "Feedback in, ranked features out",
         body: [
-          "I built an agent pipeline that fed the raw material in, grouped tickets into feature themes, then scored the themes with the RICE framework to decide what actually deserved design time. From there I spun up focused agents around specific lenses to generate fourteen baseline options for human review.",
+          "Interviews, support tickets, product usage, and past queries go in, along with the PRDs and sales-call transcripts around them. Agents cluster them into feature themes, score the themes with RICE, and pass the top ones to a second set that drafts directions and scopes what building them would take. I set the fan-out at three variations per feature, so a top feature arrives as a comparison rather than a proposal.",
+          "The first run produced fourteen features, enough to sketch what the product could become. It has run weekly since: three to five new features, plus a re-ranking of everything already in the list as new feedback lands.",
         ],
         visual: <AgentsWorkflowVisual />,
         visualCaption:
-          "Tickets, PRDs, and transcripts go in; fourteen baselines come out; one direction ships.",
+          "Interviews, tickets, usage, and past queries go in; the first run came back with fourteen features; the team reviews and picks a direction.",
       },
       {
-        heading: "One ticket, read twice",
+        heading: "One example, read twice",
         body: [
-          "One example was the token-usage feature. The request looked simple: “show token usage.” Underneath sat a harder question: how much cost should a user see, and when?",
-          "Token usage scored high mostly on reach. Cost is attached to every report generation, the product's core action, so it touched the entire active base rather than a subset. High reach and low effort earned it design time over louder but narrower requests.",
+          "Take the token usage request. It looked simple: “show token usage.” Underneath sat a harder question about how much cost a user should see, and when.",
+          "It scored high mostly on reach. Cost attaches to every report generation, the product's core action, so it touched the whole active base rather than a subset. High reach against low effort earned it design time over louder but narrower requests.",
         ],
         visual: <AgentsTriptychVisual />,
         visualCaption: "Three generated directions. The comparison was the point.",
       },
       {
-        heading: "The productive kill",
+        heading: "The kill happened before the PRD",
         body: [
-          "Then the design did something better than shipping. The strongest-looking direction showed users a confident cost estimate before they generated a report. On screen, it was clean and reassuring. The problem: the ML side couldn't actually produce an accurate estimate yet. The interface was making a promise the model couldn't keep. A confident number the system can't back is worse than no number, because it kills trust.",
-          "Killing it surfaced two calibrations no mockup had made visible before. One technical: how confident can the UI be before it outruns what the model can truthfully show? One business: is usage metered per person or per team, a pricing question that changes what the number on screen means. The generated design turned “show token usage” into a real decision. It put engineering and business in the same room and showed everyone exactly where we weren't ready.",
+          "The strongest-looking direction showed a confident cost estimate before the user generated a report. On screen it was clean and reassuring. The machine learning engineers could not produce an accurate estimate yet, so the interface was making a promise the model could not keep, and a confident number the system cannot back is worse than no number, because it kills trust.",
+          "Killing it surfaced two calibrations no document had made visible. One technical: how confident can the interface be before it outruns what the model can truthfully show. One business: whether usage is metered per person or per team, a pricing question that changes what the number on screen means. Both landed while the feature was still three sketches.",
         ],
       },
       {
-        heading: "The judgment stayed mine",
+        heading: "What changed is the order",
         body: [
-          "That pattern held across the whole workflow. Agents are good at finding possibilities, and bad at telling you which possibility the rest of the company can actually stand behind. The judgment about technical truth, the business model, and user trust stayed mine. What the agents changed is the starting point: the team reviewed a mapped set of tradeoffs instead of a blank page, and that review put an engineering constraint and a pricing question on the table before anything shipped.",
+          "The two tracks run in parallel now. Analysis arrives on its own clock and the top features arrive already drawn and scoped, so the PRD gets written against something the team has looked at. That removes about a week of waiting from every feature.",
+          "Agents are strong at generating possibilities. They are not there yet on two counts: deciding which possibility the rest of the company can stand behind, and taking a direction through the final craft. That is why this workflow produces exploration and not finished design. The call on technical truth, the business model, and user trust stayed mine, and so did the last pass on the screens. What the experiment changed is when design shows up, and how much the team knows before it does.",
         ],
       },
     ],
@@ -158,7 +168,7 @@ export const aiPracticeItems: EssayItem[] = [
     askAnchorPreference: "cursor",
     // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
     // data-ask-context — every surface that reads it bounds there, see
-    // boundAskContext in chatEvents. This essay's context is 2699, so all of it
+    // boundAskContext in chatEvents. This essay's context is 2716, so all of it
     // is reachable, "What it caught" and "Judgment doesn't automate" included.
     // A chip must also be unanswerable from the card face (title, role, year,
     // summary, thumbnail). The summary now states the premise, the test, and the
@@ -206,7 +216,7 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "What the golden dataset is made of",
         body: [
-          "Looking into our data, agents draft personas each week from our interviews, product usage, and past queries, along with the situations each persona would put the product in: the queries that user would type, and what a good answer looks like. From that base the model scales what we already have into as many scenarios as it can generate, and I review what comes back. That reviewed set is our golden dataset, the one our model evaluations run against, and it costs about an hour a week against the six it took by hand.",
+          "Looking into our data, agents draft personas each week from our interviews, support tickets, product usage, and past queries, along with the situations each persona would put the product in: the queries that user would type, and what a good answer looks like. From that base the model scales what we already have into as many scenarios as it can generate, and I review what comes back. That reviewed set is our golden dataset, the one our model evaluations run against, and it costs about an hour a week against the six it took by hand.",
         ],
         visual: <PersonaScenarioCards />,
         visualCaption: "Personas became situations the product had to survive.",

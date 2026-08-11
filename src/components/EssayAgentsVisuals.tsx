@@ -41,12 +41,14 @@ function Label({
 
 // In-essay figure: the agent pipeline in the site's shape alphabet.
 // Stripes = the unsorted backlog, clustered circles = themes, triangle =
-// the RICE gate, fourteen squares = generated baselines, ringed dot = the
-// human review station, green disc = the shipped direction.
+// the RICE gate, fourteen squares = generated features, ringed dot = the
+// human review station, green disc = the chosen direction. Not "shipped": the
+// essay says outright that the workflow produces exploration and not finished
+// design, so the terminal node is the pick, not the release.
 export function AgentsWorkflowVisual() {
   const stripes: number[] = [];
   for (let x = 33; x <= 77; x += 5) stripes.push(x);
-  const baselines = Array.from({ length: 14 }, (_, i) => ({
+  const features = Array.from({ length: 14 }, (_, i) => ({
     x: 300 + (i % 7) * 14,
     y: 58 + Math.floor(i / 7) * 20,
   }));
@@ -55,7 +57,7 @@ export function AgentsWorkflowVisual() {
     <svg
       viewBox="0 0 640 175"
       role="img"
-      aria-label="Pipeline of geometric shapes: striped block for the backlog, three circles for themes, a triangle for the RICE gate, a grid of fourteen small squares for generated baselines, a ringed dot for human review, and a filled green circle for the shipped direction"
+      aria-label="Pipeline of geometric shapes: striped block for the backlog, three circles for themes, a triangle for the RICE gate, a grid of fourteen small squares for generated features, a ringed dot for human review, and a filled green circle for the chosen direction"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
     >
@@ -77,7 +79,7 @@ export function AgentsWorkflowVisual() {
           <circle cx="139" cy="85" r="9" />
           <circle cx="165" cy="85" r="9" />
           <path d="M273 96 H225 L249 54 Z" />
-          {baselines.map((cell) => (
+          {features.map((cell) => (
             <rect
               height="9"
               key={`${cell.x}-${cell.y}`}
@@ -94,15 +96,15 @@ export function AgentsWorkflowVisual() {
         <Label x={55} y={140}>BACKLOG</Label>
         <Label x={152} y={140}>THEMES</Label>
         <Label x={249} y={140}>RICE GATE</Label>
-        <Label x={346} y={140}>14 BASELINES</Label>
+        <Label x={346} y={140}>14 FEATURES</Label>
         <Label x={443} y={140}>REVIEW</Label>
-        <Label x={540} y={140}>SHIPPED</Label>
+        <Label x={540} y={140}>DIRECTION</Label>
         <Label dim x={55} y={152}>40% UNSORTED</Label>
         <Label dim x={152} y={152}>GROUPED</Label>
         <Label dim x={249} y={152}>SCORED</Label>
-        <Label dim x={346} y={152}>GENERATED</Label>
+        <Label dim x={346} y={152}>FIRST RUN</Label>
         <Label dim x={443} y={152}>HUMAN</Label>
-        <Label dim x={540} y={152}>DIRECTION</Label>
+        <Label dim x={540} y={152}>CHOSEN</Label>
       </g>
     </svg>
   );

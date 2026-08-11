@@ -572,9 +572,21 @@ function ProfileRail({ suspended }: { suspended: boolean }) {
                 <span className="rail-askbox-key" aria-hidden="true">
                   /
                 </span>
+                {/*
+                  No suggested question here. The line that used to sit under
+                  the label was a string literal ("Try: what shipped at
+                  Deeli?") that nothing read back, while the panel it opens
+                  serves resolveAskContext's chips - rotated per session by
+                  homeChipsRotated - so the two could never agree, and the
+                  question it named was one askContext.ts had deliberately
+                  retired for restating the work cards. Rendering the live
+                  first chip instead was the other way to end the drift, but
+                  measured at the card's real 166px copy column every
+                  candidate wraps to two lines where the old literal fit in
+                  one. The chips do the suggesting one click later.
+                */}
                 <span className="rail-askbox-copy">
                   <b>Ask about my work</b>
-                  <span>Try: what shipped at Deeli?</span>
                 </span>
               </button>
             ) : null}

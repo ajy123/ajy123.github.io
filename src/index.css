@@ -312,13 +312,66 @@ h1 span {
   justify-content: center;
   color: var(--ink);
   background: var(--accent);
+  /* Transparent at rest so the hover border does not resize the key. The
+     universal border-box reset means it costs no width either way. */
+  border: 1px solid transparent;
   border-radius: 5px;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
+  transition:
+    background-color 140ms var(--ease-out-strong),
+    color 140ms var(--ease-out-strong),
+    border-color 140ms var(--ease-out-strong),
+    box-shadow 140ms var(--ease-out-strong),
+    transform 90ms var(--ease);
 }
 
+/* Hover/focus turns the glyph into a key you could press, which is what
+   teaches the "/" shortcut the tile alone never did.
+ *
+ * Only on hover, and only here. The accent tile is one of five surfaces
+ * sharing this mark (.contextual-ask-key, .selection-ask-pill,
+ * .cursor-chat-fab-key, .cursor-chat-send), so restyling the rest state would
+ * fork a documented family - and it could not be reconciled anyway, because
+ * the hint's key is border-radius: 4px 0 0 4px, squared off to butt flush
+ * against its copy inside one shared surface. A keycap needs four corners and
+ * separation from the label. Leaving rest alone keeps every surface identical
+ * where they are actually compared, and this rail is data-ask-zone="none", so
+ * hovering it never spawns a contextual hint: the keycap and the hint's flush
+ * tab can never be on screen at the same time.
+ *
+ * Hover swaps accent for warm rather than keeping the fill and adding depth
+ * alone. That lowers salience at the moment the reader signals interest, which
+ * is backwards, but at 22px a 3px darkened edge on an orange tile does not
+ * read as a key at all - the border and the surface change are what carry it.
+ * Both were built and compared in the browser before this call. */
+.rail-askbox:hover .rail-askbox-key,
+.rail-askbox:focus-visible .rail-askbox-key {
+  color: var(--ink);
+  background: var(--surface-warm);
+  border-color: var(--hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 3px 0 rgba(31, 30, 29, 0.18),
+    0 4px 3px rgba(31, 30, 29, 0.14);
+  transform: translateY(-1.5px);
+}
+
+.rail-askbox:active .rail-askbox-key {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); /* pressed flat */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-askbox-key {
+    transition: none;
+  }
+}
+
+/* One child now that the suggested-question line is gone, but the column stays:
+   it is what keeps the label optically centred against the 22px key. */
 .rail-askbox-copy {
   display: flex;
   flex-direction: column;
@@ -329,12 +382,6 @@ h1 span {
   color: var(--ink);
   font-size: 13.5px;
   font-weight: 600;
-}
-
-.rail-askbox-copy span {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.4;
 }
 
 /* Experience ledger — Caleb's two-tone row grammar: company ink,

@@ -102,7 +102,7 @@ export function AgentsWorkflowVisual() {
         <Label dim x={55} y={152}>40% UNSORTED</Label>
         <Label dim x={152} y={152}>GROUPED</Label>
         <Label dim x={249} y={152}>SCORED</Label>
-        <Label dim x={346} y={152}>GENERATED</Label>
+        <Label dim x={346} y={152}>FIRST RUN</Label>
         <Label dim x={443} y={152}>HUMAN</Label>
         <Label dim x={540} y={152}>CHOSEN</Label>
       </g>

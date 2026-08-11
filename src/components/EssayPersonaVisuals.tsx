@@ -278,32 +278,36 @@ export function PersonaCoverageGrid() {
           ))}
         </tbody>
       </table>
-      <div className="essay-coverage-legend">
-        {LEGEND.map((key) => (
-          <button
-            key={key.state}
-            className="essay-coverage-key"
-            onBlur={() => setFilter(null)}
-            onClick={() => setFilter((current) => (current === key.state ? null : key.state))}
-            onFocus={() => setFilter(key.state)}
-            onPointerEnter={(event) => { if (isMouse(event)) setFilter(key.state); }}
-            onPointerLeave={(event) => { if (isMouse(event)) setFilter(null); }}
-            type="button"
-          >
-            <CoverageMark state={key.state} /> {key.label}
-          </button>
-        ))}
+      {/* Legend and readout share one row: the keys hold the left, the note
+          answers on the right, both on the baseline under the table. */}
+      <div className="essay-coverage-foot">
+        <div className="essay-coverage-legend">
+          {LEGEND.map((key) => (
+            <button
+              key={key.state}
+              className="essay-coverage-key"
+              onBlur={() => setFilter(null)}
+              onClick={() => setFilter((current) => (current === key.state ? null : key.state))}
+              onFocus={() => setFilter(key.state)}
+              onPointerEnter={(event) => { if (isMouse(event)) setFilter(key.state); }}
+              onPointerLeave={(event) => { if (isMouse(event)) setFilter(null); }}
+              type="button"
+            >
+              <CoverageMark state={key.state} /> {key.label}
+            </button>
+          ))}
+        </div>
+        {/* The cell's own aria-label already carries its note, so this readout
+            serves sighted pointer users; aria-hidden stops it being announced a
+            second time when the cell takes focus. */}
+        <p
+          aria-hidden="true"
+          className="essay-figure-note"
+          data-shown={note !== null}
+        >
+          {note ?? " "}
+        </p>
       </div>
-      {/* The cell's own aria-label already carries its note, so this readout
-          serves sighted pointer users; aria-hidden stops it being announced a
-          second time when the cell takes focus. */}
-      <p
-        aria-hidden="true"
-        className="essay-figure-note"
-        data-shown={note !== null}
-      >
-        {note ?? " "}
-      </p>
     </div>
   );
 }

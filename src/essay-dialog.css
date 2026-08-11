@@ -342,6 +342,20 @@
 .essay-coverage-table svg {
   display: inline-block;
   vertical-align: middle;
+  /* The marks fill their 14-unit viewBox almost exactly, so the hover scale
+     pushed them past it and the default clip cut the ring into a square. */
+  overflow: visible;
+}
+
+/* Legend left, readout right, one baseline under the table. They wrap onto
+   separate lines only when the figure is too narrow to hold both. */
+.essay-coverage-foot {
+  display: flex;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
 .essay-coverage-legend {
@@ -349,7 +363,6 @@
   gap: 16px;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 10px;
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: 9.5px;
@@ -562,6 +575,17 @@
    one-liner, so they reserve the two lines they actually take. */
 .essay-triptych .essay-figure-note {
   min-height: 3em;
+}
+
+/* In the grid the note sits beside the legend rather than under the figure,
+   so it takes the right end of that row and reserves no extra height —
+   the legend already sets the line. */
+.essay-dialog-section .essay-coverage-foot .essay-figure-note,
+.essay-dialog-hero .essay-coverage-foot .essay-figure-note {
+  min-height: 0;
+  max-width: 42ch;
+  margin: 0 0 0 auto;
+  text-align: right;
 }
 
 /* The scenario cards (persona essay hero). Glyphs stroke themselves on at

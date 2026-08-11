@@ -530,8 +530,12 @@
 }
 
 /* One line of reserved height, so a cell note appears without shifting the
-   caption under it. Every note is written to fit that line at 52ch. */
-.essay-figure-note {
+   caption under it. Every note is written to fit that line at 52ch.
+   Scoped through the section/hero the same way .essay-figure-caption is: the
+   note is a <p>, and .essay-dialog-section p (0,1,1) would otherwise beat a
+   bare class and render it as 16px body prose. */
+.essay-dialog-section .essay-figure-note,
+.essay-dialog-hero .essay-figure-note {
   min-height: 1.5em;
   margin: 12px auto 0;
   max-width: 52ch;
@@ -546,7 +550,8 @@
   transition: opacity 200ms var(--ease);
 }
 
-.essay-figure-note[data-shown="true"] {
+.essay-dialog-section .essay-figure-note[data-shown="true"],
+.essay-dialog-hero .essay-figure-note[data-shown="true"] {
   opacity: 1;
 }
 

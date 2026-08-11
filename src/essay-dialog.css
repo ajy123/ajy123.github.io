@@ -558,6 +558,12 @@
   opacity: 1;
 }
 
+/* The triptych's notes are sentences about a direction rather than a cell's
+   one-liner, so they reserve the two lines they actually take. */
+.essay-triptych .essay-figure-note {
+  min-height: 3em;
+}
+
 /* The scenario cards (persona essay hero). Glyphs stroke themselves on at
    arrival; at rest each one acts out its own scenario when pointed at. */
 .essay-scenario-cards[data-reveal="out"] .essay-scenario-card {

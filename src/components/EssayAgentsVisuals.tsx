@@ -55,13 +55,37 @@ const FEATURE_CELLS = Array.from({ length: 14 }, (_, i) => ({
 // Each station carries a fact the figure has no room to print. They come from
 // the essay's own sentences, not from a fresh reading of the work — a station
 // with nothing new to say would make hovering a dead gesture.
-const STATIONS = [
-  { label: "BACKLOG", sub: "40% UNSORTED", fact: "FASTER THAN ANYONE COULD SORT IT", x: 55 },
+// factX/factAnchor exist because a fact is far wider than the ~97px its
+// station occupies: centred on the first or last station it would run off the
+// viewBox and clip. The two ends anchor to the figure's edges instead.
+const STATIONS: {
+  label: string;
+  sub: string;
+  fact: string;
+  x: number;
+  factX?: number;
+  factAnchor?: "start" | "middle" | "end";
+}[] = [
+  {
+    label: "BACKLOG",
+    sub: "40% UNSORTED",
+    fact: "FASTER THAN ANYONE COULD SORT IT",
+    x: 55,
+    factX: 0,
+    factAnchor: "start",
+  },
   { label: "THEMES", sub: "GROUPED", fact: "CLUSTERED INTO FEATURE THEMES", x: 152 },
   { label: "RICE GATE", sub: "SCORED", fact: "THE TOP ONES PASS ON", x: 249 },
   { label: "14 FEATURES", sub: "FIRST RUN", fact: "THREE VARIATIONS EACH", x: 346 },
   { label: "REVIEW", sub: "HUMAN", fact: "THE CALL STAYED MINE", x: 443 },
-  { label: "DIRECTION", sub: "CHOSEN", fact: "EXPLORATION, NOT FINISHED DESIGN", x: 540 },
+  {
+    label: "DIRECTION",
+    sub: "CHOSEN",
+    fact: "EXPLORATION, NOT FINISHED DESIGN",
+    x: 540,
+    factX: 590,
+    factAnchor: "end",
+  },
 ];
 
 const LEADS = [
@@ -187,8 +211,8 @@ export function AgentsWorkflowVisual() {
               {...labelProps}
               className="pipe-fact"
               fill={ACCENT}
-              textAnchor="middle"
-              x={station.x}
+              textAnchor={station.factAnchor ?? "middle"}
+              x={station.factX ?? station.x}
               y={26}
             >
               {station.fact}
@@ -216,9 +240,9 @@ export function AgentsWorkflowVisual() {
 // long one. The other two say what the figure cannot: what each one demands of
 // the model to be truthful. Nothing here is asserted that the essay does not.
 const TRIPTYCH_NOTES = [
-  "Killed before the PRD: the model could not produce an accurate estimate yet, so the number was a promise it could not keep.",
-  "Never promises a number before the work runs — it reports cost as it accrues.",
-  "Asks nothing of the model up front; the cost is there when the user goes looking.",
+  "Killed before the PRD: the model could not back the number yet.",
+  "Never promises a number before the work runs; cost reports as it accrues.",
+  "Asks nothing up front; the cost is there when the user looks.",
 ];
 
 export function AgentsTriptychVisual() {

@@ -73,13 +73,15 @@ export function useFigureReveal<T extends Element>() {
     return () => observer.disconnect();
   }, [ready, root, prefersReducedMotion, revealed]);
 
-  // Longest entrance on any figure: the coverage grid's legend starts at
-  // 2100ms and runs 400ms. One timer covers all four rather than each figure
-  // declaring its own length.
+  // Must outlast the longest entrance on any figure, or the switch to "done"
+  // pulls the animation rule out from under one still running and it snaps.
+  // The longest is the coverage grid's last gap mark: it lands at 1560ms, then
+  // flashes twice — 1560 + 420 + (2 x 520) = 3020ms. One timer covers all four
+  // rather than each figure declaring its own length.
   useEffect(() => {
     if (!revealed || settled) return;
 
-    const timer = window.setTimeout(() => setSettled(true), 2600);
+    const timer = window.setTimeout(() => setSettled(true), 3200);
     return () => window.clearTimeout(timer);
   }, [revealed, settled]);
 

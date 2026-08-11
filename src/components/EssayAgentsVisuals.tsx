@@ -355,7 +355,7 @@ export function AgentsTriptychVisual() {
         className="essay-figure-note"
         data-shown={active !== null}
       >
-        {active === null ? " " : TRIPTYCH_NOTES[active]}
+        {active === null ? "\u00a0" : TRIPTYCH_NOTES[active]}
       </p>
     </div>
   );

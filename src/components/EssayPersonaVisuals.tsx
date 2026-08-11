@@ -305,7 +305,7 @@ export function PersonaCoverageGrid() {
           className="essay-figure-note"
           data-shown={note !== null}
         >
-          {note ?? " "}
+          {note ?? "\u00a0"}
         </p>
       </div>
     </div>

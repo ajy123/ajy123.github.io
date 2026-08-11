@@ -577,12 +577,12 @@
   min-height: 3em;
 }
 
-/* In the grid the note sits beside the legend rather than under the figure,
-   so it takes the right end of that row and reserves no extra height —
-   the legend already sets the line. */
+/* In the grid the note takes the right end of the legend's row. It keeps the
+   base one-line reservation: on a phone the foot is too narrow to hold both,
+   the note wraps to its own row, and without the reserved line revealing one
+   would shove the caption and the rest of the essay down on every tap. */
 .essay-dialog-section .essay-coverage-foot .essay-figure-note,
 .essay-dialog-hero .essay-coverage-foot .essay-figure-note {
-  min-height: 0;
   max-width: 42ch;
   margin: 0 0 0 auto;
   text-align: right;

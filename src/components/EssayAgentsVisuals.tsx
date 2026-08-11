@@ -47,7 +47,7 @@ function Label({
 const STRIPE_XS: number[] = [];
 for (let x = 33; x <= 77; x += 5) STRIPE_XS.push(x);
 
-const BASELINE_CELLS = Array.from({ length: 14 }, (_, i) => ({
+const FEATURE_CELLS = Array.from({ length: 14 }, (_, i) => ({
   x: 300 + (i % 7) * 14,
   y: 58 + Math.floor(i / 7) * 20,
 }));
@@ -56,12 +56,12 @@ const BASELINE_CELLS = Array.from({ length: 14 }, (_, i) => ({
 // the essay's own sentences, not from a fresh reading of the work — a station
 // with nothing new to say would make hovering a dead gesture.
 const STATIONS = [
-  { label: "BACKLOG", sub: "40% UNSORTED", fact: "HUNDREDS OF OPEN ISSUES", x: 55 },
-  { label: "THEMES", sub: "GROUPED", fact: "TICKETS INTO FEATURE THEMES", x: 152 },
-  { label: "RICE GATE", sub: "SCORED", fact: "WHAT DESERVES DESIGN TIME", x: 249 },
-  { label: "14 BASELINES", sub: "GENERATED", fact: "FOCUSED AGENTS, ONE LENS EACH", x: 346 },
-  { label: "REVIEW", sub: "HUMAN", fact: "THE JUDGMENT STAYED MINE", x: 443 },
-  { label: "SHIPPED", sub: "DIRECTION", fact: "ONE OF FOURTEEN", x: 540 },
+  { label: "BACKLOG", sub: "40% UNSORTED", fact: "FASTER THAN ANYONE COULD SORT IT", x: 55 },
+  { label: "THEMES", sub: "GROUPED", fact: "CLUSTERED INTO FEATURE THEMES", x: 152 },
+  { label: "RICE GATE", sub: "SCORED", fact: "THE TOP ONES PASS ON", x: 249 },
+  { label: "14 FEATURES", sub: "FIRST RUN", fact: "THREE VARIATIONS EACH", x: 346 },
+  { label: "REVIEW", sub: "HUMAN", fact: "THE CALL STAYED MINE", x: 443 },
+  { label: "DIRECTION", sub: "CHOSEN", fact: "EXPLORATION, NOT FINISHED DESIGN", x: 540 },
 ];
 
 const LEADS = [
@@ -86,13 +86,15 @@ const STATION_BOXES = [
 
 // In-essay figure: the agent pipeline in the site's shape alphabet.
 // Stripes = the unsorted backlog, clustered circles = themes, triangle =
-// the RICE gate, fourteen squares = generated baselines, ringed dot = the
-// human review station, green disc = the shipped direction.
+// the RICE gate, fourteen squares = generated features, ringed dot = the
+// human review station, green disc = the chosen direction. Not "shipped": the
+// essay says outright that the workflow produces exploration and not finished
+// design, so the terminal node is the pick, not the release.
 //
 // Interaction: pointing at a station isolates it, fills the flow behind it,
-// and swaps its dim sub-label for the fact above. It does not animate on
-// arrival — this is the hero of its essay and a reader who does nothing sees
-// exactly the figure that shipped before.
+// and sets a fact the figure has no room to print above the artwork. It does
+// not animate on arrival — this is the hero of its essay, and a reader who
+// does nothing sees exactly the figure that shipped before.
 export function AgentsWorkflowVisual() {
   const { active, setActive, bind } = useActiveIndex();
 
@@ -101,7 +103,7 @@ export function AgentsWorkflowVisual() {
       className="essay-pipeline"
       viewBox="0 0 640 175"
       role="group"
-      aria-label="Pipeline of geometric shapes: striped block for the backlog, three circles for themes, a triangle for the RICE gate, a grid of fourteen small squares for generated baselines, a ringed dot for human review, and a filled green circle for the shipped direction"
+      aria-label="Pipeline of geometric shapes: striped block for the backlog, three circles for themes, a triangle for the RICE gate, a grid of fourteen small squares for generated features, a ringed dot for human review, and a filled green circle for the chosen direction"
       data-active={active === null ? undefined : active}
       onPointerLeave={(event) => { if (event.pointerType === "mouse") setActive(null); }}
       xmlns="http://www.w3.org/2000/svg"
@@ -160,7 +162,7 @@ export function AgentsWorkflowVisual() {
             ) : null}
             {index === 3 ? (
               <g stroke={STROKE} strokeWidth={1.5}>
-                {BASELINE_CELLS.map((cell) => (
+                {FEATURE_CELLS.map((cell) => (
                   <rect
                     height="9"
                     key={`${cell.x}-${cell.y}`}
@@ -179,18 +181,20 @@ export function AgentsWorkflowVisual() {
             ) : null}
             {index === 5 ? <circle cx="540" cy="76" r="16" fill={GREEN} /> : null}
 
-            <Label x={station.x} y={140}>{station.label}</Label>
-            <Label className="pipe-sub" dim x={station.x} y={152}>{station.sub}</Label>
+            {/* The fact sets above the artwork, clear of the label pair below
+                it, so an isolated station reads top-down: fact, shape, name. */}
             <text
               {...labelProps}
               className="pipe-fact"
               fill={ACCENT}
               textAnchor="middle"
               x={station.x}
-              y={152}
+              y={26}
             >
               {station.fact}
             </text>
+            <Label x={station.x} y={140}>{station.label}</Label>
+            <Label className="pipe-sub" dim x={station.x} y={152}>{station.sub}</Label>
           </g>
         ))}
       </g>
@@ -205,10 +209,18 @@ export function AgentsWorkflowVisual() {
 //
 // Two behaviors, and they compose: on arrival the three cards land together,
 // then the estimate lifts and is struck through, which is the section's
-// argument. At rest, pointing at any card isolates it against the other two —
-// isolation only, with no readout: the two calibrations the kill surfaced are
-// the only text the figure does not already carry, and they are stated in the
-// paragraph directly below it.
+// argument. At rest, pointing at any card isolates it and reads out what that
+// direction asked of the system.
+//
+// Only the killed direction has a fate the essay records, so its line is the
+// long one. The other two say what the figure cannot: what each one demands of
+// the model to be truthful. Nothing here is asserted that the essay does not.
+const TRIPTYCH_NOTES = [
+  "Killed before the PRD: the model could not produce an accurate estimate yet, so the number was a promise it could not keep.",
+  "Never promises a number before the work runs — it reports cost as it accrues.",
+  "Asks nothing of the model up front; the cost is there when the user goes looking.",
+];
+
 export function AgentsTriptychVisual() {
   const { ref, state } = useFigureReveal<HTMLDivElement>();
   const { active, setActive, bind } = useActiveIndex();
@@ -232,7 +244,7 @@ export function AgentsTriptychVisual() {
           data-on={active === 0 ? "" : undefined}
           role="button"
           tabIndex={0}
-          aria-label="Pre-generation estimate: killed"
+          aria-label={`Pre-generation estimate, killed. ${TRIPTYCH_NOTES[0]}`}
           {...bind(0)}
         >
           <rect fill="transparent" height="200" width="176" x="27" y="14" />
@@ -272,7 +284,7 @@ export function AgentsTriptychVisual() {
           data-on={active === 1 ? "" : undefined}
           role="button"
           tabIndex={0}
-          aria-label="Persistent top bar direction"
+          aria-label={`Persistent top bar. ${TRIPTYCH_NOTES[1]}`}
           {...bind(1)}
         >
           <rect fill="transparent" height="200" width="176" x="232" y="14" />
@@ -294,7 +306,7 @@ export function AgentsTriptychVisual() {
           data-on={active === 2 ? "" : undefined}
           role="button"
           tabIndex={0}
-          aria-label="Usage in settings direction"
+          aria-label={`Usage in settings. ${TRIPTYCH_NOTES[2]}`}
           {...bind(2)}
         >
           <rect fill="transparent" height="200" width="176" x="437" y="14" />
@@ -311,6 +323,16 @@ export function AgentsTriptychVisual() {
           <Label x={525} y={208}>PROMISE: LOW</Label>
         </g>
       </svg>
+      {/* Each card's aria-label already carries its note, so this readout
+          serves sighted pointer users; aria-hidden stops it being announced a
+          second time when the card takes focus. */}
+      <p
+        aria-hidden="true"
+        className="essay-figure-note"
+        data-shown={active !== null}
+      >
+        {active === null ? " " : TRIPTYCH_NOTES[active]}
+      </p>
     </div>
   );
 }

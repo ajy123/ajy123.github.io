@@ -433,8 +433,9 @@
   stroke: var(--ink);
 }
 
-/* The fact sits on top of the sub-label rather than beside it, so isolating a
-   station swaps the line instead of growing the figure. */
+/* The fact sets above the artwork, where nothing else competes for the line.
+   Below, it had to displace the sub-label to avoid colliding with the two
+   stations either side of it; up here the sub-labels can stay put. */
 .essay-pipeline .pipe-sub,
 .essay-pipeline .pipe-fact {
   transition: opacity 180ms var(--ease);
@@ -446,13 +447,6 @@
 }
 
 .essay-pipeline .pipe-fact {
-  opacity: 0;
-}
-
-/* Every sub-label clears, not just the isolated station's: the facts run
-   wider than the ~97px a station gets, and would otherwise collide with the
-   dimmed sub-labels either side of them. */
-.essay-pipeline[data-active] .pipe-sub {
   opacity: 0;
 }
 

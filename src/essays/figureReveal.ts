@@ -16,7 +16,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 
-export type FigureRevealState = "out" | "in" | "static";
+export type FigureRevealState = "out" | "in" | "done" | "static";
 
 export const EssayFigureContext = createContext<{
   root: HTMLElement | null;
@@ -30,12 +30,19 @@ export const EssayFigureContext = createContext<{
  * stays at "out" forever and renders blank. The two svg-only figures are
  * wrapped in a div for exactly this reason.
  *
- * "out" = pre-entrance, "in" = play it, "static" = reduced motion, skip
- * straight to the rest state (which is what the figure ships as today). */
+ * "out" = pre-entrance, "in" = play it, "done" = entrance over, "static" =
+ * reduced motion, skip straight to the rest state (which is what the figure
+ * ships as today).
+ *
+ * "done" exists so the entrance rules stop applying once they have played.
+ * While they apply, any hover rule that sets the `animation` shorthand
+ * replaces the entrance animation and its fill — which blanked the drawn
+ * glyphs on hover, and made them redraw from nothing on every mouse-out. */
 export function useFigureReveal<T extends Element>() {
   const { root, ready } = useContext(EssayFigureContext);
   const ref = useRef<T | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [settled, setSettled] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -66,11 +73,23 @@ export function useFigureReveal<T extends Element>() {
     return () => observer.disconnect();
   }, [ready, root, prefersReducedMotion, revealed]);
 
+  // Longest entrance on any figure: the coverage grid's legend starts at
+  // 2100ms and runs 400ms. One timer covers all four rather than each figure
+  // declaring its own length.
+  useEffect(() => {
+    if (!revealed || settled) return;
+
+    const timer = window.setTimeout(() => setSettled(true), 2600);
+    return () => window.clearTimeout(timer);
+  }, [revealed, settled]);
+
   const state: FigureRevealState = prefersReducedMotion
     ? "static"
-    : revealed
-      ? "in"
-      : "out";
+    : !revealed
+      ? "out"
+      : settled
+        ? "done"
+        : "in";
 
   return { ref, state };
 }
@@ -83,11 +102,18 @@ export function useFigureReveal<T extends Element>() {
  * the station and immediately toggle it back off. */
 export function useActiveIndex() {
   const [active, setActive] = useState<number | null>(null);
+  // A mouse has already set this target on pointerenter by the time its click
+  // lands, so a toggling click would switch it straight back off under a
+  // stationary pointer. Only a pointer that cannot hover gets the toggle.
+  const lastPointerType = useRef<string>("mouse");
 
   const clearIf = (index: number) =>
     setActive((current) => (current === index ? null : current));
 
   const bind = (index: number) => ({
+    onPointerDown: (event: { pointerType?: string }) => {
+      lastPointerType.current = event.pointerType ?? "mouse";
+    },
     onPointerEnter: (event: { pointerType?: string }) => {
       if (event.pointerType === "mouse") setActive(index);
     },
@@ -96,7 +122,23 @@ export function useActiveIndex() {
     },
     onFocus: () => setActive(index),
     onBlur: () => clearIf(index),
-    onClick: () => setActive((current) => (current === index ? null : index)),
+    onClick: () => {
+      if (lastPointerType.current === "mouse") {
+        setActive(index);
+        return;
+      }
+      setActive((current) => (current === index ? null : index));
+    },
+    // These carry role="button", so Enter and Space have to do what the role
+    // promises. Space is also the panel's scroll key, hence preventDefault.
+    onKeyDown: (event: {
+      key: string;
+      preventDefault: () => void;
+    }) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      setActive((current) => (current === index ? null : index));
+    },
   });
 
   return { active, setActive, bind };

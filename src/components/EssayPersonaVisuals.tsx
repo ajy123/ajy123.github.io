@@ -162,6 +162,12 @@ function CoverageMark({
 
 const COLUMNS = ["UI", "Model", "Evaluation"];
 
+const STATE_LABELS: Record<CoverageState, string> = {
+  shipped: "shipped",
+  design: "in design",
+  gap: "gap found",
+};
+
 // Notes exist only where the essay states what actually broke — the
 // mixed-language row. The other six cells say no more than their mark and
 // their column already do, so they get no readout rather than invented copy.
@@ -241,6 +247,14 @@ export function PersonaCoverageGrid() {
                 return (
                   <td
                     key={index}
+                    // A focusable cell holding only an unlabelled <svg> is a
+                    // silent stop; the label carries the whole cell — scenario,
+                    // surface, state, and what broke.
+                    aria-label={
+                      cellNote
+                        ? `${row.scenario}, ${COLUMNS[index]}: ${STATE_LABELS[mark]}. ${cellNote}`
+                        : `${row.scenario}, ${COLUMNS[index]}: ${STATE_LABELS[mark]}`
+                    }
                     onBlur={cellNote ? () => setNote(null) : undefined}
                     onClick={
                       cellNote
@@ -280,7 +294,14 @@ export function PersonaCoverageGrid() {
           </button>
         ))}
       </div>
-      <p className="essay-figure-note" data-shown={note !== null}>
+      {/* The cell's own aria-label already carries its note, so this readout
+          serves sighted pointer users; aria-hidden stops it being announced a
+          second time when the cell takes focus. */}
+      <p
+        aria-hidden="true"
+        className="essay-figure-note"
+        data-shown={note !== null}
+      >
         {note ?? " "}
       </p>
     </div>

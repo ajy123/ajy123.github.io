@@ -438,6 +438,11 @@
 .essay-pipeline .pipe-sub,
 .essay-pipeline .pipe-fact {
   transition: opacity 180ms var(--ease);
+  /* A fact runs far wider than the ~97px its station occupies and is painted
+     after the station to its left, so while invisible it was still hit-tested
+     and stole the pointer — landing on one station's right edge isolated the
+     next one along. */
+  pointer-events: none;
 }
 
 .essay-pipeline .pipe-fact {
@@ -508,11 +513,19 @@
 }
 
 /* The killed card arrives at full strength — it did look like the strongest
-   direction — lifts on its own beat, and only then drops away. */
+   direction — lifts on its own beat, and only then drops away. Rise and drop
+   are one keyframe rather than two animations: two would both own `opacity`,
+   and the second's backwards fill would win from t=0, skipping the fade in
+   and blocking the hover dim until its delay elapsed. */
 .essay-triptych-svg[data-reveal="in"] .trip-card[data-i="0"] {
-  animation:
-    essay-fig-rise 460ms var(--ease) backwards,
-    essay-fig-dim 320ms var(--ease) 1700ms backwards;
+  animation: essay-fig-arrive-then-dim 2020ms var(--ease) backwards;
+}
+
+@keyframes essay-fig-arrive-then-dim {
+  0% { opacity: 0; transform: translateY(7px); }
+  23% { opacity: 1; transform: none; }
+  84% { opacity: 1; }
+  100% { opacity: 0.34; }
 }
 
 .essay-triptych-svg[data-reveal="in"] .trip-lift {
@@ -524,10 +537,6 @@
   animation: essay-fig-strike 320ms var(--ease) 1500ms backwards;
 }
 
-@keyframes essay-fig-dim {
-  from { opacity: 1; }
-  to { opacity: 0.34; }
-}
 
 /* One line of reserved height, so a cell note appears without shifting the
    caption under it. Every note is written to fit that line at 52ch.
@@ -565,6 +574,9 @@
   animation: essay-fig-rise 480ms var(--ease) var(--card-delay, 0ms) backwards;
 }
 
+/* Only while the entrance is live. Once the figure is "done" the dash is gone
+   entirely, so a hover rule that replaces the `animation` shorthand cannot
+   strand a glyph mid-dash — which is what blanked the triangle on hover. */
 .essay-scenario-cards[data-reveal="out"] .glyph-draw,
 .essay-scenario-cards[data-reveal="in"] .glyph-draw {
   stroke-dasharray: 1;
@@ -611,7 +623,10 @@
   .essay-scenario-card:hover .glyph-split-a { transform: translateX(-2.5px); }
   .essay-scenario-card:hover .glyph-split-b { transform: translateX(2.5px); }
 
+  /* Carries its own dash: after the entrance the base dash is gone, and the
+     sweep needs one to travel along. */
   .essay-scenario-card:hover .glyph-sweep {
+    stroke-dasharray: 1;
     animation: essay-glyph-sweep 900ms var(--ease) infinite;
   }
 
@@ -673,9 +688,11 @@
   transition: background-color 160ms var(--ease);
 }
 
+/* --surface-elevated, not --surface-subtle: the figure's own ground is
+   --surface-subtle, so tinting a row with it painted nothing at all. */
 .essay-coverage-table tbody tr:hover,
 .essay-coverage-table tbody tr:focus-within {
-  background: var(--surface-subtle);
+  background: var(--surface-elevated);
 }
 
 .essay-coverage-table td[tabindex] {
@@ -749,7 +766,10 @@
   .essay-pipeline .pipe-fact,
   .essay-triptych-svg .trip-card,
   .essay-coverage .cov-mark,
-  .essay-figure-note {
+  /* Matches the note's own scoped selector — a media query adds no
+     specificity, so a bare .essay-figure-note here would lose to it. */
+  .essay-dialog-section .essay-figure-note,
+  .essay-dialog-hero .essay-figure-note {
     transition-duration: 0.01ms;
   }
 }

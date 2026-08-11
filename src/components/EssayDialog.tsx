@@ -1,11 +1,12 @@
 // The portal/backdrop/stage/panel half of the essay dialog. Lifted out of
 // main.tsx's EssayPracticeCard so the same dialog — copy, behavior, CSS — can
 // be reused by the /deeli/ case study, which has no card to morph from.
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 import type { EssayItem } from "../essays/types";
 import { essayAskContext } from "../essays/essayAskContext";
+import { EssayFigureContext } from "../essays/figureReveal";
 
 function CloseGlyph() {
   return (
@@ -44,6 +45,14 @@ export function EssayDialog({
 }) {
   const [isScrollReady, setIsScrollReady] = useState(false);
   const dialogRef = useRef<HTMLElement | null>(null);
+  // The panel doubles as the IntersectionObserver root for in-essay figures
+  // (it is the scroll container, not the window), and a ref alone would not
+  // re-render the figures once it mounts — so it is mirrored into state.
+  const [panelEl, setPanelEl] = useState<HTMLElement | null>(null);
+  const setPanelRef = useCallback((node: HTMLElement | null) => {
+    dialogRef.current = node;
+    setPanelEl(node);
+  }, []);
   const closeRef = useRef<HTMLButtonElement | null>(null);
   // Captured on open rather than passed in as a prop, so this works whether
   // the trigger is the landing card (a motion.div) or the deeli case-study's
@@ -164,6 +173,13 @@ export function EssayDialog({
     ? { duration: 0.01 }
     : { duration: 0.12, ease: [0.23, 1, 0.32, 1] as const };
 
+  // Figures arm their observer only once the panel has stopped morphing, so
+  // a hero figure's entrance starts on a settled panel rather than behind one.
+  const figureContext = useMemo(
+    () => ({ root: panelEl, ready: isScrollReady }),
+    [panelEl, isScrollReady],
+  );
+
   const panelLayoutId = layoutIdPrefix
     ? `${layoutIdPrefix}-panel-${item.id}`
     : undefined;
@@ -227,7 +243,7 @@ export function EssayDialog({
           transition={backdropEnterTransition}
         >
           <motion.article
-            ref={dialogRef}
+            ref={setPanelRef}
             aria-describedby={dialogDescriptionId}
             aria-labelledby={dialogTitleId}
             aria-modal="true"
@@ -257,6 +273,7 @@ export function EssayDialog({
             transition={modalEnterTransition}
             {...standaloneMotionProps}
           >
+            <EssayFigureContext.Provider value={figureContext}>
             <button
               ref={closeRef}
               aria-label="Close essay"
@@ -347,6 +364,7 @@ export function EssayDialog({
                 </section>
               ))}
             </motion.div>
+            </EssayFigureContext.Provider>
           </motion.article>
         </motion.div>
       ) : null}

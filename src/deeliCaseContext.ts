@@ -4,7 +4,7 @@
 // whatever text happens to be under the cursor.
 //
 // Hard budget: <= 5100 characters for the DEELI_CASE_CONTEXT string value.
-// Measured length as of writing: 5070 chars. Re-measure when you edit a bullet;
+// Measured length as of writing: 5086 chars. Re-measure when you edit a bullet;
 // this note has drifted before, and headroom here is single digits, not slack.
 // The worker REJECTS (it does not truncate) any request over MAX_TOTAL_CHARS =
 // 24,000, shared with the system prose (~1.2k), SITE_CONTEXT (~7.4k as of

@@ -242,8 +242,11 @@
 }
 
 /* min-width keeps the figures' 8.5px mono labels legible on phones —
-   narrow screens scroll the figure instead of shrinking it to ~50%. */
-.essay-dialog-figure > svg {
+   narrow screens scroll the figure instead of shrinking it to ~50%.
+   .essay-triptych-svg is named explicitly because that figure wraps its svg in
+   a div to carry a readout line, so it is no longer a direct child. */
+.essay-dialog-figure > svg,
+.essay-dialog-figure .essay-triptych-svg {
   display: block;
   width: 100%;
   min-width: 540px;
@@ -358,6 +361,392 @@
   display: inline-flex;
   gap: 6px;
   align-items: center;
+}
+
+/* ─── In-essay figure motion and inspection ───────────────────────────────
+ * Entrances key off data-reveal, which figureReveal.ts drives from an
+ * IntersectionObserver rooted on the dialog panel (the panel scrolls itself,
+ * so a viewport-rooted observer would fire every figure at open). Three
+ * values: "out" is the pre-entrance state, "in" plays it, and "static" is the
+ * reduced-motion path — it never hides anything, so the figure renders at rest
+ * exactly as it did before any of this existed.
+ *
+ * The hover behaviors are deliberately not gated on reduced motion: dimming
+ * five stations to isolate a sixth is information, not decoration.
+ */
+
+@keyframes essay-fig-rise {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes essay-fig-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes essay-fig-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes essay-fig-strike {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes essay-fig-flash {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.3; }
+}
+
+/* The pipeline (agents essay hero). No entrance: it is on screen the moment
+   the dialog opens, and a reader who does nothing sees the figure unchanged.
+   Pointing at a station isolates it and fills the flow behind it. */
+.essay-pipeline .pipe-station {
+  cursor: pointer;
+  transition: opacity 200ms var(--ease);
+}
+
+.essay-pipeline .pipe-station:focus {
+  outline: none;
+}
+
+.essay-pipeline .pipe-station:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.essay-pipeline[data-active] .pipe-station {
+  opacity: 0.22;
+}
+
+.essay-pipeline .pipe-station[data-on] {
+  opacity: 1;
+}
+
+.essay-pipeline .pipe-lead {
+  stroke: var(--hairline-faint);
+  transition: stroke 220ms var(--ease);
+}
+
+.essay-pipeline .pipe-lead[data-filled] {
+  stroke: var(--ink);
+}
+
+/* The fact sits on top of the sub-label rather than beside it, so isolating a
+   station swaps the line instead of growing the figure. */
+.essay-pipeline .pipe-sub,
+.essay-pipeline .pipe-fact {
+  transition: opacity 180ms var(--ease);
+}
+
+.essay-pipeline .pipe-fact {
+  opacity: 0;
+}
+
+/* Every sub-label clears, not just the isolated station's: the facts run
+   wider than the ~97px a station gets, and would otherwise collide with the
+   dimmed sub-labels either side of them. */
+.essay-pipeline[data-active] .pipe-sub {
+  opacity: 0;
+}
+
+.essay-pipeline .pipe-station[data-on] .pipe-fact {
+  opacity: 1;
+}
+
+/* The triptych (agents essay, body). Entrance states the kill; at rest,
+   pointing at a card isolates it. */
+.essay-triptych-svg .trip-card {
+  cursor: pointer;
+  transition: opacity 200ms var(--ease);
+}
+
+.essay-triptych-svg .trip-card:focus {
+  outline: none;
+}
+
+.essay-triptych-svg .trip-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The killed direction rests dimmed — that is the section's conclusion, so it
+   has to be the default markup and survive both reduced motion and a reader
+   who scrolls past before the sequence runs. */
+.essay-triptych-svg .trip-card[data-i="0"] {
+  opacity: 0.34;
+}
+
+.essay-triptych-svg .trip-strike {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.essay-triptych-svg[data-active] .trip-card {
+  opacity: 0.24;
+}
+
+/* Isolating the killed card brings it back to full strength: the point of
+   pointing at it is to look closer. */
+.essay-triptych-svg .trip-card[data-on],
+.essay-triptych-svg[data-active] .trip-card[data-i="0"][data-on] {
+  opacity: 1;
+}
+
+.essay-triptych-svg[data-reveal="out"] .trip-card,
+.essay-triptych-svg[data-reveal="out"] .trip-strike {
+  opacity: 0;
+}
+
+.essay-triptych-svg[data-reveal="in"] .trip-card[data-i="1"] {
+  animation: essay-fig-rise 460ms var(--ease) 120ms backwards;
+}
+
+.essay-triptych-svg[data-reveal="in"] .trip-card[data-i="2"] {
+  animation: essay-fig-rise 460ms var(--ease) 200ms backwards;
+}
+
+/* The killed card arrives at full strength — it did look like the strongest
+   direction — lifts on its own beat, and only then drops away. */
+.essay-triptych-svg[data-reveal="in"] .trip-card[data-i="0"] {
+  animation:
+    essay-fig-rise 460ms var(--ease) backwards,
+    essay-fig-dim 320ms var(--ease) 1700ms backwards;
+}
+
+.essay-triptych-svg[data-reveal="in"] .trip-lift {
+  animation: essay-fig-rise 520ms var(--ease) 420ms backwards;
+}
+
+.essay-triptych-svg[data-reveal="in"] .trip-strike {
+  opacity: 1;
+  animation: essay-fig-strike 320ms var(--ease) 1500ms backwards;
+}
+
+@keyframes essay-fig-dim {
+  from { opacity: 1; }
+  to { opacity: 0.34; }
+}
+
+/* One line of reserved height, so a cell note appears without shifting the
+   caption under it. Every note is written to fit that line at 52ch. */
+.essay-figure-note {
+  min-height: 1.5em;
+  margin: 12px auto 0;
+  max-width: 52ch;
+  color: var(--muted-strong);
+  /* The figure's own label voice, not prose: this is the grid answering, and
+     the serif caption below it is the only sentence in the figure's frame. */
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+}
+
+.essay-figure-note[data-shown="true"] {
+  opacity: 1;
+}
+
+/* The scenario cards (persona essay hero). Glyphs stroke themselves on at
+   arrival; at rest each one acts out its own scenario when pointed at. */
+.essay-scenario-cards[data-reveal="out"] .essay-scenario-card {
+  opacity: 0;
+}
+
+.essay-scenario-cards[data-reveal="in"] .essay-scenario-card {
+  animation: essay-fig-rise 480ms var(--ease) var(--card-delay, 0ms) backwards;
+}
+
+.essay-scenario-cards[data-reveal="out"] .glyph-draw,
+.essay-scenario-cards[data-reveal="in"] .glyph-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.essay-scenario-cards[data-reveal="in"] .glyph-draw {
+  animation: essay-fig-draw 380ms var(--ease) var(--draw-delay, 0ms) both;
+}
+
+.essay-scenario-card {
+  border: 1px solid transparent;
+  transition:
+    transform 220ms var(--ease),
+    border-color 220ms var(--ease);
+}
+
+.essay-scenario-card .essay-glyph > *,
+.essay-scenario-card .essay-glyph g {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 300ms var(--ease);
+}
+
+.essay-scenario-card .glyph-ripple {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  .essay-scenario-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--hairline-faint);
+  }
+
+  .essay-scenario-card:hover .glyph-warn {
+    animation: essay-glyph-warn 1100ms var(--ease) infinite;
+    stroke: var(--accent);
+  }
+
+  /* Two languages in one query: the stripes part into a group of two and a
+     group of three while the green diagonal keeps sweeping across both. */
+  .essay-scenario-card:hover .glyph-split-a { transform: translateX(-2.5px); }
+  .essay-scenario-card:hover .glyph-split-b { transform: translateX(2.5px); }
+
+  .essay-scenario-card:hover .glyph-sweep {
+    animation: essay-glyph-sweep 900ms var(--ease) infinite;
+  }
+
+  .essay-scenario-card:hover .glyph-ripple {
+    animation: essay-glyph-ripple 1400ms var(--ease) var(--ripple-delay, 0ms) infinite;
+  }
+}
+
+@keyframes essay-glyph-warn {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.09); }
+}
+
+@keyframes essay-glyph-sweep {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes essay-glyph-ripple {
+  0% { transform: scale(0.25); opacity: 1; }
+  70% { opacity: 0.45; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* The coverage grid (persona essay, body). The two gap marks land last and
+   alone; at rest the grid reads like a table you can point at. */
+.essay-coverage[data-reveal="out"] tbody tr,
+.essay-coverage[data-reveal="out"] .cov-mark,
+.essay-coverage[data-reveal="out"] .essay-coverage-legend {
+  opacity: 0;
+}
+
+.essay-coverage[data-reveal="in"] tbody tr {
+  animation: essay-fig-rise 400ms var(--ease) var(--row-delay, 0ms) backwards;
+}
+
+.essay-coverage[data-reveal="in"] .cov-mark {
+  animation: essay-fig-pop 380ms var(--ease-out-strong) var(--mark-delay, 0ms) backwards;
+}
+
+/* The gaps flash once as they arrive — after a hold long enough that they are
+   the only thing still moving. */
+.essay-coverage[data-reveal="in"] .cov-mark-gap {
+  animation:
+    essay-fig-pop 420ms var(--ease-out-strong) var(--mark-delay, 0ms) backwards,
+    essay-fig-flash 520ms var(--ease) calc(var(--mark-delay, 0ms) + 420ms) 2;
+}
+
+.essay-coverage[data-reveal="in"] .essay-coverage-legend {
+  animation: essay-fig-rise 400ms var(--ease) 2100ms backwards;
+}
+
+.essay-coverage .cov-mark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.essay-coverage-table tbody tr {
+  transition: background-color 160ms var(--ease);
+}
+
+.essay-coverage-table tbody tr:hover,
+.essay-coverage-table tbody tr:focus-within {
+  background: var(--surface-subtle);
+}
+
+.essay-coverage-table td[tabindex] {
+  cursor: pointer;
+}
+
+.essay-coverage-table td[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Pointing at a legend key drops every mark that is not in that state, which
+   answers "where are the gaps" in one gesture. */
+.essay-coverage .cov-mark {
+  transition:
+    opacity 180ms var(--ease),
+    transform 180ms var(--ease-out-strong);
+}
+
+.essay-coverage[data-filter="shipped"] .cov-mark:not(.cov-mark-shipped),
+.essay-coverage[data-filter="design"] .cov-mark:not(.cov-mark-design),
+.essay-coverage[data-filter="gap"] .cov-mark:not(.cov-mark-gap) {
+  opacity: 0.14;
+}
+
+.essay-coverage-table td:hover .cov-mark {
+  transform: scale(1.35);
+}
+
+.essay-coverage-key {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 160ms var(--ease);
+}
+
+.essay-coverage-key:hover {
+  color: var(--ink);
+}
+
+.essay-coverage-key:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The entrances are already skipped by data-reveal="static", but the glyphs'
+   hover loops are pure CSS and would keep running. The state changes they
+   accompany — the split stripes, the card lift — are kept: those carry
+   meaning, the looping does not. */
+@media (prefers-reduced-motion: reduce) {
+  .essay-scenario-card:hover .glyph-warn,
+  .essay-scenario-card:hover .glyph-sweep,
+  .essay-scenario-card:hover .glyph-ripple {
+    animation: none;
+  }
+
+  .essay-scenario-card,
+  .essay-scenario-card .essay-glyph > *,
+  .essay-scenario-card .essay-glyph g,
+  .essay-pipeline .pipe-station,
+  .essay-pipeline .pipe-lead,
+  .essay-pipeline .pipe-sub,
+  .essay-pipeline .pipe-fact,
+  .essay-triptych-svg .trip-card,
+  .essay-coverage .cov-mark,
+  .essay-figure-note {
+    transition-duration: 0.01ms;
+  }
 }
 
 @media (max-width: 860px) {

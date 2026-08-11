@@ -1,3 +1,5 @@
+import { useFigureReveal, useActiveIndex } from "../essays/figureReveal";
+
 const GREEN = "#174C3A";
 const STROKE = "#171717";
 const ACCENT = "#f44800";
@@ -17,18 +19,21 @@ function Label({
   x,
   y,
   children,
+  className,
   dim = false,
   anchor = "middle",
 }: {
   x: number;
   y: number;
   children: string;
+  className?: string;
   dim?: boolean;
   anchor?: "middle" | "start" | "end";
 }) {
   return (
     <text
       {...labelProps}
+      className={className}
       fill={dim ? MUTED : STROKE}
       textAnchor={anchor}
       x={x}
@@ -39,70 +44,155 @@ function Label({
   );
 }
 
+const STRIPE_XS: number[] = [];
+for (let x = 33; x <= 77; x += 5) STRIPE_XS.push(x);
+
+const BASELINE_CELLS = Array.from({ length: 14 }, (_, i) => ({
+  x: 300 + (i % 7) * 14,
+  y: 58 + Math.floor(i / 7) * 20,
+}));
+
+// Each station carries a fact the figure has no room to print. They come from
+// the essay's own sentences, not from a fresh reading of the work — a station
+// with nothing new to say would make hovering a dead gesture.
+const STATIONS = [
+  { label: "BACKLOG", sub: "40% UNSORTED", fact: "HUNDREDS OF OPEN ISSUES", x: 55 },
+  { label: "THEMES", sub: "GROUPED", fact: "TICKETS INTO FEATURE THEMES", x: 152 },
+  { label: "RICE GATE", sub: "SCORED", fact: "WHAT DESERVES DESIGN TIME", x: 249 },
+  { label: "14 BASELINES", sub: "GENERATED", fact: "FOCUSED AGENTS, ONE LENS EACH", x: 346 },
+  { label: "REVIEW", sub: "HUMAN", fact: "THE JUDGMENT STAYED MINE", x: 443 },
+  { label: "SHIPPED", sub: "DIRECTION", fact: "ONE OF FOURTEEN", x: 540 },
+];
+
+const LEADS = [
+  { x1: 84, x2: 118 },
+  { x1: 186, x2: 216 },
+  { x1: 281, x2: 294 },
+  { x1: 400, x2: 424 },
+  { x1: 462, x2: 517 },
+];
+
+// Hit areas are wider than the artwork so the whole column — glyph and its two
+// labels — is one target. They carry no stroke of their own: the signifier is
+// the other five stations dimming, not a box drawn around this one.
+const STATION_BOXES = [
+  { x: 14, width: 82 },
+  { x: 118, width: 68 },
+  { x: 216, width: 65 },
+  { x: 294, width: 106 },
+  { x: 424, width: 38 },
+  { x: 517, width: 46 },
+];
+
 // In-essay figure: the agent pipeline in the site's shape alphabet.
 // Stripes = the unsorted backlog, clustered circles = themes, triangle =
 // the RICE gate, fourteen squares = generated baselines, ringed dot = the
 // human review station, green disc = the shipped direction.
+//
+// Interaction: pointing at a station isolates it, fills the flow behind it,
+// and swaps its dim sub-label for the fact above. It does not animate on
+// arrival — this is the hero of its essay and a reader who does nothing sees
+// exactly the figure that shipped before.
 export function AgentsWorkflowVisual() {
-  const stripes: number[] = [];
-  for (let x = 33; x <= 77; x += 5) stripes.push(x);
-  const baselines = Array.from({ length: 14 }, (_, i) => ({
-    x: 300 + (i % 7) * 14,
-    y: 58 + Math.floor(i / 7) * 20,
-  }));
+  const { active, setActive, bind } = useActiveIndex();
 
   return (
     <svg
+      className="essay-pipeline"
       viewBox="0 0 640 175"
-      role="img"
+      role="group"
       aria-label="Pipeline of geometric shapes: striped block for the backlog, three circles for themes, a triangle for the RICE gate, a grid of fourteen small squares for generated baselines, a ringed dot for human review, and a filled green circle for the shipped direction"
+      data-active={active === null ? undefined : active}
+      onPointerLeave={(event) => { if (event.pointerType === "mouse") setActive(null); }}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
     >
       <g transform="translate(25 0)">
-        <g stroke={HAIRLINE_FAINT} strokeWidth={1}>
-          <line x1="84" y1="76" x2="118" y2="76" />
-          <line x1="186" y1="76" x2="216" y2="76" />
-          <line x1="281" y1="76" x2="294" y2="76" />
-          <line x1="400" y1="76" x2="424" y2="76" />
-          <line x1="462" y1="76" x2="517" y2="76" />
-        </g>
-        <g stroke={STROKE} strokeWidth={1.5}>
-          {stripes.map((x) => (
-            <line key={x} x1={x} y1={54} x2={x} y2={98} />
-          ))}
-        </g>
-        <g stroke={STROKE} strokeWidth={1.5}>
-          <circle cx="152" cy="58" r="9" />
-          <circle cx="139" cy="85" r="9" />
-          <circle cx="165" cy="85" r="9" />
-          <path d="M273 96 H225 L249 54 Z" />
-          {baselines.map((cell) => (
-            <rect
-              height="9"
-              key={`${cell.x}-${cell.y}`}
-              width="9"
-              x={cell.x}
-              y={cell.y}
+        {/* A connector reads as travelled once the station past it is the one
+            being inspected — the flow fills in behind the pointer. */}
+        <g strokeWidth={1}>
+          {LEADS.map((lead, index) => (
+            <line
+              className="pipe-lead"
+              data-filled={active !== null && index < active ? "" : undefined}
+              key={lead.x1}
+              x1={lead.x1}
+              x2={lead.x2}
+              y1="76"
+              y2="76"
             />
           ))}
-          <circle cx="443" cy="76" r="12" />
         </g>
-        <circle cx="443" cy="76" r="4" fill={STROKE} />
-        <circle cx="540" cy="76" r="16" fill={GREEN} />
 
-        <Label x={55} y={140}>BACKLOG</Label>
-        <Label x={152} y={140}>THEMES</Label>
-        <Label x={249} y={140}>RICE GATE</Label>
-        <Label x={346} y={140}>14 BASELINES</Label>
-        <Label x={443} y={140}>REVIEW</Label>
-        <Label x={540} y={140}>SHIPPED</Label>
-        <Label dim x={55} y={152}>40% UNSORTED</Label>
-        <Label dim x={152} y={152}>GROUPED</Label>
-        <Label dim x={249} y={152}>SCORED</Label>
-        <Label dim x={346} y={152}>GENERATED</Label>
-        <Label dim x={443} y={152}>HUMAN</Label>
-        <Label dim x={540} y={152}>DIRECTION</Label>
+        {STATIONS.map((station, index) => (
+          <g
+            className="pipe-station"
+            data-on={active === index ? "" : undefined}
+            key={station.label}
+            role="button"
+            tabIndex={0}
+            aria-label={`${station.label}: ${station.fact.toLowerCase()}`}
+            {...bind(index)}
+          >
+            <rect
+              fill="transparent"
+              height="122"
+              width={STATION_BOXES[index].width}
+              x={STATION_BOXES[index].x}
+              y="40"
+            />
+            {index === 0 ? (
+              <g stroke={STROKE} strokeWidth={1.5}>
+                {STRIPE_XS.map((x) => (
+                  <line key={x} x1={x} y1={54} x2={x} y2={98} />
+                ))}
+              </g>
+            ) : null}
+            {index === 1 ? (
+              <g stroke={STROKE} strokeWidth={1.5}>
+                <circle cx="152" cy="58" r="9" />
+                <circle cx="139" cy="85" r="9" />
+                <circle cx="165" cy="85" r="9" />
+              </g>
+            ) : null}
+            {index === 2 ? (
+              <path d="M273 96 H225 L249 54 Z" stroke={STROKE} strokeWidth={1.5} />
+            ) : null}
+            {index === 3 ? (
+              <g stroke={STROKE} strokeWidth={1.5}>
+                {BASELINE_CELLS.map((cell) => (
+                  <rect
+                    height="9"
+                    key={`${cell.x}-${cell.y}`}
+                    width="9"
+                    x={cell.x}
+                    y={cell.y}
+                  />
+                ))}
+              </g>
+            ) : null}
+            {index === 4 ? (
+              <>
+                <circle cx="443" cy="76" r="12" stroke={STROKE} strokeWidth={1.5} />
+                <circle cx="443" cy="76" r="4" fill={STROKE} />
+              </>
+            ) : null}
+            {index === 5 ? <circle cx="540" cy="76" r="16" fill={GREEN} /> : null}
+
+            <Label x={station.x} y={140}>{station.label}</Label>
+            <Label className="pipe-sub" dim x={station.x} y={152}>{station.sub}</Label>
+            <text
+              {...labelProps}
+              className="pipe-fact"
+              fill={ACCENT}
+              textAnchor="middle"
+              x={station.x}
+              y={152}
+            >
+              {station.fact}
+            </text>
+          </g>
+        ))}
       </g>
     </svg>
   );
@@ -112,68 +202,115 @@ export function AgentsWorkflowVisual() {
 // only in where the token-cost number lives. The promise row underneath is
 // the real comparison — the pre-generation estimate makes the biggest
 // promise, marked orange because it's the one the model couldn't keep.
+//
+// Two behaviors, and they compose: on arrival the three cards land together,
+// then the estimate lifts and is struck through, which is the section's
+// argument. At rest, pointing at any card isolates it against the other two —
+// isolation only, with no readout: the two calibrations the kill surfaced are
+// the only text the figure does not already carry, and they are stated in the
+// paragraph directly below it.
 export function AgentsTriptychVisual() {
+  const { ref, state } = useFigureReveal<HTMLDivElement>();
+  const { active, setActive, bind } = useActiveIndex();
+
   return (
-    <svg
-      viewBox="0 0 640 235"
-      role="img"
-      aria-label="Three wireframe cards: a modal with a large cost estimate, a screen with a thin top usage bar, and a settings list with usage in a row; a promise rating sits under each"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-    >
-      <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="30" y="20" />
-      <rect height="74" stroke={HAIRLINE} strokeWidth={1} width="106" x="62" y="48" />
-      <text
-        fill={STROKE}
-        fontFamily={MONO}
-        fontSize={14}
-        letterSpacing="0.1em"
-        textAnchor="middle"
-        x="115"
-        y="80"
+    <div className="essay-triptych" ref={ref}>
+      <svg
+        className="essay-triptych-svg"
+        viewBox="0 0 640 235"
+        role="group"
+        aria-label="Three wireframe cards: a modal with a large cost estimate, a screen with a thin top usage bar, and a settings list with usage in a row; a promise rating sits under each. The estimate direction is struck through — it was killed."
+        data-reveal={state}
+        data-active={active === null ? undefined : active}
+        onPointerLeave={(event) => { if (event.pointerType === "mouse") setActive(null); }}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
       >
-        ~1.2K
-      </text>
-      <Label dim x={115} y={94}>EST. TOKENS</Label>
-      <rect fill={ACCENT} height="10" width="66" x="82" y="104" />
-
-      <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="235" y="20" />
-      <line stroke={HAIRLINE} strokeWidth={1} x1="235" x2="405" y1="38" y2="38" />
-      <rect fill={GREEN} height="5" width="44" x="243" y="27" />
-      <g stroke={HAIRLINE_FAINT} strokeWidth={1}>
-        <line x1="251" x2="389" y1="62" y2="62" />
-        <line x1="251" x2="389" y1="82" y2="82" />
-        <line x1="251" x2="365" y1="102" y2="102" />
-      </g>
-
-      <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="440" y="20" />
-      <g stroke={HAIRLINE_FAINT} strokeWidth={1}>
-        <line x1="456" x2="594" y1="50" y2="50" />
-        <line x1="456" x2="594" y1="76" y2="76" />
-        <line x1="456" x2="594" y1="102" y2="102" />
-      </g>
-      <rect fill={GREEN} height="7" width="30" x="456" y="112" />
-      <Label anchor="start" dim x={494} y={119}>USAGE</Label>
-
-      <Label x={115} y={172}>PRE-GENERATION ESTIMATE</Label>
-      <Label x={320} y={172}>PERSISTENT TOP BAR</Label>
-      <Label x={525} y={172}>USAGE IN SETTINGS</Label>
-      <Label dim x={115} y={186}>PROMISE BEFORE ACTION</Label>
-      <Label dim x={320} y={186}>AMBIENT COST</Label>
-      <Label dim x={525} y={186}>COST ON DEMAND</Label>
-      <text
-        fill={ACCENT}
-        fontFamily={MONO}
-        fontSize={8.5}
-        letterSpacing="0.1em"
-        textAnchor="middle"
-        x="115"
-        y="208"
-      >
-        PROMISE: HIGH
-      </text>
-      <Label x={320} y={208}>PROMISE: MEDIUM</Label>
-      <Label x={525} y={208}>PROMISE: LOW</Label>
-    </svg>
+        <g
+          className="trip-card"
+          data-i={0}
+          data-on={active === 0 ? "" : undefined}
+          role="button"
+          tabIndex={0}
+          aria-label="Pre-generation estimate: killed"
+          {...bind(0)}
+        >
+          <rect fill="transparent" height="200" width="176" x="27" y="14" />
+          <g className="trip-lift">
+            <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="30" y="20" />
+            <rect height="74" stroke={HAIRLINE} strokeWidth={1} width="106" x="62" y="48" />
+            <text
+              fill={STROKE}
+              fontFamily={MONO}
+              fontSize={14}
+              letterSpacing="0.1em"
+              textAnchor="middle"
+              x="115"
+              y="80"
+            >
+              ~1.2K
+            </text>
+            <Label dim x={115} y={94}>EST. TOKENS</Label>
+            <rect fill={ACCENT} height="10" width="66" x="82" y="104" />
+          </g>
+          <Label x={115} y={172}>PRE-GENERATION ESTIMATE</Label>
+          <Label dim x={115} y={186}>PROMISE BEFORE ACTION</Label>
+          <text
+            {...labelProps}
+            fill={ACCENT}
+            textAnchor="middle"
+            x="115"
+            y="208"
+          >
+            PROMISE: HIGH
+          </text>
+          <rect className="trip-strike" fill={ACCENT} height="2" width="170" x="30" y="84" />
+        </g>
+        <g
+          className="trip-card"
+          data-i={1}
+          data-on={active === 1 ? "" : undefined}
+          role="button"
+          tabIndex={0}
+          aria-label="Persistent top bar direction"
+          {...bind(1)}
+        >
+          <rect fill="transparent" height="200" width="176" x="232" y="14" />
+          <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="235" y="20" />
+          <line stroke={HAIRLINE} strokeWidth={1} x1="235" x2="405" y1="38" y2="38" />
+          <rect fill={GREEN} height="5" width="44" x="243" y="27" />
+          <g stroke={HAIRLINE_FAINT} strokeWidth={1}>
+            <line x1="251" x2="389" y1="62" y2="62" />
+            <line x1="251" x2="389" y1="82" y2="82" />
+            <line x1="251" x2="365" y1="102" y2="102" />
+          </g>
+          <Label x={320} y={172}>PERSISTENT TOP BAR</Label>
+          <Label dim x={320} y={186}>AMBIENT COST</Label>
+          <Label x={320} y={208}>PROMISE: MEDIUM</Label>
+        </g>
+        <g
+          className="trip-card"
+          data-i={2}
+          data-on={active === 2 ? "" : undefined}
+          role="button"
+          tabIndex={0}
+          aria-label="Usage in settings direction"
+          {...bind(2)}
+        >
+          <rect fill="transparent" height="200" width="176" x="437" y="14" />
+          <rect height="130" stroke={STROKE} strokeWidth={1.5} width="170" x="440" y="20" />
+          <g stroke={HAIRLINE_FAINT} strokeWidth={1}>
+            <line x1="456" x2="594" y1="50" y2="50" />
+            <line x1="456" x2="594" y1="76" y2="76" />
+            <line x1="456" x2="594" y1="102" y2="102" />
+          </g>
+          <rect fill={GREEN} height="7" width="30" x="456" y="112" />
+          <Label anchor="start" dim x={494} y={119}>USAGE</Label>
+          <Label x={525} y={172}>USAGE IN SETTINGS</Label>
+          <Label dim x={525} y={186}>COST ON DEMAND</Label>
+          <Label x={525} y={208}>PROMISE: LOW</Label>
+        </g>
+      </svg>
+    </div>
   );
 }

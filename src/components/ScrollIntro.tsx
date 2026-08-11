@@ -63,13 +63,13 @@ export const DEFAULT_INTRO_DIALS: IntroDials = {
 };
 
 export const INTRO_FINAL_SENTENCE =
-  "I design AI and search products for complex B2B work, down to what the model says.";
+  "I design AI and agents for complex B2B work, down to what the model says.";
 
 const INTRO_SENTENCE: IntroSentenceModel = {
   final: INTRO_FINAL_SENTENCE,
   lead: "I design ",
   groups: [
-    { text: "AI and search products" },
+    { text: "AI and agents" },
     { text: "complex B2B work" },
     { text: "what the model says" },
   ],

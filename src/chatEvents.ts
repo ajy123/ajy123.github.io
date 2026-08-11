@@ -62,7 +62,7 @@ export function isCoarsePointer(): boolean {
 // How much page text an ask surface may send as its grounding, split by where
 // the text came from. The walked bound exists to stop an unbounded DOM walk over
 // a region nobody authored; a curated data-ask-context is a known quantity, and
-// the two live essays measure 2699 and 3703, so one flat bound at 2200 cut both
+// the two live essays measure 2716 and 3793, so one flat bound at 2200 cut both
 // mid-section and a chip naming a fact only the tail states answered "I don't
 // know". Raise the curated bound only against a measured length: it is what
 // keeps the assembled request under the worker's MAX_TOTAL_CHARS.

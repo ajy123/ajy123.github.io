@@ -78,12 +78,12 @@ export const aiPracticeItems: EssayItem[] = [
     title: "Product discovery on a weekly clock",
     role: "AI workflow",
     year: "2026",
-    askHint: "Why run this as an experiment?",
+    askHint: "What was the experiment testing?",
     askKind: "essay",
     askAnchorPreference: "cursor",
     // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
     // data-ask-context: every surface that reads it bounds there, see
-    // boundAskContext in chatEvents. This essay's context measures 3703, so the
+    // boundAskContext in chatEvents. This essay's context measures 3793, so the
     // whole essay is reachable and a chip may draw on any section, "The kill
     // happened before the PRD" and "What changed is the order" included.
     // A chip also has to be unanswerable from the card face (title, role, year,
@@ -123,14 +123,14 @@ export const aiPracticeItems: EssayItem[] = [
         ],
       },
       {
-        heading: "Tickets in, ranked features out",
+        heading: "Feedback in, ranked features out",
         body: [
-          "Tickets, PRDs, and transcripts go in. Agents cluster them into feature themes, score the themes with RICE, and pass the top ones to a second set that drafts directions and scopes what building them would take. I set the fan-out at three variations per feature, so a top feature arrives as a comparison rather than a proposal.",
+          "Interviews, support tickets, product usage, and past queries go in, along with the PRDs and sales-call transcripts around them. Agents cluster them into feature themes, score the themes with RICE, and pass the top ones to a second set that drafts directions and scopes what building them would take. I set the fan-out at three variations per feature, so a top feature arrives as a comparison rather than a proposal.",
           "The first run produced fourteen features, enough to sketch what the product could become. It has run weekly since: three to five new features, plus a re-ranking of everything already in the list as new feedback lands.",
         ],
         visual: <AgentsWorkflowVisual />,
         visualCaption:
-          "Tickets, PRDs, and transcripts go in; the first run came back with fourteen features; the team reviews and picks a direction.",
+          "Interviews, tickets, usage, and past queries go in; the first run came back with fourteen features; the team reviews and picks a direction.",
       },
       {
         heading: "One example, read twice",
@@ -168,7 +168,7 @@ export const aiPracticeItems: EssayItem[] = [
     askAnchorPreference: "cursor",
     // Chip facts must sit inside CURATED_CONTEXT_MAX (4000) chars of
     // data-ask-context — every surface that reads it bounds there, see
-    // boundAskContext in chatEvents. This essay's context is 2699, so all of it
+    // boundAskContext in chatEvents. This essay's context is 2716, so all of it
     // is reachable, "What it caught" and "Judgment doesn't automate" included.
     // A chip must also be unanswerable from the card face (title, role, year,
     // summary, thumbnail). The summary now states the premise, the test, and the
@@ -216,7 +216,7 @@ export const aiPracticeItems: EssayItem[] = [
       {
         heading: "What the golden dataset is made of",
         body: [
-          "Looking into our data, agents draft personas each week from our interviews, product usage, and past queries, along with the situations each persona would put the product in: the queries that user would type, and what a good answer looks like. From that base the model scales what we already have into as many scenarios as it can generate, and I review what comes back. That reviewed set is our golden dataset, the one our model evaluations run against, and it costs about an hour a week against the six it took by hand.",
+          "Looking into our data, agents draft personas each week from our interviews, support tickets, product usage, and past queries, along with the situations each persona would put the product in: the queries that user would type, and what a good answer looks like. From that base the model scales what we already have into as many scenarios as it can generate, and I review what comes back. That reviewed set is our golden dataset, the one our model evaluations run against, and it costs about an hour a week against the six it took by hand.",
         ],
         visual: <PersonaScenarioCards />,
         visualCaption: "Personas became situations the product had to survive.",

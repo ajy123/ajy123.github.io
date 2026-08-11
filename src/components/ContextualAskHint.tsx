@@ -190,7 +190,7 @@ function readActiveHint(element: HTMLElement): ActiveHint {
     // reaches the model as the string "undefined".
     caseKey: toCaseContextKey(element.dataset.askCase),
     // Same bounds getBoundedText applies, from the same place: without the
-    // curated/walked split a pin ask on the essay card cut the 2699-char persona
+    // curated/walked split a pin ask on the essay card cut the 2716-char persona
     // essay at 2200 and lost the tail, while the identical chip inside the open
     // dialog got all of it.
     contextText: boundAskContext(

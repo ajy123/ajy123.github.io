@@ -70,7 +70,7 @@ export const DEELI_CASE_CONTEXT: string = [
   `- #ns-method "The story above ran on a working method." Published: persona.md is built from interviews, tickets, usage and queries, the same weekly pipeline ranks them into features, and upkeep that took "6+ hours a week now takes about one"; an AI judge grades every answer against the persona questions, so review asks which check failed instead of arguing taste; the interface is written as a few design primitives in design.md, and the doc is the handoff, engineers read it instead of meeting. UNPUBLISHED, do not state to visitors: those primitives are content not chrome, encode by exception, hierarchy via weight and space not color.`,
   `- #ns-postlaunch "28% of queries were re-asks. We're finding out why." Page copy: "Each re-ask raises one question: did the answer miss, or did the topic have a second angle? The two need opposite fixes, so the next move is research, not a feature." That answers any what-is-next question. No feature is committed or planned; never tell a visitor one is.`,
   `- UNPUBLISHED, internal only, do not state to visitors: one candidate direction was discussed and explicitly NOT committed to, surfacing the system's interpretation before generating so users can steer it and same-intent queries return one consistent report; candidate only, never describe it as planned. Also unpublished: near-identical queries sometimes produced different report titles, e.g. one MRAM-aerospace question asked 5x produced 2 different titles.`,
-  `- Never cite $300K ARR or 82% booked revenue: unverified old-resume figures.`,
+  `- Never cite $300K ARR or 82% booked revenue: unverified legacy figures.`,
 ].join("\n");
 
 if (import.meta.env.DEV && DEELI_CASE_CONTEXT.length > 5100) {

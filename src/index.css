@@ -1,62 +1,20 @@
-@import "./tokens.css";
-@import "./chat-ui.css";
-@import "./essay-dialog.css";
-
-
 :root {
+  --canvas: #fcfcfb;
+  --ink: #191918;
+  --muted: #70706b;
+  --rule: #e5e5e1;
+  --focus: #292927;
   --font-body: Figtree, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* Masthead name face — a modern grotesque with character; holds from the
-     32px desktop rail up to the 60px stacked masthead. */
-  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
-
-  /* Palette from design.md — ink / grey / white, no brand accent. */
-  --canvas: #ffffff; /* default page floor */
-  --surface-elevated: #ffffff; /* elevated surface background */
-  --surface-subtle: #f7f7f7; /* faint card / divider fill */
-  --surface-warm: #faf9f5; /* warm off-white control surface */
-  --surface-card: #f5f4f1; /* warm gray object card (rail ask box) */
-  --surface-card-hover: #efede9;
-  --ghost: #e0e0e0; /* oversized decorative section titles */
-  --muted: #757169; /* secondary text, captions, eyebrows — AA on all surfaces */
-  --muted-strong: #57534b; /* muted ink at small sizes — 7.1:1 on warm surfaces */
-  --body: #141413; /* control/label text on warm surface */
-  --ink: #111111; /* primary text, headings */
-  --ink-strong: #000000; /* max-contrast text, links */
-  --hairline: rgba(31, 30, 29, 0.4); /* 1px control borders */
-  --hairline-faint: rgba(31, 30, 29, 0.12);
-  --accent: #f44800;
-  /* Orange tint: orange ink over a restrained orange wash.
-   * Light ink deepened to #bd4319 to retain AA. */
-  --selection-bg: rgba(230, 95, 46, 0.1);
-  --selection-ink: #bd4319;
-  --overlay: rgba(255, 255, 255, 0.85);
-  --shadow-soft: rgba(22, 21, 19, 0.12);
-  /* Paper-plate material — a typewriter keycap over the intro's halftone
-   * field. Shared by .intro-key--paper and the coarse CTA so the look stays
-   * in one place. */
-  --plate-fill: rgba(250, 249, 245, 0.92);
-  --plate-border: rgba(31, 30, 29, 0.18);
-  --plate-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 1px 0 rgba(31, 30, 29, 0.12);
-  /* --white, --control-dark and --control-dark-hover now live in tokens.css,
-     which this file imports: the case-study figure videos use the same media
-     control and do not load this stylesheet. */
-
-  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
-  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-family: var(--font-body);
   color: var(--ink);
   background: var(--canvas);
-  color-scheme: light;
+  font-family: var(--font-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 }
 
 *,
@@ -66,1635 +24,282 @@
 }
 
 html {
+  min-width: 0;
   min-height: 100%;
-  overflow-y: scroll;
   scroll-behavior: smooth;
 }
 
-body,
-#root {
+body {
+  min-width: 0;
   min-height: 100%;
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
 }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  font-family: var(--font-body);
-  background: var(--canvas);
+button,
+a {
+  font: inherit;
 }
 
 a {
   color: inherit;
-  text-decoration: none;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
 }
 
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--ink);
+a:hover {
+  color: var(--muted);
+  text-decoration-color: currentColor;
+}
+
+a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--focus);
   outline-offset: 4px;
 }
 
-button {
-  padding: 0;
-  font: inherit;
-}
-
-svg {
-  display: block;
-}
-
 ::selection {
-  color: var(--selection-ink);
-  background: var(--selection-bg);
+  background: #e7e7e2;
+  color: var(--ink);
 }
 
-.portfolio-shell {
-  display: flex;
-  min-height: 100vh;
-  min-height: 100dvh;
-  gap: var(--space-major);
-  padding: 0 var(--gutter);
-  /* The cap is what holds the rail-to-content gap at the declared 64px:
-     uncapped, .work-canvas's auto margins centre it in the whole flex
-     remainder, so the gap grew as 64 + (viewport - 1200)/2 and reached
-     ~390px on a wide display. 1200 = 40 gutter + rail + 64 gap + measure
-     + 40 gutter, where the rail is clamp(264–300px) (280px baseline) and
-     the measure takes the remainder (~776px at the 280px baseline). */
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.profile-rail {
-  position: relative;
-  /* Fluid rail: the bio measure and dot leaders scale with the window instead
-     of locking at a fixed 280px. Tight bounds keep the bio close to its tuned
-     ~40-char measure (264–300px). Must match .profile-sticky below, which is
-     position:fixed and carries the actual visual width. The ≤1100px step still
-     overrides this to 240px for the two-column work grid. */
-  width: clamp(264px, 20vw, 300px);
-  flex-shrink: 0;
-}
-
-.profile-sticky {
+.skip-link {
   position: fixed;
-  top: 0;
-  display: flex;
-  /* Keep in lockstep with .profile-rail's fluid width above. */
-  width: clamp(264px, 20vw, 300px);
-  height: 100vh;
-  height: 100dvh;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 72px 48px 72px 0;
-  background: var(--canvas);
-  /* No divider: the 64px gap does the separating. A full-height hairline
-     needs a page edge to belong to, and the shell is centred, so the line
-     would float with white on both sides. */
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  padding: 0.65rem 0.8rem;
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 1rem));
 }
 
-.profile-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* Nudge identity heading cap-top to align with the 64px "Work" ghost cap. */
-  padding-top: 14px;
+.skip-link:focus {
+  color: var(--canvas);
+  transform: translateY(0);
 }
 
-/* With the ask card + experience ledger the rail runs ~790px tall; on
-   short viewports let the fixed column scroll instead of clipping the
-   contact block off the bottom. */
-@media (max-height: 820px) {
-  .profile-sticky {
-    overflow-y: auto;
-  }
+.site-shell {
+  width: 100%;
+  max-width: 45rem;
+  margin: 0 auto;
+  padding:
+    clamp(2rem, 8vw, 5.5rem)
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
+    max(clamp(3rem, 8vw, 5.75rem), env(safe-area-inset-bottom))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
 }
 
-.profile-identity {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  margin: 0 0 var(--space-figure);
+.profile-header {
+  display: grid;
+  gap: clamp(1.75rem, 5vw, 3rem);
 }
 
-/* Rail rhythm, Caleb-style: hierarchy from ink-vs-muted pairs and
-   whitespace alone — no rules, no caps. The flex gap (4px chrome)
-   contributes to every seam, so margins carry the remainder: zone seams
-   (role line -> prose, prose -> ask card, card -> ledger) land on
-   --space-figure; paragraph rhythm lands on --space-copy. */
-.profile-identity .sidebar-bio {
-  margin: calc(var(--space-copy) - 4px) 0 0;
-}
-
-/* 12px + the 4px flex gap renders as a 24.0px optical seam, which is
-   --space-figure as seen rather than as declared. The old
-   calc(--space-figure - 4px) measured 31.8. See .profile-role-line.
-   Integer on purpose: a fractional margin rounds unpredictably at non-integer
-   devicePixelRatio, and here the whole numbers land nearer the targets anyway
-   (16.2 and 24.0, against 15.7 and 23.5 for the halves). */
-.profile-identity .sidebar-story {
-  margin-top: 12px;
+.identity {
+  display: grid;
+  gap: 0.3rem;
 }
 
 h1,
 h2,
+h3,
+h4,
 p {
-  margin-top: 0;
-}
-
-/* Identity heading — full ink, no chip. */
-h1 {
-  margin: 0 0 18px;
-  color: var(--ink);
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-}
-
-/* Name in the base h1 masthead voice (30/700/1.05) — deliberately NOT
-   the 20px card-title step: at card size the identity pair read as one
-   more work-card header. The rail is the landing's only identity
-   surface, so the name owns the page's top rank. */
-.profile-identity h1 {
   margin: 0;
-  font-family: var(--font-display);
-  font-optical-sizing: auto;
-  font-size: 32px;
+}
+
+h1 {
+  max-width: 14ch;
+  font-size: clamp(1.88rem, 8vw, 3.2rem);
   font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-/* Inline emphasis in the muted bio — the Caleb move: the phrase the skim
-   should catch, ranked by color and weight, not size.
-   One step down from --ink, because at full ink this was the heaviest mark in
-   the rail after the name itself. The eye landed on a project name inside a
-   paragraph before it reached the positioning line above, which put the role
-   line fourth in a five-block rail. Still the skim target, no longer the
-   thing that outranks the identity. */
-.sidebar-bio .bio-hl {
-  color: var(--muted-strong);
-  font-weight: 500;
-}
-
-/* Role line bound to the masthead as a 13px label: muted-strong keeps it one
-   lockup with the name rather than a stray body line.
- *
- * Spacing here is stated as the OPTICAL gap, ink to ink, because the margin
- * and the gap you see are not the same number. A 32px Bricolage line box
- * reserves ~11.7px of ascent slack above its caps for accents it never uses,
- * and a 13px Figtree line leaves ~2.8px of descender slack below its
- * baseline. Stack those and the old `margin: 4px` + 4px flex gap rendered as
- * a 14.7px gap under the name, while `--space-figure` before the bio rendered
- * as 31.8px. Neither was a token and no two seams held a ratio.
- *
- * Solved backwards instead: pick the optical gap, derive the margin. The
- * three seams now measure 16.1 / 7.9 / 24.2, stepping 1 : 2 : 3 on
- * --space-copy and --space-figure. Measured in a browser, not computed from
- * the stylesheet.
- *
- * 20px leading is --space-copy plus one 4px unit, and it is what puts the
- * seam between the two lines at 7.9. The old 1.4 gives 6.1 and breaks the
- * step. */
-.profile-role-line {
-  margin: 5px 0 0; /* + 4px flex gap; optical 16.2 under the name */
-  color: var(--muted-strong);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-/* Title on line one, focus on line two: a deliberate break rather than
-   whatever the rail width happens to wrap. Still one <p>, so the text the
-   ask-zone reader pulls off the rail is unchanged (the JSX keeps the space
-   between the two spans).
-   The -5px pull cancels the mark's horizontal padding so the glyph edge sits
-   on the rail's left margin, not the wash's box edge. */
-.profile-role-focus {
-  display: block;
-  margin-left: -5px;
-  /* Between 861 and 1100px the rail is overridden to 240px, so the measure is
-     192px and this phrase does wrap. Left to the browser it broke as
-     "AI and agents in complex" / "B2B.", orphaning a four-character washed chip
-     on its own line. Balanced it splits "AI and agents in" / "complex B2B.".
-     Where balance is unsupported the ragged break returns, which is the old
-     behaviour rather than a broken one. */
+  line-height: 0.98;
+  letter-spacing: -0.045em;
   text-wrap: balance;
 }
 
-/* The domain claim carries the wash the chat already puts on a clarified
-   term, so the mark means the same thing here as it does there: these are
-   the terms the assistant behind the "/" key is briefed on. It ranks without
-   growing, by being the only object in the identity block with a surface.
-   Inline, not inline-block, so box-decoration-break can carry the wash across
-   the wrap the 216px rail forces below a 1320px window. */
-.profile-role-mark {
-  display: inline;
-  padding: 2px 5px;
-  border-radius: 3px;
-  color: var(--selection-ink);
-  background: var(--selection-bg);
+.profile-title {
+  margin-top: 0.55rem;
+  font-size: clamp(1rem, 3vw, 1.125rem);
   font-weight: 500;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-
-/* ::selection near the top of this file paints --selection-ink on
-   --selection-bg, which is exactly what the mark already is. Dragging a cursor
-   over the phrase therefore painted the same wash onto the same wash and the
-   selection was invisible: the one place on the page where selecting text
-   reported nothing. Deepened here so the phrase still answers the drag. */
-.profile-role-mark::selection {
-  background: rgba(230, 95, 46, 0.26);
-}
-
-.profile-role-mark::-moz-selection {
-  background: rgba(230, 95, 46, 0.26);
-}
-
-h1 span {
-  display: block;
-}
-
-/* Body narrative — the work cards' summary voice (14/1.55, muted). */
-.sidebar-bio {
-  width: 100%;
-  margin: 0 0 var(--space-copy);
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.55;
-}
-
-/* The rail's one material object: chat entry as a warm-gray card
-   (accent keycap + ink label + muted subline). Being the only filled
-   shape in the rail is what ranks it — no border, no shadow. */
-.rail-askbox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  margin: calc(var(--space-figure) - 4px) 0 0;
-  padding: 13px 14px;
-  text-align: left;
-  color: inherit;
-  background: var(--surface-card);
-  border: 0;
-  border-radius: 10px;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  font: inherit;
-  transition: background 160ms var(--ease-out-strong);
-}
-
-.rail-askbox:hover {
-  background: var(--surface-card-hover);
-}
-
-.rail-askbox:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Mobile/touch: the floating "/" FAB (chat-ui.css, identical gate) is the
-   persistent chat entry there, so the rail card would be a duplicate
-   affordance — same call as the old rail chip. */
-@media (pointer: coarse), (max-width: 860px) {
-  .rail-askbox {
-    display: none;
-  }
-}
-
-/* Keycap glyph — shared visual language with the contextual hint,
-   selection pill, and touch FAB. Ink on accent: 5.19:1 from the :root
-   hexes (#111111 on #f44800), clears the 4.5:1 text bar despite being
-   aria-hidden. ~1:4.5 radius-to-size ratio, matching the family. */
-.rail-askbox-key {
-  display: inline-flex;
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  background: var(--accent);
-  /* Transparent at rest so the hover border does not resize the key. The
-     universal border-box reset means it costs no width either way. */
-  border: 1px solid transparent;
-  border-radius: 5px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  transition:
-    background-color 140ms var(--ease-out-strong),
-    color 140ms var(--ease-out-strong),
-    border-color 140ms var(--ease-out-strong),
-    box-shadow 140ms var(--ease-out-strong),
-    transform 90ms var(--ease);
-}
-
-/* Hover/focus turns the glyph into a key you could press, which is what
-   teaches the "/" shortcut the tile alone never did.
- *
- * Only on hover, and only here. The accent tile is one of five surfaces
- * sharing this mark (.contextual-ask-key, .selection-ask-pill,
- * .cursor-chat-fab-key, .cursor-chat-send), so restyling the rest state would
- * fork a documented family - and it could not be reconciled anyway, because
- * the hint's key is border-radius: 4px 0 0 4px, squared off to butt flush
- * against its copy inside one shared surface. A keycap needs four corners and
- * separation from the label. Leaving rest alone keeps every surface identical
- * where they are actually compared, and this rail is data-ask-zone="none", so
- * hovering it never spawns a contextual hint: the keycap and the hint's flush
- * tab can never be on screen at the same time.
- *
- * Hover swaps accent for warm rather than keeping the fill and adding depth
- * alone. That lowers salience at the moment the reader signals interest, which
- * is backwards, but at 22px a 3px darkened edge on an orange tile does not
- * read as a key at all - the border and the surface change are what carry it.
- * Both were built and compared in the browser before this call. */
-.rail-askbox:hover .rail-askbox-key,
-.rail-askbox:focus-visible .rail-askbox-key {
-  color: var(--ink);
-  background: var(--surface-warm);
-  border-color: var(--hairline);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 3px 0 rgba(31, 30, 29, 0.18),
-    0 4px 3px rgba(31, 30, 29, 0.14);
-  transform: translateY(-1.5px);
-}
-
-.rail-askbox:active .rail-askbox-key {
-  transform: translateY(1.5px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); /* pressed flat */
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rail-askbox-key {
-    transition: none;
-  }
-}
-
-/* One child now that the suggested-question line is gone, but the column stays:
-   it is what keeps the label optically centred against the 22px key. */
-.rail-askbox-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.rail-askbox-copy b {
-  color: var(--ink);
-  font-size: 13.5px;
-  font-weight: 600;
-}
-
-/* Experience ledger — Caleb's two-tone row grammar: company ink,
-   role muted, year right-aligned. Data the recruiter scans for,
-   living in the rail itself. No section label: the row shape is
-   self-describing, so it sits one zone seam under the ask card. */
-/* The list owns the columns, not the row: company | domain | year. Every domain
-   has to start on one vertical, and only a track shared by all four rows can do
-   that — a per-row grid would size its company column to its own company and
-   land the domain somewhere different in each row. The rows opt into the shared
-   tracks with `grid-template-columns: subgrid`.
-   Without subgrid support the row falls back to a one-column grid and the three
-   spans stack, which stays readable. */
-.rail-ledger {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  width: 100%;
-  margin: calc(var(--space-figure) - 4px) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.rail-ledger li {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  align-items: baseline;
-  column-gap: 10px;
-  padding: 6px 0;
-  font-size: 13px;
   line-height: 1.4;
 }
 
-.rail-ledger-co {
-  grid-column: 1;
-  grid-row: 1;
-  color: var(--ink);
+.profile-location,
+.entry-meta,
+.entry-role,
+.site-footer {
+  color: var(--muted);
+}
+
+.profile-location {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.introduction {
+  max-width: 61ch;
+  font-size: clamp(1.0625rem, 2.5vw, 1.1875rem);
+  line-height: 1.62;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.contact-links a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
   font-weight: 500;
 }
 
-/* The label used to read "Product design, news analytics" on every row. The
-   discipline was identical in all four, so it discriminated nothing while
-   taking ~86px of a rail that is only 192px between 861px and 1100px — and the
-   name lockup states it one line up. Only the domain survives, which is the
-   part that actually differs, and the row fits one line again.
-   `overflow-wrap` stays for the case where a single token outruns the column. */
-.rail-ledger-dom {
-  grid-column: 2;
-  grid-row: 1;
+.profile-section {
+  margin-top: clamp(4.5rem, 12vw, 7.5rem);
+}
+
+.section-heading {
+  padding-bottom: 0.8rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+.entry-list {
+  border-bottom: 1px solid var(--rule);
+}
+
+.entry {
+  display: grid;
+  min-width: 0;
+  gap: 0.75rem;
+  padding: 1.5rem 0 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.entry-meta,
+.entry-body {
+  min-width: 0;
+}
+
+.entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+}
+
+.entry-meta p + p::before {
+  content: "·";
+  margin-right: 0.75rem;
+}
+
+.entry-body {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.entry-body h3 {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.0625rem, 3vw, 1.1875rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.entry-role {
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.entry-summary {
+  max-width: 61ch;
+  margin-top: 0.35rem;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+  line-height: 1.62;
+  text-wrap: pretty;
+}
+
+.related-work {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.related-work-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.related-work-item {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.related-work-item h4 {
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.related-work-item p {
+  max-width: 61ch;
   overflow-wrap: anywhere;
   color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.58;
+  text-wrap: pretty;
 }
 
-/* Year and label carry the same muted tone: one step down from the company,
-   not two. The distinction between them is positional and numeric, so a third
-   grey would only muddy which of the two is the row's subject. */
-.rail-ledger-yr {
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: end;
-  color: var(--muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+.site-footer {
+  margin-top: clamp(4.5rem, 12vw, 7.5rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
-/* Contact block anchored at the bottom of the rail, above the copyright.
-   Resume / LinkedIn / Email all follow the GitHub block's design: bold ink
-   label, optional muted secondary, icon pushed right, hover → ink. */
-.rail-contact {
-  display: flex;
-  flex-direction: column;
-  gap: var(--rl-gap, 12px);
-  /* Larger than the in-group 12px so the © credit reads as its own section. */
-  margin-bottom: 40px;
-}
-
-.rail-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 0;
-  font: inherit;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--muted);
-  text-align: left;
-  text-decoration: none;
-  background: none;
-  border: 0;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-
-.rail-link-label {
-  color: var(--ink);
-  font-weight: 600;
-  font-size: var(--rl-label-size, 12px);
-}
-
-.rail-link svg {
-  width: var(--rl-icon-size, 12px);
-  height: var(--rl-icon-size, 12px);
-  flex-shrink: 0;
-  color: var(--muted);
-  transition: color 0.35s var(--spring);
-}
-
-.rail-link svg rect,
-.rail-link svg path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.rail-link:hover .rail-link-label,
-.rail-link:hover svg {
-  color: var(--ink);
-}
-
-.rail-footer p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 12.6px; /* 10% smaller than the 14px credit */
-  line-height: 1;
-}
-
-/* ===========================================================================
-   Rail-footer design variants. The footer body carries data-variant + the
-   DialKit-tuned CSS vars (set inline; the var() fallbacks below = baked
-   defaults so the production build, where DialKit is absent, still renders).
-   `current` is the baseline above; these blocks restyle the whole footer.
-   =========================================================================== */
-.rail-footer-body {
-  display: contents; /* layout stays owned by .profile-sticky / .rail-footer */
-}
-
-/* --- divided: ruled rows, icons aligned to the right edge ---------------- */
-.rail-footer-body[data-variant="divided"] .rail-contact {
-  gap: 0;
-}
-.rail-footer-body[data-variant="divided"] .rail-link {
-  padding: var(--rl-rowpad, 10px) 0;
-  border-top: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
-}
-.rail-footer-body[data-variant="divided"] .rail-link svg {
-  margin-left: auto;
-}
-.rail-footer-body[data-variant="divided"] > p {
-  margin-top: var(--rl-rowpad, 10px);
-  padding-top: var(--rl-rowpad, 10px);
-  border-top: 1px solid rgba(31, 30, 29, var(--rl-divider-opacity, 0.12));
-}
-
-/* --- mono: monospace, lowercase, optional [brackets], no icons ----------- */
-.rail-footer-body[data-variant="mono"] {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: var(--rl-mono-tracking, 0px);
-}
-.rail-footer-body[data-variant="mono"] .rail-link {
-  font-size: var(--rl-mono-size, 12px);
-}
-.rail-footer-body[data-variant="mono"] .rail-link-label {
-  text-transform: lowercase;
-}
-.rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::before {
-  content: "[";
-}
-.rail-footer-body[data-variant="mono"][data-brackets="true"] .rail-link-label::after {
-  content: "]";
-}
-.rail-footer-body[data-variant="mono"] .rail-link svg {
-  display: none;
-}
-
-/* --- dotleader: table-of-contents dotted leaders, label ···· icon -------- */
-.rail-link-leader {
-  display: none; /* inert in every variant except dotleader */
-}
-.rail-footer-body[data-variant="dotleader"] .rail-link-leader {
-  display: block;
-  flex: 1;
-  align-self: end;
-  height: 3px;
-  margin: 0 8px 5px;
-  background-image: radial-gradient(circle, var(--muted) 1.1px, transparent 1.7px);
-  background-size: var(--rl-leader-gap, 6px) 3px;
-  background-position: 0 center;
-  background-repeat: repeat-x;
-}
-.rail-footer-body[data-variant="dotleader"] .rail-link svg {
-  margin-left: 0;
-}
-
-/* --- keycap: links as tactile keyboard keys ----------------------------- */
-.rail-footer-body[data-variant="keycap"] .rail-contact {
-  flex-flow: row wrap;
-  gap: var(--rl-gap, 12px);
-}
-.rail-footer-body[data-variant="keycap"] .rail-link {
-  width: auto;
-  align-self: flex-start;
-  padding: 8px 12px 10px;
-  background: var(--surface-warm);
-  border: 1px solid var(--hairline);
-  border-radius: var(--rl-key-radius, 8px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 var(--rl-key-depth, 3px) 0 rgba(31, 30, 29, 0.18),
-    0 calc(var(--rl-key-depth, 3px) + 1px) 3px rgba(31, 30, 29, 0.14);
-  transition:
-    transform 0.08s var(--ease),
-    box-shadow 0.08s var(--ease);
-}
-.rail-footer-body[data-variant="keycap"] .rail-link:active {
-  transform: translateY(var(--rl-key-depth, 3px));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); /* pressed flat */
-}
-.work-canvas {
-  flex: 1;
-  min-width: 0;
-  /* Caps the measure and lets flexbox's auto-margin free-space distribution
-     center the column in whatever room is left of the rail — never under it,
-     since the rail is a fixed-width sibling flex item, not an overlay. Below
-     the max-width the free space is 0, so the column just sits flush next
-     to the rail (the "clamps" behavior called for in the design). */
-  max-width: 776px;
-  margin: 0 auto;
-  padding: 72px 0 64px;
-}
-
-.work-heading {
-  position: relative;
-  margin-bottom: 28px;
-}
-
-/* Second+ section ghost heading gets generous separation from prior grid. */
-.work-grid + .work-heading {
-  margin-top: 96px;
-}
-
-/* Signature ghost section title — quiet label behind the content. */
-.section-heading {
-  display: block;
-  color: var(--ghost);
-  font-size: 64px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.work-heading p {
-  display: block;
-  width: fit-content;
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.work-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--space-copy);
-  row-gap: var(--space-major);
-}
-
-/* Designing with AI reuses .work-grid, so essays align to the same two-column grid
-   (and single-column mobile collapse) as the case-study work cards above. */
-
-/* case-card: transparent, no border/shadow, eyebrow → title → meta → image. */
-.work-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-eyebrow {
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.card-title {
-  margin: 0 0 6px;
-  color: var(--ink);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.card-role {
-  margin: 0 0 4px;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.card-summary {
-  margin: 14px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.55;
-}
-
-/* Work-card role row: role copy left, a quiet uppercase status flag or the
- * live-site link right-aligned on the same line. */
-.card-role-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0 0 16px;
-}
-
-.card-role-row .card-role {
-  margin: 0;
-}
-
-.card-eyebrow-flag {
-  flex-shrink: 0;
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-a.card-eyebrow-flag {
-  color: var(--muted);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 3px;
-  transition:
-    color 180ms var(--ease),
-    text-decoration-color 180ms var(--ease);
-}
-
-a.card-eyebrow-flag:hover,
-a.card-eyebrow-flag:focus-visible {
-  color: var(--ink-strong);
-  text-decoration-color: currentColor;
-}
-
-/* Desktop scans the noun ("Case study"); touch gets the verb below. */
-a.card-eyebrow-flag .flag-verb {
-  display: none;
-}
-
-/* The essay card's flag skips the noun/verb split: its noun is already spent
- * in the eyebrow ("2026 · Essay"), so repeating it desktop-side would be dead
- * copy. Arrow is "→" not "↗" — the essay opens in place, it doesn't leave.
- * Everything else matches a.card-eyebrow-flag, underline included: the rule
- * reads "this is the way in", and the flag is the only one touch users get. */
-.essay-flag {
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 3px;
-  transition:
-    color 180ms var(--ease),
-    text-decoration-color 180ms var(--ease);
-}
-
-/* The card is the button, so the card's own hover/focus drives the flag. */
-.essay-dialog-trigger:hover .essay-flag,
-.essay-dialog-trigger:focus-visible .essay-flag {
-  color: var(--ink-strong);
-  text-decoration-color: currentColor;
-}
-
-/* Wherever the cursor pill can't render (touch, or hover windows ≤ 860px —
- * see canShowHoverHints in ContextualAskHint.tsx) the flag is the card's only
- * visible way into the live site / case study — promote it, speak in the verb
- * register, and give it a ~44px target. */
-@media (hover: none), (max-width: 860px) {
-  a.card-eyebrow-flag {
-    color: var(--ink-strong);
-    font-size: 13px;
-    padding: 14px;
-    margin: -14px;
+@media (min-width: 40rem) {
+  .entry {
+    grid-template-columns: minmax(7.5rem, 0.8fr) minmax(0, 2.7fr);
+    gap: clamp(1.5rem, 5vw, 3rem);
+    padding-block: 1.75rem 2rem;
   }
 
-  a.card-eyebrow-flag .flag-noun {
-    display: none;
+  .entry-meta {
+    display: block;
   }
 
-  a.card-eyebrow-flag .flag-verb {
-    display: inline;
+  .entry-meta p + p {
+    margin-top: 0.3rem;
   }
 
-  /* Same promotion for the essay flag — contrast and size only. No padded
-   * target here: the whole card already is one, and inflating a span inside
-   * it would just overlap the card's own hit area. */
-  .essay-flag {
-    color: var(--ink-strong);
-    font-size: 13px;
-  }
-}
-
-/* Live-project media: the link is an invisible overlay above the video and
- * below the play/pause control, so the control never nests inside the anchor. */
-.work-media-frame {
-  position: relative;
-}
-
-.work-media-link {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-.work-media-frame .work-media-control {
-  z-index: 2;
-}
-
-.work-media-frame:hover .work-media-control,
-.work-media-frame:focus-within .work-media-control {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Full-width media, square corners, flat — depth comes from the image only. */
-.work-media {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: var(--surface-subtle);
-  border-radius: 0;
-  transition: transform 0.35s var(--ease);
-}
-
-.work-media video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.work-media-control {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  color: var(--white);
-  background: var(--control-dark);
-  border: 0;
-  border-radius: 999px;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(4px);
-  transition:
-    opacity 180ms var(--ease),
-    transform 180ms var(--ease),
-    background 180ms var(--ease);
-}
-
-.work-media-control:hover {
-  background: var(--control-dark-hover);
-}
-
-.work-media-control:focus-visible,
-.work-media:hover .work-media-control,
-.work-media:focus-within .work-media-control {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.work-media-control svg {
-  width: 16px;
-  height: 16px;
-}
-
-.work-media-control svg path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.work-media-control svg path[d="M8 5v14l11-7z"] {
-  fill: currentColor;
-  stroke: none;
-}
-
-.work-card-askable,
-.essay-dialog-trigger {
-  display: flex;
-  flex-direction: column;
-}
-
-.essay-dialog-trigger {
-  border-radius: 2px;
-  cursor: pointer;
-  outline: none;
-  touch-action: manipulation;
-}
-
-.essay-dialog-trigger:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 8px;
-}
-
-.essay-dialog-trigger:hover .card-title,
-.essay-dialog-trigger:focus-visible .card-title {
-  color: var(--ink-strong);
-}
-
-.essay-dialog-visual {
-  display: block;
-}
-
-.essay-dialog-visual .work-media {
-  aspect-ratio: 16 / 9;
-}
-
-@media (hover: none) {
-  .work-media-control {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 500ms var(--ease),
-    transform 500ms var(--ease);
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.intro {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  box-sizing: border-box;
-  color: var(--ink);
-  background: var(--surface-warm);
-  overflow-x: hidden;
-  overflow-y: scroll;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-  animation: splashIn 360ms var(--ease) both;
-}
-
-.intro--reduced {
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-/* Masked shader host: the sentence bitmap punches soft letterform pockets
- * out of the halftone field (mask-image set imperatively per layout). The
- * cream .intro floor shows through the holes. */
-.intro-shader-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-}
-
-/* Shader backgrounds paint over the cream fallback and stay click-through. */
-.splash-shader-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.intro.is-leaving {
-  pointer-events: none;
-  animation: splashOut 280ms var(--ease) both;
-}
-
-.intro-track {
-  min-height: var(--intro-track, 350svh);
-}
-
-.intro-stage {
-  position: sticky;
-  top: 0;
-  display: grid;
-  /* svh matches --intro-track so the sticky frame never grows mid-scroll when
-     the mobile URL bar retracts. dvh/vh here re-centered on first scroll. */
-  min-height: 100svh;
-  place-items: center;
-  overflow: hidden;
-  padding: 44px 24px;
-}
-
-.intro-copy {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  width: min(980px, calc(100vw - 48px));
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-  text-align: center;
-}
-
-.intro-sentence {
-  /* Hero-local ink, softened from the global --ink (#111) so the resolved
-     words read charcoal rather than pure black. Scoped here so the site token
-     stays #111 everywhere else. */
-  --intro-ink: #3a3a3a;
-  max-width: 980px;
-  margin: 0;
-  color: var(--ghost);
-  font-size: clamp(40px, 7vw, 72px);
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.05;
-  text-wrap: balance;
-}
-
-.intro-sentence > span {
-  display: inline;
-}
-
-.intro-word {
-  --fill: 0;
-  --fill-color: var(--intro-ink, var(--ink));
-  display: inline;
-  color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    var(--fill-color) calc(var(--fill) * 100%),
-    var(--ghost) calc(var(--fill) * 100%)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-}
-
-.intro-word--scramble {
-  display: inline;
-  color: var(--ghost);
-}
-
-.intro-scramble-token {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-/* Scattered letters travel on transform only, so the sentence's layout box
- * never moves; will-change is justified — chars animate for most of the
- * intro's life. */
-.intro-scramble-char {
-  display: inline-block;
-  color: var(--ghost);
-  will-change: transform;
-}
-
-/* The lead inks itself on load so the first frame is never all-ghost;
- * the rest of the print sentence waits for the scroll. */
-.intro-lead {
-  color: var(--ghost);
-  animation: introLeadInk 700ms var(--ease) 400ms forwards;
-}
-
-@keyframes introLeadInk {
-  to {
-    color: var(--intro-ink, var(--ink));
-  }
-}
-
-.intro-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 34px;
-  color: var(--muted);
-  background: transparent;
-  border: 0;
-  opacity: 0;
-  transform: translateY(8px);
-  /* visibility flips after the fade-out so the hidden CTA is neither
-   * clickable nor in the tab order before its reveal. */
-  visibility: hidden;
-  transition:
-    opacity 220ms var(--ease),
-    transform 220ms var(--ease),
-    visibility 0s linear 220ms;
-  cursor: pointer;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.intro-cta.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
-  transition-delay: 0s, 0s, 0s;
-}
-
-.intro-cta.is-visible:active {
-  transform: translateY(0) scale(0.97);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .intro-cta.is-visible:hover {
-    color: var(--ink);
-  }
-}
-
-.intro-keycap {
-  display: inline-flex;
-  min-width: 58px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  /* Darker step of the brand orange: white 11px label needs 4.5:1 (AA);
-   * #f44800 only reaches 3.64. The hot words stay #f44800 (large-text 3:1). */
-  background: #d63e00;
-  border: 0;
-  border-radius: 0;
-  box-shadow:
-    inset 0 -2px 0 rgba(0, 0, 0, 0.22),
-    0 1px 0 rgba(31, 30, 29, 0.18);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  transition:
-    box-shadow 120ms var(--ease),
-    transform 120ms var(--ease);
-}
-
-.intro-keycap.is-ready {
-  box-shadow:
-    inset 0 1px 0 rgba(0, 0, 0, 0.2),
-    0 0 0 rgba(31, 30, 29, 0);
-  transform: translateY(2px);
-}
-
-/* Print CTA: the sentence's closing line, set in the print world — ink,
- * paper, and a typewriter key. The base .intro-cta transform states are
- * disabled because the inner span carries the spring. */
-.intro-cta--print {
-  flex-direction: column;
-  gap: 8px;
-  transform: none;
-}
-
-.intro-cta--print.is-visible {
-  transform: none;
-}
-
-.intro-cta--print.is-visible:active {
-  transform: scale(0.97);
-}
-
-.intro-cta-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.intro-cta-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
-  /* Inked from the start: the chat needs no local-model warmup anymore, so
-     the CTA no longer has a muted "still loading" state. */
-  color: var(--ink);
-  font-size: clamp(18px, 2.2vw, 24px);
-  font-weight: 600;
-  line-height: 1;
-}
-
-/* "Read on" carries a reading underline: a hairline that draws in under the
-   words on hover (ink), and on press commits to accent + sweeps out to the
-   right — a page-turn register, not a UI-chip wipe. Reduced-motion is handled
-   by the global *,::after animation/transition kill. */
-.intro-cta-word {
-  position: relative;
-}
-
-.intro-cta-word::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -0.12em;
-  height: 2px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition:
-    transform 200ms var(--ease-out-strong),
-    background 160ms var(--ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .intro-cta--print.is-visible:hover .intro-cta-word::after {
-    transform: scaleX(1);
-  }
-
-  .intro-cta--print.is-visible:hover .intro-key--paper {
-    transform: translateY(-1px);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.85),
-      0 3px 6px rgba(31, 30, 29, 0.16);
-  }
-}
-
-/* Added on the CTA in JS at press-start; runs within the 280ms loader exit. */
-.intro-cta--print.is-committing .intro-cta-word::after {
-  animation: introCtaUnderlineCommit 280ms var(--ease-out-strong) forwards;
-}
-
-@keyframes introCtaUnderlineCommit {
-  0% {
-    transform: scaleX(0);
-    transform-origin: left;
-    background: var(--ink);
-  }
-  45% {
-    transform: scaleX(1);
-    transform-origin: left;
-    background: var(--accent);
-  }
-  65% {
-    transform: scaleX(1);
-    transform-origin: right;
-    background: var(--accent);
-  }
-  100% {
-    transform: scaleX(0);
-    transform-origin: right;
-    background: var(--accent);
-  }
-}
-
-/* Paper keycap: a typewriter key, not a UI chip. */
-.intro-key--paper {
-  display: inline-flex;
-  height: 1.5em;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.5em;
-  color: var(--body);
-  background: var(--plate-fill);
-  border: 1px solid var(--plate-border);
-  border-radius: 5px;
-  box-shadow: var(--plate-shadow);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 0.8em;
-  font-weight: 600;
-  line-height: 1;
-  transition:
-    box-shadow 120ms var(--ease),
-    transform 120ms var(--ease);
-}
-
-.intro-cta--print.is-visible:active .intro-key--paper {
-  transform: translateY(1px);
-  box-shadow:
-    inset 0 1px 2px rgba(31, 30, 29, 0.18),
-    0 0 0 rgba(31, 30, 29, 0);
-}
-
-/* Coarse pointers have no Enter key — swap the keycap sentence for tap copy.
-   Same CSS-only gate as the deleted rail chip keycap, so hybrid devices that attach or shed
-   a mouse re-evaluate live, with both variants inside the measured CTA. */
-.intro-cta-copy--fine {
-  display: contents;
-}
-
-.intro-cta-copy--coarse {
-  display: none;
-}
-
-@media (pointer: coarse) {
-  .intro-cta-copy--fine {
-    display: none;
-  }
-
-  .intro-cta-copy--coarse {
-    /* Same paper-plate material as .intro-key--paper: bare --muted text
-       fell under 4.5:1 over the shader's halftone field, and coarse
-       pointers have no hover state to recover contrast on. */
-    display: inline-flex;
-    align-items: center;
-    height: 1.5em;
-    padding: 0 0.6em;
-    color: var(--body);
-    background: var(--plate-fill);
-    border: 1px solid var(--plate-border);
-    border-radius: 5px;
-    box-shadow: var(--plate-shadow);
-  }
-}
-
-.intro-scrollhint {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  z-index: 1;
-  color: var(--muted);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  /* Full-opacity muted: this is instruction text, and 0.7 dropped it below
-   * the 4.5:1 AA floor at 11px. */
-  transform: translateX(-50%);
-  transition: opacity 180ms var(--ease);
-}
-
-.intro-scrollhint.is-hidden {
-  opacity: 0;
-}
-
-.sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
-
-@keyframes splashIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes splashOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-@media (max-width: 860px) {
-  .portfolio-shell {
-    display: flex;
-    flex-direction: column;
-    /* Own the vertical rhythm through each item's margins/padding below,
-       not a flex gap — otherwise the desktop --space-major gap would apply
-       between every stacked block. */
-    gap: 0;
-    max-width: none;
-    padding: 0 var(--gutter);
-    /* Framed column: faint side rules in the stacked range only. */
-    border-left: 1px solid var(--hairline-faint);
-    border-right: 1px solid var(--hairline-faint);
-  }
-
-  /* Flatten the rail wrappers AND the footer so the identity/bio block, the
-     contact links, and the copyright line each become direct shell-level
-     children alongside the work grid (.rail-footer-body is already
-     display:contents globally, so its two children promote all the way up).
-     Then `order` places them: intro → contact → work → ©. Only the copyright
-     drops to the true page end; the contact links stay up in the rail where
-     they were. Desktop keeps the whole footer pinned in the fixed rail
-     (space-between) — untouched.
-     Trade-off: display:contents drops the <aside> complementary landmark on
-     mobile; acceptable for the stacked layout, content is unchanged. */
-  .profile-rail,
-  .profile-sticky,
-  .rail-footer {
-    display: contents;
-  }
-
-  .profile-content {
-    order: 1;
-    /* No fixed cap: the ask card and ledger span the same column as the
-       contact rows below, so their right edges agree (the year column
-       lands where the leader icons do). Only running text keeps a
-       reading measure — ch, so it tracks the type size. */
-    max-width: none;
-    /* Restores the top breathing room the flattened .profile-sticky used to
-       carry as its 48px top padding. */
-    padding-top: 48px;
-  }
-
-  /* The identity block otherwise shrinks to the bio's measure, which
-     strands the card/ledger short of the contact rows' right edge. The
-     bio wraps to the same full column as everything else. */
-  .profile-content,
-  .profile-identity {
-    width: 100%;
-  }
-
-  /* Contact links keep their rail position, right after the bio. */
-  .rail-contact {
-    order: 2;
-  }
-
-  /* Stacked mobile layout: the desktop rail-clearing measure cap/centering
-     doesn't apply once the shell stacks in one column. */
-  .work-canvas {
-    order: 3;
-    max-width: none;
-    margin: 0;
-    padding: 42px 0 64px;
-  }
-
-  /* Copyright alone drops to the true page end, below the work grid. */
-  .rail-footer-body > p {
-    order: 4;
-    margin-top: 44px;
-    padding-bottom: 32px;
-  }
-
-  /* Ghost titles scale down so they stay proportional (design.md). */
-  .section-heading {
-    font-size: 40px;
-  }
-
-  .work-grid {
-    grid-template-columns: 1fr;
-    row-gap: var(--space-block);
-  }
-
-  .intro-stage {
-    padding: 36px 20px;
-  }
-
-  .intro-copy {
-    width: min(100%, calc(100vw - 40px));
-  }
-
-  .intro-sentence {
-    font-size: clamp(38px, 12vw, 56px);
-  }
-}
-
-/* ===========================================================================
-   Direction 1 — editorial masthead (stacked range only, ≤860px).
-   Desktop (≥861) keeps the fixed rail untouched. The rail content was tuned
-   for a 280px column; stacked full-width it stretched — overlong dot-leaders,
-   a yawning company→year gap, an empty experience→contact seam. Here the name
-   goes masthead-scale over a hairline rule, bio + experience share two columns
-   on tablet, and the contact links drop their leaders for a tight inline row.
-   =========================================================================== */
-@media (max-width: 860px) {
-  /* The name is the masthead now: display face, big, one line. */
-  .profile-identity h1 {
-    font-size: clamp(38px, 8.5vw, 60px);
-    font-weight: 600;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-  }
-
-  /* Hairline under the name + role lockup — the editorial rule. */
-  .profile-identity .profile-role-line {
-    margin: 6px 0 0;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--hairline-faint);
-  }
-
-  /* Grid/gap owns the rhythm now, not the rail's tuned top-margins. */
-  .profile-identity .sidebar-bio,
-  .profile-identity .sidebar-story {
-    margin-top: 20px;
-  }
-  .profile-identity .rail-ledger {
-    margin-top: 20px;
-  }
-
-  /* Drop the stretched table-of-contents leaders in the stacked range; the
-     desktop rail keeps them. Label + icon stay, falling back to the .rail-link
-     8px gap so each label sits right beside its icon (proximity).
-     A bare `.rail-link-leader { display: none }` (0-1-0) lost to the dotleader
-     variant's `.rail-footer-body[data-variant="dotleader"] .rail-link-leader
-     { display: block; flex: 1 }` (0-3-0), so the stretched leader survived on
-     mobile and shoved each icon to the far edge. This selector is byte-for-byte
-     that same 0-3-0 — equal specificity, so the later source position (here,
-     below the block rule) is what wins. */
-  .rail-footer-body[data-variant="dotleader"] .rail-link-leader {
-    display: none;
-  }
-  .rail-contact {
-    margin-top: 28px;
-  }
-  .rail-link {
-    font-size: 13px;
-  }
-}
-
-/* Tablet: the width earns two columns — bio | experience side by side, so
-   neither stretches, and the contact links collapse to one inline row. */
-@media (min-width: 561px) and (max-width: 860px) {
-  .profile-identity {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    column-gap: 44px;
-    row-gap: 0;
-    align-items: start;
-  }
-  .profile-identity h1,
-  .profile-identity .profile-role-line {
-    grid-column: 1 / -1;
-  }
-  .profile-identity .sidebar-bio,
-  .profile-identity .sidebar-story {
-    grid-column: 1;
-    margin-top: var(--space-figure);
-  }
-  .profile-identity .rail-ledger {
-    grid-column: 2;
-    margin-top: var(--space-figure);
-  }
-
-  .rail-contact {
-    flex-flow: row wrap;
-    gap: 22px;
-    align-items: center;
-  }
-  .rail-link {
-    width: auto;
-  }
-}
-
-/* Mobile wraps the print sentence to 6-8 lines; desktop's tight 1.05
-   line-height puts wrapped lines close enough to collide with the halftone
-   mask's dilated+feathered per-glyph pockets (introShaderMask.ts), which
-   reads as a double-image halo across line breaks. Loosen leading below the
-   same 860px step where the font drops to the 56px ceiling and starts
-   multi-line wrapping — desktop's 2-3 line layout keeps the tighter rhythm.
-   Compound `pointer: coarse` gate (matching this file's other touch rules)
-   also relieves large phones in landscape, which exceed 860px wide but are
-   short enough to wrap deep. */
-@media (pointer: coarse), (max-width: 860px) {
-  .intro-sentence {
-    line-height: 1.2;
-    /* `balance` rags harder as the line count climbs; `pretty` avoids
-       orphaned fragments (a lone "the model says.") on narrow measures. */
-    text-wrap: pretty;
-  }
-}
-
-/* Small phones: the 860px step's 40px ghost heading still crowds a ~375-390px
-   viewport. Additive step-down only. */
-/* The short "Email" label rides only on the smallest breakpoint's one-line
-   footer; the full address shows everywhere else. */
-.rail-link-email-short {
-  display: none;
-}
-
-@media (max-width: 560px) {
-  .section-heading {
-    font-size: 32px;
-  }
-
-  /* Hold the framed column to a 390px reading width and centre it, so the
-     side hairlines frame the content instead of stretching to the screen
-     edges on the larger phones in this range. */
-  .portfolio-shell {
-    max-width: 390px;
-    margin: 0 auto;
-    padding: 0 var(--gutter);
-  }
-
-  /* Contact links on one line: labels + icons in a single row, and the email
-     collapses to a short "Email" so all three fit the phone measure. */
-  .rail-contact {
-    flex-flow: row wrap;
-    gap: 16px;
-    align-items: center;
-    margin-top: var(--space-figure);
-  }
-  .rail-link {
-    width: auto;
-    font-size: 13px;
-  }
-  .rail-link-email-long {
-    display: none;
-  }
-  .rail-link-email-short {
-    display: inline;
-  }
-}
-
-/* Between the stacked mobile layout and the full 1200px desktop shell, the
-   fixed 280px rail crowds work-grid down to ~262px columns. Give the rail
-   40px and the gap 24px back to the content column (64px total ≈ one extra
-   card gutter) so two work columns stay readable further down. */
-@media (min-width: 861px) and (max-width: 1100px) {
-  .portfolio-shell {
-    /* Not a token: this 40px is layout arithmetic, not rhythm. It is the
-       64px shell gap minus the 24px handed back to the content column, and
-       it has to stay in step with the 280 -> 240 rail above. Snapping it to
-       --space-section (56px) returns only 8px instead of 24 and re-crowds
-       the work grid this rule exists to widen. */
-    gap: 40px;
-  }
-
-  .profile-rail,
-  .profile-sticky {
-    width: 240px;
-  }
-}
-
-/* Even with the narrower rail, two work columns dip under ~300px until the
-   window clears ~990px — run a single column there so cards keep their
-   proportions next to the sticky rail. */
-@media (min-width: 861px) and (max-width: 990px) {
-  .work-grid {
-    grid-template-columns: 1fr;
-    row-gap: var(--space-block);
+  .entry-meta p + p::before {
+    content: none;
   }
 }
 
@@ -1703,52 +308,7 @@ a.card-eyebrow-flag .flag-verb {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-
-  /* Coded thumbnails have no motion under reduced motion, so their play/pause
-     control would be inert — hide it. */
-  .work-media--thumbnail .work-media-control {
-    display: none;
-  }
-
-  /* Video controls do the opposite: under reduced motion the card no longer
-     plays by itself, so the control is the only way to start it and the only
-     sign the still is a video at all. Hidden until hover, a pointer visitor
-     would see two static images and never learn otherwise, so it stays up. The
-     NYU figure video's control follows the same rule. */
-  .work-media-control {
-    opacity: 1;
-    transform: none;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
-  }
-
-  .intro,
-  .intro.is-leaving {
-    animation: none;
-  }
-
-  /* The lead's ink-in animation is disabled above, so land it inked. */
-  .intro-lead {
-    animation: none;
-    color: var(--ink);
-  }
-
-  .intro-cta,
-  .intro-keycap,
-  .intro-cta-line,
-  .intro-key--paper,
-  .intro-scrollhint {
+  a {
     transition: none;
   }
 }
-

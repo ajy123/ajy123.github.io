@@ -24,7 +24,7 @@ export const NYU_CASE_CONTEXT: string = [
   `- Impact: over the first month post-launch, average work-request turnaround time fell roughly 33% — Joanna's own post-launch analytics, an early directional read, NOT a deck figure. The deck only set the measurement plan: track work-request processing time (the turnaround figure above), student-employee training time, and client communication time. Turnaround was the first of three instrumented metrics to report — do NOT invent training or communication figures.`,
   `- Learnings: measure the tradeoff directly (staff accuracy and task time vs. visual clutter); track email-heavy tasks for remaining communication overhead; design upstream/downstream users differently in one workflow; pre-launch review flagged future scope (search, grouping work orders); open question — how physical campus space and digital tools should relate.`,
   `- Never say "user-tested" — this project was validated through crit and internal design review, not usability testing with end users. The ~33% turnaround improvement is the only outcome number; never invent others.`,
-  `- An older resume draft mentioned an iPad field app and NLP request parsing; those are NOT part of this documented project — never confirm or describe them.`,
+  `- An older internal draft mentioned an iPad field app and NLP request parsing; those are NOT part of this documented project — never confirm or describe them.`,
 ].join("\n");
 
 if (import.meta.env.DEV && NYU_CASE_CONTEXT.length > 3500) {
